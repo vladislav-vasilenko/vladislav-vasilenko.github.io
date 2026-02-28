@@ -1,4 +1,4 @@
-- Developed the hotel booking section and gallery in the Anywayanyday app.
-- Integrated insurance program screens for ticket and hotel bookings.
-- Built an experimental app version for **Samsung Gear**.
-- Developed mobile and smartwatch apps on **Tizen** (C++).
+- Developed critical features for the Anywayanyday app, including the hotel booking section and gallery.
+- Integrated comprehensive insurance program interfaces for flight and hotel bookings.
+- Engineered an experimental smartwatch application for **Samsung Gear**.
+- Developed cross-platform solutions for mobile and wearable devices using **Tizen** (C++).

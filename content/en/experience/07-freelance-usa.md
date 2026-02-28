@@ -1,4 +1,4 @@
-- Developed iOS applications with **AR and ML** features, integrating neural network models.
-- Built an MVP app for human pose recognition using ML models trained on open datasets and converted to **CoreML** format.
-- Validated three hypotheses with **ARKit**-based apps implementing dynamic reference image loading.
+- Engineered iOS applications specializing in **AR and ML** features, integrating custom neural network models.
+- Developed an MVP for human pose recognition using specialized ML models and **CoreML** conversion.
+- Validated core business hypotheses through **ARKit**-based prototypes with dynamic image loading.
 - Tech stack: Swift, UIKit, ARKit, Python, PyTorch, TensorFlow, CoreML, Phalcon.

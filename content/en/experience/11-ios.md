@@ -1,10 +1,10 @@
-Over 5 years of experience in iOS and AR development (Swift, ARKit, CoreML). Released several commercial applications and led mobile development teams. This foundation provides the discipline of industrial software development, though currently secondary to my focus on ML/CV.
+Over 5 years of professional experience in iOS and AR development (Swift, ARKit, CoreML). Engineered several high-impact commercial applications and led mobile development teams. This foundation ensures rigorous industrial software development discipline, supporting my primary focus on ML/CV.
 
 **Key projects and achievements:**
-- **[Monster Deals](https://apps.apple.com/us/app/monster-deals/id1003724916)**: Developed most of the application functionality, which was featured in the App Store as "Best Gifting App".
-- **Afisha Restaurants**: Developed the "Restaurant News" section in the app.
-- **AnywayAnyday**: Implemented insurance purchase functionality for flight and hotel bookings.
-- **EOSDO iOS RosAtom**: Developed functionality for a corporate task management and document workflow system between departments.
+- **[Monster Deals](https://apps.apple.com/us/app/monster-deals/id1003724916)**: Engineered the primary functionality of the app, which received the Apple App Store "Best Gifting App" award.
+- **Afisha Restaurants**: Developed the core "Restaurant News" section for the platform.
+- **AnywayAnyday**: Implemented critical insurance purchase workflows for travel bookings.
+- **EOSDO iOS RosAtom**: Engineered enterprise-grade task management and document workflow modules for RosAtom.
 
 **Technology stack:**
 - **UI/Graphics**: UIKit, SwiftUI, SpriteKit, Custom Animations (UIView/CALayer).
