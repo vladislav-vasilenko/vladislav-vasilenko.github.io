@@ -1,6 +1,6 @@
 {
   "name": "Vladislav Vasilenko",
-  "title": "DL Researcher / CV Engineer / ML Engineer",
+  "title": "DL Researcher / CV Engineer / LLM/ML Engineer",
   "productTitle": "Senior Product Manager / AI Product Lead",
   "contact": {
     "phone": "+7 (996) 328-84-98",
@@ -152,6 +152,18 @@
       "role": "Junior Mobile Developer (C++/Tizen & Objective-C/iOS)",
       "profiles": [
         "technical"
+      ]
+    },
+    {
+      "id": "11-ios",
+      "period": "2014 — 2018",
+      "duration": "5 years",
+      "company": "Various Companies (iOS Development)",
+      "location": "Moscow / London / Remote",
+      "role": "Senior iOS Developer / Mobile Team Lead",
+      "profiles": [
+        "technical",
+        "product"
       ]
     }
   ],

@@ -1,6 +1,6 @@
 {
   "name": "Василенко Владислав",
-  "title": "DL Researcher / CV Engineer / ML Engineer",
+  "title": "DL Researcher / CV Engineer / LLM/ML Engineer",
   "productTitle": "Senior Product Manager / AI Product Lead",
   "contact": {
     "phone": "+7 (996) 328-84-98",
@@ -152,6 +152,18 @@
       "role": "Младший разработчик мобильных приложений (C++/Tizen и Objective-C/iOS)",
       "profiles": [
         "technical"
+      ]
+    },
+    {
+      "id": "11-ios",
+      "period": "2014 — 2018",
+      "duration": "5 лет",
+      "company": "Различные компании (iOS разработка)",
+      "location": "Москва / Лондон / Удаленно",
+      "role": "Senior iOS Developer / Mobile Team Lead",
+      "profiles": [
+        "technical",
+        "product"
       ]
     }
   ],

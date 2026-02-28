@@ -2,44 +2,224 @@
   "categories": [
     {
       "id": "core",
-      "label": { "en": "Core Frameworks", "ru": "Основные фреймворки" },
+      "label": {
+        "en": "Core Frameworks",
+        "ru": "Основные фреймворки"
+      },
       "ring": 1,
       "items": [
-        { "name": "Python", "icon": "python", "url": "https://python.org", "color": "#3776AB" },
-        { "name": "PyTorch", "icon": "pytorch", "url": "https://pytorch.org", "color": "#EE4C2C" },
-        { "name": "TensorFlow", "icon": "tensorflow", "url": "https://tensorflow.org", "color": "#FF6F00" },
-        { "name": "Hugging Face", "icon": "huggingface", "url": "https://huggingface.co", "color": "#FFD21E" },
-        { "name": "W&B", "icon": "weightsandbiases", "url": "https://wandb.ai", "color": "#FFBE00" }
+        {
+          "name": "Python",
+          "icon": "python",
+          "url": "https://python.org",
+          "color": "#3776AB"
+        },
+        {
+          "name": "PyTorch",
+          "icon": "pytorch",
+          "url": "https://pytorch.org",
+          "color": "#EE4C2C"
+        },
+        {
+          "name": "TensorFlow",
+          "icon": "tensorflow",
+          "url": "https://tensorflow.org",
+          "color": "#FF6F00"
+        },
+        {
+          "name": "Hugging Face",
+          "icon": "huggingface",
+          "url": "https://huggingface.co",
+          "color": "#FFD21E"
+        },
+        {
+          "name": "NumPy",
+          "icon": "numpy",
+          "url": "https://numpy.org",
+          "color": "#013243"
+        },
+        {
+          "name": "Pandas",
+          "icon": "pandas",
+          "url": "https://pandas.pydata.org",
+          "color": "#150458"
+        },
+        {
+          "name": "OpenCV",
+          "icon": "opencv",
+          "url": "https://opencv.org",
+          "color": "#5C3EE8"
+        },
+        {
+          "name": "torchvision",
+          "icon": "pytorch",
+          "url": "https://pytorch.org/vision",
+          "color": "#EE4C2C"
+        },
+        {
+          "name": "W&B",
+          "icon": "weightsandbiases",
+          "url": "https://wandb.ai",
+          "color": "#FFBE00"
+        }
       ]
     },
     {
       "id": "ai-genai",
-      "label": { "en": "AI & Generative AI", "ru": "ИИ и генеративный ИИ" },
+      "label": {
+        "en": "AI & Generative AI",
+        "ru": "ИИ и генеративный ИИ"
+      },
       "ring": 2,
       "items": [
-        { "name": "LangChain", "icon": "langchain", "url": "https://langchain.com", "color": "#1C3C3C" },
-        { "name": "LLMs", "icon": null, "url": "https://en.wikipedia.org/wiki/Large_language_model", "color": "#8B5CF6" },
-        { "name": "RAG", "icon": null, "url": "https://research.ibm.com/blog/retrieval-augmented-generation-RAG", "color": "#06B6D4" },
-        { "name": "Diffusion", "icon": null, "url": "https://github.com/huggingface/diffusers", "color": "#F97316" },
-        { "name": "Transformer", "icon": null, "url": "https://arxiv.org/abs/1706.03762", "color": "#EC4899" },
-        { "name": "LoRA", "icon": null, "url": "https://arxiv.org/abs/2106.09685", "color": "#10B981" },
-        { "name": "Flow Matching", "icon": null, "url": "https://arxiv.org/abs/2210.02747", "color": "#6366F1" },
-        { "name": "GAN", "icon": null, "url": "https://arxiv.org/abs/1406.2661", "color": "#EF4444" }
+        {
+          "name": "LangChain",
+          "icon": "langchain",
+          "url": "https://langchain.com",
+          "color": "#1C3C3C"
+        },
+        {
+          "name": "LLMs",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Large_language_model",
+          "color": "#8B5CF6"
+        },
+        {
+          "name": "RAG",
+          "icon": null,
+          "url": "https://research.ibm.com/blog/retrieval-augmented-generation-RAG",
+          "color": "#06B6D4"
+        },
+        {
+          "name": "Diffusion",
+          "icon": null,
+          "url": "https://github.com/huggingface/diffusers",
+          "color": "#F97316"
+        },
+        {
+          "name": "Transformer",
+          "icon": null,
+          "url": "https://arxiv.org/abs/1706.03762",
+          "color": "#EC4899"
+        },
+        {
+          "name": "LoRA",
+          "icon": null,
+          "url": "https://arxiv.org/abs/2106.09685",
+          "color": "#10B981"
+        },
+        {
+          "name": "Flow Matching",
+          "icon": null,
+          "url": "https://arxiv.org/abs/2210.02747",
+          "color": "#6366F1"
+        },
+        {
+          "name": "CLIP",
+          "icon": null,
+          "url": "https://openai.com/research/clip",
+          "color": "#412991"
+        },
+        {
+          "name": "BLIP",
+          "icon": null,
+          "url": "https://github.com/salesforce/BLIP",
+          "color": "#00AEEF"
+        },
+        {
+          "name": "SAM",
+          "icon": null,
+          "url": "https://segment-anything.com",
+          "color": "#1877F2"
+        },
+        {
+          "name": "Gaussian Splatting",
+          "icon": null,
+          "url": "https://repo-l33t.github.io/gaussian-splatting",
+          "color": "#FFD700"
+        },
+        {
+          "name": "GAN",
+          "icon": null,
+          "url": "https://arxiv.org/abs/1406.2661",
+          "color": "#EF4444"
+        }
       ]
     },
     {
       "id": "tools-infra",
-      "label": { "en": "Tools & Infrastructure", "ru": "Инструменты и инфраструктура" },
+      "label": {
+        "en": "Tools & Infrastructure",
+        "ru": "Инструменты и инфраструктура"
+      },
       "ring": 3,
       "items": [
-        { "name": "Docker", "icon": "docker", "url": "https://docker.com", "color": "#2496ED" },
-        { "name": "FastAPI", "icon": "fastapi", "url": "https://fastapi.tiangolo.com", "color": "#009688" },
-        { "name": "ONNX", "icon": "onnx", "url": "https://onnx.ai", "color": "#005CED" },
-        { "name": "Next.js", "icon": "nextdotjs", "url": "https://nextjs.org", "color": "#000000" },
-        { "name": "WebRTC", "icon": "webrtc", "url": "https://webrtc.org", "color": "#333333" },
-        { "name": "Triton", "icon": null, "url": "https://github.com/triton-inference-server/server", "color": "#76B900" },
-        { "name": "Swift", "icon": "swift", "url": "https://swift.org", "color": "#F05138" },
-        { "name": "Gradio", "icon": null, "url": "https://gradio.app", "color": "#F97316" }
+        {
+          "name": "Docker",
+          "icon": "docker",
+          "url": "https://docker.com",
+          "color": "#2496ED"
+        },
+        {
+          "name": "FastAPI",
+          "icon": "fastapi",
+          "url": "https://fastapi.tiangolo.com",
+          "color": "#009688"
+        },
+        {
+          "name": "CUDA",
+          "icon": "nvidia",
+          "url": "https://developer.nvidia.com/cuda-zone",
+          "color": "#76B900"
+        },
+        {
+          "name": "TensorRT",
+          "icon": "nvidia",
+          "url": "https://developer.nvidia.com/tensorrt",
+          "color": "#76B900"
+        },
+        {
+          "name": "MLflow",
+          "icon": "mlflow",
+          "url": "https://mlflow.org",
+          "color": "#0194E2"
+        },
+        {
+          "name": "Kubernetes",
+          "icon": "kubernetes",
+          "url": "https://kubernetes.io",
+          "color": "#326CE5"
+        },
+        {
+          "name": "ONNX",
+          "icon": "onnx",
+          "url": "https://onnx.ai",
+          "color": "#005CED"
+        },
+        {
+          "name": "Triton",
+          "icon": null,
+          "url": "https://github.com/triton-inference-server/server",
+          "color": "#76B900"
+        },
+        {
+          "name": "Gradio",
+          "icon": null,
+          "url": "https://gradio.app",
+          "color": "#F97316"
+        },
+        {
+          "name": "Swift",
+          "icon": "swift",
+          "url": "https://swift.org",
+          "color": "#F05138"
+        },
+        {
+          "name": "Next.js",
+          "icon": "nextdotjs",
+          "url": "https://nextjs.org",
+          "color": "#000000"
+        }
       ]
     }
   ]
