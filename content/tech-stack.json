@@ -277,6 +277,36 @@
           "icon": "pydantic",
           "url": "https://docs.pydantic.dev",
           "color": "#E92063"
+        },
+        {
+          "name": "C/C++",
+          "icon": "cplusplus",
+          "url": "https://isocpp.org",
+          "color": "#00599C"
+        },
+        {
+          "name": "Shaders (Fragment/Pixel)",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Shader",
+          "color": "#FFD700"
+        },
+        {
+          "name": "OpenGL",
+          "icon": "opengl",
+          "url": "https://www.opengl.org",
+          "color": "#5586A4"
+        },
+        {
+          "name": "WebGL",
+          "icon": "webgl",
+          "url": "https://www.khronos.org/webgl/",
+          "color": "#990000"
+        },
+        {
+          "name": "Metal",
+          "icon": null,
+          "url": "https://developer.apple.com/metal/",
+          "color": "#000000"
         }
       ]
     }
