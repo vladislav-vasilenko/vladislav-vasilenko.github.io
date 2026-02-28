@@ -20,7 +20,7 @@
     "exportPdf": "Экспорт в PDF",
     "exportDoc": "Экспорт в DOC",
     "exportMd": "Экспорт в Markdown",
-    "copied": "Скопировано!",
+    "copied": "Email скопирован. Нажмите, чтобы написать.",
     "viewCards": "Карточки",
     "viewHex": "Соты",
     "viewOrbit": "Орбита"
@@ -138,5 +138,8 @@
       "program": "PyTorch for Deep Learning"
     }
   ],
-  "languages": ["Русский — Родной", "Английский — C1 (Продвинутый)"]
+  "languages": [
+    "Русский — Родной",
+    "Английский — C1 (Продвинутый)"
+  ]
 }
