@@ -189,6 +189,15 @@ a:hover {
   transform: translateX(-50%) translateY(0);
 }
 
+.toast--local {
+  position: fixed;
+  bottom: auto;
+  pointer-events: none;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--color-accent);
+}
+
 /* Language Toggle */
 .lang-toggle {
   display: flex;

@@ -324,18 +324,51 @@ function renderPage(lang: Lang): void {
   // Email copy button
   const emailBtn = document.querySelector<HTMLButtonElement>('.social-link--email');
   if (emailBtn) {
+    let timeout: number | null = null;
     emailBtn.addEventListener('click', async () => {
       const email = cv.contact.email;
+
+      if (emailBtn.classList.contains('revealed')) {
+        window.location.href = `mailto:${email}`;
+        return;
+      }
+
       await navigator.clipboard.writeText(email);
       emailBtn.classList.add('revealed');
       emailBtn.innerHTML = `<span class="email-text">${email}</span>`;
-      showToast(cv.labels.copied);
-      setTimeout(() => {
+      showLocalToast(cv.labels.copied, emailBtn);
+
+      if (timeout) clearTimeout(timeout);
+      timeout = window.setTimeout(() => {
         emailBtn.classList.remove('revealed');
         emailBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z"/><path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z"/></svg>`;
-      }, 3000);
+        timeout = null;
+      }, 5000);
     });
   }
+}
+
+function showLocalToast(message: string, target: HTMLElement): void {
+  const existing = document.querySelector('.toast--local');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'toast toast--local';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  const rect = target.getBoundingClientRect();
+  toast.style.top = `${rect.top - 40}px`;
+  toast.style.left = `${rect.left + rect.width / 2}px`;
+
+  requestAnimationFrame(() => {
+    toast.classList.add('toast--visible');
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('toast--visible');
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
 }
 
 function showToast(message: string): void {
