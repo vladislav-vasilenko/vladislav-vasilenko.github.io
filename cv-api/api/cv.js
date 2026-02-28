@@ -13,10 +13,30 @@ module.exports = async function handler(req, res) {
   const about = await fetchText(`${lang}/about.md`);
   const productAbout = await fetchText(`${lang}/product-about.md`);
 
+  const MONTHS = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
+
+  function parsePeriod(period) {
+    const parts = period.split('—').map(s => s.trim());
+    const [startMonth, startYear] = parts[0].split(' ');
+    const result = { startMonth: MONTHS[startMonth] || 0, startYear: parseInt(startYear) || 0 };
+    if (parts[1] === 'Present') {
+      result.endMonth = 0;
+      result.endYear = 0;
+      result.currentlyWorkHere = true;
+    } else {
+      const [endMonth, endYear] = parts[1].split(' ');
+      result.endMonth = MONTHS[endMonth] || 0;
+      result.endYear = parseInt(endYear) || 0;
+      result.currentlyWorkHere = false;
+    }
+    return result;
+  }
+
   const experience = await Promise.all(
     cvJson.experience.map(async (exp) => {
       const description = await fetchText(`${lang}/experience/${exp.id}.md`);
-      return { ...exp, description };
+      const dates = parsePeriod(exp.period);
+      return { ...exp, description, ...dates };
     })
   );
 
