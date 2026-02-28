@@ -1,4 +1,5 @@
-Over 5 years of professional experience in iOS and AR development (Swift, ARKit, CoreML). Engineered several high-impact commercial applications and led mobile development teams. This foundation ensures rigorous industrial software development discipline, supporting my primary focus on ML/CV.
+- **High-Impact Mobile Engineering**: Over 5 years of professional experience developing commercial iOS and AR applications (Swift, ARKit, CoreML).
+- **Leadership & Discipline**: Led mobile development teams and established rigorous industrial software engineering standards, now supporting a primary focus on ML/CV.
 
 **Key projects and achievements:**
 - **[Monster Deals](https://apps.apple.com/us/app/monster-deals/id1003724916)**: Engineered the primary functionality of the app, which received the Apple App Store "Best Gifting App" award.
