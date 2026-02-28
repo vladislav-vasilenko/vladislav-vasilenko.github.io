@@ -25,6 +25,7 @@ export interface Experience {
   industry?: string;
   role: string;
   descriptionHtml: string;
+  descriptionMd: string;
 }
 
 export interface Education {
@@ -68,6 +69,15 @@ interface CVJson {
     skills: string;
     languages: string;
     employment: string;
+    export: string;
+    copyText: string;
+    exportPdf: string;
+    exportDoc: string;
+    exportMd: string;
+    copied: string;
+    viewCards: string;
+    viewHex: string;
+    viewOrbit: string;
   };
   employment: string;
   experience: Omit<Experience, 'descriptionHtml'>[];
@@ -85,6 +95,7 @@ export interface CVContent {
   education: Education[];
   languages: string[];
   aboutHtml: string;
+  aboutMd: string;
   techStack: TechStack;
 }
 
@@ -103,7 +114,7 @@ export function loadContent(lang: Lang): CVContent {
     const mdKey = `/content/${lang}/experience/${exp.id}.md`;
     const md = expModules[mdKey] ?? '';
     const descriptionHtml = marked.parse(md, { async: false }) as string;
-    return { ...exp, descriptionHtml };
+    return { ...exp, descriptionHtml, descriptionMd: md };
   });
 
   return {
@@ -116,6 +127,7 @@ export function loadContent(lang: Lang): CVContent {
     education: cv.education,
     languages: cv.languages,
     aboutHtml,
+    aboutMd,
     techStack,
   };
 }

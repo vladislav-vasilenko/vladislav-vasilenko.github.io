@@ -14,7 +14,16 @@
     "education": "Образование",
     "skills": "Навыки",
     "languages": "Языки",
-    "employment": "Тип занятости"
+    "employment": "Тип занятости",
+    "export": "Экспорт",
+    "copyText": "Копировать текст",
+    "exportPdf": "Экспорт в PDF",
+    "exportDoc": "Экспорт в DOC",
+    "exportMd": "Экспорт в Markdown",
+    "copied": "Скопировано!",
+    "viewCards": "Карточки",
+    "viewHex": "Соты",
+    "viewOrbit": "Орбита"
   },
   "employment": "Полная занятость, частичная занятость, проектная работа. На месте, удалённо или гибрид.",
   "experience": [

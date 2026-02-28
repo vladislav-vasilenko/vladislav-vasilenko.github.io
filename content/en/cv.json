@@ -3,7 +3,7 @@
   "title": "DL Researcher / CV Engineer / ML Engineer",
   "contact": {
     "phone": "+7 (996) 328-84-98",
-    "email": "mr.vasilenko.vlad@yandex.ru",
+    "email": "ivlad.skipper.us@gmail.com",
     "location": "Moscow, Russia",
     "citizenship": "Russia",
     "relocation": "Open to relocation and business trips"
@@ -14,7 +14,16 @@
     "education": "Education",
     "skills": "Skills",
     "languages": "Languages",
-    "employment": "Employment Preferences"
+    "employment": "Employment Preferences",
+    "export": "Export",
+    "copyText": "Copy as Text",
+    "exportPdf": "Export as PDF",
+    "exportDoc": "Export as DOC",
+    "exportMd": "Export as Markdown",
+    "copied": "Copied!",
+    "viewCards": "Cards",
+    "viewHex": "Hexagonal",
+    "viewOrbit": "Orbit"
   },
   "employment": "Full-time, part-time, project-based. On-site, remote, or hybrid.",
   "experience": [
@@ -129,5 +138,8 @@
       "program": "PyTorch for Deep Learning"
     }
   ],
-  "languages": ["Russian — Native", "English — C1 (Advanced)"]
+  "languages": [
+    "Russian — Native",
+    "English — C1 (Advanced)"
+  ]
 }
