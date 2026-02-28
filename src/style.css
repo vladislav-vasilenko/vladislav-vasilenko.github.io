@@ -522,9 +522,9 @@ a:hover {
 
 .orbit-container {
   position: relative;
-  width: 520px;
-  height: 520px;
-  margin: 1rem auto;
+  width: 700px;
+  height: 700px;
+  margin: 2rem auto;
 }
 
 .orbit-center {
@@ -532,13 +532,13 @@ a:hover {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   background: radial-gradient(circle, #6366f1, #4f46e5);
   color: #fff;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -557,46 +557,75 @@ a:hover {
 
 .ring-label {
   position: absolute;
-  top: -1.5rem;
+  top: 0;
   left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.7rem;
-  font-weight: 600;
+  transform: translate(-50%, -100%);
+  padding-bottom: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: var(--color-muted);
   white-space: nowrap;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.6;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  pointer-events: none;
 }
 
 .orbit-ring.ring-1 {
-  --ring-size: 180px;
+  --ring-size: 160px;
+  --spin-speed: 80s;
   width: var(--ring-size);
   height: var(--ring-size);
   margin-left: calc(var(--ring-size) / -2);
   margin-top: calc(var(--ring-size) / -2);
-  animation: orbit-spin 60s linear infinite;
+  animation: orbit-spin var(--spin-speed) linear infinite;
 }
 
 .orbit-ring.ring-2 {
-  --ring-size: 320px;
+  --ring-size: 280px;
+  --spin-speed: 70s;
   width: var(--ring-size);
   height: var(--ring-size);
   margin-left: calc(var(--ring-size) / -2);
   margin-top: calc(var(--ring-size) / -2);
-  animation: orbit-spin 45s linear infinite reverse;
+  animation: orbit-spin var(--spin-speed) linear infinite reverse;
 }
 
 .orbit-ring.ring-3 {
-  --ring-size: 470px;
+  --ring-size: 420px;
+  --spin-speed: 60s;
   width: var(--ring-size);
   height: var(--ring-size);
   margin-left: calc(var(--ring-size) / -2);
   margin-top: calc(var(--ring-size) / -2);
-  animation: orbit-spin 35s linear infinite;
+  animation: orbit-spin var(--spin-speed) linear infinite;
+}
+
+.orbit-ring.ring-4 {
+  --ring-size: 560px;
+  --spin-speed: 50s;
+  width: var(--ring-size);
+  height: var(--ring-size);
+  margin-left: calc(var(--ring-size) / -2);
+  margin-top: calc(var(--ring-size) / -2);
+  animation: orbit-spin var(--spin-speed) linear infinite reverse;
+}
+
+.orbit-ring.ring-5 {
+  --ring-size: 700px;
+  --spin-speed: 40s;
+  width: var(--ring-size);
+  height: var(--ring-size);
+  margin-left: calc(var(--ring-size) / -2);
+  margin-top: calc(var(--ring-size) / -2);
+  animation: orbit-spin var(--spin-speed) linear infinite;
 }
 
 @keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
   to {
     transform: rotate(360deg);
   }
@@ -610,11 +639,11 @@ a:hover {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 42px;
-  height: 42px;
-  margin-left: -21px;
-  margin-top: -21px;
-  transform: rotate(var(--angle)) translateX(calc(var(--ring-size) / 2)) rotate(calc(var(--angle) * -1));
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  margin-top: -22px;
+  transform: rotate(var(--angle)) translateX(calc(var(--ring-size) / 2));
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -622,26 +651,25 @@ a:hover {
   z-index: 5;
 }
 
-/* Counter-rotate icon content to keep it upright when ring spins */
-.ring-1 .orbit-icon,
-.ring-1 .orbit-tooltip,
-.ring-1 .ring-label {
-  animation: counter-spin 60s linear infinite;
+/* Counter-rotate everything inside the item to stay upright */
+.orbit-item>* {
+  transform: rotate(calc(var(--angle) * -1));
+  animation: inherit;
+  animation-name: counter-spin;
 }
 
-.ring-2 .orbit-icon,
-.ring-2 .orbit-tooltip,
-.ring-2 .ring-label {
-  animation: counter-spin 45s linear infinite reverse;
-}
-
-.ring-3 .orbit-icon,
-.ring-3 .orbit-tooltip,
-.ring-3 .ring-label {
-  animation: counter-spin 35s linear infinite;
+/* The ring's own label also needs counter-rotation IF it was inside the spinning ring.
+   But we placed it so it just needs to stay upright relative to the container. */
+.ring-label {
+  animation: inherit;
+  animation-name: counter-spin;
 }
 
 @keyframes counter-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
   to {
     transform: rotate(-360deg);
   }
