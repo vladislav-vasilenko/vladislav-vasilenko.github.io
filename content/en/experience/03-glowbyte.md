@@ -1,0 +1,8 @@
+- Built multi-agent **LLM systems** for moderation, ad generation and Telegram work chat analysis (**LangChain/LangGraph**).
+- Deployed separate services for each project with **Python/FastAPI** + Pydantic validator APIs; some projects integrated Python/Next.js.
+- Model inference from Replicate cloud (**LLaMA 3**) / Claude / HuggingFace.
+- Implemented **RAG** for moderation rule search.
+- Applied prompt engineering (Prompt Chaining, Chain-of-Thought, fast-CoT).
+- Fine-tuned **LLaMA 3 with SFT** for AdTech domain/auto-moderation of advertisements using a labeled database of ad campaigns and violations.
+- Built a meeting transcription service on **Whisper Large + Speaker Diarization** (Pyannote) with Gradio interface.
+- Developed a Telegram bot for chat analysis with **multi-user authentication** — Telegram Client authorization for accessing all user chats, chat scraping, and LLM dialogue support (Claude Sonnet) with compressed chat context (LangChain Conversation Memory).

@@ -1,0 +1,5 @@
+- Developed two **PyTorch**-based concepts resulting in a voice cloning model patent application.
+- Built and tested TTS & Voice Cloning models: **Tacotron 2**, WaveRNN, SpeakerVerification2TTS, Transformer models.
+- **DeepFace/FaceNet** experiments: gender, age, height and weight recognition from photos.
+- Implemented data collection and processing (image scraping) using async multitasking (**Asyncio**).
+- Trained ML models on **Google Colab** and **Paperspace**.

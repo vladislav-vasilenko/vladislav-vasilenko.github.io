@@ -1,0 +1,2 @@
+- **TalkyBuddy** ([banibot.ru/talkybuddy](https://banibot.ru/talkybuddy)) — personalized foreign language learning platform with a voice AI assistant that adapts to the student. Uses WebRTC for real-time audio token exchange with an omni-modal model (audio, image and text understanding with audio/text generation) achieving minimal response latency.
+- **BaniBaniBot** ([banibanibot.t.me](https://banibanibot.t.me)) — Telegram bot service for multimodal image generation based on references and text descriptions.

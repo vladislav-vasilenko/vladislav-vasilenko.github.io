@@ -1,0 +1,8 @@
+- Researched Bark-like **AR-Transformer** (EnCodec) and StableAudio-like latent diffusion (**DiT** on EnCodec); explored VAE + RVQ/VQ quantizers for audio latent representations.
+- Studied building blocks from `stable-audio-tools`: dit.py / encodec.py / conditioners.py. Compared DiT blocks (attention, MLP) with **SDXL** backbone (UNet) and **Flux** (DiT).
+- Identified optimal layers for **LoRA adaptation** and depth/width parameters for quality/resource tradeoffs.
+- Applied **PEFT (LoRA/QLoRA)** for fast domain/voice/genre adaptation; trained LoRA with LoRAW for DiT, conducted ablations on rank/regularization/data selection.
+- Quality evaluation: **FAD**, **CLAPScore** and FID/CLIPScore/FVD (CV).
+- Built reproducible ML pipelines from data preparation to batch inference. Logged experiments in **W&B**, created speed/quality profiles for different inference modes.
+- Inference optimization: **xFormers/Flash-Attention**, diffusion schedulers, Gradio demos.
+- MLOps: **Docker + CI/CD**, monitoring, experimental exports to ONNX and Triton for production deployment.

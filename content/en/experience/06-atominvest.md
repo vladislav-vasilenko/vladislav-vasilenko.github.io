@@ -1,0 +1,4 @@
+- Developed and released two products from scratch: **EOSDO** (iOS) — a client app for an enterprise document management system; **Random English** (Messenger Chatbot) — connecting English learners from the same region.
+- Designed the EOSDO app architecture using **Realm, UIKit, Alamofire and RxSwift**.
+- Collaborated with designers on UI/UX and participated in stakeholder requirements gathering.
+- Conducted **A/B testing** of the chatbot across countries (including Spain), optimizing performance and user engagement.

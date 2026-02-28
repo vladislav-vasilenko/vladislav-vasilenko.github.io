@@ -1,0 +1,133 @@
+{
+  "name": "Vladislav Vasilenko",
+  "title": "DL Researcher / CV Engineer / ML Engineer",
+  "contact": {
+    "phone": "+7 (996) 328-84-98",
+    "email": "mr.vasilenko.vlad@yandex.ru",
+    "location": "Moscow, Russia",
+    "citizenship": "Russia",
+    "relocation": "Open to relocation and business trips"
+  },
+  "labels": {
+    "about": "About",
+    "experience": "Work Experience",
+    "education": "Education",
+    "skills": "Skills",
+    "languages": "Languages",
+    "employment": "Employment Preferences"
+  },
+  "employment": "Full-time, part-time, project-based. On-site, remote, or hybrid.",
+  "experience": [
+    {
+      "id": "01-pet-projects",
+      "period": "Dec 2025 — Present",
+      "duration": "3 months",
+      "company": "PET (Passion-Driven) Projects",
+      "location": "Moscow",
+      "url": "https://banibot.ru/",
+      "role": "Product & Technical Developer"
+    },
+    {
+      "id": "02-severstal",
+      "period": "Sep 2025 — Dec 2025",
+      "duration": "4 months",
+      "company": "Severstal",
+      "location": "Russia",
+      "url": "https://www.severstal.com",
+      "industry": "Metallurgy",
+      "role": "Lead Software Development Expert"
+    },
+    {
+      "id": "03-glowbyte",
+      "period": "Sep 2024 — May 2025",
+      "duration": "9 months",
+      "company": "GlowByte Consulting",
+      "location": "Russia",
+      "url": "https://www.glowbyteconsulting.com",
+      "industry": "IT Consulting & System Integration",
+      "role": "Senior Python Developer / ML Engineer (GenAI)"
+    },
+    {
+      "id": "04-genai",
+      "period": "Jun 2023 — Sep 2024",
+      "duration": "1 year 4 months",
+      "company": "GenAI",
+      "location": "",
+      "role": "ML / Deep Learning Engineer / GenAI Researcher"
+    },
+    {
+      "id": "05-bortnik",
+      "period": "Mar 2021 — Mar 2022",
+      "duration": "1 year 1 month",
+      "company": "Bortnik Foundation (FASIE)",
+      "location": "Russia",
+      "url": "https://fasie.ru",
+      "role": "ML / Deep Learning Engineer"
+    },
+    {
+      "id": "06-atominvest",
+      "period": "May 2019 — Feb 2021",
+      "duration": "1 year 10 months",
+      "company": "Atominvest",
+      "location": "Russia",
+      "url": "https://atominvest.ru",
+      "industry": "Nuclear Energy & Heavy Engineering",
+      "role": "Lead iOS Software Engineer"
+    },
+    {
+      "id": "07-freelance-usa",
+      "period": "Sep 2018 — Apr 2019",
+      "duration": "8 months",
+      "company": "Freelance (USA)",
+      "location": "USA",
+      "role": "ML Engineer / iOS Software Engineer"
+    },
+    {
+      "id": "08-swift-gift",
+      "period": "Oct 2016 — Aug 2018",
+      "duration": "1 year 11 months",
+      "company": "Swift Gift (Polemur Ltd.)",
+      "location": "London, UK",
+      "url": "https://swiftgift.com",
+      "role": "Lead iOS Mobile Developer"
+    },
+    {
+      "id": "09-anywayanyday",
+      "period": "Aug 2014 — Mar 2015",
+      "duration": "8 months",
+      "company": "Anywayanyday",
+      "location": "Moscow",
+      "url": "https://www.anywayanyday.com",
+      "industry": "Travel & Internet Services",
+      "role": "Junior Mobile Developer (C++/Tizen & Objective-C/iOS)"
+    }
+  ],
+  "education": [
+    {
+      "year": "2014",
+      "institution": "Moscow State Technical University (MSTU)",
+      "program": "Information Systems: Computers, Complexes, Systems and Networks"
+    },
+    {
+      "year": "2024",
+      "institution": "Deep Learning School — MIPT",
+      "program": "DL Engineer"
+    },
+    {
+      "year": "2023",
+      "institution": "Google",
+      "program": "Machine Learning Crash Course"
+    },
+    {
+      "year": "2023",
+      "institution": "MIT",
+      "program": "Computational Thinking with Julia"
+    },
+    {
+      "year": "2023",
+      "institution": "Zero to Mastery",
+      "program": "PyTorch for Deep Learning"
+    }
+  ],
+  "languages": ["Russian — Native", "English — C1 (Advanced)"]
+}

@@ -1,0 +1,133 @@
+{
+  "name": "Василенко Владислав",
+  "title": "DL Researcher / CV Engineer / ML Engineer",
+  "contact": {
+    "phone": "+7 (996) 328-84-98",
+    "email": "mr.vasilenko.vlad@yandex.ru",
+    "location": "Москва, Россия",
+    "citizenship": "Россия",
+    "relocation": "Готов к переезду и командировкам"
+  },
+  "labels": {
+    "about": "Обо мне",
+    "experience": "Опыт работы",
+    "education": "Образование",
+    "skills": "Навыки",
+    "languages": "Языки",
+    "employment": "Тип занятости"
+  },
+  "employment": "Полная занятость, частичная занятость, проектная работа. На месте, удалённо или гибрид.",
+  "experience": [
+    {
+      "id": "01-pet-projects",
+      "period": "Декабрь 2025 — настоящее время",
+      "duration": "3 месяца",
+      "company": "PET (Passion-Driven) Projects",
+      "location": "Москва",
+      "url": "https://banibot.ru/",
+      "role": "Продуктовый и технический разработчик"
+    },
+    {
+      "id": "02-severstal",
+      "period": "Сентябрь 2025 — Декабрь 2025",
+      "duration": "4 месяца",
+      "company": "Северсталь",
+      "location": "Россия",
+      "url": "https://www.severstal.com",
+      "industry": "Металлургия",
+      "role": "Ведущий эксперт разработки ПО"
+    },
+    {
+      "id": "03-glowbyte",
+      "period": "Сентябрь 2024 — Май 2025",
+      "duration": "9 месяцев",
+      "company": "GlowByte Consulting",
+      "location": "Россия",
+      "url": "https://www.glowbyteconsulting.com",
+      "industry": "ИТ-консалтинг, системная интеграция",
+      "role": "Senior Python Разработчик / ML Инженер (GenAI)"
+    },
+    {
+      "id": "04-genai",
+      "period": "Июнь 2023 — Сентябрь 2024",
+      "duration": "1 год 4 месяца",
+      "company": "GenAI",
+      "location": "",
+      "role": "ML / Deep Learning Инженер / GenAI Исследователь"
+    },
+    {
+      "id": "05-bortnik",
+      "period": "Март 2021 — Март 2022",
+      "duration": "1 год 1 месяц",
+      "company": "Фонд Бортника (ФАСИЕ)",
+      "location": "Россия",
+      "url": "https://fasie.ru",
+      "role": "ML / Deep Learning Инженер"
+    },
+    {
+      "id": "06-atominvest",
+      "period": "Май 2019 — Февраль 2021",
+      "duration": "1 год 10 месяцев",
+      "company": "Atominvest",
+      "location": "Россия",
+      "url": "https://atominvest.ru",
+      "industry": "Атомная энергетика, тяжёлое машиностроение",
+      "role": "Ведущий инженер-программист iOS"
+    },
+    {
+      "id": "07-freelance-usa",
+      "period": "Сентябрь 2018 — Апрель 2019",
+      "duration": "8 месяцев",
+      "company": "Фриланс (США)",
+      "location": "США",
+      "role": "ML Инженер / iOS Инженер-программист"
+    },
+    {
+      "id": "08-swift-gift",
+      "period": "Октябрь 2016 — Август 2018",
+      "duration": "1 год 11 месяцев",
+      "company": "Swift Gift (Polemur Ltd.)",
+      "location": "Лондон, Великобритания",
+      "url": "https://swiftgift.com",
+      "role": "Ведущий разработчик мобильных приложений iOS"
+    },
+    {
+      "id": "09-anywayanyday",
+      "period": "Август 2014 — Март 2015",
+      "duration": "8 месяцев",
+      "company": "Anywayanyday",
+      "location": "Москва",
+      "url": "https://www.anywayanyday.com",
+      "industry": "Интернет-сервисы, путешествия",
+      "role": "Младший разработчик мобильных приложений (C++/Tizen и Objective-C/iOS)"
+    }
+  ],
+  "education": [
+    {
+      "year": "2014",
+      "institution": "МГТУ им. Баумана",
+      "program": "Информационные системы: ЭВМ, комплексы, системы и сети"
+    },
+    {
+      "year": "2024",
+      "institution": "Deep Learning School — МФТИ",
+      "program": "DL Engineer"
+    },
+    {
+      "year": "2023",
+      "institution": "Google",
+      "program": "Machine Learning Crash Course"
+    },
+    {
+      "year": "2023",
+      "institution": "MIT",
+      "program": "Computational Thinking with Julia"
+    },
+    {
+      "year": "2023",
+      "institution": "Zero to Mastery",
+      "program": "PyTorch for Deep Learning"
+    }
+  ],
+  "languages": ["Русский — Родной", "Английский — C1 (Продвинутый)"]
+}

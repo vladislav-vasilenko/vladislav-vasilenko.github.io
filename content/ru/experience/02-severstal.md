@@ -1,0 +1,6 @@
+- Проектирование архитектуры мультиагентной системы. Разработка голосовой мультиагентной системы на базе **OpenAI Agents SDK** / GPT-Realtime / GPT-Mini / GPT-4o / GPT-5.1.
+- Разработка веб-интерфейса на **Next.js + WebRTC** для передачи голоса.
+- Разработка агентов поиска в базе знаний **Graph-RAG** (включая систему токенизации документов и генерации embeddings).
+- Разработка с нуля бэкенд supervisor мультиагентной системы (паттерны **Hierarchical Orchestration** и **Planning → Executor**) с поддержкой SSE синхронизации в реальном времени.
+- Разработка **MCP сервера** (Python, FastMCP) с поддержкой Multi-user аутентификации в Google Auth для Gmail API и Google Calendar API.
+- Разработка Agent Tools с поддержкой **Perplexity Search** / Perplexity Deep Research (Sonar API).

@@ -1,0 +1,6 @@
+- Launched the product in **UK, US and European** markets.
+- Product analytics with **Mixpanel** and **Intercom**; user segmentation and discovery of new product use cases.
+- Feature roadmap planning and success criteria definition.
+- **A/B testing** for UX improvement and conversion optimization.
+- Won **Apple 2016 UK Award** for Best Gifting App.
+- Reduced user acquisition costs through gamification; improved unit economics (Retention and ARPU growth).

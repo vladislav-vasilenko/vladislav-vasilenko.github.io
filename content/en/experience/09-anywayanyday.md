@@ -1,0 +1,4 @@
+- Developed the hotel booking section and gallery in the Anywayanyday app.
+- Integrated insurance program screens for ticket and hotel bookings.
+- Built an experimental app version for **Samsung Gear**.
+- Developed mobile and smartwatch apps on **Tizen** (C++).
