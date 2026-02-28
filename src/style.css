@@ -48,8 +48,9 @@ a:hover {
 .cv-header {
   background: var(--color-header-bg);
   color: var(--color-header-text);
-  padding: 2.5rem 2rem 2rem;
+  padding: 2.5rem 2rem 2.25rem;
   position: relative;
+  text-align: left;
 }
 
 .cv-header h1 {
@@ -71,6 +72,7 @@ a:hover {
   gap: 0.5rem 1.5rem;
   font-size: 0.9rem;
   opacity: 0.8;
+  margin-bottom: 1.25rem;
 }
 
 .cv-contact a {
@@ -795,14 +797,12 @@ a:hover {
   color: #fff;
 }
 
-/* Social Bar */
-.social-bar {
-  position: fixed;
-  top: 1rem;
-  right: 1.5rem;
+/* Header Social */
+.header-social {
   display: flex;
-  gap: 0.5rem;
-  z-index: 200;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .social-link {
@@ -849,7 +849,7 @@ a:hover {
   border: none;
   cursor: pointer;
   font-family: inherit;
-  transition: transform 0.2s, box-shadow 0.2s, color 0.2s, width 0.3s, border-radius 0.3s;
+  transition: transform 0.2s, box-shadow 0.2s, color 0.2s, width 0.3s, border-radius 0.3s, background 0.3s;
 }
 
 .social-link--email:hover {
@@ -865,7 +865,7 @@ a:hover {
 }
 
 .email-text {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -927,16 +927,19 @@ a:hover {
     display: none !important;
   }
 
-  .no-print {
+  .header-social {
     display: none !important;
   }
 
-  .print-only {
-    display: inline !important;
+  .print-only-email {
+    display: block !important;
+    margin-top: 0.5rem;
+    font-size: 11pt;
+    font-weight: 600;
   }
 }
 
-.print-only {
+.print-only-email {
   display: none;
 }
 
