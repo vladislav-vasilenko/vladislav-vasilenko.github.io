@@ -358,7 +358,7 @@ function showLocalToast(message: string, target: HTMLElement): void {
   document.body.appendChild(toast);
 
   const rect = target.getBoundingClientRect();
-  toast.style.top = `${rect.top - 40}px`;
+  toast.style.top = `${rect.bottom + 10}px`;
   toast.style.left = `${rect.left + rect.width / 2}px`;
 
   requestAnimationFrame(() => {

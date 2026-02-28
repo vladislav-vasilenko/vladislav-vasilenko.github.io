@@ -170,7 +170,7 @@ a:hover {
   position: fixed;
   bottom: 2rem;
   left: 50%;
-  transform: translateX(-50%) translateY(10px);
+  transform: translateX(-50%) translateY(-10px);
   background: var(--color-header-bg);
   color: #fff;
   font-size: 0.85rem;
