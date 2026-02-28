@@ -7,6 +7,9 @@
         "storage",
         "activeTab"
     ],
+    "host_permissions": [
+        "https://vladislav-vasilenko-github-io.vercel.app/*"
+    ],
     "action": {
         "default_popup": "popup.html",
         "default_icon": {
