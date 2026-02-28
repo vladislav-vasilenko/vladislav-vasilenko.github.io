@@ -68,10 +68,18 @@ function renderHexView(cv: CVContent, lang: Lang): string {
 }
 
 function renderOrbitView(cv: CVContent, lang: Lang): string {
+  const categories = cv.techStack.categories;
   return `
+    <div class="orbit-view-controls no-print">
+      ${categories.map(cat => `
+        <button class="orbit-filter-btn active" data-ring="${cat.ring}" style="--color: ${cat.items[0]?.color || 'var(--color-accent)'}">
+          ${cat.label[lang]}
+        </button>
+      `).join('')}
+    </div>
     <div class="orbit-container">
       <div class="orbit-center">AI / ML</div>
-      ${cv.techStack.categories.map((cat) => `
+      ${categories.map((cat) => `
         <div class="orbit-ring ring-${cat.ring}" style="--item-count: ${cat.items.length}">
           <span class="ring-label">${cat.label[lang]}</span>
           ${cat.items.map((item, i) => {
@@ -356,8 +364,30 @@ function renderPage(lang: Lang): void {
             cv.labels.viewOrbit;
       app.querySelectorAll('.view-option').forEach((o) => o.classList.remove('active'));
       btn.classList.add('active');
+
+      // Re-bind orbit filters if switching to orbit view
+      if (view === 'orbit') {
+        bindOrbitFilters();
+      }
     });
   });
+
+  function bindOrbitFilters() {
+    app.querySelectorAll<HTMLButtonElement>('.orbit-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ring = btn.dataset.ring;
+        const ringEl = app.querySelector(`.orbit-ring.ring-${ring}`);
+        if (ringEl) {
+          const isActive = btn.classList.toggle('active');
+          ringEl.classList.toggle('hidden', !isActive);
+        }
+      });
+    });
+  }
+
+  if (skillsView === 'orbit') {
+    bindOrbitFilters();
+  }
 
   // Close all dropdowns on outside click
   document.addEventListener('click', () => {

@@ -545,6 +545,7 @@ a:hover {
   box-shadow: 0 0 30px rgba(99, 102, 241, 0.4), 0 0 60px rgba(99, 102, 241, 0.15);
   z-index: 10;
   letter-spacing: 0.05em;
+  pointer-events: auto;
 }
 
 .orbit-ring {
@@ -553,6 +554,7 @@ a:hover {
   left: 50%;
   border-radius: 50%;
   border: 1px dashed var(--color-border);
+  pointer-events: none;
 }
 
 .ring-label {
@@ -568,7 +570,7 @@ a:hover {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   opacity: 0.7;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .orbit-ring.ring-1 {
@@ -631,7 +633,7 @@ a:hover {
   }
 }
 
-.orbit-ring:hover {
+.orbit-ring:has(:hover) {
   animation-play-state: paused;
 }
 
@@ -649,6 +651,7 @@ a:hover {
   align-items: center;
   justify-content: center;
   z-index: 5;
+  pointer-events: auto;
 }
 
 /* Counter-rotate everything inside the item to stay upright */
@@ -735,6 +738,52 @@ a:hover {
 
 .orbit-item:hover .orbit-tooltip {
   opacity: 1;
+}
+
+/* Orbit Filters */
+.orbit-view-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.orbit-filter-btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: #fff;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.orbit-filter-btn:hover {
+  border-color: var(--color);
+  color: var(--color);
+}
+
+.orbit-filter-btn.active {
+  background: var(--color);
+  border-color: var(--color);
+  color: #fff;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color) 30%, transparent);
+}
+
+/* Hidden Rings */
+.orbit-ring {
+  transition: opacity 0.4s, transform 0.4s, visibility 0.4s;
+}
+
+.orbit-ring.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -50%) scale(0.8);
+  pointer-events: none;
 }
 
 /* Cards View */
