@@ -4,12 +4,24 @@ import { exportPDF, exportDOC, exportMarkdown, copyAsText } from './export';
 
 type SkillsView = 'cards' | 'hex' | 'orbit';
 const SKILLS_VIEW_KEY = 'cv-skills-view';
+const PROFILE_VIEW_KEY = 'cv-profile-view';
+
+type ViewMode = 'technical' | 'product';
 
 function getSkillsView(): SkillsView {
   const v = localStorage.getItem(SKILLS_VIEW_KEY);
   if (v === 'cards' || v === 'hex' || v === 'orbit') return v;
   return 'cards';
 }
+
+function getViewMode(): ViewMode {
+  const v = localStorage.getItem(PROFILE_VIEW_KEY);
+  if (v === 'technical' || v === 'product') return v;
+  return 'technical';
+}
+
+let currentLang: Lang = getLang();
+let currentViewMode: ViewMode = getViewMode();
 
 function renderCardsView(cv: CVContent, lang: Lang): string {
   return cv.techStack.categories.map((cat) => `
@@ -141,7 +153,15 @@ function renderPage(lang: Lang): void {
           </div>
         </div>
         <h1>${cv.name}</h1>
-        <p class="cv-title">${cv.title}</p>
+        <p class="cv-title">${currentViewMode === 'product' ? cv.productTitle : cv.title}</p>
+        <div class="profile-toggle no-print">
+          <button class="profile-btn ${currentViewMode === 'technical' ? 'active' : ''}" data-view="technical">
+            <span>⚙️</span> ${cv.labels.profileTechnical}
+          </button>
+          <button class="profile-btn ${currentViewMode === 'product' ? 'active' : ''}" data-view="product">
+            <span>💼</span> ${cv.labels.profileProduct}
+          </button>
+        </div>
         <div class="cv-contact">
           <span>${cv.contact.location}</span>
           <span><a href="tel:${cv.contact.phone.replace(/[\s()-]/g, '')}">${cv.contact.phone}</a></span>
@@ -165,6 +185,7 @@ function renderPage(lang: Lang): void {
         <h2>${cv.labels.experience}</h2>
         <div class="timeline">
           ${cv.experience
+      .filter(exp => exp.profiles.includes(currentViewMode))
       .map(
         (exp) => `
             <div class="timeline-item">
@@ -252,6 +273,18 @@ function renderPage(lang: Lang): void {
     });
   });
 
+  // Profile toggle
+  app.querySelectorAll<HTMLButtonElement>('.profile-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const newViewMode = btn.dataset.view as ViewMode;
+      if (newViewMode !== currentViewMode) {
+        currentViewMode = newViewMode;
+        localStorage.setItem(PROFILE_VIEW_KEY, newViewMode);
+        renderPage(currentLang);
+      }
+    });
+  });
+
   // Export dropdown
   const exportBtn = app.querySelector<HTMLButtonElement>('.export-btn')!;
   const exportMenu = app.querySelector<HTMLDivElement>('.export-menu')!;
@@ -266,19 +299,23 @@ function renderPage(lang: Lang): void {
     btn.addEventListener('click', async () => {
       const action = btn.dataset.action;
       exportMenu.classList.remove('open');
+
+      const filteredExperience = cv.experience.filter(exp => exp.profiles.includes(currentViewMode));
+      const filteredCv = { ...cv, experience: filteredExperience };
+
       switch (action) {
         case 'copy':
-          await copyAsText(cv);
+          await copyAsText(filteredCv);
           showToast(cv.labels.copied);
           break;
         case 'pdf':
           exportPDF();
           break;
         case 'doc':
-          exportDOC(cv);
+          exportDOC(filteredCv);
           break;
         case 'md':
-          exportMarkdown(cv);
+          exportMarkdown(filteredCv);
           break;
       }
     });

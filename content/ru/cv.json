@@ -1,6 +1,7 @@
 {
   "name": "Василенко Владислав",
   "title": "DL Researcher / CV Engineer / ML Engineer",
+  "productTitle": "Senior Product Manager / AI Product Lead",
   "contact": {
     "phone": "+7 (996) 328-84-98",
     "email": "mr.vasilenko.vlad@yandex.ru",
@@ -23,7 +24,9 @@
     "copied": "Email скопирован! Нажмите, чтобы написать.",
     "viewCards": "Карточки",
     "viewHex": "Соты",
-    "viewOrbit": "Орбита"
+    "viewOrbit": "Орбита",
+    "profileTechnical": "Технический",
+    "profileProduct": "Продуктовый"
   },
   "employment": "Полная занятость, частичная занятость, проектная работа. На месте, удалённо или гибрид.",
   "experience": [
@@ -34,7 +37,11 @@
       "company": "PET (Passion-Driven) Projects",
       "location": "Москва",
       "url": "https://banibot.ru/",
-      "role": "Продуктовый и технический разработчик"
+      "role": "Продуктовый и технический разработчик",
+      "profiles": [
+        "technical",
+        "product"
+      ]
     },
     {
       "id": "02-severstal",
@@ -44,7 +51,10 @@
       "location": "Россия",
       "url": "https://www.severstal.com",
       "industry": "Металлургия",
-      "role": "Ведущий эксперт разработки ПО"
+      "role": "Ведущий эксперт разработки ПО",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "03-glowbyte",
@@ -54,7 +64,10 @@
       "location": "Россия",
       "url": "https://www.glowbyteconsulting.com",
       "industry": "ИТ-консалтинг, системная интеграция",
-      "role": "Senior Python Разработчик / ML Инженер (GenAI)"
+      "role": "Senior Python Разработчик / ML Инженер (GenAI)",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "04-genai",
@@ -62,7 +75,23 @@
       "duration": "1 год 4 месяца",
       "company": "GenAI",
       "location": "",
-      "role": "ML / Deep Learning Инженер / GenAI Исследователь"
+      "role": "ML / Deep Learning Инженер / GenAI Исследователь",
+      "profiles": [
+        "technical"
+      ]
+    },
+    {
+      "id": "10-b2broker",
+      "period": "Май 2022 — Июнь 2023",
+      "duration": "1 год 1 месяц",
+      "company": "B2Broker",
+      "location": "Лимассол, Кипр / Удаленно",
+      "url": "https://b2broker.com",
+      "industry": "Финтех / B2B Ликвидность и Технологии",
+      "role": "Senior Product Manager (iOS / Android / Финтех)",
+      "profiles": [
+        "product"
+      ]
     },
     {
       "id": "05-bortnik",
@@ -71,7 +100,10 @@
       "company": "Фонд Бортника (ФАСИЕ)",
       "location": "Россия",
       "url": "https://fasie.ru",
-      "role": "ML / Deep Learning Инженер"
+      "role": "ML / Deep Learning Инженер",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "06-atominvest",
@@ -81,7 +113,10 @@
       "location": "Россия",
       "url": "https://atominvest.ru",
       "industry": "Атомная энергетика, тяжёлое машиностроение",
-      "role": "Ведущий инженер-программист iOS"
+      "role": "Ведущий инженер-программист iOS",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "07-freelance-usa",
@@ -89,7 +124,10 @@
       "duration": "8 месяцев",
       "company": "Фриланс (США)",
       "location": "США",
-      "role": "ML Инженер / iOS Инженер-программист"
+      "role": "ML Инженер / iOS Инженер-программист",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "08-swift-gift",
@@ -98,7 +136,10 @@
       "company": "Swift Gift (Polemur Ltd.)",
       "location": "Лондон, Великобритания",
       "url": "https://swiftgift.com",
-      "role": "Ведущий разработчик мобильных приложений iOS"
+      "role": "Ведущий разработчик мобильных приложений iOS",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "09-anywayanyday",
@@ -108,7 +149,10 @@
       "location": "Москва",
       "url": "https://www.anywayanyday.com",
       "industry": "Интернет-сервисы, путешествия",
-      "role": "Младший разработчик мобильных приложений (C++/Tizen и Objective-C/iOS)"
+      "role": "Младший разработчик мобильных приложений (C++/Tizen и Objective-C/iOS)",
+      "profiles": [
+        "technical"
+      ]
     }
   ],
   "education": [

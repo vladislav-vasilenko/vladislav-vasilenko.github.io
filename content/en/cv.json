@@ -1,6 +1,7 @@
 {
   "name": "Vladislav Vasilenko",
   "title": "DL Researcher / CV Engineer / ML Engineer",
+  "productTitle": "Senior Product Manager / AI Product Lead",
   "contact": {
     "phone": "+7 (996) 328-84-98",
     "email": "ivlad.skipper.us@gmail.com",
@@ -23,7 +24,9 @@
     "copied": "Email copied! Click again to compose.",
     "viewCards": "Cards",
     "viewHex": "Hexagonal",
-    "viewOrbit": "Orbit"
+    "viewOrbit": "Orbit",
+    "profileTechnical": "Technical",
+    "profileProduct": "Product"
   },
   "employment": "Full-time, part-time, project-based. On-site, remote, or hybrid.",
   "experience": [
@@ -34,7 +37,11 @@
       "company": "PET (Passion-Driven) Projects",
       "location": "Moscow",
       "url": "https://banibot.ru/",
-      "role": "Product & Technical Developer"
+      "role": "Product & Technical Developer",
+      "profiles": [
+        "technical",
+        "product"
+      ]
     },
     {
       "id": "02-severstal",
@@ -44,7 +51,10 @@
       "location": "Russia",
       "url": "https://www.severstal.com",
       "industry": "Metallurgy",
-      "role": "Lead Software Development Expert"
+      "role": "Lead Software Development Expert",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "03-glowbyte",
@@ -54,7 +64,10 @@
       "location": "Russia",
       "url": "https://www.glowbyteconsulting.com",
       "industry": "IT Consulting & System Integration",
-      "role": "Senior Python Developer / ML Engineer (GenAI)"
+      "role": "Senior Python Developer / ML Engineer (GenAI)",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "04-genai",
@@ -62,7 +75,23 @@
       "duration": "1 year 4 months",
       "company": "GenAI",
       "location": "",
-      "role": "ML / Deep Learning Engineer / GenAI Researcher"
+      "role": "ML / Deep Learning Engineer / GenAI Researcher",
+      "profiles": [
+        "technical"
+      ]
+    },
+    {
+      "id": "10-b2broker",
+      "period": "May 2022 — Jun 2023",
+      "duration": "1 year 1 month",
+      "company": "B2Broker",
+      "location": "Limassol, Cyprus / Remote",
+      "url": "https://b2broker.com",
+      "industry": "Fintech / B2B Liquidity & Technology Provider",
+      "role": "Senior Product Manager (iOS / Android / Fintech)",
+      "profiles": [
+        "product"
+      ]
     },
     {
       "id": "05-bortnik",
@@ -71,7 +100,10 @@
       "company": "Bortnik Foundation (FASIE)",
       "location": "Russia",
       "url": "https://fasie.ru",
-      "role": "ML / Deep Learning Engineer"
+      "role": "ML / Deep Learning Engineer",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "06-atominvest",
@@ -81,7 +113,10 @@
       "location": "Russia",
       "url": "https://atominvest.ru",
       "industry": "Nuclear Energy & Heavy Engineering",
-      "role": "Lead iOS Software Engineer"
+      "role": "Lead iOS Software Engineer",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "07-freelance-usa",
@@ -89,7 +124,10 @@
       "duration": "8 months",
       "company": "Freelance (USA)",
       "location": "USA",
-      "role": "ML Engineer / iOS Software Engineer"
+      "role": "ML Engineer / iOS Software Engineer",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "08-swift-gift",
@@ -98,7 +136,10 @@
       "company": "Swift Gift (Polemur Ltd.)",
       "location": "London, UK",
       "url": "https://swiftgift.com",
-      "role": "Lead iOS Mobile Developer"
+      "role": "Lead iOS Mobile Developer",
+      "profiles": [
+        "technical"
+      ]
     },
     {
       "id": "09-anywayanyday",
@@ -108,7 +149,10 @@
       "location": "Moscow",
       "url": "https://www.anywayanyday.com",
       "industry": "Travel & Internet Services",
-      "role": "Junior Mobile Developer (C++/Tizen & Objective-C/iOS)"
+      "role": "Junior Mobile Developer (C++/Tizen & Objective-C/iOS)",
+      "profiles": [
+        "technical"
+      ]
     }
   ],
   "education": [

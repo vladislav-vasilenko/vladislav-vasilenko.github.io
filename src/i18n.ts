@@ -24,6 +24,7 @@ export interface Experience {
   url?: string;
   industry?: string;
   role: string;
+  profiles: string[];
   descriptionHtml: string;
   descriptionMd: string;
 }
@@ -55,6 +56,7 @@ export interface TechStack {
 interface CVJson {
   name: string;
   title: string;
+  productTitle: string;
   contact: {
     phone: string;
     email: string;
@@ -78,9 +80,11 @@ interface CVJson {
     viewCards: string;
     viewHex: string;
     viewOrbit: string;
+    profileTechnical: string;
+    profileProduct: string;
   };
   employment: string;
-  experience: Omit<Experience, 'descriptionHtml'>[];
+  experience: (Omit<Experience, 'descriptionHtml' | 'descriptionMd'>)[];
   education: Education[];
   languages: string[];
 }
@@ -88,6 +92,7 @@ interface CVJson {
 export interface CVContent {
   name: string;
   title: string;
+  productTitle: string;
   contact: CVJson['contact'];
   labels: CVJson['labels'];
   employment: string;
@@ -120,6 +125,7 @@ export function loadContent(lang: Lang): CVContent {
   return {
     name: cv.name,
     title: cv.title,
+    productTitle: cv.productTitle,
     contact: cv.contact,
     labels: cv.labels,
     employment: cv.employment,
