@@ -1,7 +1,9 @@
-- **TalkyBuddy** ([banibot.ru/talkybuddy](https://banibot.ru/talkybuddy)) — Engineered a personalized foreign language learning platform with a voice AI assistant. 
-    - Implemented **Domain-Driven Design (DDD)** to manage complex linguistic and pedagogical logic.
-    - Developed an **adaptive AI-agent assembly** system for lesson guidance, leveraging iterative experience and error-correction loops.
-    - Integrated WebRTC for real-time audio token exchange with an omni-modal model, achieving sub-second latency.
+- **TalkyBuddy** ([banibot.ru/talkybuddy](https://banibot.ru/talkybuddy)) — Full-stack AI foreign language learning ecosystem with a focus on real-time voice interaction.
+    - Engineered a **cross-platform ecosystem** (Web, iOS/Android, Telegram Mini App).
+    - Architected a modular core using **Domain-Driven Design (DDD)** to decouple complex linguistic logic from infrastructure.
+    - Integrated **WebRTC & Omni-modal AI**: Designed a low-latency audio exchange system for real-time AI conversations, achieving sub-second response times (**TTFT**).
+    - **AI Agent Orchestration**: Developed an adaptive assembly system for AI tutors with self-correction loops, leveraging iterative experience to improve lesson flow.
+    - *Tech Stack*: React Native, Next.js, Node.js (NestJS), WebRTC, OpenAI/Gemini API.
 - **BaniBaniBot** ([banibanibot.t.me](https://banibanibot.t.me)) — Developed a multimodal image generation service in Telegram.
     - Integrated **Gemini 3.1** with support for **Streaming**, **Reasoning**, and **Search Grounding** (Search Landing) for advanced prompt assistance.
     - Applied **Domain-Driven Design (DDD)** for robust service architecture.
