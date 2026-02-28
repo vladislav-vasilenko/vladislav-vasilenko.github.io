@@ -655,7 +655,8 @@ a:hover {
 }
 
 /* Counter-rotate everything inside the item to stay upright */
-.orbit-item>* {
+.orbit-item>.orbit-icon,
+.orbit-item>.orbit-fallback {
   transform: rotate(calc(var(--angle) * -1));
   animation: inherit;
   animation-name: counter-spin;
@@ -729,6 +730,8 @@ a:hover {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s;
+  animation: inherit;
+  animation-name: counter-spin-tooltip;
 }
 
 .orbit-item:hover .orbit-icon {
@@ -912,12 +915,45 @@ a:hover {
   color: #fff;
 }
 
-/* Header Social */
+/* Header Social & Languages */
+.header-social-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
 .header-social {
   display: flex;
   gap: 0.75rem;
   align-items: center;
-  justify-content: flex-start;
+}
+
+.header-languages {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.lang-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.lang-tag:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--color-accent);
+  transform: translateY(-1px);
 }
 
 .social-link {
