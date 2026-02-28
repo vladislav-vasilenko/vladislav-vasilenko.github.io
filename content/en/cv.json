@@ -20,7 +20,7 @@
     "exportPdf": "Export as PDF",
     "exportDoc": "Export as DOC",
     "exportMd": "Export as Markdown",
-    "copied": "Email copied. Click again to compose.",
+    "copied": "Email copied! Click again to compose.",
     "viewCards": "Cards",
     "viewHex": "Hexagonal",
     "viewOrbit": "Orbit"
