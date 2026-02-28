@@ -173,7 +173,7 @@ function renderPage(lang: Lang): void {
 
       <section class="cv-section">
         <h2>${cv.labels.about}</h2>
-        <div class="about-text">${cv.aboutHtml}</div>
+        <div class="about-text">${currentViewMode === 'product' ? cv.productAboutHtml : cv.aboutHtml}</div>
       </section>
 
       <section class="cv-section">
@@ -301,7 +301,12 @@ function renderPage(lang: Lang): void {
       exportMenu.classList.remove('open');
 
       const filteredExperience = cv.experience.filter(exp => exp.profiles.includes(currentViewMode));
-      const filteredCv = { ...cv, experience: filteredExperience };
+      const filteredCv = {
+        ...cv,
+        experience: filteredExperience,
+        aboutHtml: currentViewMode === 'product' ? cv.productAboutHtml : cv.aboutHtml,
+        aboutMd: currentViewMode === 'product' ? cv.productAboutMd : cv.aboutMd
+      };
 
       switch (action) {
         case 'copy':
