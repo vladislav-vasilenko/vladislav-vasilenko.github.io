@@ -1,5 +1,4 @@
-// TODO: Replace with your actual Vercel deployment URL after `vercel deploy`
-const CV_API_URL = 'https://cv-api.vercel.app/api/cv?lang=en';
+const CV_API_URL = 'https://vladislav-vasilenko-github-io.vercel.app/api/cv?lang=en';
 
 let cvData = null;
 

@@ -6,7 +6,7 @@ async function fetchText(path) {
   return res.text();
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const lang = req.query.lang === 'ru' ? 'ru' : 'en';
 
   const cvJson = JSON.parse(await fetchText(`${lang}/cv.json`));
