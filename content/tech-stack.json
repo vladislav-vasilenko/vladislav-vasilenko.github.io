@@ -3,8 +3,8 @@
     {
       "id": "core",
       "label": {
-        "en": "Core Frameworks",
-        "ru": "Основные фреймворки"
+        "en": "ML Core Frameworks",
+        "ru": "ML Core / Ядро"
       },
       "ring": 1,
       "items": [
@@ -57,16 +57,44 @@
           "color": "#EE4C2C"
         },
         {
-          "name": "W&B",
-          "icon": "weightsandbiases",
-          "url": "https://wandb.ai",
-          "color": "#FFBE00"
-        },
-        {
           "name": "Librosa",
           "icon": null,
           "url": "https://librosa.org",
           "color": "#6B4E90"
+        }
+      ]
+    },
+    {
+      "id": "math",
+      "label": {
+        "en": "Applied Mathematics",
+        "ru": "Прикладная математика"
+      },
+      "ring": 1,
+      "items": [
+        {
+          "name": "Linear Algebra",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Linear_algebra",
+          "color": "#007ACC"
+        },
+        {
+          "name": "Calculus",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Calculus",
+          "color": "#D32F2F"
+        },
+        {
+          "name": "Probability & Stats",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Probability_theory",
+          "color": "#388E3C"
+        },
+        {
+          "name": "Numerical Optimization",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Mathematical_optimization",
+          "color": "#F57C00"
         }
       ]
     },
@@ -173,6 +201,12 @@
           "color": "#009688"
         },
         {
+          "name": "Pydantic",
+          "icon": "pydantic",
+          "url": "https://docs.pydantic.dev",
+          "color": "#E92063"
+        },
+        {
           "name": "CUDA",
           "icon": "nvidia",
           "url": "https://developer.nvidia.com/cuda-zone",
@@ -189,6 +223,12 @@
           "icon": "mlflow",
           "url": "https://mlflow.org",
           "color": "#0194E2"
+        },
+        {
+          "name": "W&B",
+          "icon": "weightsandbiases",
+          "url": "https://wandb.ai",
+          "color": "#FFBE00"
         },
         {
           "name": "Kubernetes",
@@ -271,12 +311,6 @@
           "icon": "npm",
           "url": "https://www.npmjs.com",
           "color": "#CB3837"
-        },
-        {
-          "name": "Pydantic",
-          "icon": "pydantic",
-          "url": "https://docs.pydantic.dev",
-          "color": "#E92063"
         },
         {
           "name": "C/C++",
