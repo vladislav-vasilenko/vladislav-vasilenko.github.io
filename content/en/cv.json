@@ -7,7 +7,8 @@
     "email": "ivlad.skipper.us@gmail.com",
     "location": "Moscow, Russia",
     "citizenship": "Russia",
-    "relocation": "Open to relocation and business trips"
+    "relocation": "Open to relocation and business trips",
+    "calendly": "https://calendly.com/ivlad-skipper-us/30min"
   },
   "labels": {
     "about": "About",
@@ -26,7 +27,8 @@
     "viewHex": "Hexagonal",
     "viewOrbit": "Orbit",
     "profileTechnical": "Technical",
-    "profileProduct": "Product"
+    "profileProduct": "Product",
+    "scheduleCall": "Schedule call via Calendly"
   },
   "employment": "Full-time, part-time, project-based. On-site, remote, or hybrid.",
   "experience": [

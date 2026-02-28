@@ -63,6 +63,7 @@ interface CVJson {
     location: string;
     citizenship: string;
     relocation: string;
+    calendly?: string;
   };
   labels: {
     about: string;
@@ -82,6 +83,7 @@ interface CVJson {
     viewOrbit: string;
     profileTechnical: string;
     profileProduct: string;
+    scheduleCall: string;
   };
   employment: string;
   experience: (Omit<Experience, 'descriptionHtml' | 'descriptionMd'>)[];

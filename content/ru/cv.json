@@ -7,7 +7,8 @@
     "email": "mr.vasilenko.vlad@yandex.ru",
     "location": "Москва, Россия",
     "citizenship": "Россия",
-    "relocation": "Готов к переезду и командировкам"
+    "relocation": "Готов к переезду и командировкам",
+    "calendly": "https://calendly.com/ivlad-skipper-us/30min"
   },
   "labels": {
     "about": "Обо мне",
@@ -26,7 +27,8 @@
     "viewHex": "Соты",
     "viewOrbit": "Орбита",
     "profileTechnical": "Технический",
-    "profileProduct": "Продуктовый"
+    "profileProduct": "Продуктовый",
+    "scheduleCall": "Назначить встречу"
   },
   "employment": "Полная занятость, частичная занятость, проектная работа. На месте, удалённо или гибрид.",
   "experience": [
