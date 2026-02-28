@@ -1,2 +1,9 @@
-- **TalkyBuddy** ([banibot.ru/talkybuddy](https://banibot.ru/talkybuddy)) — Engineered a personalized foreign language learning platform with a voice AI assistant that adapts to the student. Integrated WebRTC for real-time audio token exchange with an omni-modal model (audio, image and text understanding with audio/text generation), achieving minimal response latency.
-- **BaniBaniBot** ([banibanibot.t.me](https://banibanibot.t.me)) — Developed a Telegram bot service for multimodal image generation based on references and text descriptions.
+- **TalkyBuddy** ([banibot.ru/talkybuddy](https://banibot.ru/talkybuddy)) — Engineered a personalized foreign language learning platform with a voice AI assistant. 
+    - Implemented **Domain-Driven Design (DDD)** to manage complex linguistic and pedagogical logic.
+    - Developed an **adaptive AI-agent assembly** system for lesson guidance, leveraging iterative experience and error-correction loops.
+    - Integrated WebRTC for real-time audio token exchange with an omni-modal model, achieving sub-second latency.
+- **BaniBaniBot** ([banibanibot.t.me](https://banibanibot.t.me)) — Developed a multimodal image generation service in Telegram.
+    - Integrated **Gemini 3.1** with support for **Streaming**, **Reasoning**, and **Search Grounding** (Search Landing) for advanced prompt assistance.
+    - Applied **Domain-Driven Design (DDD)** for robust service architecture.
+    - Architected an **Event-Driven Architecture (EDA)** for the backend to ensure high scalability and support for complex Rules/Overlays/FSM.
+    - Engineered a high-precision **Credits Ledger** system for transaction management and usage tracking.

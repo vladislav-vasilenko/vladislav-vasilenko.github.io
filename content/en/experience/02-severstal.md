@@ -1,4 +1,4 @@
-- Architected a multi-agent system and engineered a voice multi-agent solution based on **OpenAI Agents SDK** / GPT-Realtime / GPT-4o / GPT-5.1.
+- Architected a multi-agent system and engineered a voice multi-agent solution based on **OpenAI Agents SDK** / GPT-Realtime / GPT-4o / GPT-5.2 / Claude 4.6 Opus.
 - Engineered a web interface using **Next.js + WebRTC** for low-latency voice transmission.
 - Developed **Graph-RAG** knowledge base search agents, including document tokenization and an automated embeddings generation pipeline.
 - Built from scratch a backend supervisor for the multi-agent system using **Hierarchical Orchestration** and **Planning → Executor** patterns with real-time SSE synchronization.

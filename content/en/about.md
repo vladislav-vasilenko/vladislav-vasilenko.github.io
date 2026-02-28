@@ -2,4 +2,4 @@ Experienced ML/DL engineer focused on generative models: Diffusion, Flow-Matchin
 
 Build reproducible pipelines (Hydra, MLflow, W&B), optimize inference (xFormers, Flash-Attention, scheduler tuning) and prepare models for production (Docker, CI/CD, Triton, ONNX).
 
-Proficient in PyTorch and Python with experience in LLM, LangChain and cloud infrastructure (SageMaker, GCP, Paperspace).
+Proficient in **Python (Expert)** and **PyTorch (Advanced)**, with a secondary focus on TensorFlow and JAX. Extensive experience in LLM orchestration, LangChain, and cloud infrastructure (SageMaker, GCP, Paperspace). Senior-level competence in Docker, MLOps, and industrial software engineering.

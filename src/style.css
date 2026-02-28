@@ -856,6 +856,10 @@ a:hover {
   text-decoration: none;
 }
 
+.social-link--calendly {
+  background: #006bff !important;
+}
+
 .social-link svg {
   width: 18px;
   height: 18px;
@@ -877,6 +881,10 @@ a:hover {
 
 .social-link--whatsapp:hover {
   box-shadow: 0 0 14px rgba(37, 211, 102, 0.5);
+}
+
+.social-link--calendly:hover {
+  box-shadow: 0 0 14px rgba(0, 107, 255, 0.5);
 }
 
 .social-link--telegram:hover {

@@ -5,4 +5,5 @@
 - Established rigorous quality evaluation using **FAD**, **CLAPScore**, FID, CLIPScore, and FVD.
 - Engineered reproducible ML pipelines from data preparation to batch inference, logging performance in **W&B**.
 - Optimized inference using **xFormers/Flash-Attention** and specialized diffusion schedulers; developed Gradio demos.
+- Practical experience with **GAN architectures** for data augmentation and synthesis.
 - Spearheaded MLOps initiatives: **Docker + CI/CD**, monitoring, and experimental exports to ONNX/Triton for production.

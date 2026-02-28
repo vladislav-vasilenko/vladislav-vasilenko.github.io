@@ -61,6 +61,12 @@
           "icon": "weightsandbiases",
           "url": "https://wandb.ai",
           "color": "#FFBE00"
+        },
+        {
+          "name": "Librosa",
+          "icon": null,
+          "url": "https://librosa.org",
+          "color": "#6B4E90"
         }
       ]
     },
@@ -147,10 +153,10 @@
       ]
     },
     {
-      "id": "tools-infra",
+      "id": "mlops-infra",
       "label": {
-        "en": "Tools & Infrastructure",
-        "ru": "Инструменты и инфраструктура"
+        "en": "MLOps & Infrastructure",
+        "ru": "MLOps и инфраструктура"
       },
       "ring": 3,
       "items": [
@@ -207,7 +213,17 @@
           "icon": null,
           "url": "https://gradio.app",
           "color": "#F97316"
-        },
+        }
+      ]
+    },
+    {
+      "id": "foundational-eng",
+      "label": {
+        "en": "Foundational Engineering",
+        "ru": "Базовая инженерия"
+      },
+      "ring": 4,
+      "items": [
         {
           "name": "Swift",
           "icon": "swift",
@@ -219,6 +235,48 @@
           "icon": "nextdotjs",
           "url": "https://nextjs.org",
           "color": "#000000"
+        },
+        {
+          "name": "NestJS",
+          "icon": "nestjs",
+          "url": "https://nestjs.com",
+          "color": "#E0234E"
+        },
+        {
+          "name": "ReactFlow",
+          "icon": null,
+          "url": "https://reactflow.dev",
+          "color": "#FF0072"
+        },
+        {
+          "name": "Chart.js",
+          "icon": "chartdotjs",
+          "url": "https://www.chartjs.org",
+          "color": "#FF6384"
+        },
+        {
+          "name": "Vitest",
+          "icon": "vitest",
+          "url": "https://vitest.dev",
+          "color": "#6E9F18"
+        },
+        {
+          "name": "Bun",
+          "icon": "bun",
+          "url": "https://bun.sh",
+          "color": "#000000"
+        },
+        {
+          "name": "NPM",
+          "icon": "npm",
+          "url": "https://www.npmjs.com",
+          "color": "#CB3837"
+        },
+        {
+          "name": "Pydantic",
+          "icon": "pydantic",
+          "url": "https://docs.pydantic.dev",
+          "color": "#E92063"
         }
       ]
     }
