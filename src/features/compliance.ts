@@ -57,7 +57,7 @@ export function initializeCompliance(app: HTMLElement, lang: Lang) {
                 analyzeBtn.disabled = true;
 
                 try {
-                    const response = await fetch('https://cv-api-vladislav-vasilenko.vercel.app/api/analyze', {
+                    const response = await fetch('https://vladislav-vasilenko-github-io.vercel.app/api/analyze', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ vacancyText: text, turnstileToken: token, lang })
