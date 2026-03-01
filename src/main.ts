@@ -201,10 +201,10 @@ function renderPage(lang: Lang): void {
           </button>
         </div>
         <div class="cv-contact">
-          <span>${cv.contact.location}</span>
-          <span><a href="tel:${cv.contact.phone.replace(/[\s()-]/g, '')}">${cv.contact.phone}</a></span>
-          <span>${cv.contact.citizenship}</span>
-          <span>${cv.contact.relocation}</span>
+          ${cv.contact.location ? `<span>${cv.contact.location}</span>` : ''}
+          ${cv.contact.phone ? `<span><a href="tel:${cv.contact.phone.replace(/[\s()-]/g, '')}">${cv.contact.phone}</a></span>` : ''}
+          ${cv.contact.citizenship ? `<span>${cv.contact.citizenship}</span>` : ''}
+          ${cv.contact.relocation ? `<span>${cv.contact.relocation}</span>` : ''}
         </div>
       </header>
 
