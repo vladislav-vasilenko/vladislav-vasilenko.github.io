@@ -332,7 +332,7 @@ a:hover {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 170px;
+  left: 190px;
   width: 1px;
   background: var(--color-border);
   z-index: 1;
