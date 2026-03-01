@@ -178,7 +178,8 @@
       "profiles": [
         "technical",
         "product"
-      ]
+      ],
+      "logo": "https://www.apple.com/favicon.ico"
     }
   ],
   "education": [
