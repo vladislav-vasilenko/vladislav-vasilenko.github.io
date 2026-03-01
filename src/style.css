@@ -418,6 +418,14 @@ a:hover {
   }
 }
 
+.exp-description {
+  margin-top: 0.5rem;
+}
+
+.exp-description.collapsed {
+  display: none !important;
+}
+
 .exp-description ul {
   padding-left: 1.25rem;
   list-style: disc;
@@ -428,6 +436,17 @@ a:hover {
   color: var(--color-muted);
   margin-bottom: 0.35rem;
   line-height: 1.5;
+}
+
+.exp-description a {
+  color: var(--color-accent);
+}
+
+.exp-description code {
+  font-size: 0.85rem;
+  background: var(--color-tag-bg);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
 }
 
 .exp-description a {

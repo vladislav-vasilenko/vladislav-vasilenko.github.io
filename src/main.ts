@@ -307,6 +307,7 @@ function renderPage(lang: Lang): void {
   app.querySelectorAll<HTMLButtonElement>('.lang-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       const newLang = btn.dataset.lang as Lang;
+      currentLang = newLang;
       setLang(newLang);
       renderPage(newLang);
     });
