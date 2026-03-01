@@ -50,7 +50,16 @@ export function initializeCompliance(app: HTMLElement, lang: Lang) {
                 }
 
                 const ts = (window as any).turnstile;
-                const token = ts ? ts.getResponse() : '';
+                if (!ts) {
+                    alert(lang === 'ru' ? 'Ошибка: Cloudflare Turnstile не загружен. Проверьте блокировщики рекламы.' : 'Error: Cloudflare Turnstile not loaded. Please check your ad blockers.');
+                    return;
+                }
+
+                const token = ts.getResponse();
+                if (!token) {
+                    alert(lang === 'ru' ? 'Пожалуйста, подтвердите, что вы человек.' : 'Please confirm you are human.');
+                    return;
+                }
 
                 resultsDiv.classList.remove('hidden');
                 resultsDiv.classList.add('loading');
