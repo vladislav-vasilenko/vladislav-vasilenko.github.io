@@ -340,6 +340,7 @@ a:hover {
 
 .entry.row {
   display: flex;
+  align-items: flex-start;
   margin-bottom: 2rem;
   position: relative;
   z-index: 2;
@@ -377,7 +378,7 @@ a:hover {
   background: var(--color-bg);
   border: 2px solid var(--color-accent);
   border-radius: 50%;
-  margin-top: 0.75rem;
+  margin-top: 0.4rem;
   z-index: 3;
 }
 
@@ -385,7 +386,7 @@ a:hover {
   width: 32px;
   height: 32px;
   object-fit: contain;
-  margin-top: 0.75rem;
+  margin-top: 0.4rem;
   background: var(--color-bg);
   border-radius: 4px;
   padding: 2px;
@@ -1239,6 +1240,11 @@ a:hover {
   .history {
     orphans: 3;
     widows: 3;
+  }
+
+  .education-list {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .education-item {
