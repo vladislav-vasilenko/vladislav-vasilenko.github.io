@@ -177,6 +177,14 @@ function renderPage(lang: Lang): void {
     <div class="cv">
       <header class="cv-header">
         <div class="header-controls">
+          <div class="profile-toggle no-print">
+            <button class="profile-btn ${currentViewMode === 'technical' ? 'active' : ''}" data-view="technical">
+              <span>⚙️</span> ${cv.labels.profileTechnical}
+            </button>
+            <button class="profile-btn ${currentViewMode === 'product' ? 'active' : ''}" data-view="product">
+              <span>💼</span> ${cv.labels.profileProduct}
+            </button>
+          </div>
           <div class="export-dropdown">
             <button class="export-btn" aria-label="${cv.labels.export}">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -196,21 +204,8 @@ function renderPage(lang: Lang): void {
             <button class="lang-btn ${lang === 'ru' ? 'active' : ''}" data-lang="ru">RU</button>
           </div>
         </div>
-        <div class="cv-header-main">
-          <img src="/profile.jpg" alt="${cv.name}" class="cv-profile-image" />
-          <div class="cv-header-content">
-            <h1>${cv.name}</h1>
-            <p class="cv-title">${currentViewMode === 'product' ? cv.productTitle : cv.title}</p>
             ${renderSocialBar(lang, cv)}
           </div>
-        </div>
-        <div class="profile-toggle no-print">
-          <button class="profile-btn ${currentViewMode === 'technical' ? 'active' : ''}" data-view="technical">
-            <span>⚙️</span> ${cv.labels.profileTechnical}
-          </button>
-          <button class="profile-btn ${currentViewMode === 'product' ? 'active' : ''}" data-view="product">
-            <span>💼</span> ${cv.labels.profileProduct}
-          </button>
         </div>
         <div class="cv-contact">
           ${cv.contact.location ? `<span>${cv.contact.location}</span>` : ''}
