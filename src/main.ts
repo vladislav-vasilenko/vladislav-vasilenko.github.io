@@ -209,7 +209,7 @@ function renderPage(lang: Lang): void {
             <h1>${cv.name}</h1>
             <p class="cv-title">${currentViewMode === 'product' ? cv.productTitle : cv.title}</p>
             ${renderSocialBar(lang, cv)}
-            <div class="mobile-email-row">
+            <div class="mobile-email-row mobile-only">
                <span class="email-label">${lang === 'ru' ? 'Email:' : 'Email:'}</span>
                <span class="email-value">${cv.contact.email}</span>
             </div>
@@ -247,12 +247,18 @@ function renderPage(lang: Lang): void {
         <div class="section-header-row">
             <h2>${cv.labels.experience}</h2>
             <div class="view-toggle no-print">
-                <button class="exp-toggle-btn ${isShortView ? 'active' : ''}" data-view="short" title="${cv.labels.profileShort}">
-                    <span>📄</span> ${cv.labels.profileShort}
-                </button>
-                <button class="exp-toggle-btn ${isCollapsed ? 'active' : ''}" data-view="collapse" title="${cv.labels.profileCollapse}">
-                    <span>↔️</span> ${cv.labels.profileCollapse}
-                </button>
+                <div class="view-toggle-group">
+                  <span class="toggle-label">${lang === 'ru' ? 'Вид:' : 'View:'}</span>
+                  <button class="exp-toggle-btn ${isShortView ? 'active' : ''}" data-view="short" title="${cv.labels.profileShort}">
+                      <span>📄</span> ${isShortView ? (lang === 'ru' ? 'Кратко' : 'Short') : (lang === 'ru' ? 'Полный' : 'Full')}
+                  </button>
+                </div>
+                <div class="view-toggle-group">
+                  <span class="toggle-label">${lang === 'ru' ? 'Детали:' : 'Details:'}</span>
+                  <button class="exp-toggle-btn ${isCollapsed ? 'active' : ''}" data-view="collapse" title="${cv.labels.profileCollapse}">
+                      <span>↔️</span> ${isCollapsed ? (lang === 'ru' ? 'Свернуть' : 'Collapse') : (lang === 'ru' ? 'Развернуть' : 'Expand')}
+                  </button>
+                </div>
             </div>
         </div>
         <div id="history" class="history">
