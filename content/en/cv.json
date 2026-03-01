@@ -46,7 +46,7 @@
         "technical",
         "product"
       ],
-      "logo": "https://banibot.ru/favicon.ico"
+      "logo": "/passion.png"
     },
     {
       "id": "02-severstal",
@@ -60,7 +60,7 @@
       "profiles": [
         "technical"
       ],
-      "logo": "https://cdn.simpleicons.org/severstal/white"
+      "logo": "https://severstal.com/favicon.ico"
     },
     {
       "id": "03-glowbyte",
@@ -80,13 +80,13 @@
       "id": "04-genai",
       "period": "Jun 2023 — Sep 2024",
       "duration": "1 year 4 months",
-      "company": "GenAI",
+      "company": "recharge.city Startup",
       "location": "",
       "role": "ML / Deep Learning Engineer / GenAI Researcher",
       "profiles": [
         "technical"
       ],
-      "logo": "https://cdn.simpleicons.org/openai/white"
+      "logo": "https://static.tildacdn.com/tild6232-3465-4464-a332-303532666363/favicon.ico"
     },
     {
       "id": "10-b2broker",
@@ -127,7 +127,7 @@
       "profiles": [
         "technical"
       ],
-      "logo": "https://atominvest.ru/favicon.ico"
+      "logo": "https://rosatom.ru/local/tpl/img/site_rosatom_ru.png"
     },
     {
       "id": "07-freelance-usa",
@@ -139,7 +139,7 @@
       "profiles": [
         "technical"
       ],
-      "logo": "https://cdn.simpleicons.org/apple/white"
+      "logo": "https://www.upwork.com/favicon.ico"
     },
     {
       "id": "08-swift-gift",
@@ -152,7 +152,7 @@
       "profiles": [
         "technical"
       ],
-      "logo": "https://swiftgift.com/favicon.ico"
+      "logo": "https://monsterdeals.app/assets/app/monster-deals/monster.svg"
     },
     {
       "id": "09-anywayanyday",
