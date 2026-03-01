@@ -1189,8 +1189,9 @@ a:hover {
     font-size: 11pt;
   }
 
-  .header-controls {
-    display: none;
+  .header-controls,
+  .no-print {
+    display: none !important;
   }
 
   .cv-header {
