@@ -206,3 +206,29 @@ document.getElementById('autofill-btn').addEventListener('click', async () => {
         statusEl.style.color = '#ef4444';
     }
 });
+
+document.getElementById('ai-fill-btn').addEventListener('click', async () => {
+    const prompt = document.getElementById('ai-prompt').value.trim();
+    if (!prompt) return;
+
+    const statusEl = document.getElementById('status');
+    statusEl.textContent = 'Sending custom prompt...';
+
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab) throw new Error("No active tab");
+
+        await chrome.tabs.sendMessage(tab.id, {
+            action: 'trigger_custom_ai_fill',
+            question: prompt
+        });
+
+        statusEl.textContent = 'Prompt sent to field!';
+        statusEl.style.color = '#10b981';
+        window.close(); // Close popup to let user see the injection
+    } catch (err) {
+        console.error("AI Fill error:", err);
+        statusEl.textContent = 'Error: ' + err.message;
+        statusEl.style.color = '#ef4444';
+    }
+});

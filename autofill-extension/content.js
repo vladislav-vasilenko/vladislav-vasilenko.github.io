@@ -80,45 +80,50 @@ function getGlobalContext() {
     return globalInfo.trim();
 }
 
-async function handleAIFill() {
+async function handleAIFill(manualQuestion = null) {
     const el = document.activeElement;
-    if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) return;
+    if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) {
+        console.warn("[AutoFill AI] No active input/textarea found.");
+        return;
+    }
 
-    // 1. Try to find question context
+    // 1. Find question context
     let context = "";
     let question = "";
 
-    // Priority 1: User selection
-    const selection = window.getSelection().toString().trim();
-    if (selection) {
-        question = selection;
-        console.log("[AutoFill AI] Using selected text as question:", question);
+    if (manualQuestion) {
+        question = manualQuestion;
+        console.log("[AutoFill AI] Using manual question:", question);
     } else {
-        // Priority 2: Automatic extraction
-        // Look for label or preceding text
-        const label = document.querySelector(`label[for="${el.id}"]`);
-        if (label) context += label.innerText + " ";
+        // Priority 1: User selection
+        const selection = window.getSelection().toString().trim();
+        if (selection) {
+            question = selection;
+            console.log("[AutoFill AI] Using selected text as question:", question);
+        } else {
+            // Priority 2: Automatic extraction
+            const label = document.querySelector(`label[for="${el.id}"]`);
+            if (label) context += label.innerText + " ";
 
-        // Look for aria-labelledby
-        const ariaLabelledBy = el.getAttribute('aria-labelledby');
-        if (ariaLabelledBy) {
-            const labeled = document.getElementById(ariaLabelledBy);
-            if (labeled) context += labeled.innerText + " ";
+            const ariaLabelledBy = el.getAttribute('aria-labelledby');
+            if (ariaLabelledBy) {
+                const labeled = document.getElementById(ariaLabelledBy);
+                if (labeled) context += labeled.innerText + " ";
+            }
+
+            let parent = el.parentElement;
+            for (let i = 0; i < 5 && parent; i++) {
+                const labels = parent.querySelectorAll('h1, h2, h3, h4, label, .QuestionLabel');
+                labels.forEach(l => {
+                    if (l !== label && !context.includes(l.innerText)) context += l.innerText + " ";
+                });
+                parent = parent.parentElement;
+            }
+
+            const placeholder = el.placeholder || "";
+            question = context.trim() || placeholder || "Tell about yourself";
+            console.log("[AutoFill AI] Automatic context found:", question);
         }
-
-        // Look for nearby parent headings or containers
-        let parent = el.parentElement;
-        for (let i = 0; i < 5 && parent; i++) {
-            const labels = parent.querySelectorAll('h1, h2, h3, h4, label, .QuestionLabel');
-            labels.forEach(l => {
-                if (l !== label && !context.includes(l.innerText)) context += l.innerText + " ";
-            });
-            parent = parent.parentElement;
-        }
-
-        const placeholder = el.placeholder || "";
-        question = context.trim() || placeholder || "Tell about yourself";
-        console.log("[AutoFill AI] Automatic context found:", question);
     }
 
     const originalValue = el.value;
@@ -165,6 +170,8 @@ if (!window.__autofillRegistered) {
             sendResponse({ status: 'success', filled: filledSections });
         } else if (request.action === 'trigger_ai_fill') {
             handleAIFill();
+        } else if (request.action === 'trigger_custom_ai_fill') {
+            handleAIFill(request.question);
         }
         return true;
     });
