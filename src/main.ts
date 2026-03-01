@@ -157,7 +157,6 @@ function renderSocialBar(lang: Lang, cv: CVContent): string {
         <button class="social-link social-link--email" aria-label="Email" title="${lang === 'ru' ? 'Нажмите, чтобы скопировать email' : 'Click to copy email'}">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z"/><path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z"/></svg>
         </button>
-        <span class="print-only-email">${cv.contact.email}</span>
       </div>
       <div class="header-languages">
         ${cv.languages.map(l => `<span class="lang-tag">${l}</span>`).join('')}
@@ -177,6 +176,14 @@ function renderPage(lang: Lang): void {
     <div class="cv">
       <header class="cv-header">
         <div class="header-controls">
+          <div class="profile-toggle profile-toggle--mobile mobile-only no-print">
+            <button class="profile-btn ${currentViewMode === 'technical' ? 'active' : ''}" data-view="technical">
+              <span>⚙️</span> ${cv.labels.profileTechnical}
+            </button>
+            <button class="profile-btn ${currentViewMode === 'product' ? 'active' : ''}" data-view="product">
+              <span>💼</span> ${cv.labels.profileProduct}
+            </button>
+          </div>
           <div class="export-dropdown">
             <button class="export-btn" aria-label="${cv.labels.export}">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -208,7 +215,7 @@ function renderPage(lang: Lang): void {
             </div>
           </div>
         </div>
-        <div class="profile-toggle no-print">
+        <div class="profile-toggle profile-toggle--desktop desktop-only no-print">
           <button class="profile-btn ${currentViewMode === 'technical' ? 'active' : ''}" data-view="technical">
             <span>⚙️</span> ${cv.labels.profileTechnical}
           </button>

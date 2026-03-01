@@ -223,8 +223,15 @@ a:hover {
 }
 
 /* Profile Toggle */
-.profile-toggle {
-  display: flex;
+.desktop-only {
+  display: flex !important;
+}
+
+.mobile-only {
+  display: none !important;
+}
+
+.profile-toggle--desktop {
   gap: 0.5rem;
   margin-top: 1rem;
   margin-bottom: 1.25rem;
@@ -259,6 +266,25 @@ a:hover {
 
 .profile-btn span {
   font-size: 1rem;
+}
+
+/* Mobile profile btn style in header controls */
+.profile-toggle--mobile .profile-btn {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.profile-toggle--mobile .profile-btn:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-toggle--mobile .profile-btn.active {
+  background: var(--color-accent);
+  color: #fff;
 }
 
 .lang-toggle {
@@ -1423,10 +1449,26 @@ a:hover {
     gap: 0.5rem 1rem;
   }
 
-  .profile-toggle {
-    justify-content: center;
-    margin: 1.25rem 0;
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+
+  .header-controls {
+    position: static;
     width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .profile-toggle--mobile {
+    gap: 0.35rem;
+    width: auto;
+    margin: 0;
   }
 
   .cv-section {
