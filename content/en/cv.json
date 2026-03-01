@@ -30,7 +30,8 @@
     "profileProduct": "Product",
     "profileShort": "Short Version",
     "profileCollapse": "Collapse Descriptions",
-    "scheduleCall": "Schedule call via Calendly"
+    "scheduleCall": "Schedule call via Calendly",
+    "checkCompliance": "Check Vacancy Compliance"
   },
   "employment": "Full-time, part-time, project-based. On-site, remote, or hybrid.",
   "experience": [
