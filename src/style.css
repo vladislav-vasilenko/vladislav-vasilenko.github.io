@@ -53,6 +53,27 @@ a:hover {
   text-align: left;
 }
 
+.cv-header-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.cv-profile-image {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cv-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
 .cv-header h1 {
   font-size: 2rem;
   font-weight: 700;
@@ -1168,6 +1189,12 @@ a:hover {
     padding: 1rem 0;
   }
 
+  .cv-profile-image {
+    width: 80px;
+    height: 80px;
+    border-color: #ddd;
+  }
+
   .cv-section {
     padding: 0.75rem 0;
   }
@@ -1218,6 +1245,21 @@ a:hover {
 @media (max-width: 640px) {
   .cv-header {
     padding: 3rem 1.25rem 1.5rem;
+  }
+
+  .cv-header-main {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .cv-profile-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .cv-header-content {
+    width: 100%;
   }
 
   .cv-header h1 {

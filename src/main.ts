@@ -184,8 +184,14 @@ function renderPage(lang: Lang): void {
             <button class="lang-btn ${lang === 'ru' ? 'active' : ''}" data-lang="ru">RU</button>
           </div>
         </div>
-        <h1>${cv.name}</h1>
-        <p class="cv-title">${currentViewMode === 'product' ? cv.productTitle : cv.title}</p>
+        <div class="cv-header-main">
+          <img src="/profile.jpg" alt="${cv.name}" class="cv-profile-image" />
+          <div class="cv-header-content">
+            <h1>${cv.name}</h1>
+            <p class="cv-title">${currentViewMode === 'product' ? cv.productTitle : cv.title}</p>
+            ${renderSocialBar(lang, cv)}
+          </div>
+        </div>
         <div class="profile-toggle no-print">
           <button class="profile-btn ${currentViewMode === 'technical' ? 'active' : ''}" data-view="technical">
             <span>⚙️</span> ${cv.labels.profileTechnical}
@@ -200,7 +206,6 @@ function renderPage(lang: Lang): void {
           <span>${cv.contact.citizenship}</span>
           <span>${cv.contact.relocation}</span>
         </div>
-        ${renderSocialBar(lang, cv)}
       </header>
 
       <section class="cv-section">
