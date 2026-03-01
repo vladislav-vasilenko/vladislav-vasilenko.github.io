@@ -248,10 +248,10 @@ function renderPage(lang: Lang): void {
             <h2>${cv.labels.experience}</h2>
             <div class="view-toggle no-print">
                 <button class="exp-toggle-btn ${isShortView ? 'active' : ''}" data-view="short" title="${cv.labels.profileShort}">
-                    <span>📄</span>
+                    <span>📄</span> ${cv.labels.profileShort}
                 </button>
                 <button class="exp-toggle-btn ${isCollapsed ? 'active' : ''}" data-view="collapse" title="${cv.labels.profileCollapse}">
-                    <span>↔️</span>
+                    <span>↔️</span> ${cv.labels.profileCollapse}
                 </button>
             </div>
         </div>
