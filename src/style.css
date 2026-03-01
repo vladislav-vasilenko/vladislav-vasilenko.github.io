@@ -1175,6 +1175,11 @@ a:hover {
 
 /* Print styles */
 @media print {
+  @page {
+    size: A4;
+    margin: 15mm 20mm;
+  }
+
   body {
     font-size: 11pt;
   }
@@ -1199,12 +1204,51 @@ a:hover {
     padding: 0.75rem 0;
   }
 
+  /* Prevent section headers from being orphaned */
+  .cv-section h2 {
+    page-break-after: avoid;
+    break-after: avoid-page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    orphans: 3;
+    widows: 3;
+  }
+
+  .section-header-row {
+    page-break-after: avoid;
+    break-after: avoid-page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Keep at least the first work experience entry with its header */
+  .history .timeline-item:first-child {
+    page-break-before: avoid;
+    break-before: avoid-page;
+  }
+
   #app {
     max-width: none;
   }
 
   .timeline-item {
     break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .history {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .education-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .stack-category {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .social-bar {
