@@ -27,6 +27,8 @@ export interface Experience {
   profiles: string[];
   descriptionHtml: string;
   descriptionMd: string;
+  logo?: string;
+  logoWidth?: string;
 }
 
 export interface Education {

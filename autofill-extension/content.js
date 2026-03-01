@@ -68,22 +68,26 @@ function fillSection(sectionId, exp) {
     return filled;
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === 'autofill_experience') {
-        const data = request.data;
-        const sectionIds = findWorkdaySections();
-        let filledSections = 0;
+if (!window.__autofillRegistered) {
+    window.__autofillRegistered = true;
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.action === 'autofill_experience') {
+            const data = request.data;
+            const sectionIds = findWorkdaySections();
+            let filledSections = 0;
 
-        console.log(`[AutoFill] Found ${sectionIds.length} Workday sections, have ${data.length} experience entries`);
+            console.log(`[AutoFill] Found ${sectionIds.length} Workday sections, have ${data.length} experience entries`);
 
-        sectionIds.forEach((sectionId, index) => {
-            if (index < data.length) {
-                const count = fillSection(sectionId, data[index]);
-                console.log(`[AutoFill] Section ${sectionId}: filled ${count} fields with "${data[index].role}" @ ${data[index].company}`);
-                if (count > 0) filledSections++;
-            }
-        });
+            sectionIds.forEach((sectionId, index) => {
+                if (index < data.length) {
+                    const count = fillSection(sectionId, data[index]);
+                    console.log(`[AutoFill] Section ${sectionId}: filled ${count} fields with "${data[index].role}" @ ${data[index].company}`);
+                    if (count > 0) filledSections++;
+                }
+            });
 
-        sendResponse({ status: 'success', filled: filledSections });
-    }
-});
+            sendResponse({ status: 'success', filled: filledSections });
+        }
+        return true;
+    });
+}

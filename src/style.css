@@ -300,60 +300,122 @@ a:hover {
   margin-top: 0.5rem;
 }
 
-/* Timeline */
-.timeline-item {
-  margin-bottom: 1.75rem;
-  padding-bottom: 1.75rem;
-  border-bottom: 1px solid var(--color-border);
+/* Vertical Timeline (Karpathy style) */
+.history {
+  position: relative;
+  padding: 1rem 0;
 }
 
-.timeline-item:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
+.history::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 170px;
+  width: 1px;
+  background: var(--color-border);
+  z-index: 1;
 }
 
-.timeline-header {
+.entry.row {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
 }
 
-.timeline-left h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
+.timeline-item {
+  border-bottom: none;
+  margin-bottom: 2rem;
+  padding-bottom: 0;
 }
 
-.company {
-  font-size: 0.9rem;
-  color: var(--color-muted);
-  margin-top: 0.15rem;
-}
-
-.industry {
-  font-size: 0.85rem;
-  color: #888;
-}
-
-.timeline-right {
-  text-align: right;
+.timespan {
+  width: 150px;
   flex-shrink: 0;
-}
-
-.period {
-  display: block;
+  text-align: right;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--color-muted);
+  padding-top: 0.5rem;
+  margin-right: 20px;
 }
 
-.duration {
-  display: block;
-  font-size: 0.8rem;
+.ico {
+  width: 40px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.entry-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--color-bg);
+  border: 2px solid var(--color-accent);
+  border-radius: 50%;
+  margin-top: 0.75rem;
+  z-index: 3;
+}
+
+.ico img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-top: 0.75rem;
+  background: var(--color-bg);
+  border-radius: 4px;
+  padding: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.desc {
+  flex: 1;
+  padding-left: 20px;
+}
+
+.timeline-header-karpathy h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.15rem;
+}
+
+.timeline-header-karpathy .company {
+  font-size: 0.9rem;
   color: var(--color-muted);
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .history::before {
+    left: 15px;
+  }
+
+  .entry.row {
+    flex-direction: column;
+  }
+
+  .timespan {
+    width: auto;
+    text-align: left;
+    margin-right: 0;
+    margin-left: 35px;
+    padding-top: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  .ico {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .desc {
+    padding-left: 35px;
+  }
 }
 
 .exp-description ul {

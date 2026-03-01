@@ -203,27 +203,30 @@ function renderPage(lang: Lang): void {
 
       <section class="cv-section">
         <h2>${cv.labels.experience}</h2>
-        <div class="timeline">
+        <div id="history" class="history">
           ${cv.experience
       .filter(exp => exp.profiles.includes(currentViewMode))
       .map(
         (exp) => `
-            <div class="timeline-item">
-              <div class="timeline-header">
-                <div class="timeline-left">
-                  <h3>${exp.role}</h3>
-                  <p class="company">${exp.url
+            <div class="entry row timeline-item">
+              <div class="timespan">
+                ${exp.period}
+              </div>
+              <div class="ico">
+                <div class="entry-dot"></div>
+                ${exp.logo ? `<img src="${exp.logo}" alt="${exp.company}" ${exp.logoWidth ? `style="max-width: ${exp.logoWidth}"` : ''} loading="lazy">` : ''}
+              </div>
+              <div class="desc">
+                <div class="timeline-header-karpathy">
+                    <h3>${exp.role}</h3>
+                    <p class="company">${exp.url
             ? `<a href="${exp.url}" target="_blank" rel="noopener">${exp.company}</a>`
             : exp.company
           }${exp.location ? ` — ${exp.location}` : ''}${exp.industry ? ` <span class="industry">(${exp.industry})</span>` : ''
           }</p>
                 </div>
-                <div class="timeline-right">
-                  <span class="period">${exp.period}</span>
-                  <span class="duration">${exp.duration}</span>
-                </div>
+                <div class="exp-description">${exp.descriptionHtml}</div>
               </div>
-              <div class="exp-description">${exp.descriptionHtml}</div>
             </div>
           `
       )

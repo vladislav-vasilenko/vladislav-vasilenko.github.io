@@ -5,16 +5,23 @@
     "description": "Premium Job Application Autofill for Workday and more.",
     "permissions": [
         "storage",
-        "activeTab"
+        "activeTab",
+        "scripting"
     ],
     "host_permissions": [
-        "https://vladislav-vasilenko-github-io.vercel.app/*"
+        "https://vladislav-vasilenko-github-io.vercel.app/*",
+        "https://*.myworkdayjobs.com/*",
+        "https://*.myworkdaysite.com/*",
+        "https://*.workday.com/*"
     ],
     "action": {
         "default_popup": "popup.html",
         "default_icon": {
             "128": "icons/icon128.png"
         }
+    },
+    "icons": {
+        "128": "icons/icon128.png"
     },
     "content_scripts": [
         {
@@ -28,8 +35,5 @@
             ],
             "run_at": "document_idle"
         }
-    ],
-    "icons": {
-        "128": "icons/icon128.png"
-    }
+    ]
 }
