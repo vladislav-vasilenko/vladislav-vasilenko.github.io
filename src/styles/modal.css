@@ -105,11 +105,19 @@
 }
 
 .analysis-loader {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
     padding: 2rem 0;
+}
+
+.analysis-results.loading .analysis-loader {
+    display: flex;
+}
+
+.analysis-results.loading .results-content {
+    display: none;
 }
 
 .spinner {
