@@ -25,11 +25,11 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        let question, context, lang;
+        let question, context, lang, globalContext;
         if (req.method === 'POST') {
-            ({ question, context, lang = 'ru' } = req.body || {});
+            ({ question, context, lang = 'ru', globalContext } = req.body || {});
         } else if (req.method === 'GET') {
-            ({ question, context, lang = 'ru' } = req.query || {});
+            ({ question, context, lang = 'ru', globalContext } = req.query || {});
         } else {
             return res.status(405).json({ error: 'Method not allowed' });
         }
@@ -72,12 +72,13 @@ module.exports = async function handler(req, res) {
                         content: `You are an expert AI Assistant helping a candidate fill out a job application form.
             Your task is to answer the provided QUESTION based on the CANDIDATE'S CV and page CONTEXT.
             Keep the answer professional, concise, and focused on relevant experience.
+            If GLOBAL CONTEXT (like job title or company) is provided, tailor your answer toward that position.
             Language: ${lang === 'ru' ? 'Russian' : 'English'}.
             Output should be the answer text ONLY, no markdown, no quotes, no extra meta-text.`
                     },
                     {
                         role: 'user',
-                        content: `Candidate CV: ${JSON.stringify(cvContext)}\n\nPage Context (labels/hints near field): ${context || 'None'}\n\nQUESTION: ${question}`
+                        content: `Candidate CV: ${JSON.stringify(cvContext)}\n\nPage Local Context (labels near field): ${context || 'None'}\n\nGLOBAL context (Page title/Position): ${globalContext || 'None'}\n\nQUESTION: ${question}`
                     }
                 ]
             })

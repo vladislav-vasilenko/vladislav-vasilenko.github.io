@@ -58,6 +58,28 @@ function fillSection(sectionId, exp) {
     return filled;
 }
 
+function getGlobalContext() {
+    let globalInfo = "";
+
+    // 1. Page Title
+    if (document.title) globalInfo += `Page Title: ${document.title}. `;
+
+    // 2. Main Heading (often the job title)
+    const h1 = document.querySelector('h1');
+    if (h1) globalInfo += `Main Heading: ${h1.innerText}. `;
+
+    // 3. Specific selectors for job sites (Yandex, Workday)
+    // Yandex Jobs specific
+    const yandexJob = document.querySelector('.JobHeader-Title, .vacancy-title');
+    if (yandexJob) globalInfo += `Vacancy: ${yandexJob.innerText}. `;
+
+    // Workday specific
+    const workdayJob = document.querySelector('[data-automation-id="jobPostingHeader"]');
+    if (workdayJob) globalInfo += `Position: ${workdayJob.innerText}. `;
+
+    return globalInfo.trim();
+}
+
 async function handleAIFill() {
     const el = document.activeElement;
     if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) return;
@@ -108,6 +130,7 @@ async function handleAIFill() {
             data: {
                 question: question,
                 context: context,
+                globalContext: getGlobalContext(),
                 lang: document.documentElement.lang === 'ru' ? 'ru' : 'en'
             }
         }, (response) => {
