@@ -203,12 +203,17 @@ function renderPage(lang: Lang): void {
             <button class="lang-btn ${lang === 'en' ? 'active' : ''}" data-lang="en">EN</button>
             <button class="lang-btn ${lang === 'ru' ? 'active' : ''}" data-lang="ru">RU</button>
           </div>
+        </div>
         <div class="cv-header-main">
           <img src="/profile.jpg" alt="${cv.name}" class="cv-profile-image" />
           <div class="cv-header-content">
             <h1>${cv.name}</h1>
             <p class="cv-title">${currentViewMode === 'product' ? cv.productTitle : cv.title}</p>
             ${renderSocialBar(lang, cv)}
+            <div class="mobile-email-row print-only">
+               <span class="email-label">${lang === 'ru' ? 'Email:' : 'Email:'}</span>
+               <span class="email-value">${cv.contact.email}</span>
+            </div>
           </div>
         </div>
         <div class="cv-contact">
