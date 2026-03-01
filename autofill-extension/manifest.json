@@ -1,18 +1,22 @@
 {
     "manifest_version": 3,
     "name": "JobAutoFill Magic",
-    "version": "1.0.0",
-    "description": "Premium Job Application Autofill for Workday and more.",
+    "version": "1.1.0",
+    "description": "Premium Job Application Autofill with AI Power.",
     "permissions": [
         "storage",
         "activeTab",
-        "scripting"
+        "scripting",
+        "contextMenus"
     ],
     "host_permissions": [
         "https://vladislav-vasilenko-github-io.vercel.app/*",
         "https://*.myworkdayjobs.com/*",
         "https://*.myworkdaysite.com/*",
-        "https://*.workday.com/*"
+        "https://*.workday.com/*",
+        "https://*.yandex.ru/*",
+        "https://*.yandex.com/*",
+        "https://*.jobs.yandex.ru/*"
     ],
     "action": {
         "default_popup": "popup.html",
@@ -20,15 +24,16 @@
             "128": "icons/icon128.png"
         }
     },
+    "background": {
+        "service_worker": "background.js"
+    },
     "icons": {
         "128": "icons/icon128.png"
     },
     "content_scripts": [
         {
             "matches": [
-                "https://*.myworkdayjobs.com/*",
-                "https://*.myworkdaysite.com/*",
-                "https://*.workday.com/*"
+                "https://*/*"
             ],
             "js": [
                 "content.js"

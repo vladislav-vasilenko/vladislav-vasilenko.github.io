@@ -14,7 +14,6 @@ function fillInput(el, value) {
 }
 
 function findWorkdaySections() {
-    // Find all workExperience section IDs present in the DOM
     const allInputs = document.querySelectorAll('[id^="workExperience-"]');
     const sectionIds = new Set();
     allInputs.forEach(el => {
@@ -27,30 +26,18 @@ function findWorkdaySections() {
 function fillSection(sectionId, exp) {
     const prefix = `workExperience-${sectionId}`;
     let filled = 0;
-
-    // Job Title
     const jobTitle = document.getElementById(`${prefix}--jobTitle`);
     if (fillInput(jobTitle, exp.role)) filled++;
-
-    // Company
     const company = document.getElementById(`${prefix}--companyName`);
     if (fillInput(company, exp.company)) filled++;
-
-    // Location
     const location = document.getElementById(`${prefix}--location`);
     if (fillInput(location, exp.location || '')) filled++;
-
-    // Role Description
     const desc = document.getElementById(`${prefix}--roleDescription`);
     if (fillInput(desc, exp.description || '')) filled++;
-
-    // Start Date
     const startMonth = document.getElementById(`${prefix}--startDate-dateSectionMonth-input`);
     const startYear = document.getElementById(`${prefix}--startDate-dateSectionYear-input`);
     if (exp.startMonth && fillInput(startMonth, String(exp.startMonth))) filled++;
     if (exp.startYear && fillInput(startYear, String(exp.startYear))) filled++;
-
-    // End Date
     if (exp.currentlyWorkHere) {
         const checkbox = document.querySelector(`[data-fkit-id="${prefix}--currentlyWorkHere"] input[type="checkbox"]`)
             || document.getElementById(`${prefix}--currentlyWorkHere`);
@@ -64,8 +51,78 @@ function fillSection(sectionId, exp) {
         if (exp.endMonth && fillInput(endMonth, String(exp.endMonth))) filled++;
         if (exp.endYear && fillInput(endYear, String(exp.endYear))) filled++;
     }
-
     return filled;
+}
+
+async function handleAIFill() {
+    const el = document.activeElement;
+    if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) return;
+
+    // 1. Try to find question context
+    let context = "";
+    let question = "";
+
+    // Priority 1: User selection
+    const selection = window.getSelection().toString().trim();
+    if (selection) {
+        question = selection;
+        console.log("[AutoFill AI] Using selected text as question:", question);
+    } else {
+        // Priority 2: Automatic extraction
+        // Look for label or preceding text
+        const label = document.querySelector(`label[for="${el.id}"]`);
+        if (label) context += label.innerText + " ";
+
+        // Look for aria-labelledby
+        const ariaLabelledBy = el.getAttribute('aria-labelledby');
+        if (ariaLabelledBy) {
+            const labeled = document.getElementById(ariaLabelledBy);
+            if (labeled) context += labeled.innerText + " ";
+        }
+
+        // Look for nearby parent headings or containers
+        let parent = el.parentElement;
+        for (let i = 0; i < 5 && parent; i++) {
+            const labels = parent.querySelectorAll('h1, h2, h3, h4, label, .QuestionLabel');
+            labels.forEach(l => {
+                if (l !== label && !context.includes(l.innerText)) context += l.innerText + " ";
+            });
+            parent = parent.parentElement;
+        }
+
+        const placeholder = el.placeholder || "";
+        question = context.trim() || placeholder || "Tell about yourself";
+        console.log("[AutoFill AI] Automatic context found:", question);
+    }
+
+    const originalValue = el.value;
+    fillInput(el, "... ✨ Generating answer with AI ...");
+
+    try {
+        const response = await fetch('https://vladislav-vasilenko-github-io.vercel.app/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                question: question,
+                context: context,
+                lang: document.documentElement.lang === 'ru' ? 'ru' : 'en'
+            })
+        });
+
+        if (!response.ok) throw new Error("API call failed");
+        const data = await response.json();
+
+        if (data.answer) {
+            fillInput(el, data.answer);
+        } else {
+            fillInput(el, originalValue);
+            alert("AI could not generate an answer.");
+        }
+    } catch (err) {
+        console.error("[AutoFill AI] Error:", err);
+        fillInput(el, originalValue);
+        alert("Smart Fill error: " + err.message);
+    }
 }
 
 if (!window.__autofillRegistered) {
@@ -75,18 +132,15 @@ if (!window.__autofillRegistered) {
             const data = request.data;
             const sectionIds = findWorkdaySections();
             let filledSections = 0;
-
-            console.log(`[AutoFill] Found ${sectionIds.length} Workday sections, have ${data.length} experience entries`);
-
             sectionIds.forEach((sectionId, index) => {
                 if (index < data.length) {
                     const count = fillSection(sectionId, data[index]);
-                    console.log(`[AutoFill] Section ${sectionId}: filled ${count} fields with "${data[index].role}" @ ${data[index].company}`);
                     if (count > 0) filledSections++;
                 }
             });
-
             sendResponse({ status: 'success', filled: filledSections });
+        } else if (request.action === 'trigger_ai_fill') {
+            handleAIFill();
         }
         return true;
     });
