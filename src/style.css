@@ -1334,6 +1334,17 @@ a:hover {
     width: 100%;
   }
 
+  .cv-contact {
+    justify-content: center;
+    text-align: center;
+    gap: 0.5rem 1rem;
+  }
+
+  .profile-toggle {
+    justify-content: center;
+    margin: 1rem 0;
+  }
+
   .cv-section {
     padding: 1.25rem;
   }
