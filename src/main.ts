@@ -176,6 +176,26 @@ function renderPage(lang: Lang): void {
   app.innerHTML = `
     <div class="cv">
       <header class="cv-header">
+        <div class="header-controls">
+          <div class="export-dropdown">
+            <button class="export-btn" aria-label="${cv.labels.export}">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 12v2h12v-2"/>
+              </svg>
+              ${cv.labels.export}
+            </button>
+            <div class="export-menu">
+              <button class="export-option" data-action="copy">${cv.labels.copyText}</button>
+              <button class="export-option" data-action="pdf">${cv.labels.exportPdf}</button>
+              <button class="export-option" data-action="doc">${cv.labels.exportDoc}</button>
+              <button class="export-option" data-action="md">${cv.labels.exportMd}</button>
+            </div>
+          </div>
+          <div class="lang-toggle">
+            <button class="lang-btn ${lang === 'en' ? 'active' : ''}" data-lang="en">EN</button>
+            <button class="lang-btn ${lang === 'ru' ? 'active' : ''}" data-lang="ru">RU</button>
+          </div>
+        </div>
         <div class="cv-header-main">
           <img src="/profile.jpg" alt="${cv.name}" class="cv-profile-image" />
           <div class="cv-header-content">
