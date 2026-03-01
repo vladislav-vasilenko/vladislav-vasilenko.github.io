@@ -27,6 +27,8 @@ export interface Experience {
   profiles: string[];
   descriptionHtml: string;
   descriptionMd: string;
+  shortDescriptionHtml: string;
+  shortDescriptionMd: string;
   logo?: string;
   logoWidth?: string;
 }
@@ -85,6 +87,8 @@ interface CVJson {
     viewOrbit: string;
     profileTechnical: string;
     profileProduct: string;
+    profileShort: string;
+    profileCollapse: string;
     scheduleCall: string;
   };
   employment: string;
@@ -124,9 +128,21 @@ export function loadContent(lang: Lang): CVContent {
 
   const experience: Experience[] = cv.experience.map((exp) => {
     const mdKey = `/content/${lang}/experience/${exp.id}.md`;
+    const shortMdKey = `/content/${lang}/experience/${exp.id}-short.md`;
+
     const md = expModules[mdKey] ?? '';
+    const shortMd = expModules[shortMdKey] ?? md; // Fallback to full if short doesn't exist
+
     const descriptionHtml = marked.parse(md, { async: false }) as string;
-    return { ...exp, descriptionHtml, descriptionMd: md };
+    const shortDescriptionHtml = marked.parse(shortMd, { async: false }) as string;
+
+    return {
+      ...exp,
+      descriptionHtml,
+      descriptionMd: md,
+      shortDescriptionHtml,
+      shortDescriptionMd: shortMd
+    };
   });
 
   return {

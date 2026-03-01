@@ -5,6 +5,8 @@ import { exportPDF, exportDOC, exportMarkdown, copyAsText } from './export';
 type SkillsView = 'cards' | 'hex' | 'orbit';
 const SKILLS_VIEW_KEY = 'cv-skills-view';
 const PROFILE_VIEW_KEY = 'cv-profile-view';
+const SHORT_VIEW_KEY = 'cv-short-view';
+const COLLAPSE_VIEW_KEY = 'cv-collapse-view';
 
 type ViewMode = 'technical' | 'product';
 
@@ -18,6 +20,14 @@ function getViewMode(): ViewMode {
   const v = localStorage.getItem(PROFILE_VIEW_KEY);
   if (v === 'technical' || v === 'product') return v;
   return 'technical';
+}
+
+function getShortView(): boolean {
+  return localStorage.getItem(SHORT_VIEW_KEY) === 'true';
+}
+
+function getCollapseView(): boolean {
+  return localStorage.getItem(COLLAPSE_VIEW_KEY) === 'true';
 }
 
 let currentLang: Lang = getLang();
@@ -148,6 +158,8 @@ function renderPage(lang: Lang): void {
   const cv = loadContent(lang);
   const app = document.querySelector<HTMLDivElement>('#app')!;
   const skillsView = getSkillsView();
+  const isShortView = getShortView();
+  const isCollapsed = getCollapseView();
 
   app.innerHTML = `
     <div class="cv">
@@ -202,7 +214,17 @@ function renderPage(lang: Lang): void {
       </section>
 
       <section class="cv-section">
-        <h2>${cv.labels.experience}</h2>
+        <div class="section-header-row">
+            <h2>${cv.labels.experience}</h2>
+            <div class="view-toggle no-print">
+                <button class="exp-toggle-btn ${isShortView ? 'active' : ''}" data-view="short" title="${cv.labels.profileShort}">
+                    <span>📄</span>
+                </button>
+                <button class="exp-toggle-btn ${isCollapsed ? 'active' : ''}" data-view="collapse" title="${cv.labels.profileCollapse}">
+                    <span>↔️</span>
+                </button>
+            </div>
+        </div>
         <div id="history" class="history">
           ${cv.experience
       .filter(exp => exp.profiles.includes(currentViewMode))
@@ -225,7 +247,7 @@ function renderPage(lang: Lang): void {
           }${exp.location ? ` — ${exp.location}` : ''}${exp.industry ? ` <span class="industry">(${exp.industry})</span>` : ''
           }</p>
                 </div>
-                <div class="exp-description">${exp.descriptionHtml}</div>
+                <div class="exp-description ${isCollapsed ? 'collapsed' : ''}">${isShortView ? exp.shortDescriptionHtml : exp.descriptionHtml}</div>
               </div>
             </div>
           `
@@ -290,12 +312,28 @@ function renderPage(lang: Lang): void {
     });
   });
 
+  // Experience toggle
+  app.querySelectorAll<HTMLButtonElement>('.exp-toggle-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const view = btn.dataset.view;
+      if (view === 'short') {
+        const isShort = getShortView();
+        localStorage.setItem(SHORT_VIEW_KEY, String(!isShort));
+        renderPage(currentLang);
+      } else if (view === 'collapse') {
+        const isCollapsed = getCollapseView();
+        localStorage.setItem(COLLAPSE_VIEW_KEY, String(!isCollapsed));
+        renderPage(currentLang);
+      }
+    });
+  });
+
   // Profile toggle
   app.querySelectorAll<HTMLButtonElement>('.profile-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const newViewMode = btn.dataset.view as ViewMode;
-      if (newViewMode !== currentViewMode) {
-        currentViewMode = newViewMode;
+      const newViewMode = btn.dataset.view;
+      if (newViewMode && newViewMode !== currentViewMode) {
+        currentViewMode = newViewMode as ViewMode;
         localStorage.setItem(PROFILE_VIEW_KEY, newViewMode);
         renderPage(currentLang);
       }
@@ -317,7 +355,18 @@ function renderPage(lang: Lang): void {
       const action = btn.dataset.action;
       exportMenu.classList.remove('open');
 
-      const filteredExperience = cv.experience.filter(exp => exp.profiles.includes(currentViewMode));
+      const isShort = getShortView();
+      const isCollapsed = getCollapseView();
+      const filteredExperience = cv.experience
+        .filter(exp => exp.profiles.includes(currentViewMode))
+        .map(exp => ({
+          ...exp,
+          descriptionHtml: isCollapsed ? '' : (isShort ? exp.shortDescriptionHtml : exp.descriptionHtml),
+          shortDescriptionHtml: isCollapsed ? '' : (isShort ? exp.shortDescriptionHtml : exp.descriptionHtml),
+          descriptionMd: isCollapsed ? '' : (isShort ? exp.shortDescriptionMd : exp.descriptionMd),
+          shortDescriptionMd: isCollapsed ? '' : (isShort ? exp.shortDescriptionMd : exp.descriptionMd)
+        }));
+
       const filteredCv = {
         ...cv,
         experience: filteredExperience,

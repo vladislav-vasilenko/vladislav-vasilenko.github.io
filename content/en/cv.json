@@ -28,6 +28,8 @@
     "viewOrbit": "Orbit",
     "profileTechnical": "Technical",
     "profileProduct": "Product",
+    "profileShort": "Short Version",
+    "profileCollapse": "Collapse Descriptions",
     "scheduleCall": "Schedule call via Calendly"
   },
   "employment": "Full-time, part-time, project-based. On-site, remote, or hybrid.",
