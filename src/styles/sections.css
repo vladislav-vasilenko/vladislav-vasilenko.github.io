@@ -1,0 +1,71 @@
+.cv-section {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.cv-section:last-child {
+    border-bottom: none;
+}
+
+.cv-section h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-accent);
+}
+
+.cv-section>p,
+.about-text p {
+    font-size: 0.95rem;
+    color: var(--color-muted);
+    line-height: 1.7;
+}
+
+.about-text p+p {
+    margin-top: 0.5rem;
+}
+
+.section-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.section-header-row h2 {
+    flex: 1;
+}
+
+.education-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    align-items: baseline;
+}
+
+.edu-year {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    flex-shrink: 0;
+    min-width: 3rem;
+}
+
+.education-item strong {
+    font-size: 0.95rem;
+}
+
+.education-item p {
+    font-size: 0.88rem;
+    color: var(--color-muted);
+}
+
+@media (max-width: 640px) {
+    .cv-section {
+        padding: 1.25rem;
+    }
+}

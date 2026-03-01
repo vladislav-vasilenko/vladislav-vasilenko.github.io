@@ -1,0 +1,158 @@
+.stack-cards,
+.stack-hex,
+.stack-orbit {
+    display: none;
+}
+
+.stack-view--cards .stack-cards {
+    display: block;
+}
+
+.stack-view--hex .stack-hex {
+    display: block;
+}
+
+.stack-view--orbit .stack-orbit {
+    display: block;
+}
+
+.view-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-muted);
+    cursor: pointer;
+}
+
+.view-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.25rem 0;
+    min-width: 130px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: all 0.15s;
+    z-index: 100;
+}
+
+.view-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.view-option {
+    display: block;
+    width: 100%;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.view-option.active {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+/* Cards View */
+.stack-category {
+    margin-bottom: 1.25rem;
+}
+
+.stack-category h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-muted);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stack-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.stack-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+    background: var(--color-tag-bg);
+    border-radius: 4px;
+}
+
+.stack-tag:hover {
+    background: var(--color);
+    color: #fff;
+}
+
+/* Hex Grid */
+.hex-category {
+    margin-bottom: 1.5rem;
+}
+
+.hex-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-left: 4px;
+}
+
+.hex-cell {
+    width: 72px;
+    height: 80px;
+    transition: transform 0.2s;
+}
+
+.hex-cell:hover {
+    transform: scale(1.1);
+}
+
+.hex-inner {
+    width: 100%;
+    height: 100%;
+    background: var(--color, var(--color-header-bg));
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.hex-name {
+    font-size: 0.55rem;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+@media (max-width: 640px) {
+    .stack-cards {
+        display: block !important;
+    }
+
+    .stack-hex,
+    .stack-orbit {
+        display: none !important;
+    }
+}

@@ -1,0 +1,81 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    color: var(--color-text);
+    background: var(--color-bg);
+    min-width: 320px;
+}
+
+a {
+    color: var(--color-accent);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--color-accent-hover);
+    text-decoration: underline;
+}
+
+#app {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.desktop-only {
+    display: flex !important;
+}
+
+.mobile-only {
+    display: none !important;
+}
+
+@media (max-width: 640px) {
+    .desktop-only {
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: flex !important;
+    }
+}
+
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: var(--color-header-bg);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.toast--visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast--local {
+    position: fixed;
+    bottom: auto;
+    pointer-events: none;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    background: var(--color-accent);
+}

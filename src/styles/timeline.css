@@ -1,0 +1,172 @@
+.history {
+    position: relative;
+    padding: 1rem 0;
+}
+
+.history::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 190px;
+    width: 1px;
+    background: var(--color-border);
+    z-index: 1;
+}
+
+.entry.row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.timespan {
+    width: 150px;
+    flex-shrink: 0;
+    text-align: right;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-muted);
+    padding-top: 0.5rem;
+    margin-right: 20px;
+}
+
+.ico {
+    width: 40px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.entry-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--color-bg);
+    border: 2px solid var(--color-accent);
+    border-radius: 50%;
+    margin-top: 0.4rem;
+    z-index: 3;
+}
+
+.ico img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    margin-top: 0.4rem;
+    background: var(--color-bg);
+    border-radius: 4px;
+    padding: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.desc {
+    flex: 1;
+    padding-left: 20px;
+}
+
+.timeline-header-karpathy h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.15rem;
+}
+
+.timeline-header-karpathy .company {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    margin-bottom: 0.5rem;
+}
+
+.exp-description {
+    margin-top: 0.5rem;
+}
+
+.exp-description.collapsed {
+    display: none !important;
+}
+
+.exp-description ul {
+    padding-left: 1.25rem;
+    list-style: disc;
+}
+
+.exp-description li {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    margin-bottom: 0.35rem;
+    line-height: 1.5;
+}
+
+.exp-description code {
+    font-size: 0.85rem;
+    background: var(--color-tag-bg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+}
+
+.view-toggle {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.view-toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.exp-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.exp-toggle-btn.active {
+    background: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
+}
+
+@media (max-width: 600px) {
+    .history::before {
+        left: 15px;
+    }
+
+    .entry.row {
+        flex-direction: column;
+    }
+
+    .timespan {
+        width: auto;
+        text-align: left;
+        margin: 0 0 0.25rem 35px;
+        padding-top: 0;
+    }
+
+    .ico {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    .desc {
+        padding-left: 35px;
+    }
+
+    .view-toggle {
+        display: none;
+    }
+}

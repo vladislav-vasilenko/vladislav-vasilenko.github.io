@@ -1,0 +1,346 @@
+.cv-header {
+    background: var(--color-header-bg);
+    color: var(--color-header-text);
+    padding: 2.5rem 2rem 2.25rem;
+    position: relative;
+    text-align: left;
+}
+
+.cv-header-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.cv-profile-image {
+    flex-shrink: 0;
+    width: 156px;
+    height: 156px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.cv-header-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.cv-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.01em;
+}
+
+.cv-title {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    margin-bottom: 1rem;
+}
+
+.cv-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 1.25rem;
+}
+
+.cv-contact a {
+    color: inherit;
+}
+
+.cv-contact a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+/* Header Controls */
+.header-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 10;
+}
+
+.export-dropdown {
+    position: relative;
+}
+
+.export-btn,
+.compliance-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.export-btn:hover,
+.compliance-btn:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-accent);
+}
+
+.export-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--color-header-bg);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.25rem 0;
+    min-width: 180px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+    z-index: 100;
+}
+
+.export-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.export-option {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: background 0.1s, color 0.1s;
+}
+
+.export-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.profile-toggle--desktop {
+    gap: 0.5rem;
+    margin: 1rem 0 1.25rem;
+    display: flex !important;
+}
+
+.profile-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.profile-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.profile-btn.active {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
+}
+
+.profile-toggle--mobile .profile-btn {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.lang-toggle {
+    display: flex;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.lang-btn {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s, color 0.2s;
+}
+
+.lang-btn.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.header-social-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.header-social {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.social-link {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    background: var(--color-header-bg);
+    color: rgba(255, 255, 255, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.social-link:hover {
+    transform: scale(1.15);
+    color: #fff;
+}
+
+.social-link--calendly {
+    background: #006bff !important;
+}
+
+.social-link--email {
+    border: none;
+    cursor: pointer;
+}
+
+.social-link--email.revealed {
+    width: auto;
+    border-radius: 18px;
+    padding: 0 0.75rem;
+    background: var(--color-accent);
+    color: #fff;
+}
+
+.email-text {
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.header-languages {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.lang-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+}
+
+.lang-tag:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+    .cv-header {
+        padding: 1.5rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .header-controls {
+        position: static;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        top: auto;
+        right: auto;
+    }
+
+    .cv-header-main {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .cv-profile-image {
+        width: 130px;
+        height: 130px;
+    }
+
+    .header-social-row {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .mobile-email-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2rem;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .email-label {
+        font-weight: 700;
+        font-size: 0.75pt;
+        text-transform: uppercase;
+        color: var(--color-accent);
+        letter-spacing: 0.05em;
+    }
+}
