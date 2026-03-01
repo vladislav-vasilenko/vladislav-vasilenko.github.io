@@ -1163,6 +1163,10 @@ a:hover {
   white-space: nowrap;
 }
 
+.print-only {
+  display: none !important;
+}
+
 /* Languages */
 .languages {
   list-style: none;
