@@ -1,0 +1,1 @@
+5+ years of experience in high-impact mobile engineering (**Swift, ARKit, CoreML**). Led teams to launch award-winning apps (**Monster Deals**) and enterprise-grade solutions for **RosAtom**.

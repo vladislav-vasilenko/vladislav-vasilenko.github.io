@@ -1,0 +1,1 @@
+Researched and implemented **AR-Transformers** and **DiT** for audio generation. Optimized model adaptation using **LoRA/PEFT** and established ML pipelines with CI/CD, Docker, and **W&B** monitoring.

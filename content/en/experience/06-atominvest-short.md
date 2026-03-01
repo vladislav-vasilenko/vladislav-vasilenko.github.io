@@ -1,0 +1,1 @@
+Launched **EOSDO** (iOS) and **Random English** (Chatbot) from scratch. Architected enterprise solutions using **RxSwift and Realm**. Conducted international **A/B testing** to optimize user engagement.

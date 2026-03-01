@@ -1,0 +1,1 @@
+Developed hotel booking modules and integrated insurance interfaces for travel bookings. Engineered a smartwatch app for **Samsung Gear** using **Tizen (C++)**.

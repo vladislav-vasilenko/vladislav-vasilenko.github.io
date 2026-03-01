@@ -1,0 +1,1 @@
+Developed iOS apps featuring **AR and ML**, including human pose recognition via **CoreML**. Validated business hypotheses using **ARKit** prototypes and custom neural networks (PyTorch/TensorFlow).

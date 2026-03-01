@@ -1,0 +1,1 @@
+Engineered multi-agent **LLM systems** (LangChain/LangGraph) for moderation and chat analysis. Deployed scalable **FastAPI** services and fine-tuned **LLaMA 3** via SFT. Implemented **RAG** and audio transcription (Whisper).
