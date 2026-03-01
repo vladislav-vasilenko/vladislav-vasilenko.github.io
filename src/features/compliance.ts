@@ -20,7 +20,7 @@ export function initializeCompliance(app: HTMLElement, lang: Lang) {
             const ts = (window as any).turnstile;
             if (ts && !turnstileWidgetId) {
                 turnstileWidgetId = ts.render(turnstileContainer, {
-                    sitekey: '1x00000000000000000000AA', // Managed via Vercel env in prod
+                    sitekey: '0x4AAAAAACkZtRaBl09-ithU', // Managed via Vercel env in prod
                     theme: 'light',
                 });
             }
