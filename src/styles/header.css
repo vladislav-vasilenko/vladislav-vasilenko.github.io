@@ -353,4 +353,46 @@
         color: var(--color-accent);
         letter-spacing: 0.05em;
     }
+
+    .skills-summary {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .skills-summary-row {
+        font-size: 0.82rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.4;
+    }
+}
+
+/* Skills Summary (Global/Header) */
+.skills-summary {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.skills-summary-row {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.skills-cat-label {
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-right: 0.5rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+}
+
+.skills-cat-items {
+    font-weight: 500;
 }

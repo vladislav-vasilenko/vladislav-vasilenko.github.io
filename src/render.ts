@@ -2,11 +2,12 @@ import { type Lang, type CVContent } from './i18n';
 import { type ViewMode } from './state';
 
 export function renderSkillsSummary(cv: CVContent, lang: Lang): string {
-    return `
-    <div class="skills-summary print-only">
+  return `
+    <div class="skills-summary">
       ${cv.techStack.categories.map(cat => `
         <div class="skills-summary-row">
-          <strong>${cat.label[lang]}:</strong> ${cat.items.map(i => i.name).join(', ')}
+          <span class="skills-cat-label">${cat.label[lang]}:</span>
+          <span class="skills-cat-items">${cat.items.map(i => i.name).join(', ')}</span>
         </div>
       `).join('')}
     </div>
@@ -14,52 +15,52 @@ export function renderSkillsSummary(cv: CVContent, lang: Lang): string {
 }
 
 export function renderCardsView(cv: CVContent, lang: Lang): string {
-    return cv.techStack.categories.map((cat) => `
+  return cv.techStack.categories.map((cat) => `
     <div class="stack-category">
       <h3>${cat.label[lang]}</h3>
       <div class="stack-tags">
         ${cat.items.map((item) => {
-        const iconSrc = item.icon
-            ? `https://cdn.simpleicons.org/${item.icon}/${item.color.slice(1)}`
-            : '';
-        const iconEl = item.icon
-            ? `<img src="${iconSrc}" alt="" width="16" height="16" loading="lazy" />`
-            : '';
-        return `<a class="stack-tag" href="${item.url}" target="_blank" rel="noopener" style="--color: ${item.color}">${iconEl}${item.name}</a>`;
-    }).join('')}
+    const iconSrc = item.icon
+      ? `https://cdn.simpleicons.org/${item.icon}/${item.color.slice(1)}`
+      : '';
+    const iconEl = item.icon
+      ? `<img src="${iconSrc}" alt="" width="16" height="16" loading="lazy" />`
+      : '';
+    return `<a class="stack-tag" href="${item.url}" target="_blank" rel="noopener" style="--color: ${item.color}">${iconEl}${item.name}</a>`;
+  }).join('')}
       </div>
     </div>
   `).join('');
 }
 
 export function renderHexView(cv: CVContent, lang: Lang): string {
-    return cv.techStack.categories.map((cat) => `
+  return cv.techStack.categories.map((cat) => `
     <div class="hex-category">
       <h3>${cat.label[lang]}</h3>
       <div class="hex-grid">
         ${cat.items.map((item) => {
-        const iconSrc = item.icon
-            ? `https://cdn.simpleicons.org/${item.icon}/white`
-            : '';
-        const iconEl = item.icon
-            ? `<img src="${iconSrc}" alt="${item.name}" width="22" height="22" loading="lazy" />`
-            : `<span class="hex-letter">${item.name.charAt(0)}</span>`;
-        return `
+    const iconSrc = item.icon
+      ? `https://cdn.simpleicons.org/${item.icon}/white`
+      : '';
+    const iconEl = item.icon
+      ? `<img src="${iconSrc}" alt="${item.name}" width="22" height="22" loading="lazy" />`
+      : `<span class="hex-letter">${item.name.charAt(0)}</span>`;
+    return `
             <a class="hex-cell" href="${item.url}" target="_blank" rel="noopener" style="--color: ${item.color}">
               <div class="hex-inner">
                 ${iconEl}
                 <span class="hex-name">${item.name}</span>
               </div>
             </a>`;
-    }).join('')}
+  }).join('')}
       </div>
     </div>
   `).join('');
 }
 
 export function renderOrbitView(cv: CVContent, lang: Lang): string {
-    const categories = cv.techStack.categories;
-    return `
+  const categories = cv.techStack.categories;
+  return `
     <div class="orbit-view-controls no-print">
       ${categories.map(cat => `
         <button class="orbit-filter-btn active" data-ring="${cat.ring}" style="--color: ${cat.items[0]?.color || 'var(--color-accent)'}">
@@ -73,14 +74,14 @@ export function renderOrbitView(cv: CVContent, lang: Lang): string {
         <div class="orbit-ring ring-${cat.ring}" style="--item-count: ${cat.items.length}">
           <span class="ring-label">${cat.label[lang]}</span>
           ${cat.items.map((item, i) => {
-        const angle = (360 / cat.items.length) * i;
-        const iconSrc = item.icon
-            ? `https://cdn.simpleicons.org/${item.icon}/white`
-            : '';
-        const fallback = !item.icon
-            ? `<span class="orbit-fallback" style="background: ${item.color}">${item.name.charAt(0)}</span>`
-            : `<img src="${iconSrc}" alt="${item.name}" width="24" height="24" loading="lazy" />`;
-        return `
+    const angle = (360 / cat.items.length) * i;
+    const iconSrc = item.icon
+      ? `https://cdn.simpleicons.org/${item.icon}/white`
+      : '';
+    const fallback = !item.icon
+      ? `<span class="orbit-fallback" style="background: ${item.color}">${item.name.charAt(0)}</span>`
+      : `<img src="${iconSrc}" alt="${item.name}" width="24" height="24" loading="lazy" />`;
+    return `
               <a class="orbit-item"
                  href="${item.url}" target="_blank" rel="noopener"
                  style="--angle: ${angle}deg; --color: ${item.color}"
@@ -89,7 +90,7 @@ export function renderOrbitView(cv: CVContent, lang: Lang): string {
                 <span class="orbit-tooltip">${item.name}</span>
               </a>
             `;
-    }).join('')}
+  }).join('')}
         </div>
       `).join('')}
     </div>
@@ -97,21 +98,21 @@ export function renderOrbitView(cv: CVContent, lang: Lang): string {
 }
 
 export function renderSocialBar(lang: Lang, cv: CVContent): string {
-    const messengerBtn = lang === 'ru'
-        ? `<a class="social-link social-link--telegram" href="https://vsvladis.t.me/" target="_blank" rel="noopener" aria-label="Telegram">
+  const messengerBtn = lang === 'ru'
+    ? `<a class="social-link social-link--telegram" href="https://vsvladis.t.me/" target="_blank" rel="noopener" aria-label="Telegram">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
       </a>`
-        : `<a class="social-link social-link--whatsapp" href="https://wa.me/79963288498" target="_blank" rel="noopener" aria-label="WhatsApp">
+    : `<a class="social-link social-link--whatsapp" href="https://wa.me/79963288498" target="_blank" rel="noopener" aria-label="WhatsApp">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
       </a>`
 
-    const calendlyBtn = cv.contact.calendly
-        ? `<a class="social-link social-link--calendly" href="${cv.contact.calendly}" target="_blank" rel="noopener" aria-label="Calendly" title="${cv.labels.scheduleCall}">
+  const calendlyBtn = cv.contact.calendly
+    ? `<a class="social-link social-link--calendly" href="${cv.contact.calendly}" target="_blank" rel="noopener" aria-label="Calendly" title="${cv.labels.scheduleCall}">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>
       </a>`
-        : '';
+    : '';
 
-    return `
+  return `
     <div class="header-social-row">
       <div class="header-social">
         <a class="social-link social-link--github" href="https://github.com/vladislav-vasilenko" target="_blank" rel="noopener" aria-label="GitHub">
@@ -134,7 +135,7 @@ export function renderSocialBar(lang: Lang, cv: CVContent): string {
 }
 
 export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewMode, skillsView: string, isShortView: boolean, isCollapsed: boolean): string {
-    return `
+  return `
     <div class="cv">
       <header class="cv-header">
         <div class="header-controls">
@@ -232,9 +233,9 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
         </div>
         <div id="history" class="history">
           ${cv.experience
-            .filter(exp => exp.profiles.includes(currentViewMode))
-            .map(
-                (exp) => `
+      .filter(exp => exp.profiles.includes(currentViewMode))
+      .map(
+        (exp) => `
             <div class="entry row timeline-item">
               <div class="timespan">
                 ${exp.period}
@@ -247,17 +248,17 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
                 <div class="timeline-header-karpathy">
                     <h3>${exp.role}</h3>
                     <p class="company">${exp.url
-                        ? `<a href="${exp.url}" target="_blank" rel="noopener">${exp.company}</a>`
-                        : exp.company
-                    }${exp.location ? ` — ${exp.location}` : ''}${exp.industry ? ` <span class="industry">(${exp.industry})</span>` : ''
-                    }</p>
+            ? `<a href="${exp.url}" target="_blank" rel="noopener">${exp.company}</a>`
+            : exp.company
+          }${exp.location ? ` — ${exp.location}` : ''}${exp.industry ? ` <span class="industry">(${exp.industry})</span>` : ''
+          }</p>
                 </div>
                 <div class="exp-description ${isCollapsed ? 'collapsed' : ''}">${isShortView ? exp.shortDescriptionHtml : exp.descriptionHtml}</div>
               </div>
             </div>
           `
-            )
-            .join('')}
+      )
+      .join('')}
         </div>
       </section>
 
@@ -265,8 +266,8 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
         <h2>${cv.labels.education}</h2>
         <div class="education-list">
           ${cv.education
-            .map(
-                (edu) => `
+      .map(
+        (edu) => `
             <div class="education-item">
               <span class="edu-year">${edu.year}</span>
               <div>
@@ -275,8 +276,8 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
               </div>
             </div>
           `
-            )
-            .join('')}
+      )
+      .join('')}
         </div>
       </section>
 
@@ -289,9 +290,9 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
                 <circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6"/>
               </svg>
               <span class="view-toggle-label">${skillsView === 'cards' ? cv.labels.viewCards :
-            skillsView === 'hex' ? cv.labels.viewHex :
-                cv.labels.viewOrbit
-        }</span>
+      skillsView === 'hex' ? cv.labels.viewHex :
+        cv.labels.viewOrbit
+    }</span>
             </button>
             <div class="view-menu">
               <button class="view-option ${skillsView === 'cards' ? 'active' : ''}" data-view="cards">${cv.labels.viewCards}</button>
