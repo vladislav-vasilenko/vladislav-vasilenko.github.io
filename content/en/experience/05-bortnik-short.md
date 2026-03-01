@@ -1,1 +1,1 @@
-Engineered **PyTorch**-based voice cloning models (patent pending) and TTS architectures (**Tacotron 2**). Conducted demographic recognition experiments with **DeepFace/FaceNet** and built high-performance data scrapers.
+- Engineered **PyTorch**-based voice cloning models (patent pending) and TTS architectures (**Tacotron 2**). Conducted demographic recognition experiments with **DeepFace/FaceNet** and built high-performance data scrapers.

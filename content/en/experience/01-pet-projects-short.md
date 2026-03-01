@@ -1,1 +1,1 @@
-Development of various AI-powered tools and mobile apps using TypeScript, React, and Python. Focus on delivering practical AI solutions for niche markets.
+- Development of various AI-powered tools and mobile apps using TypeScript, React, and Python. Focus on delivering practical AI solutions for niche markets.
