@@ -210,7 +210,7 @@ function renderPage(lang: Lang): void {
             <h1>${cv.name}</h1>
             <p class="cv-title">${currentViewMode === 'product' ? cv.productTitle : cv.title}</p>
             ${renderSocialBar(lang, cv)}
-            <div class="mobile-email-row print-only">
+            <div class="mobile-email-row">
                <span class="email-label">${lang === 'ru' ? 'Email:' : 'Email:'}</span>
                <span class="email-value">${cv.contact.email}</span>
             </div>
