@@ -33,6 +33,18 @@ function getCollapseView(): boolean {
 let currentLang: Lang = getLang();
 let currentViewMode: ViewMode = getViewMode();
 
+function renderSkillsSummary(cv: CVContent, lang: Lang): string {
+  return `
+    <div class="skills-summary print-only">
+      ${cv.techStack.categories.map(cat => `
+        <div class="skills-summary-row">
+          <strong>${cat.label[lang]}:</strong> ${cat.items.map(i => i.name).join(', ')}
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
 function renderCardsView(cv: CVContent, lang: Lang): string {
   return cv.techStack.categories.map((cat) => `
     <div class="stack-category">
@@ -207,6 +219,7 @@ function renderPage(lang: Lang): void {
           ${cv.contact.citizenship ? `<span>${cv.contact.citizenship}</span>` : ''}
           ${cv.contact.relocation ? `<span>${cv.contact.relocation}</span>` : ''}
         </div>
+        ${renderSkillsSummary(cv, lang)}
       </header>
 
       <section class="cv-section">
@@ -281,7 +294,7 @@ function renderPage(lang: Lang): void {
         </div>
       </section>
 
-      <section class="cv-section cv-section--stack stack-view--${skillsView}">
+      <section class="cv-section cv-section--stack stack-view--${skillsView} no-print">
         <div class="section-header-row">
           <h2>${cv.labels.skills}</h2>
           <div class="view-toggle">
