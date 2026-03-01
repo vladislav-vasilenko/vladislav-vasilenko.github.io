@@ -1,12 +1,16 @@
 function fillInput(el, value) {
     if (!el) return false;
-    const nativeSetterDesc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')
-        || Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value');
+
+    // Determine the correct prototype based on element type to avoid "Illegal invocation"
+    const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    const nativeSetterDesc = Object.getOwnPropertyDescriptor(proto, 'value');
+
     if (nativeSetterDesc && nativeSetterDesc.set) {
         nativeSetterDesc.set.call(el, value);
     } else {
         el.value = value;
     }
+
     el.dispatchEvent(new Event('input', { bubbles: true }));
     el.dispatchEvent(new Event('change', { bubbles: true }));
     el.dispatchEvent(new Event('blur', { bubbles: true }));
@@ -99,25 +103,22 @@ async function handleAIFill() {
     fillInput(el, "... ✨ Generating answer with AI ...");
 
     try {
-        const response = await fetch('https://vladislav-vasilenko-github-io.vercel.app/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+        chrome.runtime.sendMessage({
+            action: 'generate_ai_answer',
+            data: {
                 question: question,
                 context: context,
                 lang: document.documentElement.lang === 'ru' ? 'ru' : 'en'
-            })
+            }
+        }, (response) => {
+            if (response && response.success && response.data.answer) {
+                fillInput(el, response.data.answer);
+            } else {
+                fillInput(el, originalValue);
+                const error = response ? (response.error || "AI could not generate an answer.") : "No response from background.";
+                alert("Smart Fill error: " + error);
+            }
         });
-
-        if (!response.ok) throw new Error("API call failed");
-        const data = await response.json();
-
-        if (data.answer) {
-            fillInput(el, data.answer);
-        } else {
-            fillInput(el, originalValue);
-            alert("AI could not generate an answer.");
-        }
     } catch (err) {
         console.error("[AutoFill AI] Error:", err);
         fillInput(el, originalValue);

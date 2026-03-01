@@ -1,27 +1,38 @@
 const REPO_RAW = 'https://raw.githubusercontent.com/vladislav-vasilenko/vladislav-vasilenko.github.io/main/content';
 
 async function fetchText(path) {
-    const res = await fetch(`${REPO_RAW}/${path}`);
-    if (!res.ok) return '';
+    const url = `${REPO_RAW}/${path}`;
+    const res = await fetch(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Vercel Serverless Function)'
+        }
+    });
+    if (!res.ok) {
+        console.error(`Fetch failed for ${url}: ${res.status} ${res.statusText}`);
+        return '';
+    }
     return res.text();
 }
 
 module.exports = async function handler(req, res) {
     // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
 
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
-
     try {
-        const { question, context, lang = 'ru' } = req.body;
+        let question, context, lang;
+        if (req.method === 'POST') {
+            ({ question, context, lang = 'ru' } = req.body || {});
+        } else if (req.method === 'GET') {
+            ({ question, context, lang = 'ru' } = req.query || {});
+        } else {
+            return res.status(405).json({ error: 'Method not allowed' });
+        }
 
         if (!question) {
             return res.status(400).json({ error: 'Question is missing.' });
@@ -66,7 +77,7 @@ module.exports = async function handler(req, res) {
                     },
                     {
                         role: 'user',
-                        content: `Candidate CV: ${JSON.stringify(cvContext)}\n\nPage Context (labels/hints near field): ${context}\n\nQUESTION: ${question}`
+                        content: `Candidate CV: ${JSON.stringify(cvContext)}\n\nPage Context (labels/hints near field): ${context || 'None'}\n\nQUESTION: ${question}`
                     }
                 ]
             })
@@ -84,6 +95,6 @@ module.exports = async function handler(req, res) {
 
     } catch (error) {
         console.error('API Error:', error);
-        res.status(500).json({ error: 'Internal server error.' });
+        res.status(500).json({ error: 'Internal server error: ' + error.message });
     }
 };
