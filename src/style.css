@@ -250,12 +250,6 @@ a:hover {
 }
 
 .profile-btn.active {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: var(--color-accent);
-  color: #fff;
-}
-
-.profile-btn.active {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: #fff;
