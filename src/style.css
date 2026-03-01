@@ -1283,17 +1283,14 @@ a:hover {
     display: none !important;
   }
 
-  .print-only-email {
+  .print-only {
     display: block !important;
-    margin-top: 0.5rem;
-    font-size: 11pt;
-    font-weight: 600;
+    margin-top: 0.25rem;
+    font-size: 10pt;
+    font-weight: 500;
   }
 }
 
-.print-only-email {
-  display: none;
-}
 
 /* Responsive */
 @media (max-width: 640px) {
