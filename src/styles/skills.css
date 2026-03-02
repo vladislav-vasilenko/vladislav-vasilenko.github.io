@@ -1,3 +1,12 @@
+.view-toggle {
+    position: relative;
+}
+
+.view-toggle--skills {
+    display: flex !important;
+    /* Always show skills toggle */
+}
+
 .stack-cards,
 .stack-hex,
 .stack-orbit {

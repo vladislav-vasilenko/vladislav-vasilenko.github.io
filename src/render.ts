@@ -284,12 +284,12 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
       <section class="cv-section cv-section--stack stack-view--${skillsView} no-print">
         <div class="section-header-row">
           <h2>${cv.labels.skills}</h2>
-          <div class="view-toggle">
+          <div class="view-toggle view-toggle--skills">
             <button class="view-toggle-btn">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6"/>
               </svg>
-              <span class="view-toggle-label">${skillsView === 'cards' ? cv.labels.viewCards :
+              <span class="skills-view-toggle-label">${skillsView === 'cards' ? cv.labels.viewCards :
       skillsView === 'hex' ? cv.labels.viewHex :
         cv.labels.viewOrbit
     }</span>

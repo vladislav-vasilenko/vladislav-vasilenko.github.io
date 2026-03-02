@@ -2,8 +2,8 @@ import { type CVContent } from '../i18n';
 import { type SkillsView, setSkillsView } from '../state';
 
 export function initializeSkills(app: HTMLElement, cv: CVContent) {
-    const viewToggleBtn = app.querySelector<HTMLButtonElement>('.view-toggle-btn');
-    const viewMenu = app.querySelector<HTMLDivElement>('.view-menu');
+    const viewToggleBtn = app.querySelector<HTMLButtonElement>('.view-toggle--skills .view-toggle-btn');
+    const viewMenu = app.querySelector<HTMLDivElement>('.view-toggle--skills .view-menu');
 
     if (!viewToggleBtn || !viewMenu) return { bindOrbitFilters };
 
@@ -21,7 +21,7 @@ export function initializeSkills(app: HTMLElement, cv: CVContent) {
             viewMenu.classList.remove('open');
             const section = app.querySelector('.cv-section--stack')!;
             section.className = `cv-section cv-section--stack stack-view--${view}`;
-            app.querySelector('.view-toggle-label')!.textContent =
+            app.querySelector('.skills-view-toggle-label')!.textContent =
                 view === 'cards' ? cv.labels.viewCards :
                     view === 'hex' ? cv.labels.viewHex :
                         cv.labels.viewOrbit;

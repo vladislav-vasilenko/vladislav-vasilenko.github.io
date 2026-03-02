@@ -93,13 +93,16 @@ function renderPage(lang: Lang): void {
       }, 5000);
     });
   }
-
-  // Global dropdown closer
-  document.addEventListener('click', () => {
-    app.querySelector('.export-menu')?.classList.remove('open');
-    app.querySelector('.view-menu')?.classList.remove('open');
-  });
 }
+
+// Global dropdown closer (Outside renderPage to avoid duplicates)
+document.addEventListener('click', (e) => {
+  const target = e.target as HTMLElement;
+  if (!target.closest('.view-toggle') && !target.closest('.export-dropdown')) {
+    document.querySelector('.export-menu')?.classList.remove('open');
+    document.querySelector('.view-menu')?.classList.remove('open');
+  }
+});
 
 // Initial Render
 const initialLang = getLang();
