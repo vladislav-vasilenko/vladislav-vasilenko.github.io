@@ -1,0 +1,148 @@
+import { type Lang } from '../i18n';
+
+export function initializeCoverLetter(app: HTMLElement, lang: Lang) {
+    const modal = app.querySelector<HTMLDivElement>('#coverletter-modal');
+    const coverletterBtn = app.querySelector<HTMLButtonElement>('.coverletter-btn');
+    const closeBtn = modal?.querySelector<HTMLButtonElement>('.close-modal');
+    const generateBtn = app.querySelector<HTMLButtonElement>('#generate-coverletter-btn');
+    const vacancyInput = app.querySelector<HTMLTextAreaElement>('#coverletter-vacancy-input');
+    const modelSelect = app.querySelector<HTMLSelectElement>('#coverletter-model-select');
+    const resultsDiv = app.querySelector<HTMLDivElement>('#coverletter-results');
+    const resultsContent = app.querySelector<HTMLDivElement>('.coverletter-content');
+    const turnstileContainer = app.querySelector<HTMLDivElement>('#coverletter-turnstile-container');
+
+    let turnstileWidgetId: string | null = null;
+    let generatedText = '';
+
+    if (coverletterBtn && modal && turnstileContainer) {
+        coverletterBtn.addEventListener('click', () => {
+            modal.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+
+            const ts = (window as any).turnstile;
+            if (ts && !turnstileWidgetId) {
+                turnstileWidgetId = ts.render(turnstileContainer, {
+                    sitekey: '0x4AAAAAACkZtRaBl09-ithU',
+                    theme: 'light',
+                });
+            }
+        });
+
+        const closeModal = () => {
+            modal.classList.remove('visible');
+            document.body.style.overflow = '';
+            if (resultsDiv) resultsDiv.classList.add('hidden');
+            if (resultsContent) resultsContent.innerHTML = '';
+            if (vacancyInput) vacancyInput.value = '';
+            const ts = (window as any).turnstile;
+            if (ts && turnstileWidgetId) {
+                ts.reset(turnstileWidgetId);
+            }
+        };
+
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        if (generateBtn && vacancyInput && resultsDiv && resultsContent && modelSelect) {
+            generateBtn.addEventListener('click', async () => {
+                const text = vacancyInput.value.trim();
+                if (text.length < 100) {
+                    alert(lang === 'ru' ? 'Текст слишком короткий.' : 'Text is too short.');
+                    return;
+                }
+
+                const ts = (window as any).turnstile;
+                if (!ts) {
+                    alert(lang === 'ru' ? 'Ошибка: Cloudflare Turnstile не загружен. Проверьте блокировщики рекламы.' : 'Error: Cloudflare Turnstile not loaded. Please check your ad blockers.');
+                    return;
+                }
+
+                const token = ts.getResponse();
+                if (!token) {
+                    alert(lang === 'ru' ? 'Пожалуйста, подтвердите, что вы человек.' : 'Please confirm you are human.');
+                    return;
+                }
+
+                const selectedModel = modelSelect.value;
+
+                resultsDiv.classList.remove('hidden');
+                resultsDiv.classList.add('loading');
+                generateBtn.disabled = true;
+
+                try {
+                    const response = await fetch('https://vladislav-vasilenko-github-io.vercel.app/api/coverletter', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ vacancyText: text, turnstileToken: token, lang, model: selectedModel })
+                    });
+
+                    const data = await response.json();
+                    if (data.error) throw new Error(data.error);
+
+                    generatedText = data.coverLetter;
+
+                    resultsDiv.classList.remove('loading');
+                    resultsContent.innerHTML = `
+                        <div class="coverletter-header">
+                            <h3>${lang === 'ru' ? 'Сопроводительное письмо' : 'Cover Letter'}</h3>
+                            <span class="model-badge">${lang === 'ru' ? 'Модель' : 'Model'}: ${selectedModel}</span>
+                        </div>
+                        <div class="coverletter-text">${generatedText.split('\n').map(p => `<p>${p}</p>`).join('')}</div>
+                        <div class="coverletter-actions">
+                            <button id="copy-coverletter-btn" class="action-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                ${lang === 'ru' ? 'Копировать' : 'Copy'}
+                            </button>
+                            <button id="export-coverletter-btn" class="action-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                ${lang === 'ru' ? 'Экспорт в Markdown' : 'Export to Markdown'}
+                            </button>
+                        </div>
+                    `;
+
+                    // Bind copy button
+                    const newCopyBtn = resultsContent.querySelector<HTMLButtonElement>('#copy-coverletter-btn');
+                    if (newCopyBtn) {
+                        newCopyBtn.addEventListener('click', async () => {
+                            await navigator.clipboard.writeText(generatedText);
+                            const originalText = newCopyBtn.innerHTML;
+                            newCopyBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> ${lang === 'ru' ? 'Скопировано!' : 'Copied!'}`;
+                            setTimeout(() => {
+                                newCopyBtn.innerHTML = originalText;
+                            }, 2000);
+                        });
+                    }
+
+                    // Bind export button
+                    const newExportBtn = resultsContent.querySelector<HTMLButtonElement>('#export-coverletter-btn');
+                    if (newExportBtn) {
+                        newExportBtn.addEventListener('click', () => {
+                            const markdown = `# Cover Letter\n\n${generatedText}\n\n---\n*Generated with ${selectedModel}*`;
+                            const blob = new Blob([markdown], { type: 'text/markdown' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `cover-letter-${new Date().toISOString().split('T')[0]}.md`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                        });
+                    }
+                } catch (error: any) {
+                    resultsDiv.classList.remove('loading');
+                    resultsContent.innerHTML = `<p class="error-text">${error.message || 'Error occurred.'}</p>`;
+                } finally {
+                    generateBtn.disabled = false;
+                }
+            });
+        }
+    }
+}

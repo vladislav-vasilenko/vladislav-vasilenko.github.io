@@ -154,6 +154,12 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
             </svg>
             <span class="btn-text desktop-only">${cv.labels.checkCompliance}</span>
           </button>
+          <button class="coverletter-btn" aria-label="${lang === 'ru' ? 'Сопроводительное письмо' : 'Cover Letter'}" title="${lang === 'ru' ? 'Сопроводительное письмо' : 'Cover Letter'}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <span class="btn-text desktop-only">${lang === 'ru' ? 'Письмо' : 'Cover Letter'}</span>
+          </button>
           <div class="export-dropdown">
             <button class="export-btn" aria-label="${cv.labels.export}">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -318,19 +324,56 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
         <div class="modal-body">
           <p class="modal-hint">${lang === 'ru' ? 'Вставьте текст вакансии, чтобы ИИ оценил ваше соответствие.' : 'Paste the vacancy text to get an AI-powered compliance analysis.'}</p>
           <textarea id="vacancy-input" placeholder="${lang === 'ru' ? 'Текст вакансии...' : 'Vacancy text...'}" class="modern-textarea"></textarea>
-          
+
           <div id="turnstile-container" class="turnstile-wrapper"></div>
-          
+
           <div class="modal-actions">
             <button id="analyze-btn" class="primary-btn">${lang === 'ru' ? 'Анализировать' : 'Analyze'}</button>
           </div>
-          
+
           <div id="analysis-results" class="analysis-results hidden">
             <div class="analysis-loader">
               <div class="spinner"></div>
               <span>${lang === 'ru' ? 'Анализируем...' : 'Analyzing...'}</span>
             </div>
             <div class="results-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cover Letter Modal -->
+    <div id="coverletter-modal" class="modal no-print">
+      <div class="modal-content modal-content-wide">
+        <div class="modal-header">
+          <h2>${lang === 'ru' ? 'Генерация сопроводительного письма' : 'Generate Cover Letter'}</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-hint">${lang === 'ru' ? 'Вставьте текст вакансии для генерации персонализированного сопроводительного письма.' : 'Paste the vacancy text to generate a personalized cover letter.'}</p>
+
+          <select id="coverletter-model-select" class="model-select">
+            <option value="gpt-4o-mini">${lang === 'ru' ? 'GPT-4o Mini (Быстро)' : 'GPT-4o Mini (Fast)'}</option>
+            <option value="gpt-4o">${lang === 'ru' ? 'GPT-4o (Сбалансировано)' : 'GPT-4o (Balanced)'}</option>
+            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+            <option value="gpt-5.4">${lang === 'ru' ? 'GPT-5.4 (Премиум)' : 'GPT-5.4 (Premium)'}</option>
+            <option value="gpt-5-mini-2025-08-07">GPT-5 Mini</option>
+          </select>
+
+          <textarea id="coverletter-vacancy-input" placeholder="${lang === 'ru' ? 'Текст вакансии...' : 'Vacancy text...'}" class="modern-textarea"></textarea>
+
+          <div id="coverletter-turnstile-container" class="turnstile-wrapper"></div>
+
+          <div class="modal-actions">
+            <button id="generate-coverletter-btn" class="primary-btn">${lang === 'ru' ? 'Генерировать' : 'Generate'}</button>
+          </div>
+
+          <div id="coverletter-results" class="analysis-results hidden">
+            <div class="analysis-loader">
+              <div class="spinner"></div>
+              <span>${lang === 'ru' ? 'Генерируем письмо...' : 'Generating letter...'}</span>
+            </div>
+            <div class="coverletter-content"></div>
           </div>
         </div>
       </div>
