@@ -7,6 +7,39 @@
 </head>
 
 <body>
+    <!-- Cover Letter Modal -->
+    <div id="coverLetterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>Cover Letter Generated</h2>
+                    <p id="modelUsed" class="model-badge"></p>
+                </div>
+                <button id="closeModal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="coverLetterText" readonly></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="copyBtn" class="action-btn copy-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                </button>
+                <button id="exportMdBtn" class="action-btn export-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export to Markdown
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="glass-container">
         <header>
             <h1>JobAutoFill <span>Magic</span></h1>
@@ -31,6 +64,22 @@
                     </svg>
                     Inject Experience
                 </button>
+
+                <div class="coverletter-section">
+                    <select id="model-select" class="model-select">
+                        <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
+                        <option value="gpt-4o">GPT-4o (Balanced)</option>
+                        <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                        <option value="gpt-5.4">GPT-5.4 (Premium)</option>
+                        <option value="gpt-5-mini-2025-08-07">GPT-5 Mini</option>
+                    </select>
+                    <button id="coverletter-btn" class="magic-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        Generate Cover Letter
+                    </button>
+                </div>
             </div>
 
             <div class="ai-prompt-section">
