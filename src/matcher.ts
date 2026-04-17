@@ -34,7 +34,8 @@ let scatterData: ScatterPoint[] = [];
 
 async function loadData() {
     try {
-        const response = await fetch('/matcher_data.json');
+        // Cache busting: добавляем timestamp, чтобы браузер не брал старый json из кэша
+        const response = await fetch(`/matcher_data.json?t=${new Date().getTime()}`);
         if (!response.ok) {
             throw new Error(`HTTP Error: ${response.status}`);
         }
