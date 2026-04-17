@@ -137,7 +137,17 @@ export function renderSocialBar(lang: Lang, cv: CVContent): string {
   `;
 }
 
-export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewMode, skillsView: string, isShortView: boolean, isCollapsed: boolean): string {
+export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewMode, skillsView: string, isShortView: boolean, isCollapsed: boolean, techProfile: string = 'vision'): string {
+  const techToggleHtml = currentViewMode === 'technical' ? `
+    <div class="tech-profile-toggle no-print">
+      <button class="tech-btn ${techProfile === 'vision' ? 'active' : ''}" data-tech="vision">Vision & GenAI</button>
+      <button class="tech-btn ${techProfile === 'audio' ? 'active' : ''}" data-tech="audio">Audio / Speech</button>
+      <button class="tech-btn ${techProfile === 'multimodal' ? 'active' : ''}" data-tech="multimodal">MultiModal</button>
+      <button class="tech-btn ${techProfile === 'multiagent' ? 'active' : ''}" data-tech="multiagent">MultiAgent</button>
+      <button class="tech-btn ${techProfile === 'ios' ? 'active' : ''}" data-tech="ios">iOS Swift</button>
+    </div>
+  ` : '';
+
   return `
     <div class="cv">
       <header class="cv-header">
@@ -150,6 +160,7 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
               <span>💼</span> ${cv.labels.profileProduct}
             </button>
           </div>
+          ${techToggleHtml}
           <button class="compliance-btn" aria-label="${cv.labels.checkCompliance}" title="${cv.labels.checkCompliance}">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -202,6 +213,7 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
             <span>💼</span> ${cv.labels.profileProduct}
           </button>
         </div>
+        ${techToggleHtml}
         <div class="cv-contact">
           ${cv.contact.location ? `<span>${cv.contact.location}</span>` : ''}
           <span class="print-only"><a href="tel:${cv.contact.phone.replace(/[\s()-]/g, '')}">${cv.contact.phone}</a></span>

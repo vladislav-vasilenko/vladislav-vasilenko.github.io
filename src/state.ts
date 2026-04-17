@@ -5,6 +5,19 @@ export const SKILLS_VIEW_KEY = 'cv-skills-view';
 export const PROFILE_VIEW_KEY = 'cv-profile-view';
 export const SHORT_VIEW_KEY = 'cv-short-view';
 export const COLLAPSE_VIEW_KEY = 'cv-collapse-view';
+export const TECH_PROFILE_KEY = 'cv-tech-profile';
+
+export type TechProfileMode = 'audio' | 'vision' | 'multimodal' | 'multiagent' | 'ios';
+
+export function getTechProfile(): TechProfileMode {
+    const v = localStorage.getItem(TECH_PROFILE_KEY);
+    if (v === 'audio' || v === 'vision' || v === 'multimodal' || v === 'multiagent' || v === 'ios') return v;
+    return 'vision';
+}
+
+export function setTechProfile(v: TechProfileMode) {
+    localStorage.setItem(TECH_PROFILE_KEY, v);
+}
 
 export function getSkillsView(): SkillsView {
     const v = localStorage.getItem(SKILLS_VIEW_KEY);

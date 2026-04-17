@@ -1,8 +1,8 @@
 import './style.css';
 import { getLang, setLang, loadContent, type Lang } from './i18n';
 import {
-  getViewMode, getSkillsView, getShortView, getCollapseView,
-  setViewMode, toggleShortView, toggleCollapseView, type ViewMode
+  getViewMode, getSkillsView, getShortView, getCollapseView, getTechProfile,
+  setViewMode, toggleShortView, toggleCollapseView, setTechProfile, type ViewMode, type TechProfileMode
 } from './state';
 import { renderFullPage } from './render';
 import { showLocalToast } from './features/toast';
@@ -13,15 +13,16 @@ import { initializeSkills } from './features/skillsUI';
 
 let currentLang: Lang = getLang();
 let currentViewMode: ViewMode = getViewMode();
+let currentTechProfile: TechProfileMode = getTechProfile();
 
 function renderPage(lang: Lang): void {
-  const cv = loadContent(lang);
+  const cv = loadContent(lang, currentTechProfile);
   const app = document.querySelector<HTMLDivElement>('#app')!;
   const skillsView = getSkillsView();
   const isShortView = getShortView();
   const isCollapsed = getCollapseView();
 
-  app.innerHTML = renderFullPage(cv, lang, currentViewMode, skillsView, isShortView, isCollapsed);
+  app.innerHTML = renderFullPage(cv, lang, currentViewMode, skillsView, isShortView, isCollapsed, currentTechProfile);
 
   // --- Feature Initializations ---
   initializeCompliance(app, lang);
@@ -65,6 +66,18 @@ function renderPage(lang: Lang): void {
       if (newViewMode && newViewMode !== currentViewMode) {
         currentViewMode = newViewMode;
         setViewMode(newViewMode);
+        renderPage(currentLang);
+      }
+    });
+  });
+
+  // Tech profile toggle (Audio, Vision, etc.)
+  app.querySelectorAll<HTMLButtonElement>('.tech-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const newTechProfile = btn.dataset.tech as TechProfileMode;
+      if (newTechProfile && newTechProfile !== currentTechProfile) {
+        currentTechProfile = newTechProfile;
+        setTechProfile(newTechProfile);
         renderPage(currentLang);
       }
     });

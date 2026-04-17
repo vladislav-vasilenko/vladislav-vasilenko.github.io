@@ -122,17 +122,22 @@ const expModules = import.meta.glob<string>('/content/*/experience/*.md', { eage
 const techStackModules = import.meta.glob<TechStack>('/content/tech-stack.json', { eager: true, import: 'default' });
 const techStack = techStackModules['/content/tech-stack.json'];
 
-export function loadContent(lang: Lang): CVContent {
+export function loadContent(lang: Lang, techProfile: string = 'vision'): CVContent {
   const cv = jsonModules[`/content/${lang}/cv.json`];
-  const aboutMd = aboutModules[`/content/${lang}/about.md`];
+  
+  const aboutMdKeySpecific = `/content/${lang}/about-${techProfile}.md`;
+  const aboutMdKeyFallback = `/content/${lang}/about.md`;
+  const aboutMd = aboutModules[aboutMdKeySpecific] ?? aboutModules[aboutMdKeyFallback] ?? '';
   const aboutHtml = marked.parse(aboutMd, { async: false }) as string;
 
   const experience: Experience[] = cv.experience.map((exp) => {
-    const mdKey = `/content/${lang}/experience/${exp.id}.md`;
-    const shortMdKey = `/content/${lang}/experience/${exp.id}-short.md`;
+    const mdKeySpecific = `/content/${lang}/experience/${exp.id}-${techProfile}.md`;
+    const mdKeyFallback = `/content/${lang}/experience/${exp.id}.md`;
+    const md = expModules[mdKeySpecific] ?? expModules[mdKeyFallback] ?? '';
 
-    const md = expModules[mdKey] ?? '';
-    const shortMd = expModules[shortMdKey] ?? md; // Fallback to full if short doesn't exist
+    const shortMdKeySpecific = `/content/${lang}/experience/${exp.id}-${techProfile}-short.md`;
+    const shortMdKeyFallback = `/content/${lang}/experience/${exp.id}-short.md`;
+    const shortMd = expModules[shortMdKeySpecific] ?? expModules[shortMdKeyFallback] ?? expModules[mdKeySpecific] ?? expModules[mdKeyFallback] ?? '';
 
     const descriptionHtml = marked.parse(md, { async: false }) as string;
     const shortDescriptionHtml = marked.parse(shortMd, { async: false }) as string;
