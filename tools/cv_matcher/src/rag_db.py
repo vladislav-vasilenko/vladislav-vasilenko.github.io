@@ -95,7 +95,7 @@ class RAGDatabase:
         try:
             # Получаем все векторы из ChromaDB
             data = self.collection.get(include=["embeddings", "metadatas", "documents"])
-            if not data or not data["embeddings"]:
+            if not data or data.get("embeddings") is None or len(data["embeddings"]) == 0:
                 return []
                 
             db_vectors = data["embeddings"]
