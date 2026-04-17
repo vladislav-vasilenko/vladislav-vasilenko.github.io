@@ -23,6 +23,7 @@ interface ScatterPoint {
 
 interface MatcherData {
     last_updated: string;
+    total_jobs_in_db?: number;
     vacancies: Vacancy[];
     scatter_3d?: ScatterPoint[];
 }
@@ -43,9 +44,15 @@ async function loadData() {
             scatterData = data.scatter_3d;
         }
         
-        // Update timestamp
+        // Update timestamp & total DB sum
         const dt = new Date(data.last_updated);
-        document.getElementById('last-updated')!.textContent = `Last Updated: ${dt.toLocaleString()} (via Github Actions)`;
+        document.getElementById('last-updated')!.textContent = `Last Pipeline Run: ${dt.toLocaleString()}`;
+        
+        if (data.total_jobs_in_db !== undefined) {
+             document.getElementById('total-db-count')!.textContent = `Total AI Market DB: ${data.total_jobs_in_db} vacancies parsed`;
+        } else {
+             document.getElementById('total-db-count')!.style.display = 'none';
+        }
         
         // Populate Company Filter
         const companies = new Set(allVacancies.map(v => v.company));
@@ -62,6 +69,20 @@ async function loadData() {
         
         if (scatterData.length > 0) {
             render3DChart();
+            
+            // Setup Toggle Button
+            const toggleBtn = document.getElementById('toggle-3d-btn')!;
+            const plotDiv = document.getElementById('scatter-3d-plot')!;
+            toggleBtn.style.display = 'inline-block';
+            toggleBtn.addEventListener('click', () => {
+                 if (plotDiv.style.display === 'none') {
+                     plotDiv.style.display = 'block';
+                 } else {
+                     plotDiv.style.display = 'none';
+                 }
+            });
+            // Auto-hide initially to save space, user can click to open
+            plotDiv.style.display = 'none';
         }
         
         renderVacancies();

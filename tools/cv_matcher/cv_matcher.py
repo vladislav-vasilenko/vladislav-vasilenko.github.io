@@ -1,6 +1,8 @@
 import os
 import sys
 import json
+import argparse
+import json
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 from typing import List
@@ -19,6 +21,10 @@ class ATSResult(BaseModel):
     reasoning: str = Field(description="Почему дана такая оценка (1-2 предложения)")
 
 def main():
+    parser = argparse.ArgumentParser(description="AI RAG CV Matcher")
+    parser.add_argument("--skip-scraping", action="store_true", help="Пропустить парсинг сайта Сбера и использовать кэшированные данные из БД")
+    args = parser.parse_args()
+
     print("🔥 Запуск RAG-пайплайна матчинга вакансий...")
     
     try:
@@ -44,15 +50,18 @@ def main():
     ]
     all_jobs = []
     
-    print("\n--- ЭТАП 1: СКРЕЙПИНГ ВАКАНСИЙ ---")
-    for q in queries:
-        jobs = scraper.fetch_jobs(q)
-        all_jobs.extend(jobs)
+    if not args.skip_scraping:
+        print("\n--- ЭТАП 1: СКРЕЙПИНГ ВАКАНСИЙ ---")
+        for q in queries:
+            jobs = scraper.fetch_jobs(q)
+            all_jobs.extend(jobs)
+            
+        unique_jobs = {job["id"]: job for job in all_jobs}.values()
         
-    unique_jobs = {job["id"]: job for job in all_jobs}.values()
-    
-    print("\n--- ЭТАП 2: ВЕКТОРИЗАЦИЯ И РАЗМЕЩЕНИЕ В БД ---")
-    db.add_vacancies(list(unique_jobs))
+        print("\n--- ЭТАП 2: ВЕКТОРИЗАЦИЯ И РАЗМЕЩЕНИЕ В БД ---")
+        db.add_vacancies(list(unique_jobs))
+    else:
+        print("\n--- ЭТАП 1 & 2 ПРОПУЩЕНЫ: Используем существующие вакансии из ChromaDB ---")
     
     # Извлекаем ВСЕ файлы опыта работы (кроме коротких версий)
     cv_dir = "../../content/ru/experience"
@@ -67,7 +76,7 @@ def main():
                 cv_text += f"--- ФАЙЛ: {f} ---\n{file.read()}\n\n"
 
     print("\n--- ЭТАП 3: КОСИНУСНЫЙ ПОИСК ВАКАНСИЙ (RAG) ---")
-    top_jobs = db.search_similar_vacancies(query_text=cv_text, top_k=10)
+    top_jobs = db.search_similar_vacancies(query_text=cv_text, top_k=40)
     
     if not top_jobs:
         print("⚠️ Нет вакансий в базе для поиска.")
@@ -131,6 +140,7 @@ Determine the match percentage, identify critical missing keywords, and provide 
     
     export_payload = {
         "last_updated": datetime.now(timezone.utc).isoformat(),
+        "total_jobs_in_db": db.collection.count(),
         "vacancies": ranked_results,
         "scatter_3d": scatter_3d_data
     }
