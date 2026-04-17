@@ -9,6 +9,7 @@ interface Vacancy {
     reasoning: string;
     missing_keywords: string[];
     is_good_match: boolean;
+    adapted_bullets?: string[];
 }
 
 interface ScatterPoint {
@@ -97,7 +98,20 @@ function renderHtml(v: Vacancy): string {
     
     let missingKeywordsHtml = '';
     if (v.missing_keywords && v.missing_keywords.length > 0) {
-        missingKeywordsHtml = `<div class="missing">⚠️ Missing CV Keywords: ${v.missing_keywords.join(', ')}</div>`;
+        missingKeywordsHtml = `<div class="missing">⚠️ Missing JD Keywords: ${v.missing_keywords.join(', ')}</div>`;
+    }
+    
+    let adaptedBulletsHtml = '';
+    if (v.adapted_bullets && v.adapted_bullets.length > 0) {
+        adaptedBulletsHtml = `
+            <div style="margin-top: 10px; padding: 15px; background: #eef2f5; border-left: 4px solid #007bff; border-radius: 4px;">
+                <strong style="color: #0056b3; font-size: 13px;">💡 Smart CV Adaptation for this role:</strong>
+                <ul style="margin: 5px 0 10px 0; padding-left: 20px; font-size: 13px; color: #444;">
+                    ${v.adapted_bullets.map(b => `<li>${b}</li>`).join('')}
+                </ul>
+                <a href="/adapted_cvs/${v.id}.html" target="_blank" style="display: inline-block; background: #28a745; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold;">📄 Открыть адаптированное резюме (HTML/PDF)</a>
+            </div>
+        `;
     }
     
     return `
@@ -116,6 +130,7 @@ function renderHtml(v: Vacancy): string {
                 <strong>AI Review:</strong> ${v.reasoning}
             </div>
             ${missingKeywordsHtml}
+            ${adaptedBulletsHtml}
         </div>
     `;
 }

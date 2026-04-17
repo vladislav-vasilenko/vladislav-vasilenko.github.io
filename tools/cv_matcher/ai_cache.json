@@ -1,0 +1,36 @@
+{
+  "1c2ab3c4fc6e44728fc7f2391386b8aa": {
+    "ats_score_percentage": 88,
+    "reasoning": "The candidate is an exceptionally strong technical match. They have direct experience with the exact architecture requested (Speech-to-Speech, AR-Transformers, DiT, EnCodec) and have already built a real-time voice agent (TalkyBuddy) with TTFT < 1s. They demonstrate deep research capabilities (RLHF, PPO, DPO, GRPO) and distributed training experience (DDP/FSDP). The only 'gap' is the specific terminology used by Sber (e.g., 'barge-in' or 'Time-to-First-Audio-Token' vs 'TTFT'), and the specific mention of prosody/empathy. However, the candidate's work on 'style & emotion transfer' and 'voice cloning' directly maps to these requirements.",
+    "missing_keywords": [
+      "barge-in",
+      "Time-to-First-Audio-Token",
+      "Data/Tensor/Context/Expert Parallelism",
+      "Audio-conditioned LLMs",
+      "просодия"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Спроектировал аудиопайплайн с низкой задержкой для голосового ИИ (TalkyBuddy), оптимизировав Time-to-First-Audio-Token (TTFAT) до < 1с и внедрив механизмы обработки потокового ввода/вывода для минимизации задержки в реальном времени.",
+      "Проводил исследования и дообучение генеративных аудио-моделей с использованием PEFT (LoRA/QLoRA) для управления просодией, тембром и эмоциональной окраской речи (style & emotion transfer), обеспечивая естественность и эмпатичность ответов.",
+      "Организовал распределенное обучение тяжелых мультимодальных моделей на GPU-кластерах, используя PyTorch DDP и FSDP, с глубоким пониманием принципов Data и Tensor Parallelism для масштабирования обучения на больших аудио-корпусах."
+    ]
+  },
+  "634342772c031c1889627cb3a4d917ef": {
+    "ats_score_percentage": 88,
+    "reasoning": "The candidate is an exceptionally strong technical match. They have deep experience in the entire GenAI stack: from RAG (Graph-RAG) and Multi-Agent Systems (LangGraph, OpenAI Agents SDK) to advanced model alignment (PPO, DPO, GRPO) and multimodal generation (Audio/Video/Image). They have demonstrated the ability to build end-to-end products (TalkyBuddy, BaniBaniBot) and have previous leadership experience (B2Broker). The only gap is the lack of explicit mention of 'Auto-Eval' and 'LLM-as-a-Judge' frameworks, though their work with Reward Models and RLHF strongly implies they have the technical capacity to implement these. Their 'Vibe Coding' mindset is evident through their rapid prototyping of SOTA models.",
+    "missing_keywords": [
+      "Agentic RAG",
+      "LLM-as-a-Judge",
+      "Auto-Eval",
+      "VLM fine-tuning",
+      "SOLID/OOP (explicitly mentioned in ML context)"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал и внедрил Graph-RAG систему для поиска в базе знаний, включая оптимизацию токенизации и генерации эмбеддингов, что соответствует требованиям по созданию высокопроизводительных RAG-сервисов.",
+      "Реализовал пайплайны выравнивания (alignment) мультимодальных моделей с использованием PPO, DPO и GRPO, а также обучил Reward-модели для автоматической оценки качества генерации (аналог LLM-as-a-Judge/Auto-Eval).",
+      "Спроектировал и реализовал архитектуру мультиагентных систем (MAS) с использованием паттернов Hierarchical Orchestration и Planning → Executor, обеспечивая автономность и управляемость агентов в сложных бизнес-сценариях."
+    ]
+  }
+}

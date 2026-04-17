@@ -21,7 +21,7 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { vacancyText, turnstileToken, lang = 'en', model = 'gpt-4o-mini' } = req.body;
+        const { vacancyText, turnstileToken, lang = 'en', model = 'gpt-5.4-mini' } = req.body;
 
         if (!vacancyText || vacancyText.length < 100) {
             return res.status(400).json({ error: 'Vacancy text is too short or missing.' });
@@ -32,8 +32,8 @@ module.exports = async function handler(req, res) {
         }
 
         // Validate model
-        const allowedModels = ['gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-5.4', 'gpt-5-mini-2025-08-07'];
-        const selectedModel = allowedModels.includes(model) ? model : 'gpt-4o-mini';
+        const allowedModels = ['gpt-5.4-mini', 'gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-5.4', 'gpt-5-mini-2025-08-07'];
+        const selectedModel = allowedModels.includes(model) ? model : 'gpt-5.4-mini';
 
         // Verify Turnstile
         if (process.env.TURNSTILE_SECRET_KEY && turnstileToken) {
