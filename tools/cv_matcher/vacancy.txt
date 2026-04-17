@@ -1,0 +1,18 @@
+Position: Machine Learning Engineer (GenAI & Multimodal)
+
+Minimum Qualifications:
+- 3+ years of experience in Machine Learning and Deep Learning.
+- Strong proficiency in Python, PyTorch, and JAX.
+- Hands-on experience with diffusion models (e.g., Stable Diffusion, Midjourney architectures) and multimodal understanding.
+- Experience with RAG pipelines, LangChain, and vector databases (Chroma, FAISS, Milvus).
+
+Preferred Qualifications:
+- Contributions to Open Source AI projects.
+- Experience deploying ML models in production (Triton, ONNX, TensorRT).
+- Experience with Vision-Language Models (VLM) such as CLIP, LLaVA, or Qwen-VL.
+- Understanding of low-rank adaptation (LoRA) and model quantization (INT8, FP8).
+
+Responsibilities:
+- Design and deploy state-of-the-art multimodal GenAI models.
+- Optimize inference times and throughput for heavy transformer models.
+- Build internal tooling for prompt engineering and model evaluation (ATS bypass).
