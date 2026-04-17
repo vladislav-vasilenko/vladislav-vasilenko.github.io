@@ -89,20 +89,61 @@ def main():
     else:
         print("\n--- ЭТАП 1 & 2 ПРОПУЩЕНЫ: Используем существующие вакансии из ChromaDB ---")
     
-    # Извлекаем ВСЕ файлы опыта работы (кроме коротких версий)
+    # 3. ПОДГОТОВКА ДАННЫХ РЕЗЮМЕ ДЛЯ ПОИСКА И ОТОБРАЖЕНИЯ
     cv_dir = "../../content/ru/experience"
-    if not os.path.exists(cv_dir):
-        print(f"❌ Директория CV не найдена: {cv_dir}")
+    cv_json_path = "../../content/ru/cv.json"
+    
+    if not os.path.exists(cv_json_path):
+        print(f"❌ CV JSON не найден: {cv_json_path}")
         sys.exit(1)
         
-    cv_text = ""
-    for f in sorted(os.listdir(cv_dir)):
-        if f.endswith(".md") and not f.endswith("-short.md"):
-            with open(os.path.join(cv_dir, f), "r", encoding="utf-8") as file:
-                cv_text += f"--- ФАЙЛ: {f} ---\n{file.read()}\n\n"
+    with open(cv_json_path, "r", encoding="utf-8") as f:
+        cv_data = json.load(f)
+
+    # Собираем полный текст для RAG-поиска (все файлы)
+    cv_search_text = ""
+    structured_experience = [] # Для красивого рендеринга в HTML
+    
+    # Сначала добавим информацию "Обо мне" из файла (если есть)
+    about_path = "../../content/ru/about.md"
+    about_text = ""
+    if os.path.exists(about_path):
+        with open(about_path, "r", encoding="utf-8") as f:
+            about_text = f.read()
+            cv_search_text += f"{about_text}\n\n"
+
+    # Теперь проходим по опыту работы из JSON
+    for exp in cv_data.get("experience", []):
+        exp_id = exp["id"]
+        period = exp.get("period", "")
+        
+        # Фильтр на 8 лет (от 2018 года)
+        # Ищем любые 4 цифры года в строке периода
+        years = [int(s) for s in period.split() if s.isdigit() and len(s) == 4]
+        # Если в периоде есть годы, и все они меньше 2018 - пропускаем (кроме случаев 'настоящее время')
+        if years and max(years) < 2018 and "настоящее" not in period.lower():
+            continue
+
+        md_path = os.path.join(cv_dir, f"{exp_id}.md")
+        
+        description_md = ""
+        if os.path.exists(md_path):
+            with open(md_path, "r", encoding="utf-8") as f:
+                description_md = f.read()
+        
+        # Добавляем в текст для поиска
+        cv_search_text += f"Company: {exp['company']}\nRole: {exp['role']}\n{description_md}\n\n"
+        
+        # Сохраняем структуру для HTML
+        structured_experience.append({
+            "company": exp["company"],
+            "role": exp["role"],
+            "period": exp["period"],
+            "desc_html": markdown.markdown(description_md)
+        })
 
     print("\n--- ЭТАП 3: КОСИНУСНЫЙ ПОИСК ВАКАНСИЙ (RAG) ---")
-    top_jobs = db.search_similar_vacancies(query_text=cv_text, top_k=40)
+    top_jobs = db.search_similar_vacancies(query_text=cv_search_text, top_k=40)
     
     if not top_jobs:
         print("⚠️ Нет вакансий в базе для поиска.")
@@ -144,7 +185,7 @@ Candidate Resume:
     
     for job in top_jobs:
         # Уникальный хеш для пары "Вакансия + Резюме"
-        combo_text = job["document"] + cv_text
+        combo_text = job["document"] + cv_search_text
         job_hash = hashlib.md5(combo_text.encode('utf-8')).hexdigest()
         
         try:
@@ -164,7 +205,7 @@ Candidate Resume:
                     
                     req_payload = {
                         "vacancyText": job["document"],
-                        "cvText": cv_text
+                        "cvText": cv_search_text
                     }
                     
                     api_url = os.environ.get("CV_API_URL")
@@ -186,7 +227,7 @@ Candidate Resume:
                 else:
                     ats_val: ATSResult = chain.invoke({
                         "vacancy": job["document"], 
-                        "cv": cv_text
+                        "cv": cv_search_text
                     })
                     ats_val_dict = {
                         "ats_score_percentage": ats_val.ats_score_percentage,
@@ -207,40 +248,100 @@ Candidate Resume:
             job_id = job["id"]
             cv_html_path = os.path.join(cv_exports_dir, f"{job_id}.html")
             
-            md_template = f"# Владислав Василенко\n\n"
-            md_template += f"> **Senior AI / ML Engineer** | Опыт коммерческой разработки: 10 лет\n>\n"
-            md_template += f"> *CV фокусно адаптировано под вакансию: [{job['metadata']['title']}]({job['metadata']['link']}) ({job['metadata']['company']})*\n\n"
+            # Рендерим блок "Обо мне"
+            about_html = markdown.markdown(about_text)
             
-            if adapted_cv_bullets:
-                md_template += "## 🎯 Релевантный опыт (Ключевые компетенции для вашей команды)\n\n"
-                for ab in adapted_cv_bullets:
-                    md_template += f"- {ab}\n"
-                md_template += "\n---\n\n"
-                
-            md_template += "## 💼 Детальный профессиональный опыт\n\n"
-            md_template += cv_text
+            # Строим блок опыта
+            exp_html_parts = []
+            for exp in structured_experience:
+                part = f'''
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">{exp['company']}</span>
+                        <span class="period">{exp['period']}</span>
+                    </div>
+                    <div class="role">{exp['role']}</div>
+                    <div class="description">{exp['desc_html']}</div>
+                </div>'''
+                exp_html_parts.append(part)
             
-            html_body = markdown.markdown(md_template)
+            all_experience_html = "\\n".join(exp_html_parts)
             
+            # Рендерим адаптированные буллиты
+            bullets_li = "".join([f"<li>{b}</li>" for b in adapted_cv_bullets])
+            adapted_section = f'''
+            <div class="adapted-section">
+                <h2>🎯 Релевантный опыт (Focus for {job['metadata']['company']})</h2>
+                <ul>{bullets_li}</ul>
+            </div>''' if adapted_cv_bullets else ""
+
             full_html = f'''<!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <title>CV_Vladislav_Vasilenko_{job_id}</title>
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 850px; margin: 40px auto; padding: 0 20px; }}
-        h1, h2, h3 {{ color: #2c3e50; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; margin-top: 24px; }}
-        a {{ color: #0366d6; text-decoration: none; }}
-        blockquote {{ color: #6a737d; border-left: 0.25em solid #dfe2e5; background: #f6f8fa; padding: 10px 15px; border-radius: 4px; }}
-        hr {{ height: 1px; background-color: #e1e4e8; border: 0; margin: 24px 0; }}
+        :root {{ --primary: #2c3e50; --accent: #3498db; --text: #333; --light-bg: #f8f9fa; }}
+        body {{ 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            line-height: 1.5; color: var(--text); max-width: 900px; margin: 0 auto; padding: 40px; 
+            background: #fff;
+        }}
+        .header {{ border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }}
+        .header h1 {{ margin: 0; color: var(--primary); font-size: 2.2em; letter-spacing: -0.5px; }}
+        .header .contacts {{ text-align: right; font-size: 0.9em; color: #666; }}
+        
+        .summary {{ background: var(--light-bg); padding: 20px; border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 30px; }}
+        .adapted-section {{ background: #ebf5fb; padding: 20px; border-radius: 8px; border: 1px solid #aed6f1; margin-bottom: 30px; }}
+        .adapted-section h2 {{ margin-top: 0; color: #21618c; font-size: 1.2em; text-transform: uppercase; letter-spacing: 1px; }}
+        .adapted-section ul {{ margin: 0; padding-left: 20px; }}
+        .adapted-section li {{ margin-bottom: 8px; font-weight: 500; color: #1b4f72; }}
+
+        h2 {{ color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 40px; text-transform: uppercase; font-size: 1.1em; letter-spacing: 1.5px; }}
+        
+        .experience-item {{ margin-bottom: 25px; page-break-inside: avoid; }}
+        .exp-header {{ display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1em; color: var(--primary); }}
+        .company {{ color: var(--accent); }}
+        .role {{ font-style: italic; color: #555; margin-bottom: 8px; }}
+        .description ul {{ padding-left: 20px; margin-top: 5px; }}
+        .description li {{ margin-bottom: 4px; }}
+        
+        .vacancy-meta {{ font-size: 0.85em; color: #999; margin-top: 50px; text-align: center; border-top: 1px solid #eee; padding-top: 20px; }}
+        
         @media print {{
-            body {{ max-width: 100%; margin: 0; padding: 20px; }}
-            a {{ text-decoration: none !important; color: #000 !important; }}
+            body {{ padding: 0; margin: 0; }}
+            .adapted-section {{ border: 2px solid #aed6f1; background: #fff !important; }}
+            h2 {{ border-bottom: 2px solid #eee; }}
+            a {{ text-decoration: none; color: inherit; }}
         }}
     </style>
 </head>
 <body>
-{html_body}
+    <div class="header">
+        <div>
+            <h1>Василенко Владислав</h1>
+            <div style="color: var(--accent); font-weight: 500;">Senior AI / ML Engineer</div>
+        </div>
+        <div class="contacts">
+            <div>{cv_data['contact']['email']}</div>
+            <div>Telegram: <a href="https://vsvladis.t.me/">@vsvladis</a></div>
+            <div><a href="https://vladislav-vasilenko.github.io">vladislav-vasilenko.github.io</a></div>
+        </div>
+    </div>
+
+    <div class="summary">
+        {about_html}
+    </div>
+
+    {adapted_section}
+
+    <h2>💼 Профессиональный опыт</h2>
+    {all_experience_html}
+
+    <div class="vacancy-meta">
+        CV фокусно адаптировано для вакансии {job['metadata']['title']} в {job['metadata']['company']}<br>
+        Оригинал: <a href="{job['metadata']['link']}">{job['metadata']['link']}</a>
+    </div>
 </body>
 </html>'''
 
@@ -277,7 +378,7 @@ Candidate Resume:
     
     # 5.1 Генерация 3D Scatter (PCA)
     print("\n--- ГЕНЕРАЦИЯ 3D ПРОСТРАНСТВА (PCA) ---")
-    scatter_3d_data = db.export_3d_embeddings(cv_text)
+    scatter_3d_data = db.export_3d_embeddings(cv_search_text)
     
     print("\n--- ЭТАП 5: ЭКСПОРТ В JSON ДЛЯ ФРОНТЕНДА ---")
     output_dir = "../../public"

@@ -1,145 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <title>CV_Vladislav_Vasilenko_tech-lead-data-scientist-4514420</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 850px; margin: 40px auto; padding: 0 20px; }
-        h1, h2, h3 { color: #2c3e50; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; margin-top: 24px; }
-        a { color: #0366d6; text-decoration: none; }
-        blockquote { color: #6a737d; border-left: 0.25em solid #dfe2e5; background: #f6f8fa; padding: 10px 15px; border-radius: 4px; }
-        hr { height: 1px; background-color: #e1e4e8; border: 0; margin: 24px 0; }
+        :root { --primary: #2c3e50; --accent: #3498db; --text: #333; --light-bg: #f8f9fa; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            line-height: 1.5; color: var(--text); max-width: 900px; margin: 0 auto; padding: 40px; 
+            background: #fff;
+        }
+        .header { border-bottom: 2px solid var(--primary); padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .header h1 { margin: 0; color: var(--primary); font-size: 2.2em; letter-spacing: -0.5px; }
+        .header .contacts { text-align: right; font-size: 0.9em; color: #666; }
+        
+        .summary { background: var(--light-bg); padding: 20px; border-radius: 8px; border-left: 4px solid var(--accent); margin-bottom: 30px; }
+        .adapted-section { background: #ebf5fb; padding: 20px; border-radius: 8px; border: 1px solid #aed6f1; margin-bottom: 30px; }
+        .adapted-section h2 { margin-top: 0; color: #21618c; font-size: 1.2em; text-transform: uppercase; letter-spacing: 1px; }
+        .adapted-section ul { margin: 0; padding-left: 20px; }
+        .adapted-section li { margin-bottom: 8px; font-weight: 500; color: #1b4f72; }
+
+        h2 { color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 40px; text-transform: uppercase; font-size: 1.1em; letter-spacing: 1.5px; }
+        
+        .experience-item { margin-bottom: 25px; page-break-inside: avoid; }
+        .exp-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1em; color: var(--primary); }
+        .company { color: var(--accent); }
+        .role { font-style: italic; color: #555; margin-bottom: 8px; }
+        .description ul { padding-left: 20px; margin-top: 5px; }
+        .description li { margin-bottom: 4px; }
+        
+        .vacancy-meta { font-size: 0.85em; color: #999; margin-top: 50px; text-align: center; border-top: 1px solid #eee; padding-top: 20px; }
+        
         @media print {
-            body { max-width: 100%; margin: 0; padding: 20px; }
-            a { text-decoration: none !important; color: #000 !important; }
+            body { padding: 0; margin: 0; }
+            .adapted-section { border: 2px solid #aed6f1; background: #fff !important; }
+            h2 { border-bottom: 2px solid #eee; }
+            a { text-decoration: none; color: inherit; }
         }
     </style>
 </head>
 <body>
-<h1>Владислав Василенко</h1>
-<blockquote>
-<p><strong>Senior AI / ML Engineer</strong> | Опыт коммерческой разработки: 10 лет</p>
-<p><em>CV фокусно адаптировано под вакансию: <a href="https://rabota.sber.ru/search/tech-lead-data-scientist-4514420/">Tech Lead Data Scientist</a> (Сбер)</em></p>
-</blockquote>
-<h2>🎯 Релевантный опыт (Ключевые компетенции для вашей команды)</h2>
-<ul>
-<li>Проектирование архитектуры мультиагентной GenAI-системы на базе OpenAI Agents SDK / GPT-Realtime / GPT-4o с поддержкой Graph-RAG, Planning → Executor и real-time SSE-синхронизации.</li>
-<li>Создал и сравнил пайплайны улучшения качества генеративных моделей: реализовал и тестировал <strong>PPO, DPO и GRPO</strong>, а также обучал мультимодальные <strong>Reward-модели</strong> для оценки human feedback и контроля качества генерации.</li>
-<li>Внедрил <strong>PEFT (LoRA / QLoRA)</strong> и полный цикл ML-разработки: от подготовки данных и fine-tuning LLM до логирования экспериментов в <strong>W&amp;B</strong>, анализа метрик качества и подготовки моделей к продакшену.</li>
+    <div class="header">
+        <div>
+            <h1>Василенко Владислав</h1>
+            <div style="color: var(--accent); font-weight: 500;">Senior AI / ML Engineer</div>
+        </div>
+        <div class="contacts">
+            <div>mr.vasilenko.vlad@yandex.ru</div>
+            <div>Telegram: <a href="https://vsvladis.t.me/">@vsvladis</a></div>
+            <div><a href="https://vladislav-vasilenko.github.io">vladislav-vasilenko.github.io</a></div>
+        </div>
+    </div>
+
+    <div class="summary">
+        <p>Опытный AI-инженер и исследователь с широким кругозором в области машинного обучения и генеративных сетей (GenAI). Имею глубокий практический опыт работы с различными архитектурами глубокого обучения и их адаптацией под нестандартные задачи. Способен быстро погружаться в новые домены, будь то обработка естественного языка (LLM/Agents), компьютерное зрение (CV/Diffusion) или звук (Audio-LM).</p>
+<p>Умею собирать аккуратные и воспроизводимые ML-пайплайны полного цикла: от сбора и подготовки данных до валидации метрик и оптимизации инференса (W&amp;B, ClearML). Уверенно нативно работаю на PyTorch, пишу чистый и поддерживаемый код, применяю современные подходы к ускорению (Triton, xFormers/Flash-Attention, KV-cache, квантизация). </p>
+<p>Моя сильная сторона — способность быстро читать научные статьи, проверять гипотезы, запускать эксперименты и доводить успешные идеи до продакшена (Docker, CI/CD, MLOps). Слежу за передовыми трендами в GenAI, готов к плотной командной работе и погружению в сложные RnD-експерименты на масштабе.</p>
+    </div>
+
+    
+            <div class="adapted-section">
+                <h2>🎯 Релевантный опыт (Focus for Сбер)</h2>
+                <ul><li>• Проектирование архитектуры мультиагентной системы: разработал голосовую мультиагентную систему на базе OpenAI Agents SDK / GPT-Realtime / GPT-4o, включая supervisor-логику, паттерны Hierarchical Orchestration и Planning → Executor, а также интеграцию с внутренними знаниями и инструментами поиска.</li><li>• Мультиагентные LLM-системы для модерации, генерации рекламы и анализа рабочих чатов в Telegram (LangChain/LangGraph): реализовал RAG, prompt engineering, дообучение LLaMA 3 с помощью SFT и отдельные сервисы на Python/FastAPI с поддержкой воспроизводимых ML-пайплайнов и MLOps.</li><li>• Реализовал полный цикл ML/AI-разработки: от исследования статей и проверки гипотез до запуска экспериментов, валидации метрик качества, оптимизации инференса и вывода решений в продакшен (Docker, CI/CD, W&B, Triton, xFormers/Flash-Attention).</li></ul>
+            </div>
+
+    <h2>💼 Профессиональный опыт</h2>
+    
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">PET (Passion-Driven) Projects</span>
+                        <span class="period">Декабрь 2025 — настоящее время</span>
+                    </div>
+                    <div class="role">Продуктовый и технический разработчик</div>
+                    <div class="description"><ul>
+<li><strong>TalkyBuddy</strong> (<a href="https://banibot.ru/talkybuddy">banibot.ru/talkybuddy</a>) — Full-stack AI экосистема обучения иностранным языкам с фокусом на голосовое взаимодействие в реальном времени.<ul>
+<li>Спроектировал <strong>кроссплатформенную экосистему</strong> (Web, iOS/Android, Telegram Mini App).</li>
+<li>Разработал модульное ядро на основе <strong>Domain-Driven Design (DDD)</strong> для изоляции сложной лингвистической логики от инфраструктуры.</li>
+<li>Внедрил <strong>WebRTC и Omni-modal AI</strong>: спроектировал систему обмена аудио с низкой задержкой для голосового ИИ, достигнув времени отклика менее секунды (<strong>TTFT</strong>).</li>
+<li><strong>Оркестрация ИИ-агентов</strong>: реализовал адаптивную систему сборки ИИ-тьюторов с циклами самокоррекции, использующую накопленный опыт для улучшения сценария урока.</li>
+<li><em>Стек</em>: React Native, Next.js, Node.js (NestJS), WebRTC, OpenAI/Gemini API.</li>
 </ul>
-<hr />
-<h2>💼 Детальный профессиональный опыт</h2>
-<p>--- ФАЙЛ: 01-pet-projects-audio.md ---
-- <strong>TalkyBuddy</strong> (<a href="https://banibot.ru/talkybuddy">banibot.ru/talkybuddy</a>) — Full-stack AI экосистема для обучения иностранным языкам с фокусом на голосовое взаимодействие в реальном времени.
-    - Спроектировал <strong>кроссплатформенную экосистему</strong> (Web, iOS/Android, Telegram Mini App).
-    - Внедрил <strong>WebRTC и Omni-modal AI (Speech-to-Speech translation)</strong>: спроектировал аудиопайплайн с низкой задержкой для голосового ИИ, интеграция Audio-LM / ASR / TTS-моделей (достигнуто время отклика TTFT &lt; 1s).
-    - Разработал модульное ядро на основе <strong>Domain-Driven Design (DDD)</strong> для изоляции сложной логики от инфраструктуры.
-    - <strong>Оркестрация ИИ-агентов</strong>: реализовал адаптивную систему сборки ИИ-тьюторов.
-    - <em>Стек</em>: React Native, Next.js, Node.js (NestJS), WebRTC, OpenAI/Gemini API, DSP ML.
-- <strong>BaniBaniBot</strong> (<a href="https://banibanibot.t.me">banibanibot.t.me</a>) — Платформа мультимодальной генерации контента в Telegram.
-    - Интегрировал несколько генеративных моделей и мультимодальных LLM (Gemini / OpenAI API). Плотная работа с промптингом и контролируемой генерацией.
-    - Спроектировал <strong>Event-Driven Architecture (EDA)</strong> в бэкенде для масштабирования обработки тяжелых задач инференса, поддержки асинхронных FSM (что аналогично пайплайнам обработки аудио).
-    - MLOps &amp; Billing: реализовал систему <strong>Credits Ledger</strong> для учета GPU вычислений.</p>
-<p>--- ФАЙЛ: 01-pet-projects-multimodal.md ---
-- <strong>RLHF &amp; Alignment Lab</strong> (<a href="https://github.com/vladislav-vasilenko">GitHub Repository</a>) — Исследовательские лабораторные работы по тонкой настройке (alignment) генеративных моделей.
-    - Разработал и сравнил пайплайны выравнивания моделей с использованием <strong>Reinforcement Learning</strong>: имплементировал и тестировал алгоритмы <strong>PPO</strong>, <strong>DPO</strong> и <strong>GRPO</strong> для генеративных сетей.
-    - Обучил мультимодальные <strong>Reward-модели</strong> для оценки человеческих предпочтений (human feedback). Реализовал цикл связки reward-модели и диффузионного пайплайна.
-    - Выстроил архитектуру экспериментов: логирование метрик, анализ распределения reward-сигналов и дрейфа качества генерации через W&amp;B.
-- <strong>BaniBaniBot Pipeline</strong> (<a href="https://banibanibot.t.me">banibanibot.t.me</a>) — RnD полигон для тестирования SOTA моделей <code>video/image</code> генерации.
-    - Развернул <code>self-hosted</code> пайплайн для инференса <strong>open-weight моделей</strong> на собственных GPU: видео (Wan 2.x, Kling), изображения (FLUX, SDXL).
-    - Настроил сбор сырого фидбека пользователей (instruction -&gt; output -&gt; like/dislike) для создания датасетов под RLHF дообучение.
-- <strong>TalkyBuddy Ecosystem</strong> (<a href="https://banibot.ru/talkybuddy">banibot.ru/talkybuddy</a>) 
-    - Оркестрация <strong>AI-Агентов</strong>: разработал систему автономных ИИ-тьюторов на основе открытых MLLM с циклами самокоррекции и динамического планирования.</p>
-<p>--- ФАЙЛ: 01-pet-projects.md ---
-- <strong>TalkyBuddy</strong> (<a href="https://banibot.ru/talkybuddy">banibot.ru/talkybuddy</a>) — Full-stack AI экосистема обучения иностранным языкам с фокусом на голосовое взаимодействие в реальном времени.
-    - Спроектировал <strong>кроссплатформенную экосистему</strong> (Web, iOS/Android, Telegram Mini App).
-    - Разработал модульное ядро на основе <strong>Domain-Driven Design (DDD)</strong> для изоляции сложной лингвистической логики от инфраструктуры.
-    - Внедрил <strong>WebRTC и Omni-modal AI</strong>: спроектировал систему обмена аудио с низкой задержкой для голосового ИИ, достигнув времени отклика менее секунды (<strong>TTFT</strong>).
-    - <strong>Оркестрация ИИ-агентов</strong>: реализовал адаптивную систему сборки ИИ-тьюторов с циклами самокоррекции, использующую накопленный опыт для улучшения сценария урока.
-    - <em>Стек</em>: React Native, Next.js, Node.js (NestJS), WebRTC, OpenAI/Gemini API.
-- <strong>BaniBaniBot</strong> (<a href="https://banibanibot.t.me">banibanibot.t.me</a>) — Платформа мультимодальной генерации визуального контента в Telegram.
-    - Интегрировал несколько генеративных моделей (<strong>OpenAI GPT-Image 1.5</strong>, <strong>Gemini 3.1 Flash / Gemini 3 Pro</strong> native image generation) с единым API и автоматическим роутингом между провайдерами.
-    - Реализовал пайплайн подготовки промптов с помощью <strong>LLM</strong> (Gemini 3.1 с Reasoning и Search Grounding) для повышения качества и контролируемости визуальной генерации.
-    - Применил <strong>Domain-Driven Design (DDD)</strong> в архитектуре сервиса.
-    - Спроектировал <strong>Event-Driven Architecture (EDA)</strong> в бэкенде для масштабирования обработки тяжелых задач инференса, поддержки сложных асинхронных пайплайнов (FSM).
-    - Реализовал систему <strong>Credits Ledger</strong> для управления балансом и учета затрат на генерацию GPU вычислений.</p>
-<p>--- ФАЙЛ: 02-severstal.md ---
-- Проектирование архитектуры мультиагентной системы. Разработка голосовой мультиагентной системы на базе <strong>OpenAI Agents SDK</strong> / GPT-Realtime / GPT-Mini / GPT-4o / GPT-5.2 / Claude 4.6 Opus.
-- Разработка веб-интерфейса на <strong>Next.js + WebRTC</strong> для передачи голоса.
-- Разработка агентов поиска в базе знаний <strong>Graph-RAG</strong> (включая систему токенизации документов и генерации embeddings).
-- Разработка с нуля бэкенд supervisor мультиагентной системы (паттерны <strong>Hierarchical Orchestration</strong> и <strong>Planning → Executor</strong>) с поддержкой SSE синхронизации в реальном времени.
-- Разработка <strong>MCP сервера</strong> (Python, FastMCP) с поддержкой Multi-user аутентификации в Google Auth для Gmail API и Google Calendar API.
-- Разработка Agent Tools с поддержкой <strong>Perplexity Search</strong> / Perplexity Deep Research (Sonar API).</p>
-<p>--- ФАЙЛ: 03-glowbyte.md ---
-- Мультиагентные <strong>LLM-системы</strong> для модерации, генерации рекламы и анализа рабочих чатов в Telegram (<strong>LangChain/LangGraph</strong>).
-- Развёрнут отдельный сервис для каждого проекта с API на <strong>Python/FastAPI</strong> + валидатор Pydantic; проекты с интеграцией на Python/Next.js.
-- Инференс моделей из облака Replicate (<strong>LLaMA 3</strong>) / Claude 3.5 Opus / HuggingFace.
-- Внедрение <strong>RAG</strong> для задач поиска правил модерации.
-- Промпт-инжиниринг (Prompt Chaining, Chain-of-Thought, fast-CoT).
-- Дообучение <strong>LLaMA 3 с помощью SFT</strong> для AdTech домена/автомодерации рекламы.
-- Реализация сервиса распознавания встреч на <strong>Whisper Large + Speaker Diarization</strong> (Pyannote) / интерфейс на Gradio.
-- Реализация бота анализа чатов в Telegram с поддержкой <strong>Multi-User Authentication</strong> и диалогом с Claude 3.5 Sonnet (LangChain Conversation Memory).</p>
-<p>--- ФАЙЛ: 04-genai-audio.md ---
-- Исследование генеративных архитектур для аудио и музыки: Bark-подобный <strong>AR-Transformer</strong> (на базе EnCodec) и латентная диффузия наподобие StableAudio (<strong>DiT</strong> на EnCodec); разработка VAE + RVQ/VQ квантизаторов для построения универсальных аудио-репрезентаций.
-- Глубокое изучение <strong>DiT-блоков</strong>, Attention-механизмов и концепций диффузии. Сравнение архитектур, conditioners, schedulers и латентных пространств, в том числе для задач генерации и редактирования музыкальных дорожек.
-- Работа с <strong>PEFT (LoRA / QLoRA)</strong> для быстрой адаптации генеративных моделей под специфические задачи: конверсия голоса, перенос тембра и стиля (style &amp; emotion transfer).
-- Обучение, масштабирование и оценка качества моделей на больших аудио-корпусах с использованием специализированных метрик: <strong>FAD</strong>, <strong>CLAPScore</strong>.
-- Построение воспроизводимых ML-пайплайнов полного цикла: сбор и подготовка датасетов аудио, обучение моделей, логирование в <strong>W&amp;B</strong>.
-- Оптимизация инференса для тяжелых трансформеров: разработка шедулеров для диффузии, работа с <strong>KV-cache</strong>, <strong>xFormers/Flash-Attention</strong>. Создание интерактивных демо в Gradio.
-- Практический <strong>MLOps</strong>: работа с <strong>git</strong>, <strong>dvc</strong>, <strong>Docker</strong>, <strong>CI/CD</strong>, мониторинг моделей и дрейфа данных, подготовка моделей для продакшена (экспорт в ONNX, Triton).
-- Анализ научных статей, быстрое воспроизведение SOTA-идей (в частности, в области speech &amp; audio processing).</p>
-<p>--- ФАЙЛ: 04-genai-multimodal.md ---
-- Исследование и разработка <strong>диффузионных моделей</strong> (FLUX, Stable Diffusion, Wan 2.X) для задач инструктивного редактирования изображений/видео и совместной (синхронизированной) аудио-видео генерации. Плотная работа с фреймворком <strong>Diffusers</strong>.
-- Создание пайплайнов на базе <strong>RLHF</strong> для выравнивания генеративных моделей: проектирование мультимодальных <strong>reward-моделей</strong> (аудио/видео/текст) и интеграция алгоритмов Reinforcement Learning (<strong>PPO</strong>, <strong>DPO</strong>, <strong>GRPO</strong>) в процессы тонкой настройки (fine-tuning).
-- Работа с <strong>аудио-генерацией</strong>: интеграция архитектур латентной диффузии и AR (аналоги <strong>AudioLDM</strong>, <strong>MusicGen</strong>) для озвучки и мультитрековых трансформаций видео-контента.
-- Постановка и организация распределенного обучения на GPU-кластерах (<strong>DDP / FSDP</strong> в PyTorch), проектирование сложных экспериментов и анализ статистических результатов.
-- Создание <strong>AI-агентов</strong> на базе мультимодальных LLM: проектирование систем с reasoning-циклами для сложной потоковой обработки медиа-контента.
-- Построение воспроизводимых пайплайнов полного цикла: сбор сырых данных, предобработка, логирование в <strong>W&amp;B</strong> / <strong>ClearML</strong>.
-- Анализ свежих научных статей (ArXiv / NeurIPS / CVPR / ICML), быстрое прототипирование и тесная коллаборация с Distributed Engineers для имплементации алгоритмов в устойчивый продакшен-код.</p>
-<p>--- ФАЙЛ: 04-genai.md ---
-- Исследование генеративных архитектур для аудио: Bark-подобный <strong>AR-Transformer</strong> (EnCodec) и StableAudio-подобная латентная диффузия (<strong>DiT</strong> на EnCodec); VAE + RVQ/VQ квантизаторы для латентных представлений.
-- Глубокое изучение <strong>DiT-блоков</strong> и их связи с backbone-архитектурами визуальной генерации: <strong>SDXL</strong> (UNet) и <strong>Flux</strong> (DiT). Сравнение conditioners, schedulers и латентных пространств между доменами.
-- Применение <strong>PEFT (LoRA / QLoRA)</strong> для быстрой адаптации генеративных моделей под домен/голос/жанр; абляции по rank, регуляризации и отбору данных.
-- Определение оптимальных слоёв для <strong>LoRA-адаптации</strong> и параметров глубины/ширины для оптимума качество/ресурсы.
-- Оценка качества: <strong>FAD</strong>, <strong>CLAPScore</strong> (аудио) и аналогичные метрики визуальной генерации — FID/CLIPScore/FVD.
-- Построение воспроизводимых ML-пайплайнов от подготовки данных до батчевого инференса. Логирование экспериментов в <strong>W&amp;B</strong>.
-- Оптимизация инференса: <strong>xFormers/Flash-Attention</strong>, шедулеры для диффузии, демо в Gradio.
-- Практический опыт работы с <strong>архитектурами GAN</strong> для аугментации и синтеза данных.
-- MLOps: <strong>Docker + CI/CD</strong>, мониторинг, экспорты в ONNX и Triton для прод-выкатки.</p>
-<p>--- ФАЙЛ: 05-bortnik.md ---
-- Разработка двух концепций на <strong>PyTorch</strong>, подача заявки на патент модели клонирования голоса.
-- Создание и тестирование моделей TTS и Voice Cloning: <strong>Tacotron 2</strong>, WaveRNN, SpeakerVerification2TTS, Transformer-модели.
-- Эксперименты <strong>DeepFace/FaceNet</strong>: распознавание пола, возраста, роста и веса по фотографиям.
-- Сбор и обработка данных (скрапинг изображений) с использованием <strong>Asyncio</strong>.
-- Обучение моделей на <strong>Google Colab</strong> и <strong>Paperspace</strong>.</p>
-<p>--- ФАЙЛ: 06-atominvest.md ---
-- Разработка и выпуск с нуля двух продуктов: <strong>EOSDO</strong> (iOS) — клиентское приложение для системы управления документами; <strong>Random English</strong> — чат-бот, соединяющий изучающих английский из одного региона.
-- Проектирование архитектуры EOSDO на <strong>Realm, UIKit, Alamofire и RxSwift</strong>.
-- Сотрудничество с дизайнерами по UI/UX, участие в сборе требований от стейкхолдеров.
-- <strong>A/B-тестирование</strong> чат-бота в разных странах (включая Испанию), оптимизация вовлечённости пользователей.</p>
-<p>--- ФАЙЛ: 07-freelance-usa.md ---
-- Разработка iOS-приложений с функциями <strong>AR и ML</strong>, интеграция моделей нейронных сетей.
-- MVP-приложение для распознавания поз человека на основе ML-моделей, конвертированных в <strong>CoreML</strong>.
-- Проверка трёх гипотез с помощью приложений на <strong>ARKit</strong> с динамической загрузкой эталонных изображений.
-- Стек: Swift, UIKit, ARKit, Python, PyTorch, TensorFlow, CoreML, Phalcon.</p>
-<p>--- ФАЙЛ: 08-swift-gift.md ---
-- Вывод продукта на рынки <strong>Великобритании, США и Европы</strong>.
-- Аналитика продукта с <strong>Mixpanel</strong> и <strong>Intercom</strong>; сегментация пользователей.
-- Формирование дорожной карты внедрения функций и критериев успеха.
-- <strong>A/B-тестирование</strong> для улучшения UX и повышения конверсии.
-- Награда <strong>Apple 2016 UK</strong> за лучшее приложение для подарков.
-- Снижение затрат на привлечение пользователей через геймификацию; улучшение unit-экономики (рост Retention и ARPU).</p>
-<p>--- ФАЙЛ: 09-anywayanyday.md ---
-- Разработка раздела бронирования отелей и галереи в приложении Anywayanyday.
-- Интеграция экранов страховой программы для бронирования билетов и отелей.
-- Создание экспериментальной версии приложения для <strong>Samsung Gear</strong>.
-- Разработка мобильного приложения и смарт-часов на <strong>Tizen</strong> (C++).</p>
-<p>--- ФАЙЛ: 10-b2broker.md ---
-- Запустил и поставил: мобильные приложения B2BX, B2Core и B2BinPay для платформ iOS и Android (AppStore/PlayMarket).
-- Увеличил аудитории MAU в 7 раз.
-- Увеличил число B2B-клиентов с 19 до более 70 на обеих мобильных платформах.
-- Разработал и запустил новые функции для мобильных продуктов: новая книга ордеров, протоколы аутентификации, криптовалютные кошельки, поставщики платежей, интеграция торговых терминалов cTrader, MT 4/5.
-- Улучшил мобильный пользовательский интерфейс на основе принципов проектирования каждой платформы (iOS Apple Human Interface и Google Material Design), что привело к улучшению пользовательского опыта и повышению удовлетворенности клиентов.</p>
+</li>
+<li><strong>BaniBaniBot</strong> (<a href="https://banibanibot.t.me">banibanibot.t.me</a>) — Платформа мультимодальной генерации визуального контента в Telegram.<ul>
+<li>Интегрировал несколько генеративных моделей (<strong>OpenAI GPT-Image 1.5</strong>, <strong>Gemini 3.1 Flash / Gemini 3 Pro</strong> native image generation) с единым API и автоматическим роутингом между провайдерами.</li>
+<li>Реализовал пайплайн подготовки промптов с помощью <strong>LLM</strong> (Gemini 3.1 с Reasoning и Search Grounding) для повышения качества и контролируемости визуальной генерации.</li>
+<li>Применил <strong>Domain-Driven Design (DDD)</strong> в архитектуре сервиса.</li>
+<li>Спроектировал <strong>Event-Driven Architecture (EDA)</strong> в бэкенде для масштабирования обработки тяжелых задач инференса, поддержки сложных асинхронных пайплайнов (FSM).</li>
+<li>Реализовал систему <strong>Credits Ledger</strong> для управления балансом и учета затрат на генерацию GPU вычислений.</li>
+</ul>
+</li>
+</ul></div>
+                </div>\n
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">Северсталь</span>
+                        <span class="period">Сентябрь 2025 — Декабрь 2025</span>
+                    </div>
+                    <div class="role">Ведущий эксперт разработки ПО</div>
+                    <div class="description"><ul>
+<li>Проектирование архитектуры мультиагентной системы. Разработка голосовой мультиагентной системы на базе <strong>OpenAI Agents SDK</strong> / GPT-Realtime / GPT-Mini / GPT-4o / GPT-5.2 / Claude 4.6 Opus.</li>
+<li>Разработка веб-интерфейса на <strong>Next.js + WebRTC</strong> для передачи голоса.</li>
+<li>Разработка агентов поиска в базе знаний <strong>Graph-RAG</strong> (включая систему токенизации документов и генерации embeddings).</li>
+<li>Разработка с нуля бэкенд supervisor мультиагентной системы (паттерны <strong>Hierarchical Orchestration</strong> и <strong>Planning → Executor</strong>) с поддержкой SSE синхронизации в реальном времени.</li>
+<li>Разработка <strong>MCP сервера</strong> (Python, FastMCP) с поддержкой Multi-user аутентификации в Google Auth для Gmail API и Google Calendar API.</li>
+<li>Разработка Agent Tools с поддержкой <strong>Perplexity Search</strong> / Perplexity Deep Research (Sonar API).</li>
+</ul></div>
+                </div>\n
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">GlowByte Consulting</span>
+                        <span class="period">Сентябрь 2024 — Май 2025</span>
+                    </div>
+                    <div class="role">Senior Python Разработчик / ML Инженер (GenAI)</div>
+                    <div class="description"><ul>
+<li>Мультиагентные <strong>LLM-системы</strong> для модерации, генерации рекламы и анализа рабочих чатов в Telegram (<strong>LangChain/LangGraph</strong>).</li>
+<li>Развёрнут отдельный сервис для каждого проекта с API на <strong>Python/FastAPI</strong> + валидатор Pydantic; проекты с интеграцией на Python/Next.js.</li>
+<li>Инференс моделей из облака Replicate (<strong>LLaMA 3</strong>) / Claude 3.5 Opus / HuggingFace.</li>
+<li>Внедрение <strong>RAG</strong> для задач поиска правил модерации.</li>
+<li>Промпт-инжиниринг (Prompt Chaining, Chain-of-Thought, fast-CoT).</li>
+<li>Дообучение <strong>LLaMA 3 с помощью SFT</strong> для AdTech домена/автомодерации рекламы.</li>
+<li>Реализация сервиса распознавания встреч на <strong>Whisper Large + Speaker Diarization</strong> (Pyannote) / интерфейс на Gradio.</li>
+<li>Реализация бота анализа чатов в Telegram с поддержкой <strong>Multi-User Authentication</strong> и диалогом с Claude 3.5 Sonnet (LangChain Conversation Memory).</li>
+</ul></div>
+                </div>\n
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">recharge.city Startup</span>
+                        <span class="period">Июнь 2023 — Сентябрь 2024</span>
+                    </div>
+                    <div class="role">ML / Deep Learning Инженер / GenAI Исследователь</div>
+                    <div class="description"><ul>
+<li>Исследование генеративных архитектур для аудио: Bark-подобный <strong>AR-Transformer</strong> (EnCodec) и StableAudio-подобная латентная диффузия (<strong>DiT</strong> на EnCodec); VAE + RVQ/VQ квантизаторы для латентных представлений.</li>
+<li>Глубокое изучение <strong>DiT-блоков</strong> и их связи с backbone-архитектурами визуальной генерации: <strong>SDXL</strong> (UNet) и <strong>Flux</strong> (DiT). Сравнение conditioners, schedulers и латентных пространств между доменами.</li>
+<li>Применение <strong>PEFT (LoRA / QLoRA)</strong> для быстрой адаптации генеративных моделей под домен/голос/жанр; абляции по rank, регуляризации и отбору данных.</li>
+<li>Определение оптимальных слоёв для <strong>LoRA-адаптации</strong> и параметров глубины/ширины для оптимума качество/ресурсы.</li>
+<li>Оценка качества: <strong>FAD</strong>, <strong>CLAPScore</strong> (аудио) и аналогичные метрики визуальной генерации — FID/CLIPScore/FVD.</li>
+<li>Построение воспроизводимых ML-пайплайнов от подготовки данных до батчевого инференса. Логирование экспериментов в <strong>W&amp;B</strong>.</li>
+<li>Оптимизация инференса: <strong>xFormers/Flash-Attention</strong>, шедулеры для диффузии, демо в Gradio.</li>
+<li>Практический опыт работы с <strong>архитектурами GAN</strong> для аугментации и синтеза данных.</li>
+<li>MLOps: <strong>Docker + CI/CD</strong>, мониторинг, экспорты в ONNX и Triton для прод-выкатки.</li>
+</ul></div>
+                </div>\n
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">B2Broker</span>
+                        <span class="period">Май 2022 — Июнь 2023</span>
+                    </div>
+                    <div class="role">Senior Product Manager (iOS / Android / Финтех)</div>
+                    <div class="description"><ul>
+<li>Запустил и поставил: мобильные приложения B2BX, B2Core и B2BinPay для платформ iOS и Android (AppStore/PlayMarket).</li>
+<li>Увеличил аудитории MAU в 7 раз.</li>
+<li>Увеличил число B2B-клиентов с 19 до более 70 на обеих мобильных платформах.</li>
+<li>Разработал и запустил новые функции для мобильных продуктов: новая книга ордеров, протоколы аутентификации, криптовалютные кошельки, поставщики платежей, интеграция торговых терминалов cTrader, MT 4/5.</li>
+<li>Улучшил мобильный пользовательский интерфейс на основе принципов проектирования каждой платформы (iOS Apple Human Interface и Google Material Design), что привело к улучшению пользовательского опыта и повышению удовлетворенности клиентов.</li>
+</ul>
 <p><strong>Обязанности:</strong>
 - Развитие и составление дорожной карты на основе поставленных KPI.
 - Проведение Scrum церемоний в качестве Scrum Master для команд разработки и дизайна: Daily, Sprint-planning, Retro.
@@ -149,10 +163,73 @@
 - Исследование аудитории и приложений конкурентов для новых фичей.
 - Написание Release notes для каждого выпуска приложения.
 - Доставка расширенных сборок каждый месяц с новыми функциями.
-- Подготовка анонсов с отделом маркетинга для новых релизов.</p>
-<p>--- ФАЙЛ: 11-ios.md ---
-- <strong>Наследие iOS-разработки</strong>: Более 5 лет профессионального опыта создания коммерческих iOS и AR приложений (Swift, ARKit, CoreML).
-- <strong>Лидерство и дисциплина</strong>: Руководил командами мобильной разработки, внедряя стандарты промышленной инженерии. Эта база обеспечивает надежность и системность текущих ML/CV решений.</p>
+- Подготовка анонсов с отделом маркетинга для новых релизов.</p></div>
+                </div>\n
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">Фонд Бортника (ФАСИЕ)</span>
+                        <span class="period">Март 2021 — Март 2022</span>
+                    </div>
+                    <div class="role">ML / Deep Learning Инженер</div>
+                    <div class="description"><ul>
+<li>Разработка двух концепций на <strong>PyTorch</strong>, подача заявки на патент модели клонирования голоса.</li>
+<li>Создание и тестирование моделей TTS и Voice Cloning: <strong>Tacotron 2</strong>, WaveRNN, SpeakerVerification2TTS, Transformer-модели.</li>
+<li>Эксперименты <strong>DeepFace/FaceNet</strong>: распознавание пола, возраста, роста и веса по фотографиям.</li>
+<li>Сбор и обработка данных (скрапинг изображений) с использованием <strong>Asyncio</strong>.</li>
+<li>Обучение моделей на <strong>Google Colab</strong> и <strong>Paperspace</strong>.</li>
+</ul></div>
+                </div>\n
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">Atominvest</span>
+                        <span class="period">Май 2019 — Февраль 2021</span>
+                    </div>
+                    <div class="role">Ведущий инженер-программист iOS</div>
+                    <div class="description"><ul>
+<li>Разработка и выпуск с нуля двух продуктов: <strong>EOSDO</strong> (iOS) — клиентское приложение для системы управления документами; <strong>Random English</strong> — чат-бот, соединяющий изучающих английский из одного региона.</li>
+<li>Проектирование архитектуры EOSDO на <strong>Realm, UIKit, Alamofire и RxSwift</strong>.</li>
+<li>Сотрудничество с дизайнерами по UI/UX, участие в сборе требований от стейкхолдеров.</li>
+<li><strong>A/B-тестирование</strong> чат-бота в разных странах (включая Испанию), оптимизация вовлечённости пользователей.</li>
+</ul></div>
+                </div>\n
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">Фриланс (США)</span>
+                        <span class="period">Сентябрь 2018 — Апрель 2019</span>
+                    </div>
+                    <div class="role">ML Инженер / iOS Инженер-программист</div>
+                    <div class="description"><ul>
+<li>Разработка iOS-приложений с функциями <strong>AR и ML</strong>, интеграция моделей нейронных сетей.</li>
+<li>MVP-приложение для распознавания поз человека на основе ML-моделей, конвертированных в <strong>CoreML</strong>.</li>
+<li>Проверка трёх гипотез с помощью приложений на <strong>ARKit</strong> с динамической загрузкой эталонных изображений.</li>
+<li>Стек: Swift, UIKit, ARKit, Python, PyTorch, TensorFlow, CoreML, Phalcon.</li>
+</ul></div>
+                </div>\n
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">Swift Gift (Polemur Ltd.)</span>
+                        <span class="period">Октябрь 2016 — Август 2018</span>
+                    </div>
+                    <div class="role">Ведущий разработчик мобильных приложений iOS</div>
+                    <div class="description"><ul>
+<li>Вывод продукта на рынки <strong>Великобритании, США и Европы</strong>.</li>
+<li>Аналитика продукта с <strong>Mixpanel</strong> и <strong>Intercom</strong>; сегментация пользователей.</li>
+<li>Формирование дорожной карты внедрения функций и критериев успеха.</li>
+<li><strong>A/B-тестирование</strong> для улучшения UX и повышения конверсии.</li>
+<li>Награда <strong>Apple 2016 UK</strong> за лучшее приложение для подарков.</li>
+<li>Снижение затрат на привлечение пользователей через геймификацию; улучшение unit-экономики (рост Retention и ARPU).</li>
+</ul></div>
+                </div>\n
+                <div class="experience-item">
+                    <div class="exp-header">
+                        <span class="company">Различные компании (iOS разработка)</span>
+                        <span class="period">2014 — 2018</span>
+                    </div>
+                    <div class="role">Senior iOS Developer / Mobile Team Lead</div>
+                    <div class="description"><ul>
+<li><strong>Наследие iOS-разработки</strong>: Более 5 лет профессионального опыта создания коммерческих iOS и AR приложений (Swift, ARKit, CoreML).</li>
+<li><strong>Лидерство и дисциплина</strong>: Руководил командами мобильной разработки, внедряя стандарты промышленной инженерии. Эта база обеспечивает надежность и системность текущих ML/CV решений.</li>
+</ul>
 <p><strong>Ключевые проекты и достижения:</strong>
 - <strong><a href="https://apps.apple.com/us/app/monster-deals/id1003724916?l=ru">Monster Deals</a></strong>: Разработка большей части функционала приложения, которое было отмечено в App Store как "Best Gifting App" (лучшее приложение для подарков).
 - <strong>Afisha Restaurants</strong>: Разработка секции "Новости Ресторанов" в приложении.
@@ -162,6 +239,12 @@
 - <strong>UI/Графика</strong>: UIKit, SwiftUI, SpriteKit, Custom Animations (UIView/CALayer).
 - <strong>Реактивное программирование</strong>: Combine, RxSwift/ReactiveCocoa/ReactiveSwift.
 - <strong>Данные/Сеть</strong>: Realm/CoreData, URLSession/Alamofire.
-- <strong>Продвинутое</strong>: AVFoundation (Camera), StoreKit (IAP), Concurrency (GCD/NSOperation).</p>
+- <strong>Продвинутое</strong>: AVFoundation (Camera), StoreKit (IAP), Concurrency (GCD/NSOperation).</p></div>
+                </div>
+
+    <div class="vacancy-meta">
+        CV фокусно адаптировано для вакансии Tech Lead Data Scientist в Сбер<br>
+        Оригинал: <a href="https://rabota.sber.ru/search/tech-lead-data-scientist-4514420/">https://rabota.sber.ru/search/tech-lead-data-scientist-4514420/</a>
+    </div>
 </body>
 </html>
