@@ -4,6 +4,7 @@ import json
 import argparse
 import hashlib
 import markdown
+import requests
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 from typing import List
@@ -32,24 +33,31 @@ def main():
     parser = argparse.ArgumentParser(description="AI RAG CV Matcher")
     parser.add_argument("--skip-scraping", action="store_true", help="Пропустить парсинг сайта Сбера и использовать кэшированные данные из БД")
     parser.add_argument("--use-openai", action="store_true", help="Использовать OpenAI API вместо локального Ollama")
+    parser.add_argument("--use-cloud-api", action="store_true", help="Использовать Vercel API Gateway (скрывает OpenAI ключ)")
     parser.add_argument("--openai-model", type=str, default="gpt-5.4-mini", help="Модель OpenAI (по умолчанию gpt-5.4-mini)")
     args = parser.parse_args()
 
     print("🔥 Запуск RAG-пайплайна матчинга вакансий...")
     
-    try:
-        if args.use_openai:
-            if not os.environ.get("OPENAI_API_KEY"):
-                print("❌ ОШИБКА: OPENAI_API_KEY не установлен в .env")
-                sys.exit(1)
-            print(f"🧠 Инициализация OpenAI API ({args.openai_model})...")
-            llm = ChatOpenAI(model=args.openai_model, temperature=0.1)
-        else:
-            print("🧠 Инициализация локального Ollama (gemma4:31b)...")
-            llm = ChatOllama(model="gemma4:31b", temperature=0)
-    except Exception as e:
-        print(f"❌ Ошибка инициализации LLM: {e}")
-        sys.exit(1)
+    # Инициализация LLM
+    llm = None
+    chain = None
+    if args.use_cloud_api:
+        print("☁️ Выбран облачный Vercel API Gateway. Ланчейн не инициализируем.")
+    else:
+        try:
+            if args.use_openai:
+                if not os.environ.get("OPENAI_API_KEY"):
+                    print("❌ ОШИБКА: OPENAI_API_KEY не установлен в .env")
+                    sys.exit(1)
+                print(f"🧠 Инициализация OpenAI API ({args.openai_model})...")
+                llm = ChatOpenAI(model=args.openai_model, temperature=0.1)
+            else:
+                print("🧠 Инициализация локального Ollama (gemma4:31b)...")
+                llm = ChatOllama(model="gemma4:31b", temperature=0)
+        except Exception as e:
+            print(f"❌ Ошибка инициализации LLM: {e}")
+            sys.exit(1)
         
     db = RAGDatabase(db_path="./chroma_db")
     scraper = SberScraper()
@@ -112,8 +120,9 @@ def main():
         except:
             pass
 
-    structured_llm = llm.with_structured_output(ATSResult)
-    prompt = PromptTemplate.from_template("""You are a FAANG-level ATS Recruiter AI. 
+    if llm:
+        structured_llm = llm.with_structured_output(ATSResult)
+        prompt = PromptTemplate.from_template("""You are a FAANG-level ATS Recruiter AI. 
 Evaluate the candidate's Resume against the provided Job Description.
 
 Job Description:
@@ -126,7 +135,7 @@ Candidate Resume:
 2. Identify critical missing keywords.
 3. Provide brief reasoning.
 4. Provide 'adapted_bullets': rewrite 2-3 specific bullet points from the candidate's actual experience to perfectly align with the vacancy's specific terminology and missing keywords. Do NOT invent new experience, just re-frame their existing technical achievements using the language of the Job Description (e.g., if they built audio streaming, frame it as TTFAT/barge-in optimization if the job asks for it). Output these clearly in Russian.""")
-    chain = prompt | structured_llm
+        chain = prompt | structured_llm
 
     ranked_results = []
     
@@ -144,19 +153,49 @@ Candidate Resume:
                 print(f"⚡ КЭШ: {job['metadata']['title']} (извлечено за 0мс)")
                 ats_val_dict = ai_cache[job_hash]
             else:
-                # 2. Идем в LLM если нет в кэше
-                print(f"🤖 Оценка LLM: {job['metadata']['title']} (Cosine Dist: {job['distance']:.4f})...")
-                ats_val: ATSResult = chain.invoke({
-                    "vacancy": job["document"], 
-                    "cv": cv_text
-                })
-                ats_val_dict = {
-                    "ats_score_percentage": ats_val.ats_score_percentage,
-                    "reasoning": ats_val.reasoning,
-                    "missing_keywords": ats_val.missing_keywords,
-                    "is_good_match": ats_val.is_good_match,
-                    "adapted_bullets": ats_val.adapted_bullets
-                }
+                # 2. Идем в LLM или Cloud API
+                print(f"🤖 Оценка: {job['metadata']['title']} (Cosine Dist: {job['distance']:.4f})...")
+                
+                if args.use_cloud_api:
+                    api_secret = os.environ.get("API_SECRET", "")
+                    headers = {"Content-Type": "application/json"}
+                    if api_secret:
+                        headers["Authorization"] = f"Bearer {api_secret}"
+                    
+                    req_payload = {
+                        "vacancyText": job["document"],
+                        "cvText": cv_text
+                    }
+                    
+                    api_url = os.environ.get("CV_API_URL")
+                    if not api_url:
+                        print("❌ ОШИБКА: Добавьте CV_API_URL в файл .env. Например: CV_API_URL=https://ваше-приложение.vercel.app/api/ats")
+                        sys.exit(1)
+                        
+                    res = requests.post(api_url, json=req_payload, headers=headers)
+                    res.raise_for_status()
+                    data = res.json()
+                    
+                    ats_val_dict = {
+                        "ats_score_percentage": data.get("ats_score_percentage", 0),
+                        "reasoning": data.get("reasoning", ""),
+                        "missing_keywords": data.get("missing_keywords", []),
+                        "is_good_match": data.get("is_good_match", False),
+                        "adapted_bullets": data.get("adapted_bullets", [])
+                    }
+                else:
+                    ats_val: ATSResult = chain.invoke({
+                        "vacancy": job["document"], 
+                        "cv": cv_text
+                    })
+                    ats_val_dict = {
+                        "ats_score_percentage": ats_val.ats_score_percentage,
+                        "reasoning": ats_val.reasoning,
+                        "missing_keywords": ats_val.missing_keywords,
+                        "is_good_match": ats_val.is_good_match,
+                        "adapted_bullets": ats_val.adapted_bullets
+                    }
+                    
                 # Сохраняем результат в кэш словарь
                 ai_cache[job_hash] = ats_val_dict
                 # Инкрементальное сохранение кэша на случай отмены (Ctrl+C)
@@ -224,11 +263,15 @@ Candidate Resume:
             })
         except Exception as e:
             err_str = str(e)
-            if "404" in err_str and not args.use_openai:
-                print(f"❌ ОШИБКА ДЕМОНА OLLAMA: Модель 'gemma4-31b' не найдена.")
+            if "404" in err_str and not args.use_openai and not args.use_cloud_api:
+                print(f"❌ ОШИБКА ДЕМОНА OLLAMA: Локальная модель Ollama не найдена.")
                 sys.exit(1)
             else:
-                print(f"Ошибка LLM для вакансии {job['metadata']['title']}: {e}")
+                print(f"❌ СЕТЕВАЯ ОШИБКА (Vercel API) для вакансии {job['metadata']['title']}: {e}")
+                
+                if args.use_cloud_api and "404" in err_str:
+                     print("   -> Подсказка: Vercel возвращает 404. Возможно вы ошиблись в домене CV_API_URL в .env, или деплой на Vercel еще не завершился! Подождите 1 минуту.")
+                sys.exit(1)
             
     ranked_results.sort(key=lambda x: x["ats_score"], reverse=True)
     
