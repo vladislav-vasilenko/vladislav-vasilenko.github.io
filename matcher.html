@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Vacancy Matcher Ranked By RAG</title>
+    <!-- Plotly CDN for 3D charts -->
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <!-- Use the same fonts or generic ones as the main site -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        select, button {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        .vacancy-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .v-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .v-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .v-title:hover {
+            text-decoration: underline;
+        }
+        .v-company {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        .scores {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+        }
+        .badge {
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+        .badge.ats-high { background: #d4edda; color: #155724; }
+        .badge.ats-med { background: #fff3cd; color: #856404; }
+        .badge.ats-low { background: #f8d7da; color: #721c24; }
+        
+        .reasoning {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .missing {
+            font-size: 13px;
+            color: #d9534f;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #888;
+        }
+        #loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Vacancy Matcher</h1>
+            <div class="filter-group">
+                <label>Company:</label>
+                <select id="company-filter">
+                    <option value="All">All Categories</option>
+                </select>
+                <label>Min ATS Score:</label>
+                <select id="score-filter">
+                    <option value="0">0%+</option>
+                    <option value="50">50%+</option>
+                    <option value="70">70%+</option>
+                    <option value="85">85%+</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="timestamp" id="last-updated">Last Updated: Loading...</div>
+        <hr style="border: 0; height: 1px; background: #ddd; margin: 15px 0;">
+
+        <!-- 3D Visualization Container -->
+        <div id="scatter-3d-plot" style="width: 100%; height: 500px; display: none; margin-bottom: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div>
+
+        <div id="loading">✨ Fetching AI RAG Results...</div>
+        <div id="results-container"></div>
+    </div>
+
+    <!-- Frontend logic for fetching and rendering JSON -->
+    <script type="module" src="/src/matcher.ts"></script>
+</body>
+</html>

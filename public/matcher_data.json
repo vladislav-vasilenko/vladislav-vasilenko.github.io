@@ -1,0 +1,183 @@
+{
+  "last_updated": "2026-04-17T18:53:53.189700+00:00",
+  "vacancies": [
+    {
+      "id": "senior-ml-ai-razrabotchik-agentnye-sistemy-4505945",
+      "title": "Senior ML/AI разработчик (Агентные системы)",
+      "company": "Сбер",
+      "link": "https://rabota.sber.ru/search/senior-ml-ai-razrabotchik-agentnye-sistemy-4505945/",
+      "ats_score": 92,
+      "cosine_distance": 0.3456594944000244,
+      "reasoning": "The candidate is an exceptional match for a Senior ML/AI Developer role focusing on Agentic Systems. They demonstrate direct, high-level experience with the exact core requirements: Multi-agent orchestration (Hierarchical Orchestration, Planning -> Executor), LangGraph/LangChain, RAG (including advanced Graph-RAG), and MCP servers. Their background in GenAI is deep, covering not only application-level orchestration but also low-level model alignment (RLHF, PPO, DPO, GRPO) and multimodal research. While they lack specific experience with Sber's internal stack (GigaChat) and certain enterprise infrastructure tools (Kafka, Hadoop), these are easily learnable for a candidate of this technical caliber. The candidate's transition from a Senior iOS Lead to an AI Engineer shows a high capacity for rapid learning and systemic architectural thinking, which is a critical requirement for the 'Senior' level of this role.",
+      "missing_keywords": [
+        "GigaChat",
+        "Kafka",
+        "gRPC",
+        "Hadoop",
+        "Elasticsearch",
+        "SberDevice"
+      ],
+      "is_good_match": true
+    },
+    {
+      "id": "python-backend-developer-ai-agents-mcp-infrastructure-4509490",
+      "title": "Python Backend Developer (AI Agents & MCP Infrastructure)",
+      "company": "Сбер",
+      "link": "https://rabota.sber.ru/search/python-backend-developer-ai-agents-mcp-infrastructure-4509490/",
+      "ats_score": 92,
+      "cosine_distance": 0.3479975461959839,
+      "reasoning": "The candidate is an exceptional match for this specific, high-complexity role. While they lack explicit mentions of 'SOLID' or 'TDD' (standard software engineering buzzwords), their practical experience is far beyond the average Python developer. They have already implemented the most difficult requirements of the JD: MCP servers (FastMCP), Graph-RAG, Hierarchical Orchestration, and complex Agentic loops. Their background in both deep ML (RLHF, PPO, DPO) and backend architecture (DDD, EDA) makes them a 'unicorn' candidate for an AI Agents infrastructure role. The gap between their current profile and the JD is minimal, consisting mostly of formal terminology rather than actual skill deficits.",
+      "missing_keywords": [
+        "SOLID",
+        "TDD",
+        "NoSQL",
+        "Relational Databases (PostgreSQL/MySQL)",
+        "agents.md"
+      ],
+      "is_good_match": true
+    },
+    {
+      "id": "senior-deep-learning-engineer-real-time-voice-agent-4522126",
+      "title": "Senior Deep Learning Engineer (Real-time Voice Agent)",
+      "company": "Сбер",
+      "link": "https://rabota.sber.ru/search/senior-deep-learning-engineer-real-time-voice-agent-4522126/",
+      "ats_score": 88,
+      "cosine_distance": 0.34054309129714966,
+      "reasoning": "The candidate is an exceptional match from a research and architectural perspective. They have direct experience building a real-time voice ecosystem (TalkyBuddy) with TTFT < 1s and have deeply explored the exact architectures Sber is using (AR-Transformers, DiT, EnCodec, VAE/RVQ). They demonstrate high-level proficiency in RLHF (PPO, DPO, GRPO) and distributed training (DDP/FSDP), which are critical for Senior roles. The only 'gap' is the lack of explicit mention of 'barge-in' logic and the specific 'Parallelism' types (Tensor/Expert), though their work with GPU clusters and distributed training suggests they possess the underlying knowledge. The candidate's transition from a high-level iOS Lead to a GenAI Researcher shows a rare combination of production-grade engineering and SOTA research capabilities.",
+      "missing_keywords": [
+        "Barge-in (specific implementation)",
+        "Time-to-First-Audio-Token (TTFAT)",
+        "Data/Tensor/Context/Expert Parallelism",
+        "Audio-conditioned LLMs (GigaChat Audio style)",
+        "Prosody control (sighs, pauses)"
+      ],
+      "is_good_match": true
+    },
+    {
+      "id": "team-lead-llm-engineer-genai-4491904",
+      "title": "Team Lead LLM engineer GenAI",
+      "company": "Сбер",
+      "link": "https://rabota.sber.ru/search/team-lead-llm-engineer-genai-4491904/",
+      "ats_score": 88,
+      "cosine_distance": 0.34408849477767944,
+      "reasoning": "The candidate is an exceptionally strong technical match. They possess deep expertise in the exact 'cutting-edge' stack Sber is requesting: Agentic RAG, Multi-Agent Systems (MAS), and advanced alignment techniques (PPO, DPO, GRPO). Their experience with Graph-RAG and the OpenAI Agents SDK aligns perfectly with the 'Team Lead' level of technical complexity. While the resume is a collection of project files rather than a traditional CV, the depth of R&D (RLHF, DiT, PEFT) and the transition from a Senior iOS Lead to an AI Engineer demonstrates the 'Mindset' and 'Vibe Coding' capabilities requested. The only gaps are specific enterprise-grade observability tools and formal evidence of competitive ML (Kaggle), but their portfolio of deployed AI products (TalkyBuddy, BaniBaniBot) outweighs these omissions.",
+      "missing_keywords": [
+        "Agent Observability",
+        "Auto-Eval",
+        "VLM (Vision Language Models) fine-tuning",
+        "SOLID/OOP (explicitly mentioned in ML context)",
+        "Kaggle/Open-Source contributions"
+      ],
+      "is_good_match": true
+    },
+    {
+      "id": "team-lead-llm-engineer-genai-4518750",
+      "title": "Team Lead LLM engineer GenAI",
+      "company": "Сбер",
+      "link": "https://rabota.sber.ru/search/team-lead-llm-engineer-genai-4518750/",
+      "ats_score": 88,
+      "cosine_distance": 0.34408849477767944,
+      "reasoning": "The candidate is an exceptionally strong technical match. They possess deep expertise in the exact 'cutting-edge' stack Sber is requesting: Agentic RAG, Multi-Agent Systems (MAS), and advanced alignment techniques (PPO, DPO, GRPO). Their experience with Graph-RAG and the OpenAI Agents SDK aligns perfectly with the 'Team Lead' level of technical complexity. While the resume is a collection of project files rather than a traditional CV, the depth of R&D (RLHF, DiT, PEFT) and the transition from a Senior iOS Lead to an AI Engineer demonstrates the 'Mindset' and 'Vibe Coding' capabilities requested. The only gaps are specific enterprise-grade observability tools and formal evidence of competitive ML (Kaggle), but their portfolio of deployed AI products (TalkyBuddy, BaniBaniBot) outweighs these omissions.",
+      "missing_keywords": [
+        "Agent Observability",
+        "Auto-Eval",
+        "VLM (Vision Language Models) fine-tuning",
+        "SOLID/OOP (explicitly mentioned in ML context)",
+        "Kaggle/Open-Source contributions"
+      ],
+      "is_good_match": true
+    },
+    {
+      "id": "python-ai-engineer-genai-4522943",
+      "title": "Python/AI Engineer (GenAI)",
+      "company": "Сбер",
+      "link": "https://rabota.sber.ru/search/python-ai-engineer-genai-4522943/",
+      "ats_score": 88,
+      "cosine_distance": 0.35138994455337524,
+      "reasoning": "The candidate is an exceptionally strong technical match for the GenAI/AI Engineer requirements. They demonstrate advanced expertise in the 'applied layer' requested: Multi-agent systems, Graph-RAG, and complex LLM orchestration (LangGraph, OpenAI Agents SDK). Their research background in RLHF, DPO, and GRPO exceeds the basic requirements, showing a deep understanding of model alignment. While they have extensive Python experience and have built production-grade AI services with FastAPI, the resume is light on specific 'Enterprise Backend' keywords (specific DBs like Kafka/ClickHouse or ETL libraries like Polars). However, their experience with Event-Driven Architecture (EDA) and DDD suggests they possess the architectural maturity to handle these tools. The lack of financial sector experience is noted but listed as 'desirable, not mandatory' in the JD.",
+      "missing_keywords": [
+        "PostgreSQL",
+        "Redis",
+        "Kafka",
+        "OpenSearch",
+        "ClickHouse",
+        "Pandas/Polars",
+        "Financial Sector Experience"
+      ],
+      "is_good_match": true
+    },
+    {
+      "id": "senior-deep-learning-engineer-speech-llm-4522124",
+      "title": "Senior Deep Learning Engineer (Speech LLM)",
+      "company": "Сбер",
+      "link": "https://rabota.sber.ru/search/senior-deep-learning-engineer-speech-llm-4522124/",
+      "ats_score": 88,
+      "cosine_distance": 0.3569250702857971,
+      "reasoning": "The candidate is an exceptionally strong match for a Senior Deep Learning Engineer role focusing on Speech LLMs. They possess a rare combination of deep theoretical knowledge in audio-native generative architectures (AR-Transformers, DiT, EnCodec) and practical experience with the exact alignment techniques requested (SFT, DPO, PPO, GRPO). While they have used DDP/FSDP in a general sense, they lack explicit mentions of the specific high-scale parallelism strategies (Tensor/Context Parallelism) and the specific latest model families (DeepSeek/Qwen) mentioned in the JD. However, their experience with RLHF, multimodal reward models, and the intersection of ASR/TTS/LLMs makes them a top-tier candidate for this specific 'Next Gen ASR' project.",
+      "missing_keywords": [
+        "DDP",
+        "FSDP",
+        "Tensor Parallelism",
+        "Context Parallelism",
+        "DeepSeek",
+        "Qwen",
+        "Knowledge Distillation"
+      ],
+      "is_good_match": true
+    },
+    {
+      "id": "ml-engineer-cent-prakticheskogo-ii-4493918",
+      "title": "ML Engineer (Цент практического ИИ)",
+      "company": "Сбер",
+      "link": "https://rabota.sber.ru/search/ml-engineer-cent-prakticheskogo-ii-4493918/",
+      "ats_score": 88,
+      "cosine_distance": 0.3655485510826111,
+      "reasoning": "The candidate is an exceptionally strong technical match, particularly for the 'Practical AI' focus of the role. They demonstrate deep expertise in the most complex requirements: Multi-agent systems (LangGraph, OpenAI Agents SDK), RAG (Graph-RAG), and Multimodal LLMs (Audio/Vision/Video). Their experience with RLHF (PPO, DPO, GRPO) and PEFT (LoRA/QLoRA) is a high-value bonus. While they lack explicit mentions of specific Sber-preferred infrastructure tools (vLLM, Prometheus, Grafana), their demonstrated experience with Docker, CI/CD, and Triton/ONNX suggests they possess the underlying engineering maturity to bridge this gap quickly. The candidate's transition from a senior iOS lead to an ML Engineer shows a high capacity for learning and architectural thinking.",
+      "missing_keywords": [
+        "vLLM",
+        "DeepSpeed",
+        "Accelerate",
+        "Prometheus",
+        "Grafana",
+        "OpenTelemetry",
+        "Feature Store",
+        "Model Registry"
+      ],
+      "is_good_match": true
+    },
+    {
+      "id": "senior-lead-ml-engineer-operacionnyy-centr-4512516",
+      "title": "Senior/Lead ML Engineer (Операционный центр)",
+      "company": "Сбер",
+      "link": "https://rabota.sber.ru/search/senior-lead-ml-engineer-operacionnyy-centr-4512516/",
+      "ats_score": 82,
+      "cosine_distance": 0.35427379608154297,
+      "reasoning": "The candidate is a high-caliber ML Engineer with an exceptional profile in LLM orchestration and Agentic workflows. They demonstrate direct experience with the core architectural requirements: ReAct, Planning/Executor patterns, Graph-RAG, and LangGraph. Their background in RLHF (PPO, DPO, GRPO) is a significant 'bonus' for a team building an 'AI Trainer' for prompt optimization. While they lack specific experience with Sber's internal ecosystem (GigaChat, KAP), their technical depth in SOTA LLM frameworks and production-grade Python (FastAPI, Asyncio) makes them a top-tier candidate. The gap is primarily domain-specific (Banking/Sber) rather than technical.",
+      "missing_keywords": [
+        "GigaChat",
+        "SQLAlchemy 2.0",
+        "ЦБ РФ (Central Bank of Russia)",
+        "Corporate Analytical Platform (КАП)",
+        "Pydantic (explicitly mentioned as a requirement, though implied by FastAPI)"
+      ],
+      "is_good_match": true
+    },
+    {
+      "id": "senior-deep-learning-engineer-speech-audio-foundation-models-4522125",
+      "title": "Senior Deep Learning Engineer (Speech / Audio Foundation Models)",
+      "company": "Сбер",
+      "link": "https://rabota.sber.ru/search/senior-deep-learning-engineer-speech-audio-foundation-models-4522125/",
+      "ats_score": 82,
+      "cosine_distance": 0.3587977886199951,
+      "reasoning": "The candidate is a high-caliber ML Engineer with a strong theoretical and practical foundation in Audio/Speech generative models (AR-Transformers, DiT, EnCodec) and RLHF. They demonstrate 'FAANG-level' engineering rigor through their work on low-latency pipelines (TTFT < 1s) and distributed training (DDP/FSDP). While they have the experience to perform the role, the resume lacks explicit mention of 'Scaling Laws' and deep-dive infrastructure optimization (I/O bottlenecks/GPU memory management) at the scale Sber's GigaAM requires (multi-billion parameter models). The candidate's profile is more 'Research-Engineer' than 'Infrastructure-Engineer', but their technical depth in Audio SOTA makes them a top-tier candidate for this specific role.",
+      "missing_keywords": [
+        "Scaling Laws",
+        "DDP/FSDP/ZeRO (Practical Large-Scale Application)",
+        "I/O bottlenecks",
+        "Memory management (GPU)",
+        "Russian language speech datasets"
+      ],
+      "is_good_match": true
+    }
+  ]
+}
