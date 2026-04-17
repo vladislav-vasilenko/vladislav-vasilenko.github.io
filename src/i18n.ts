@@ -116,7 +116,7 @@ export interface CVContent {
 }
 
 const jsonModules = import.meta.glob<CVJson>('/content/*/cv.json', { eager: true, import: 'default' });
-const aboutModules = import.meta.glob<string>('/content/*/about.md', { eager: true, query: '?raw', import: 'default' });
+const aboutModules = import.meta.glob<string>('/content/*/about*.md', { eager: true, query: '?raw', import: 'default' });
 const productAboutModules = import.meta.glob<string>('/content/*/product-about.md', { eager: true, query: '?raw', import: 'default' });
 const expModules = import.meta.glob<string>('/content/*/experience/*.md', { eager: true, query: '?raw', import: 'default' });
 const techStackModules = import.meta.glob<TechStack>('/content/tech-stack.json', { eager: true, import: 'default' });
