@@ -32,12 +32,16 @@ Evaluate the candidate's Resume against the provided Job Description.
 
 1. Determine the match percentage.
 2. Identify critical missing keywords.
-3. Provide brief reasoning.
-4. Provide 'adapted_bullets': rewrite 2-3 specific bullet points from the candidate's actual experience to perfectly align with the vacancy's specific terminology and missing keywords. Do NOT invent new experience, just re-frame their existing technical achievements using the language of the Job Description. Output these clearly in Russian.
+3. Identify 'matched_keywords': technical skills and competencies from the Resume that are explicitly or strongly implicitly requested in the Job Description.
+4. Provide brief reasoning.
+5. Categorize the vacancy into one of the following domains ('sphere'): 'GenAI / LLM', 'Computer Vision', 'ML / Data Science', 'Audio / Speech', 'Backend', 'Mobile', 'Product / Management'.
+6. Provide 'adapted_bullets': rewrite 2-3 specific bullet points from the candidate's actual experience to perfectly align with the vacancy's specific terminology and missing keywords. Do NOT invent new experience, just re-frame their existing technical achievements using the language of the Job Description. Output these clearly in Russian.
 
 Return ONLY a JSON object with the exact following structure:
 {
   "ats_score_percentage": number (0-100),
+  "sphere": "string",
+  "matched_keywords": string[],
   "missing_keywords": string[],
   "reasoning": "string",
   "adapted_bullets": string[],

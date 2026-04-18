@@ -2391,5 +2391,1333 @@
       "• Развёртывал отдельные **Python/FastAPI** сервисы под каждый проект, применяя **Domain-Driven Design (DDD)**, **Event-Driven Architecture (EDA)**, Pydantic и CI/CD; обеспечивал воспроизводимый ML/MLOps-процесс от подготовки данных и валидации метрик до продакшен-выкатки.",
       "• Реализовал систему **AI-агентов** с циклом самокоррекции и адаптивной сборкой сценариев, а также поддерживал высоконагруженные асинхронные пайплайны инференса с WebRTC, SSE и масштабируемой обработкой задач в продакшене."
     ]
+  },
+  "52c432093de94b7d3f0eb71c947a33cb": {
+    "ats_score_percentage": 76,
+    "reasoning": "Профиль хорошо совпадает по сильному ML/DL-фону, PyTorch, генеративным моделям, LLM/agents, мультиагентным системам, MLOps и оптимизации инференса. Также есть релевантный опыт с оркестрацией агентов, multimodal/voice AI и доведением R&D до продакшна. Однако для этой вакансии критично не хватает явного практического опыта в RL-обучении именно по GRPO/GSPO/DAPO/Dr.GRPO, работы с computer-use/web agents, GUI grounding, VLM и многошаговыми tool-use траекториями. Это снижает точное соответствие роли, ориентированной на RL research для компьютерного агента.",
+    "missing_keywords": [
+      "RL",
+      "GRPO",
+      "GSPO",
+      "DAPO",
+      "Dr.GRPO",
+      "reward design",
+      "multi-turn RL",
+      "computer use",
+      "web agents",
+      "GUI grounding",
+      "VLM",
+      "tool-use",
+      "memory",
+      "planning",
+      "FP8",
+      "distillation",
+      "parallelism"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "— Оркестрация ИИ-агентов: реализовал адаптивную систему сборки ИИ-тьюторов с циклами самокоррекции и планированием, используя накопленный опыт для улучшения сценария урока и multi-turn взаимодействия с инструментами.",
+      "— Реализовал пайплайн подготовки промптов с помощью LLM (Gemini 3.1 с Reasoning и Search Grounding) для повышения качества, контролируемости и grounding визуальной генерации в мультимодальных сценариях.",
+      "— Построил воспроизводимые ML-пайплайны полного цикла: от сбора и подготовки данных до валидации метрик и оптимизации инференса; применял PyTorch, W&B, xFormers/Flash-Attention, Triton и квантизацию для продакшн-выкатки.",
+      "— Разрабатывал мультиагентные LLM-системы на базе LangChain/LangGraph и OpenAI Agents SDK, включая hierarchical orchestration, planning → executor и MCP-интеграции для tool-use сценариев."
+    ]
+  },
+  "51055a6f9e465c44014e76d2dbdd3852": {
+    "ats_score_percentage": 86,
+    "reasoning": "Кандидат очень хорошо совпадает по Python, LLM/GenAI, разработке AI-фич, RAG, агентным системам, MLOps и выводу решений в продакшен. Есть сильный опыт с пайплайнами, инференсом, оптимизацией latency и интеграцией моделей в сервисы. При этом в резюме не явно подтверждены SQL, Java и именно опыт продакшен-ML в классическом продуктовом контуре с онлайн-сценариями, большими batch/MapReduce пайплайнами и тесной работой с внешними данными/инструментами. Для Яндекса это близкое, но не идеальное совпадение.",
+    "missing_keywords": [
+      "SQL",
+      "Java",
+      "ML/AI-системы в продакшене",
+      "онлайн-сценарии",
+      "внешние данные и инструменты",
+      "обучение и адаптация моделей под продуктовые задачи",
+      "пакетные пайплайны",
+      "MapReduce",
+      "поиск решений в данных/сервисах для Книг, Музыки и Кинопоиска"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Умею собирать end-to-end ML/AI-решения: от подготовки данных и построения ML-пайплайнов до интеграции моделей в стабильный продакшен-сервис с контролем качества, задержки и стоимости инференса.",
+      "Внедрял прикладные LLM/AI-сценарии в реальные продукты: мультиагентные системы, RAG, оркестрацию tools/agents, SSE-синхронизацию и low-latency voice AI для пользовательских онлайн-сценариев.",
+      "Оптимизировал инференс и продакшен-выкатку AI-компонентов: квантизация, KV-cache, xFormers/Flash-Attention, Triton, Docker, CI/CD, мониторинг и воспроизводимость экспериментов в W&B/ClearML."
+    ]
+  },
+  "f4b23d5d844c53992fce56ea2b2842a0": {
+    "ats_score_percentage": 78,
+    "reasoning": "Сильное совпадение по ML/GenAI, Python, PyTorch, NLP/LLM, RAG, embeddings, инференсу, CI/CD, MLOps и продакшен-опыту. Также есть релевантный опыт продуктового roadmap и кросс-функциональной работы. Однако в резюме недостаточно явно отражены ключевые требования именно тимлидской роли: формальное управление ML-командой, performance review, 1-to-1, карьерное развитие, квартальное планирование, полноценный ML lifecycle ownership, а также специфичный стек/инференс-оптимизации из вакансии (vLLM, TensorRT, C++/CUDA).",
+    "missing_keywords": [
+      "управление ML-командой 1+ год",
+      "performance review",
+      "1-to-1",
+      "карьерное развитие",
+      "технический roadmap",
+      "квартальные планы",
+      "CI/CD для моделей",
+      "код-ревью",
+      "тестирование ML-артефактов",
+      "разработка и вывод в продакшен ML-сервисов высокой надежности",
+      "Information Retrieval",
+      "few-shot",
+      "zero-shot",
+      "guards",
+      "инфраструктура инференса",
+      "логирование",
+      "мониторинги",
+      "C++",
+      "CUDA",
+      "TensorRT",
+      "TensorRT-LLM",
+      "vLLM",
+      "SGLang",
+      "распределенная команда"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "• Управлял техническим roadmap и квартальными планами AI/ML-проектов, декомпозируя продуктовые цели в измеримые задачи разработки и инференса; обеспечивал стабильную поставку ML-функций через CI/CD, Docker и MLOps-процессы.",
+      "• Проектировал и развивал мультимодальные и RAG-сценарии: поиск по базе знаний, генерацию embeddings, orchestration агентов и real-time инференс с низкой задержкой; отвечал за качество моделей, воспроизводимость экспериментов и готовность решений к продакшену.",
+      "• Внедрял оптимизации инференса и production-ready ML-пайплайны на PyTorch: ускорение через Triton, xFormers/Flash-Attention, KV-cache и квантизацию, а также мониторинг, логирование и тестирование ML-сервисов перед релизом."
+    ]
+  },
+  "e90ee30d81cb9a2a0e4f9fd6fecfb7ff": {
+    "ats_score_percentage": 67,
+    "reasoning": "Кандидат очень сильный по GenAI, мультиагентным системам, RAG, LangChain/LangGraph, MCP, Prompting, интеграции LLM и Docker/CI/CD. Также есть релевантный опыт Python/FastAPI и production-разработки AI-сервисов. Однако для вакансии в Сбере не хватает явного backend-фокуса на Python-стеке с промышленной работой в FastAPI/Django/Flask, БД и очередях, ETL-процессах, Kubernetes, а также специфичных практик оценки LLM и обработки финансовых документов. Опыт сильный, но профиль больше GenAI/RnD и AI orchestration, чем прикладной backend engineer в банковском контуре.",
+    "missing_keywords": [
+      "FastAPI",
+      "Django",
+      "Flask",
+      "async/await в production Python",
+      "PostgreSQL",
+      "Redis",
+      "Kafka",
+      "OpenSearch",
+      "ClickHouse",
+      "ETL для финансовых данных",
+      "Docker/Kubernetes",
+      "RAG end-to-end (ingest, chunking, reranking, hybrid search)",
+      "tool-calling",
+      "JSON schemas",
+      "guardrails",
+      "LLM-as-judge",
+      "golden datasets",
+      "детекция галлюцинаций",
+      "парсинг финансовых документов",
+      "OCR",
+      "Table Transformers",
+      "Claude API",
+      "Perplexity API",
+      "банковский/финансовый backend-контекст"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал и вывел в продакшн мультиагентные LLM-системы для модерации, генерации рекламы и анализа рабочих чатов в Telegram на Python/FastAPI, с валидацией схем через Pydantic и отдельным backend-сервисом для каждого проекта.",
+      "Реализовал end-to-end RAG-решения: поиск по базе знаний, генерацию embeddings и Graph-RAG, а также интеграцию агентных инструментов с Perplexity Search/Deep Research и LLM API для прикладного использования в корпоративных сценариях.",
+      "Спроектировал backend supervisor мультиагентной системы с Hierarchical Orchestration и Planning → Executor, поддержкой SSE-синхронизации в реальном времени и deployment-подходом через Docker, CI/CD и MLOps-практики."
+    ]
+  },
+  "ed54a5ece73f0bd4c2d01c2c77403c00": {
+    "ats_score_percentage": 88,
+    "reasoning": "Кандидат очень сильный для роли Senior ML/AI разработчика по агентным системам: есть прямой опыт мультиагентных систем, LangChain/LangGraph, OpenAI Agents SDK, Graph-RAG, MCP, FastAPI, Python backend, GenAI, MLOps, Docker и CI/CD. Также хорошо совпадают системный дизайн, интеграции, orchestration, RAG и продакшен-ориентированный подход. Основные пробелы — отсутствие явного упоминания Kafka/gRPC/REST на уровне интеграций, Kubernetes, специфичного стека Сбера (GigaChat), а также терминов A2A и полноценного agent lifecycle management в формулировках резюме.",
+    "missing_keywords": [
+      "GigaChat",
+      "Kafka",
+      "REST API",
+      "gRPC",
+      "Docker",
+      "Kubernetes",
+      "LLM monitoring",
+      "CI/CD",
+      "agent lifecycle management",
+      "MCP",
+      "A2A",
+      "Hadoop",
+      "Elastic"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Проектирование и реализация мультиагентной voice AI-системы на базе OpenAI Agents SDK / GPT-Realtime / GPT-4o с поддержкой hierarchical orchestration, planning → executor и полным циклом управления агентом: от бизнес-сценария до релиза и сопровождения в продакшене.",
+      "Разработка агентов поиска в базе знаний на основе Graph-RAG, включая токенизацию документов, генерацию embeddings и end-to-end RAG-архитектуру для корпоративных сценариев поиска и ответов.",
+      "Реализация MCP-сервера на Python (FastMCP) и backend-сервисов на FastAPI для интеграции с внешними системами и API, а также внедрение MLOps-практик, Docker и CI/CD для подготовки решения к промышленной эксплуатации."
+    ]
+  },
+  "605194808918852879cd7317ca928e24": {
+    "ats_score_percentage": 78,
+    "reasoning": "Сильное совпадение по ML/GenAI, PyTorch, NLP, RAG, embeddings, production ML, CI/CD, инференсу и distributed/team work. Также есть релевантный опыт руководства и планирования из продуктовой роли. Однако для вакансии не хватает явного подтверждения именно ML-team leadership, регулярных управленческих практик (performance review, 1-to-1, career growth), опыта построения ML roadmap/quarterly planning в ML-команде, а также более точного совпадения по search/classification, guards, retrieval/information retrieval и специфическим inference stack (vLLM/TensorRT/CUDA).",
+    "missing_keywords": [
+      "performance review",
+      "1-to-1",
+      "карьерное развитие",
+      "технический roadmap",
+      "квартальные планы",
+      "владение командой ML от 1 года",
+      "Information Retrieval",
+      "few-shot / zero-shot",
+      "guards / AI Guardrails",
+      "мониторинги",
+      "код-ревью",
+      "релизный цикл ML-артефактов",
+      "OpenAI-like Responses / RealTime API",
+      "мультитенантные поисковые и классификационные модели",
+      "TensorRT / TensorRT-LLM / vLLM / SGLang",
+      "C++ / CUDA",
+      "инфраструктура инференса"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал агенты поиска в базе знаний на базе Graph-RAG, включая токенизацию документов и генерацию embeddings, что напрямую соответствует задачам построения поисковых и классификационных компонентов для AI-сервисов.",
+      "Спроектировал и с нуля реализовал бэкенд supervisor мультиагентной системы с паттернами Hierarchical Orchestration и Planning → Executor, обеспечив реализацию RAG-сценариев и интеграцию в инфраструктуру инференса с SSE-синхронизацией в реальном времени.",
+      "Построил воспроизводимые ML-пайплайны полного цикла: от подготовки данных и валидации метрик до оптимизации инференса, внедрив Docker, CI/CD, мониторинг и Triton для продакшен-выкатки ML-сервисов с высокими требованиями к надежности и производительности."
+    ]
+  },
+  "b98377f72a662009b78601f0a8e8ed54": {
+    "ats_score_percentage": 88,
+    "reasoning": "Кандидат очень хорошо совпадает по core GenAI/LLM тематике: есть опыт с мультиагентными системами, RAG/Graph-RAG, LangChain/LangGraph, Prompt Engineering, SFT, LLM-сервисами, Python/FastAPI, MLOps и продакшен-выкаткой. Также релевантны Agent SDK, memory/orchestration, embeddings и работа с документами/коммуникациями. Слабее закрыты требования именно под банковский продуктовый LLM engineering stack: неявно описаны OCR, rerankers, Agent Observability, Auto-Eval, LLM-as-a-Judge, управление разметкой и краудсорсингом, а также часть базовых формальных требований вроде SOLID, алгоритмов/структур данных и публичных сигналов GitHub/Kaggle/Open Source. В целом это сильное соответствие для роли Team Lead LLM engineer GenAI.",
+    "missing_keywords": [
+      "Prompt Engineering",
+      "Fine-tuning LLM/VLM",
+      "LangChain / LlamaIndex",
+      "Agent Observability",
+      "OCR",
+      "Embeddings",
+      "Rerankers",
+      "Auto-Eval",
+      "LLM-as-a-Judge",
+      "разметка данных",
+      "контроль качества краудсорсинга",
+      "русскоязычные модели",
+      "SOLID",
+      "алгоритмы и структуры данных",
+      "GitHub",
+      "Kaggle",
+      "Open-Source"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Проектирование и развитие мультиагентных LLM-систем на базе LangChain/LangGraph и OpenAI Agents SDK: реализация Agentic RAG, hierarchical orchestration и Planning → Executor для задач поиска, модерации и анализа документов/коммуникаций.",
+      "Разработка RAG-подсистемы для поиска по базе знаний: токенизация документов, генерация embeddings и внедрение Graph-RAG для повышения качества retrieval в сценариях с неструктурированным контентом.",
+      "Дообучение и адаптация LLM под доменные задачи с помощью SFT и PEFT (LoRA/QLoRA); выстраивание воспроизводимых ML-пайплайнов полного цикла с MLOps, Docker и CI/CD для продакшен-выкатки GenAI-сервисов."
+    ]
+  },
+  "96afc61faf762b0246bcc5a0475b432d": {
+    "ats_score_percentage": 88,
+    "reasoning": "Кандидат очень сильный по GenAI/LLM, мультиагентным системам, RAG, LangChain/LangGraph, fine-tuning (SFT/LoRA/QLoRA), MLOps и продакшен-инженерии. Есть прямое совпадение с ключевыми направлениями вакансии: LLM, Agents, RAG, multimodal, embeddings, release in production, AI tooling. Однако в резюме недостаточно явно отражены некоторые формальные требования и терминология вакансии: Agentic RAG, Agent Observability, OCR, rerankers, LLM-as-a-Judge/Auto-Eval, а также системная организация разметки и контроль качества данных. Также не показаны отдельно Python 3/SOLID/алгоритмы и структуры данных, GitHub/Kaggle/Open-Source, Vibe Coding. Для Team Lead-роли не хватает явных маркеров лидерства команды и управления E2E delivery в банковском/enterprise-контуре.",
+    "missing_keywords": [
+      "Prompt Engineering",
+      "Fine-tuning LLM/VLM",
+      "LangChain",
+      "LlamaIndex",
+      "Agentic RAG",
+      "Agent Observability",
+      "OCR",
+      "Embeddings",
+      "Rerankers",
+      "LLM-as-a-Judge",
+      "Auto-Eval",
+      "Data Labeling / разметка данных",
+      "контроль качества краудсорсинга",
+      "Python 3",
+      "SOLID",
+      "алгоритмы и структуры данных",
+      "Vibe Coding",
+      "GitHub",
+      "Kaggle",
+      "Open-Source"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "• Разработал мультиагентные LLM-системы на базе LangChain/LangGraph для модерации, генерации рекламы и анализа рабочих чатов, включая RAG-механики для поиска правил и контекстного ответа по знаниям домена.",
+      "• Спроектировал Graph-RAG и поисковых агентов по базе знаний: реализовал токенизацию документов, генерацию embeddings и hierarchical orchestration для мультиагентного сценария с поддержкой real-time синхронизации.",
+      "• Построил воспроизводимые ML/GenAI пайплайны полного цикла: от сбора и подготовки данных до батчевого инференса, обучения/дообучения моделей (SFT, LoRA/QLoRA), MLOps-выкатки и оптимизации качества и скорости инференса."
+    ]
+  },
+  "c259f5a8992ab6420f5ffc0bb77647c5": {
+    "ats_score_percentage": 78,
+    "reasoning": "Кандидат очень сильный по LLM/Agents, LangChain/LangGraph, FastAPI, Pydantic, RAG, prompt engineering, embeddings, MLOps и A/B-тестированию. Это хорошо совпадает с задачами по оркестрации агентов, промпт-оптимизации и оценке ML-систем. Однако в резюме не хватает явных упоминаний production-опыта с LLM на требуемом уровне, архитектур ReAct/Plan-and-Execute/Tool Use, SQLAlchemy 2.0, vector DB/hybrid search, offline-evaluator, а также специфики GigaChat-2-Max и банковских процессов/корпоративной аналитической платформы. В целом это близкий кандидат, но с заметными терминологическими и доменными пробелами под конкретную вакансию.",
+    "missing_keywords": [
+      "LLM production",
+      "ReAct",
+      "Plan-and-Execute",
+      "Tool Use",
+      "SQLAlchemy 2.0",
+      "async/await",
+      "FastAPI",
+      "vector DB",
+      "embedding",
+      "hybrid search",
+      "offline evaluator",
+      "A/B testing",
+      "GigaChat",
+      "GigaChat-2-Max",
+      "corporate analytics platform",
+      "batch processing",
+      "prompt optimization",
+      "few-shot",
+      "fresh data",
+      "FSM",
+      "banking processes"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Мультиагентные LLM-системы для модерации, генерации рекламы и анализа рабочих чатов в Telegram на базе LangChain/LangGraph; разработка отдельных сервисов на Python/FastAPI с Pydantic-валидацией, что соответствует production-подходу к оркестрации LLM-агентов.",
+      "Разработка агентов поиска в базе знаний Graph-RAG, включая токенизацию документов и генерацию embeddings; внедрение RAG для поиска правил и контроля качества ответов, что близко к задачам hybrid search и работы с векторными представлениями.",
+      "Реализация пайплайнов генерации и подготовки промптов с помощью LLM, включая prompt chaining и chain-of-thought; применение оффлайн-экспериментов, валидации метрик и A/B-тестирования для улучшения качества сценариев и снижения ошибок модели."
+    ]
+  },
+  "8a79a5bd6eada18520dcfafa3404aa65": {
+    "ats_score_percentage": 72,
+    "reasoning": "Сильное совпадение по AI/GenAI, LLM, мультиагентным системам, LangChain/LangGraph, MCP, RAG, оркестрации агентов, Python и production-инженерии. Кандидат уже делал AI-агентов, Graph-RAG, FastAPI, Docker и CI/CD, что близко к задачам вакансии. Однако в резюме не хватает явных ключевых требований Сбера: Hadoop, Kafka/gRPC/REST/WS, опыт с Kubernetes/OpenShift в промышленном контуре, LLM-мониторинг, полноценный MLOps/CI&CD как отдельная зона ответственности, а также опыт защиты решений перед регуляторами и интеграции именно с банковскими/корпоративными системами. В целом профиль релевантный, но часть стека и enterprise-контекста раскрыта недостаточно.",
+    "missing_keywords": [
+      "Hadoop",
+      "Kafka",
+      "REST API",
+      "gRPC",
+      "WS",
+      "CI/CD",
+      "MLOps",
+      "LLM-мониторинг",
+      "microservices",
+      "Python backend",
+      "OpenShift/Kubernetes",
+      "distributed data storage",
+      "production deployment",
+      "regulatory defense",
+      "GigaChat",
+      "A2A",
+      "NoCode-фабрика агентов"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Проектирование и разработка мультиагентной AI-системы на базе OpenAI Agents SDK / GPT-Realtime / GPT-4o с реализацией Hierarchical Orchestration, Planning → Executor и интеграцией через MCP для внешних сервисов и инструментов.",
+      "Разработка AI-агентов и Graph-RAG сервисов на Python/FastAPI с поддержкой мультимодального поиска по базе знаний, генерации embeddings и real-time синхронизации через SSE; применение LangChain/LangGraph для оркестрации LLM-решений.",
+      "Построение воспроизводимых ML/GenAI-пайплайнов полного цикла: подготовка данных, инференс, оптимизация производительности, Docker и CI/CD, а также мониторинг качества моделей и экспериментов в W&B/ClearML."
+    ]
+  },
+  "977350527f3a33fda92cc06d1e001766": {
+    "ats_score_percentage": 84,
+    "reasoning": "Сильное совпадение по ключевым требованиям: есть опыт с LLM, RAG, LangChain/LangGraph, AI-агентами, FastAPI, Python, PyTorch, Docker, CI/CD, MLOps и production-инференсом. Также релевантны мультиагентные системы, Graph-RAG, orchestration и full-cycle ML-пайплайны. Основные пробелы — неявно подтверждены SQL/PostgreSQL, векторные БД, Kubernetes, on-premise развёртывания и text-to-sql. По стеку и тематике кандидат близок к вакансии, но часть backend/MLOps-деталей не закрыта явно.",
+    "missing_keywords": [
+      "PostgreSQL",
+      "векторные базы данных",
+      "Milvus",
+      "Pinecone",
+      "Weaviate",
+      "Kubernetes",
+      "REST API",
+      "microservice architecture",
+      "on-premise",
+      "text-to-sql",
+      "мониторинг ML-моделей в production",
+      "LLM production deployment",
+      "TensorFlow"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал мультиагентную LLM-систему на базе OpenAI Agents SDK с паттернами Hierarchical Orchestration и Planning → Executor для решения бизнес-задач, включая поиск в базе знаний Graph-RAG и интеграцию retrieval-подходов в production-сценарии.",
+      "Внедрял RAG и LangChain/LangGraph в Python/FastAPI-сервисы для модерации, генерации и анализа данных, организуя отдельные API-сервисы, валидируемые Pydantic, и обеспечивая бесшовную интеграцию в микросервисную архитектуру.",
+      "Собирал воспроизводимые ML-пайплайны полного цикла: от подготовки данных и экспериментов в W&B до оптимизации инференса, контейнеризации в Docker и вывода решений в production с практиками MLOps и CI/CD."
+    ]
+  },
+  "d0337ff55b14da8f348e3b9a5863a27a": {
+    "ats_score_percentage": 92,
+    "reasoning": "Кандидат очень сильный матч по GenAI/NLP, RAG, LangGraph/LangChain, мультиагентным системам, FastAPI, Docker, CI/CD, Python, production-ориентированной разработке, оптимизации инференса и исследовательскому циклу. Также есть релевантный опыт с Graph-RAG, ассистентами, orchestration, memory, асинхронными пайплайнами и мультимодальностью (аудио/vision). Основной разрыв — отсутствие явного упоминания части инфраструктурного стека Сбера (Kubernetes/OpenShift, GitLab CI/ArgoCD, Prometheus/Grafana/OpenTelemetry), а также MLOps-паттернов вроде feature store/model registry и конкретных фреймворков инференса больших моделей (vLLM/DeepSpeed/Accelerate). В целом кандидат почти полностью соответствует роли и выглядит как сильный senior/lead ML engineer под эту вакансию.",
+    "missing_keywords": [
+      "OpenShift",
+      "Kubernetes",
+      "bash",
+      "GitLab CI",
+      "GitHub Actions",
+      "ArgoCD",
+      "Prometheus",
+      "Grafana",
+      "OpenTelemetry",
+      "feature store",
+      "model registry",
+      "rollout/rollback",
+      "vLLM",
+      "DeepSpeed",
+      "Accelerate",
+      "Streamlit",
+      "Chainlit",
+      "multimodal models",
+      "production ML services 5+ years"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "- Разработал и развил мультиагентную голосовую AI-систему на базе OpenAI Agents SDK с паттернами Hierarchical Orchestration и Planning → Executor, включая поиск по базе знаний через Graph-RAG, токенизацию документов и генерацию embeddings для retrieval-стека.",
+      "- Внедрил RAG для задач поиска правил модерации и создал отдельные ML-сервисы на Python/FastAPI с валидатором Pydantic, обеспечив упаковку моделей в поддерживаемые API-слои и продакшен-интеграцию в прикладные бизнес-процессы.",
+      "- Собирал воспроизводимые ML-пайплайны полного цикла: от подготовки данных и валидации метрик до оптимизации инференса, используя W&B, Docker и CI/CD, а также применяя xFormers/Flash-Attention, KV-cache и квантизацию для повышения производительности."
+    ]
+  },
+  "82e12da3c1914fb58ca6c67be4302151": {
+    "ats_score_percentage": 72,
+    "reasoning": "Кандидат очень сильный по Deep Learning, PyTorch, GenAI, аудио, LLM, real-time voice и оптимизации инференса. Есть прямое совпадение с задачами голосовых агентов: WebRTC, низкая задержка, TTFT, аудиопайплайны, Whisper, speaker diarization, SFT, LoRA/QLoRA, RAG, agent orchestration. Однако в резюме не хватает явных подтверждений distributed training больших моделей и глубокой работы с parallelism, а также конкретных терминов из вакансии: barge-in, streaming I/O, function calling, prosody, multi-turn long-context, evaluation design и data-centric edge-case slicing. В целом соответствие высокое, но часть ключевых research/system keywords отсутствует или выражена косвенно.",
+    "missing_keywords": [
+      "distributed training",
+      "data/tensor/context/expert parallelism",
+      "barge-in",
+      "streaming input/output",
+      "latency optimization / Time-to-First-Audio-Token",
+      "function calling",
+      "prosody / управление просодией",
+      "speaker embeddings / audio-conditioned speech2speech",
+      "edge-case slicing",
+      "custom evaluation metrics",
+      "long-context dialogue",
+      "domain adaptation"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Внедрил WebRTC и Omni-modal AI в TalkyBuddy: спроектировал систему голосового взаимодействия в реальном времени с низкой задержкой, достигнув TTFT менее секунды и подготовив архитектуру к streaming input/output для voice agent сценариев.",
+      "Разработал мультиагентную голосовую систему на базе OpenAI Agents SDK / GPT-Realtime / GPT-4o, включая hierarchical orchestration и Planning → Executor, а также интеграцию внешних инструментов и MCP-сервера для вызова API в сложных диалоговых сценариях.",
+      "Исследовал и адаптировал аудио-генеративные архитектуры (Bark-like AR-Transformer, StableAudio-like latent diffusion на EnCodec), применял PEFT (LoRA/QLoRA) и проводил абляции по данным и параметрам модели для доменной адаптации аудио-моделей."
+    ]
+  },
+  "b24b325655cd564398c002b4edf9110f": {
+    "ats_score_percentage": 78,
+    "reasoning": "У кандидата очень сильное совпадение по AI/GenAI, Python, разработке LLM-агентов, RAG, FastAPI, Docker и MLOps, что хорошо ложится на роль AI Developer. Особенно релевантны опыт с мультиагентными системами, Graph-RAG, Python/FastAPI и продакшен-интеграциями. При этом в резюме не хватает ряда ключевых терминов из вакансии: конкретных векторных БД и реляционных БД, Kubernetes, явного опыта оценки RAG/агентов, а также части инженерного стека и практик команды (gRPC, Prometheus/Grafana, OCR, тестирование/код-ревью).",
+    "missing_keywords": [
+      "Qdrant",
+      "ChromaDB",
+      "FAISS",
+      "PostgreSQL",
+      "MySQL",
+      "Docker",
+      "Kubernetes",
+      "FastAPI",
+      "Flask",
+      "asyncio",
+      "RAG",
+      "LLM agents",
+      "методики оценки RAG-систем",
+      "код-ревью",
+      "тестирование",
+      "gRPC",
+      "OCR",
+      "Prometheus",
+      "Grafana",
+      "локальный запуск LLM",
+      "open-source модели"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал агентов поиска в базе знаний на базе **Graph-RAG**, включая систему токенизации документов, генерации embeddings и подготовку архитектуры для последующей интеграции с векторными базами данных.",
+      "Реализовал мультиагентную **LLM-систему** на базе **OpenAI Agents SDK** с паттернами **Hierarchical Orchestration** и **Planning → Executor**, обеспечив поддержку real-time синхронизации и инженерных стандартов командной разработки.",
+      "Развернул отдельные backend-сервисы на **Python/FastAPI** для GenAI-проектов, обеспечив воспроизводимые ML-пайплайны, контейнеризацию через **Docker**, CI/CD и продакшен-инференс моделей."
+    ]
+  },
+  "70760b445a0f9c7fa731c75e7a3e9d78": {
+    "ats_score_percentage": 82,
+    "reasoning": "Сильное совпадение по GenAI, LLM, agents, LangChain/LangGraph, multi-agent architecture, RAG, SFT, LoRA/QLoRA, ML-pipelines, эксперименты и MLOps. Есть релевантный опыт проектирования мультиагентных систем и работы с GPT/Claude/OpenAI Agents SDK. Однако в резюме слабо отражены именно лидерские обязанности техлида AI/ML-продукта, а также часть ключевых терминов вакансии: Causal AI, RLHF, DPO, LLM-as-a-Judge, fine-tuning в более широком смысле, метрики/бенчмарки, и явный статистический бэкграунд. Поэтому профиль очень близок технически, но не полностью закрывает требования по лидеству и специфике GenAI-стека Сбера.",
+    "missing_keywords": [
+      "Causal AI",
+      "RLHF",
+      "DPO",
+      "Transformer/GPT-модели для what-if моделирования",
+      "LLM-as-a-Judge",
+      "fine-tuning LLM",
+      "Prompt Engineering",
+      "техлид/тимлид AI/ML-продукта от 3 лет",
+      "автоматизация рутинных процессов команды с помощью AI-инструментов",
+      "статистический бэкграунд",
+      "продуктовые и технические метрики",
+      "бенчмарки",
+      "управление командой",
+      "коммуникация со стейкхолдерами"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Спроектировал и реализовал мультиагентную AI-систему на базе OpenAI Agents SDK / GPT-Realtime / GPT-4o, включая hierarchical orchestration и Planning → Executor, с интеграцией RAG по корпоративной базе знаний и поддержкой real-time синхронизации.",
+      "Разработал и развивал LLM-системы на LangChain/LangGraph: prompt engineering, prompt chaining, SFT дообучение LLaMA 3, внедрение RAG для поиска правил и повышение качества моделей через воспроизводимые эксперименты и валидацию метрик.",
+      "Построил полный цикл ML/AI-разработки: от чтения научных статей и проверки гипотез до продакшн-выкатки; использовал W&B, ClearML, Docker, CI/CD, Triton, xFormers/Flash-Attention и квантизацию для ускорения инференса и оптимизации качества решений."
+    ]
+  },
+  "3e183d9d41ec761d087fb6b7c7c2be44": {
+    "ats_score_percentage": 78,
+    "reasoning": "У кандидата сильное соответствие по Python, PyTorch, GenAI, исследованиям, воспроизводимым ML-пайплайнам, оптимизации инференса, продакшену и работе с агентами/оркестрацией. Также есть релевантный опыт мультиагентных систем, LLM, VLM-элементов, дообучения LLaMA 3, RAG и MLOps. Однако в резюме не хватает ключевой специфики вакансии: явного опыта RL-обучения по GRPO/GSPO/DAPO/Dr.GRPO, reward engineering, computer-use/web agents, GUI grounding, multi-turn RL на траекториях с тулзами, а также продакшн-опыта именно с VLM и safety/truthfulness. Поэтому матч сильный, но не идеальный для узко R&D RL-задачи в Алисе.",
+    "missing_keywords": [
+      "GRPO",
+      "GSPO",
+      "DAPO",
+      "Dr.GRPO",
+      "reward design",
+      "multi-turn RL",
+      "computer use",
+      "web agents",
+      "GUI grounding",
+      "VLM",
+      "RL-пайплайны",
+      "FP8",
+      "distillation",
+      "parallelism",
+      "safety",
+      "truthfulness",
+      "LLM/VLM fine-tuning at scale"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Умею собирать воспроизводимые ML-пайплайны полного цикла: от сбора и подготовки данных до валидации метрик, запуска экспериментов и оптимизации инференса для продакшна; работаю с W&B, ClearML, Triton, xFormers и Flash-Attention.",
+      "Оркестрация ИИ-агентов: реализовал адаптивную систему сборки ИИ-тьюторов с циклами самокоррекции и накоплением опыта, что близко к multi-turn взаимодействию агента с внешней средой и инструментами.",
+      "Спроектировал мультиагентные LLM-системы и backend supervisor с паттернами Hierarchical Orchestration и Planning → Executor, а также MCP-сервер и agent tools, что релевантно архитектуре planning, tool orchestration и agent memory."
+    ]
+  },
+  "d35d1cde2b8603b4375e5754233b2ac1": {
+    "ats_score_percentage": 76,
+    "reasoning": "Профиль очень сильный по AI/GenAI backend и агентным системам: есть Python, FastAPI, LangChain/LangGraph, OpenAI Agents SDK, MCP server, Graph-RAG, multi-agent orchestration, DDD, продакшен-инфраструктура и опыт с LLM API. Это хорошо совпадает с вакансией Сбера. Однако в резюме не хватает явного упоминания ряда требований уровня backend/system design: TDD, SOLID, NoSQL и векторных БД как инфраструктуры, A2A, agents.md, detailed prompt specs, а также надежных пайплайнов с rate limiting/caching/error handling. В целом соответствие высокое, но не идеальное из-за неполного покрытия терминологии вакансии.",
+    "missing_keywords": [
+      "MCP infrastructure",
+      "A2A protocol",
+      "RAG pipelines",
+      "OpenAI API",
+      "NoSQL",
+      "vector databases",
+      "TDD",
+      "SOLID",
+      "clean architecture",
+      "long-term memory",
+      "planning",
+      "agents.md",
+      "prompt orchestration",
+      "error handling",
+      "rate limiting",
+      "caching",
+      "knowledge graph / information models"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал **MCP сервер** на Python/FastMCP с поддержкой multi-user аутентификации (Google Auth) для интеграции бизнес-систем через инструменты агентов: Gmail API и Google Calendar API.",
+      "Разработал **Graph-RAG**-подсистему для поиска в базе знаний, включая токенизацию документов, генерацию embeddings и построение пайплайна извлечения и синтеза контекста для мультиагентной системы.",
+      "Спроектировал **бэкенд supervisor** мультиагентной системы на базе паттернов Hierarchical Orchestration и Planning → Executor, обеспечив SSE-синхронизацию в реальном времени и чистое разделение ответственности между агентом, инструментами и бизнес-логикой."
+    ]
+  },
+  "198d675aa2c42f786cf09000bba2f5d8": {
+    "ats_score_percentage": 78,
+    "reasoning": "Кандидат очень сильный по GenAI/LLM, мультиагентным системам, RAG, LangGraph/LangChain, Perplexity, Triton, MLOps и продакшн-инференсу. Есть прямое совпадение с архитектурой мультиагентных систем, supervisor/worker паттернами, agent memory, grounding/search и выводом решений в прод. Однако в резюме недостаточно явно раскрыты ключевые банковские требования вакансии: self-hosted/on-prem deployment, миграция с внешних API на собственные модели, интеграция с внутренними БД и регуляторными источниками, финансово-макроэкономический домен, а также управленческий контур команды 5-6 человек и формальные практики качества/тестирования. В целом match высокий, но для точного соответствия нужно усилить терминологию вакансии.",
+    "missing_keywords": [
+      "LangGraph",
+      "vLLM",
+      "Triton",
+      "TGI",
+      "self-hosted",
+      "on-premise / промышленный контур",
+      "fine-tuning",
+      "временные ряды",
+      "регрессия",
+      "ансамбли",
+      "граундинг",
+      "BM25",
+      "гибридный поиск",
+      "детекция галлюцинаций",
+      "внутренние БД",
+      "финансы",
+      "макроэкономика",
+      "регуляторные документы",
+      "качество/бенчмарки",
+      "code review",
+      "unit/integration/e2e тестирование",
+      "leadership / управление командой 5-6 человек"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Проектирование архитектуры мультиагентной системы для LLM/GenAI: разработал голосовую мультиагентную платформу на базе OpenAI Agents SDK с hierarchical orchestration, паттернами supervisor/worker и Planning → Executor, обеспечив согласованную работу агентов, обработку ошибок и real-time синхронизацию.",
+      "Разработка RAG-агентов поиска по базе знаний: реализовал Graph-RAG с токенизацией документов, генерацией embeddings и search grounding для повышения качества retrieval и снижения риска hallucinations в сложных сценариях.",
+      "Оптимизация инференса и продакшн-выкатка ML/GenAI-решений: применял Triton, xFormers/Flash-Attention, KV-cache и квантизацию, выстраивал воспроизводимые ML-пайплайны, Docker и CI/CD для доведения моделей до промышленного применения."
+    ]
+  },
+  "8d298117fcc33b5e1f960ae3edf37093": {
+    "ats_score_percentage": 78,
+    "reasoning": "Кандидат очень сильный по GenAI, LLM, агентным системам, R&D, прототипированию и доведению решений до продакшена. Есть прямое совпадение с мультиагентностью, LLM, RAG, оркестрацией, экспериментами и MLOps-практиками. Однако вакансия в Сбере ориентирована на data science/ML research с упором на классический ML, статистику, работу с табличными данными, пайплайны для трейсов агентов и observability-стек. Этих ключевых терминов в резюме почти нет или они не представлены явно. Поэтому матч высокий по AI/LLM-направлению, но не полный по точному стеку и предметной области вакансии.",
+    "missing_keywords": [
+      "NumPy",
+      "Pandas",
+      "Polars",
+      "Scikit-learn",
+      "XGBoost",
+      "LightGBM",
+      "CatBoost",
+      "Optuna",
+      "Hyperopt",
+      "математическая статистика",
+      "классический ML",
+      "продакшн-мониторинг ML-моделей",
+      "Git",
+      "LLM-as-a-Judge",
+      "RAG",
+      "MLOps",
+      "OpenTelemetry",
+      "Prometheus",
+      "Grafana",
+      "OpenAI / Arize Phoenix / LangSmith",
+      "векторные базы данных",
+      "трейсы и метаданные ИИ-агентов",
+      "SOLID"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "— Разработал и внедрил мультиагентную систему на базе OpenAI Agents SDK / GPT-Realtime / GPT-4o с иерархической оркестрацией (Planning → Executor), интегрировав её в production-архитектуру и обеспечив поддержку сложных асинхронных сценариев.",
+      "— Реализовал Graph-RAG для поиска в базе знаний, включая токенизацию документов и генерацию embeddings, что повысило качество retrieval-подсистемы для задач анализа и локализации причин сбоев.",
+      "— Построил воспроизводимые ML-pipeline полного цикла: от подготовки данных и проверки гипотез до валидации метрик, батчевого инференса и прод-выкатки, используя Docker, CI/CD и MLOps-подходы."
+    ]
+  },
+  "c1cce974943bb7ff5b2875cc554592e2": {
+    "ats_score_percentage": 78,
+    "reasoning": "Кандидат очень сильный по ML/GenAI, LLM, RAG, MLOps, продакшен-инференсу и построению AI-сервисов. Хорошо совпадает с фокусом вакансии на прикладные LLM-сценарии, продакшен-выкатку, пайплайны и инженерную часть. Однако в резюме не видно явного опыта с SQL, Java, большими batch/MapReduce-пайплайнами и не подтверждены напрямую требования по работе с заказчиками и online-critical системами в продуктовой среде Яндекса. Также Python есть, но он не выделен как основной навык в лаконичной форме под вакансию.",
+    "missing_keywords": [
+      "Python",
+      "SQL",
+      "LLM в продакшене",
+      "онлайн-сценарии",
+      "стабильность и предсказуемость",
+      "взаимодействие с заказчиками",
+      "Java",
+      "MapReduce",
+      "обработка больших объёмов данных",
+      "интеграция моделей в сервисы"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Уверенно разрабатывал прикладные AI/LLM-решения на Python, собирая полный цикл от подготовки данных и ML-пайплайнов до интеграции моделей в production-сервисы с Docker, CI/CD и MLOps.",
+      "Проектировал и запускал LLM-сценарии и внутренние AI-инструменты: RAG, мультиагентные системы, prompt chaining и orchestration, доводя решения от прототипа до стабильно работающего сервиса.",
+      "Оптимизировал инференс и поведение AI-систем в продакшене: снижал задержки ответа, внедрял квантизацию, KV-cache, Triton, xFormers/Flash-Attention и контролировал качество, стабильность и стоимость запуска."
+    ]
+  },
+  "87936084f9387fa3b662e4e4ac5bcc64": {
+    "ats_score_percentage": 72,
+    "reasoning": "У кандидата сильное совпадение по GenAI, PyTorch, Computer Vision, diffusion/DiT, Flux, SFT, экспериментам, воспроизводимым ML-пайплайнам и продакшену. Также есть релевантный исследовательский опыт и работа с генеративными моделями. Однако для этой вакансии критично не хватает явного опыта RLHF/RLAIF, PPO/DPO, масштабирования RL-пайплайнов, distributed training (DDP/FSDP), а также специфики видео-диффузии и командной исследовательской работы в формате review/mentoring/roadmap. В целом профиль близкий, но не полностью закрывает core requirements вакансии.",
+    "missing_keywords": [
+      "RLHF",
+      "RLAIF",
+      "PPO",
+      "DPO",
+      "SFT",
+      "диффузионные модели для видео/изображений (R2V, R2I, R2V+A)",
+      "distributed training",
+      "DDP",
+      "FSDP",
+      "Diffusers",
+      "FLUX",
+      "Wan 2.X",
+      "code review",
+      "менторинг",
+      "research roadmap",
+      "arxiv",
+      "NeurIPS",
+      "ICML",
+      "CVPR",
+      "ICLR",
+      "cross-functional collaboration with Pretraining/Data/Infrastructure/Production"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Исследование генеративных архитектур для аудио и визуальных задач: глубокое изучение **diffusion models**, **DiT**-подходов, **SDXL** и **Flux**; сравнение conditioners, schedulers и латентных пространств между доменами для повышения качества и управляемости генерации.",
+      "Построение воспроизводимых ML-пайплайнов полного цикла: от подготовки данных до батчевого инференса и валидации метрик; логирование экспериментов в **W&B**, оптимизация инференса через **xFormers/Flash-Attention**, Triton и Docker/CI/CD.",
+      "Дообучение **LLaMA 3** с помощью **SFT** для AdTech-домена; проведение абляций по данным и параметрам адаптации, интерпретация результатов и доведение решений до продакшена."
+    ]
+  },
+  "8b6a23fbfdf8e879e9307917f6e7d8df": {
+    "ats_score_percentage": 86,
+    "reasoning": "Кандидат очень сильный матч по GenAI/AI Agents: есть LangChain/LangGraph, multi-agent orchestration, RAG, LLM, production/MLOps и опыт доведения решений до продакшна. Однако в резюме почти нет явной привязки к банковскому домену, финансовым задачам и кредитному ценообразованию, а также не перечислены некоторые ожидаемые инструменты/термины из вакансии (FAISS/Chroma/Qdrant, open-source LLM, git/Jira/Confluence). Для Senior Data Scientist в Сбере профиль выглядит релевантным по AI Agents, но не полностью закрывает classic ML и finance-specific часть.",
+    "missing_keywords": [
+      "финансовые задачи",
+      "ценообразование кредитных банковских продуктов",
+      "внутренние API",
+      "банковские системы",
+      "FAISS",
+      "Chroma",
+      "Qdrant",
+      "open-source LLM",
+      "Llama",
+      "Mistral",
+      "Qwen",
+      "production monitoring",
+      "полный цикл ML-проекта EDA-MVP-Validation-Production",
+      "классический ML",
+      "нейросетевые архитектуры MLP/CNN/RNN/LSTM/Transformers",
+      "BigData stack",
+      "git",
+      "Jira",
+      "Confluence",
+      "финансы"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "• Спроектировал и разработал мультиагентную AI-систему на базе OpenAI Agents SDK / GPT-Realtime с паттернами Hierarchical Orchestration и Planning → Executor, обеспечив интеграцию агентов с внутренними API и реал-тайм синхронизацию в продакшн-сценариях.",
+      "• Реализовал Graph-RAG / RAG-пайплайны для поиска и извлечения знаний из базы, включая токенизацию документов, генерацию embeddings и поддержку multi-agent сценариев для повышения качества ответов AI-агентов.",
+      "• Внедрял LangChain/LangGraph multi-agent LLM-системы в production, сопровождал полный цикл ML/GenAI-проектов: от сбора и подготовки данных, проверки гипотез и оценки метрик до деплоя, мониторинга и поддержки решения."
+    ]
+  },
+  "fdbeff65dfaac6e2f40d53fb1918d25c": {
+    "ats_score_percentage": 88,
+    "reasoning": "Сильное совпадение по ключевым требованиям: есть 3+ лет опыта в ML/GenAI, Python, LangChain/LangGraph, мультиагентные системы, LLM, RAG, prompt engineering, fine-tuning, подготовка данных, NLP/embeddings и production/MLOps. Особенно релевантен опыт разработки AI-агентов и Graph-RAG. Снижают score отсутствие явных упоминаний SQL, pandas/spark, векторных БД, OCR и специализированных метрик оценки retrieval/generative quality. В целом кандидат выглядит очень подходящим под роль.",
+    "missing_keywords": [
+      "pandas",
+      "spark",
+      "SQL",
+      "vекторные БД (Chroma, Weaviate, pgvector)",
+      "RAGAS",
+      "TruLens",
+      "OCR",
+      "семантический поиск",
+      "извлечение сущностей",
+      "precision",
+      "recall",
+      "NDCG",
+      "корпоративные данные (банк, ERP, CRM)"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Проектирование архитектуры мультиагентной системы: разработал голосовую мультиагентную GenAI-систему на базе OpenAI Agents SDK / GPT-Realtime / GPT-4o с поддержкой hierarchical orchestration и planning→executor, что соответствует разработке и настройке логики ИИ-агентов.",
+      "Разработка агентов поиска в базе знаний Graph-RAG: реализовал систему токенизации документов и генерации embeddings, а также retrieval-слой для семантического поиска по корпоративной базе знаний, что напрямую релевантно интеграции с RAG-сервисом и оптимизации retrieval-пайплайнов.",
+      "Мультиагентные LLM-системы для модерации, генерации рекламы и анализа рабочих чатов в Telegram на LangChain/LangGraph: внедрил prompt engineering (Prompt Chaining, Chain-of-Thought), RAG и дообучение LLaMA 3 с помощью SFT для улучшения качества ответов и релевантности генерации."
+    ]
+  },
+  "4672481796ab083881803d6223de983c": {
+    "ats_score_percentage": 78,
+    "reasoning": "У кандидата очень сильное совпадение по GenAI/LLM, мультиагентным системам, LangChain/LangGraph, FastAPI, RAG, Docker и MLOps. Есть релевантный опыт проектирования архитектуры, backend-сервисов, AI-агентов и оценки качества моделей. Однако в резюме не хватает части ключевых терминов из вакансии: AutoGen, явных mention'ов Qdrant/ChromaDB/FAISS, LangFuse/MLflow/Phoenix, Kubernetes, structured output/function calling/context engineering, а также более явного акцента на оценке LLM/RAG систем и техническом лидерстве на уровне code review и архитектурных решений под продуктовую эксплуатацию. Поэтому матч высокий, но не полный.",
+    "missing_keywords": [
+      "LangGraph",
+      "MS AutoGen",
+      "asyncio",
+      "function calling",
+      "structured output",
+      "context engineering",
+      "Qdrant",
+      "ChromaDB",
+      "FAISS",
+      "PostgreSQL",
+      "MySQL",
+      "LangFuse",
+      "MLflow",
+      "Phoenix",
+      "offline-метрики",
+      "human evaluation",
+      "llm-as-a-judge",
+      "Docker",
+      "Kubernetes",
+      "code review",
+      "backend-архитектура",
+      "API",
+      "data flow",
+      "мониторинг LLM-систем"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Проектировал и развивал мультиагентные LLM-системы на базе LangChain/LangGraph и FastAPI: выделял отдельные сервисы под каждый проект, реализовывал API, Pydantic-валидацию, интеграцию с Python/Next.js и поддержку production-ready сценариев.",
+      "Разработал агентные и RAG-решения для поиска и модерации знаний: внедрял Graph-RAG, систему токенизации документов и генерации embeddings, а также организовывал асинхронные пайплайны обработки и масштабирования инференса.",
+      "Собирал воспроизводимые ML/GenAI пайплайны полного цикла — от подготовки данных и экспериментов до мониторинга и прод-выкатки — с использованием Docker, CI/CD, W&B и оптимизацией инференса для стабильной промышленной эксплуатации."
+    ]
+  },
+  "58489ca5843a3141dde9477fa04847cf": {
+    "ats_score_percentage": 72,
+    "reasoning": "У кандидата сильное совпадение по AI/LLM/Agents, RAG, мультиагентным системам, MLOps, Docker и CI/CD, а также есть опыт вывода ML-решений в продакшен. Однако в резюме не хватает ключевой инфраструктурной части вакансии: Kubernetes, Istio, Vault, Kafka/REST-интеграций, мониторинга/логирования/трассировки на уровне production-эксплуатации, а также явного опыта PySpark, OCR и отказоустойчивых механизмов retry/fallback. В целом профиль близок к роли AI Platform Engineer, но часть обязательных DevOps/платформенных требований отражена слабо или неявно.",
+    "missing_keywords": [
+      "Kubernetes",
+      "Istio Service Mesh",
+      "HashiCorp Vault",
+      "REST",
+      "Kafka",
+      "OCR",
+      "persistent storage",
+      "PySpark",
+      "model drift",
+      "tracing",
+      "retry",
+      "fallback",
+      "LLM agents in production",
+      "LangGraph",
+      "LangChain",
+      "CI/CD for production AI services"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "• Оркестрация ИИ-агентов: реализовал адаптивную систему сборки AI-тьюторов с циклами самокоррекции, доводя сценарии до стабильной работы в production и подготавливая основу для эксплуатации LLM/AI-агентов в реальных сервисах.",
+      "• Развернул отдельные AI-сервисы для каждого проекта с API на Python/FastAPI, внедрил RAG и LangChain/LangGraph для мультиагентных LLM-систем, что позволило интегрировать AI-функциональность в production-окружение с воспроизводимыми пайплайнами.",
+      "• Построил воспроизводимые ML-пайплайны полного цикла: от подготовки данных до батчевого инференса, с логированием экспериментов в W&B и MLOps-подходом (Docker + CI/CD), а также оптимизацией инференса для стабильной работы моделей в продакшене."
+    ]
+  },
+  "5b06f33391c170bc9d0d84a247c74142": {
+    "ats_score_percentage": 78,
+    "reasoning": "Сильное совпадение по GenAI/LLM, Python, LangChain/LangGraph, FastAPI, Pydantic, RAG, мультиагентным системам, prompt engineering, Docker и CI/CD. У кандидата есть прямой опыт с агентами, Graph-RAG, MCP, интеграциями через API и дообучением SFT/LoRA. При этом в резюме не подтверждены несколько ключевых требований вакансии: asyncio/pytest на уровне Python 3.10+, конкретные векторные БД из описания, OAuth 2.0, serverless и очереди, eval/LLM-as-a-judge, DPO, GitHub Actions и Kubernetes. В целом кандидат очень близок к профилю Middle Python Developer для LLM-платформы, но требуется небольшое доборное соответствие по инфраструктуре и testing/evaluation стеку.",
+    "missing_keywords": [
+      "asyncio",
+      "pytest",
+      "OpenAI/Anthropic/GigaChat API",
+      "Chroma/Qdrant/Weaviate",
+      "OAuth 2.0",
+      "serverless",
+      "очереди сообщений",
+      "LLM-as-a-judge",
+      "eval-подходы",
+      "DPO",
+      "github actions",
+      "Kubernetes"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал мультиагентные LLM-системы на базе LangChain/LangGraph с поддержкой tool use, conversation memory и интеграцией через FastAPI; использовал Pydantic для валидации API-контрактов и построения поддерживаемых сервисов.",
+      "Спроектировал Graph-RAG/ RAG-подходы для поиска по базе знаний: токенизация документов, генерация embeddings и подключение retrieval-логики для повышения качества ответов агентов.",
+      "Реализовал MCP-сервер на Python (FastMCP) и набор Agent Tools для интеграции с внешними сервисами, включая Google Auth для Gmail API и Google Calendar API; работал с асинхронными сценариями и сложными пайплайнами автоматизации."
+    ]
+  },
+  "03c9263ad78deba32931b9cd4cf9b96f": {
+    "ats_score_percentage": 72,
+    "reasoning": "Кандидат очень силён в GenAI, LLM, RAG, prompt engineering, мультиагентных системах, Python и FastAPI, а также имеет опыт продакшн-разработки AI-сервисов. Это хорошо соответствует части вакансии про генеративные модели, интеграцию ML-решений, RAG и Python-разработку. Однако в резюме недостаточно явно отражены ключевые для позиции инфраструктурные и backend-требования Сбера: высоконагруженные микросервисы, глубокий async/backend stack, Kafka, Kubernetes, продвинутый SQL, системный/бизнес-анализ, тестирование и процессы BitBucket/Jira/Scrum. Поэтому матч сильный по AI/LLM-направлению, но неполный по корпоративной backend-архитектуре и эксплуатационным требованиям.",
+    "missing_keywords": [
+      "FastAPI",
+      "REST API",
+      "микросервисы",
+      "Kafka",
+      "Kubernetes",
+      "Docker",
+      "asyncio",
+      "threading",
+      "продвинутый SQL",
+      "оконные функции",
+      "индексы",
+      "шардирование",
+      "Ignite",
+      "системный анализ",
+      "бизнес-анализ",
+      "генеративные модели (GPT, GigaChat)",
+      "LLM-агенты",
+      "BitBucket",
+      "Jira",
+      "Scrum",
+      "тестовые сценарии",
+      "тестовые датасеты"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Развёрнут отдельный сервис для каждого проекта с API на Python/FastAPI, интегрированными Pydantic-валидаторами и логикой для взаимодействия с LLM/RAG-компонентами; обеспечивал поддержку модульной микросервисной архитектуры и интеграцию сервисов в продуктовый контур.",
+      "Спроектировал backend на основе Event-Driven Architecture для масштабирования обработки тяжёлых задач инференса и сложных асинхронных пайплайнов (FSM), что близко к требованиям высоконагруженных отказоустойчивых микросервисов и интеграции через очереди сообщений.",
+      "Реализовал Graph-RAG и систему токенизации документов с генерацией embeddings для поиска по базе знаний, а также MCP-сервер на Python/FastMCP с multi-user аутентификацией и интеграцией с внешними API, демонстрируя опыт проектирования сервисов и AI-интеграций."
+    ]
+  },
+  "eabc2d80865794275b8c17b4d1d7511b": {
+    "ats_score_percentage": 74,
+    "reasoning": "Профиль кандидата сильный для AI/GenAI и микросервисных решений: есть Python, FastAPI, LLM, RAG, AI-агенты, Docker, асинхронные пайплайны и продакшен-опыт. Однако под вакансию Сбера не хватает явного подтверждения ключевых enterprise-ожиданий: продвинутого SQL, Kafka, Kubernetes, системного анализа требований, тестирования/дефект-анализа, а также опыта именно в высоконагруженных и отказоустойчивых Python-сервисах в формулировках вакансии. Также нет явного упоминания Bitbucket/Jira и Scrum. В целом матч высокий, но не идеальный из-за части инфраструктурно-процессных и data/backend keyword gap.",
+    "missing_keywords": [
+      "Python от 2 лет",
+      "FastAPI",
+      "REST API",
+      "Kafka",
+      "Docker",
+      "Kubernetes",
+      "asyncio",
+      "threading",
+      "продвинутый SQL",
+      "оконные функции",
+      "индексы",
+      "шардирование",
+      "Ignite",
+      "Bitbucket/Jira",
+      "Agile/Scrum",
+      "системный/бизнес-анализ",
+      "тестовые сценарии",
+      "тестовые датасеты",
+      "анализ дефектов",
+      "корневые причины дефектов",
+      "генеративные модели GPT/GigaChat",
+      "LLM",
+      "AI-агенты",
+      "LangChain/LangGraph",
+      "Scikit-Learn",
+      "Pandas"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал отдельные сервисы на **Python/FastAPI** с **Pydantic** и интеграцией **LLM**-компонентов, обеспечив API-слой для модерации, генерации и анализа пользовательских данных в микросервисной архитектуре.",
+      "Спроектировал и внедрил **RAG**-подходы и **Graph-RAG** для поиска по базе знаний, включая генерацию embeddings, токенизацию документов и оптимизацию сценариев взаимодействия с данными для LLM-решений.",
+      "Реализовал асинхронные пайплайны инференса и обработки тяжёлых задач в **Event-Driven Architecture**, что позволило масштабировать сервисы и поддерживать низкую задержку при интеграции AI-моделей."
+    ]
+  },
+  "381da038a8a64ddfc6905c29f6bcd8c6": {
+    "ats_score_percentage": 74,
+    "reasoning": "Кандидат очень сильный в Python, GenAI, LLM, AI-агентах, RAG, FastAPI и микросервисной разработке, а также имеет релевантный опыт проектирования мультиагентных систем и асинхронных пайплайнов. Это хорошо совпадает с фокусом вакансии на AI-агентов, генеративные модели и интеграцию ML в сервисы. Однако в резюме не хватает явных подтверждений по части высоконагруженных отказоустойчивых микросервисов на FastAPI в production, Kafka, Kubernetes, продвинутого SQL, Ignite, системного/бизнес-анализа требований, тестовых сценариев/датасетов и работы в Jira/BitBucket/Scrum. Из-за этого совпадение высокое, но не идеальное.",
+    "missing_keywords": [
+      "FastAPI",
+      "Kafka",
+      "Docker",
+      "Kubernetes",
+      "REST API",
+      "asyncio",
+      "threading",
+      "продвинутый SQL",
+      "индексы",
+      "шардирование",
+      "Ignite",
+      "BitBucket/Jira",
+      "Scrum",
+      "системный анализ",
+      "бизнес-анализ",
+      "тестовые сценарии",
+      "тестовые датасеты",
+      "корневые причины дефектов",
+      "генеративные модели GPT/GigaChat",
+      "LLM",
+      "AI-агенты",
+      "LangChain/GigaChain"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал отдельные сервисы на Python/FastAPI с Pydantic-валидацией для LLM-систем, обеспечив интеграцию AI-моделей в продуктовые сценарии и поддержку масштабируемой микросервисной архитектуры.",
+      "Спроектировал и реализовал мультиагентную систему с архитектурой Hierarchical Orchestration и Planning → Executor, включая RAG-поиск по базе знаний, генерацию embeddings и синхронизацию компонентов в реальном времени.",
+      "Внедрил асинхронные пайплайны обработки тяжелых задач инференса и промпт-инжиниринг для генеративных моделей, обеспечив устойчивую обработку сценариев с низкой задержкой и воспроизводимый ML-процесс от данных до продакшена."
+    ]
+  },
+  "b4353929b25cea622ec4aa8804d6c908": {
+    "ats_score_percentage": 81,
+    "reasoning": "У кандидата очень сильное совпадение по ядру вакансии: LLM/Agents, LangChain/LangGraph, FastAPI, RAG, мультиагентные системы, продакшен-опыт, Docker/CI/CD, оценка качества моделей и лидерский опыт. Также есть прямые пересечения с архитектурой backend, оркестрацией агентов и внедрением AI-фич в продукт. Основные пробелы — не указаны явно многие ключевые инструменты и практики из описания вакансии: Qdrant/ChromaDB/FAISS, MLflow/LangFuse/Phoenix, конкретные методы оценки LLM-систем, а также акценты на autoscaling, Kubernetes, cost control и end-to-end data pipeline в формулировках резюме. В целом соответствие высокое, но часть обязательных терминов отсутствует.",
+    "missing_keywords": [
+      "LangGraph",
+      "MS AutoGen",
+      "asyncio",
+      "function calling",
+      "structured output",
+      "context engineering",
+      "Qdrant",
+      "ChromaDB",
+      "FAISS",
+      "PostgreSQL",
+      "MySQL",
+      "LangFuse",
+      "MLflow",
+      "Phoenix",
+      "Docker",
+      "Kubernetes",
+      "offline-метрики",
+      "human evaluation",
+      "llm-as-a-judge",
+      "A/B тестирование LLM",
+      "мониторинг RAG/AI-агентов",
+      "end-to-end data pipeline",
+      "backend architecture",
+      "API design"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Спроектировал и реализовал мультиагентную LLM-систему на базе LangChain/LangGraph с backend-архитектурой на Python/FastAPI, включая API, асинхронную оркестрацию, SSE-синхронизацию и интеграцию AI-фич в продуктовую среду.",
+      "Разработал Graph-RAG / RAG-механики поиска по базе знаний: токенизацию документов, генерацию embeddings, индексацию и retrieval-пайплайн; обеспечивал воспроизводимость экспериментов и контроль качества решений в продакшене.",
+      "Внедрил end-to-end ML/AI-пайплайны полного цикла — от подготовки и нормализации данных до мониторинга и оптимизации инференса; использовал Docker, CI/CD, W&B/ClearML и подходы к промышленной эксплуатации LLM-решений."
+    ]
+  },
+  "bfc6d474ec82ef9a20824e31d45199cb": {
+    "ats_score_percentage": 78,
+    "reasoning": "Кандидат хорошо совпадает с вакансией по AI/GenAI, LLM, агентам, LangChain/LangGraph, RAG, PEFT, мультиагентным пайплайнам, воспроизводимым ML-пайплайнам и продакшен-внедрению. Сильные стороны также включают NLP-ориентированные проекты, дообучение LLM, поиск по базе знаний и работу с документами. Основной пробел — недостаточно явно отражены именно банковские NLP-задачи из вакансии: семантический поиск, классификация, кластеризация, суммаризация, NER, сжатие/упрощение текста, индексация и ранжирование документов, а также CRISP-DM, ML SysDes и взаимодействие с бизнес-заказчиком в формулировках, близких к описанию вакансии.",
+    "missing_keywords": [
+      "CRISP-DM",
+      "Semantic Search",
+      "Classification",
+      "Summarization",
+      "Sentence Compression",
+      "Simplification",
+      "NER",
+      "Clustering",
+      "In-Context Learning",
+      "Prompt Tuning",
+      "LangChain/GigaChain",
+      "RAG",
+      "PEFT",
+      "A/B testing",
+      "автомониторинг",
+      "ML SysDes",
+      "индексация и ранжирование текстовых документов",
+      "взаимодействие с бизнес-заказчиком"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал мультиагентные LLM-системы для модерации, генерации рекламы и анализа рабочих чатов в Telegram с использованием LangChain/LangGraph; внедрил RAG для поиска правил и промпт-инжиниринг для повышения качества ответов и контролируемости пайплайна.",
+      "Спроектировал агенты поиска в базе знаний на базе Graph-RAG, включая токенизацию документов и генерацию embeddings, что напрямую соотносится с задачами семантического поиска, индексации и ранжирования текстовых документов.",
+      "Собирал воспроизводимые ML-пайплайны полного цикла: от подготовки данных до валидации метрик и оптимизации инференса; запускал эксперименты, проверял гипотезы и доводил решения до продакшена через Docker, CI/CD и MLOps."
+    ]
+  },
+  "9c16928278c9751638e2319f2c5e2b92": {
+    "ats_score_percentage": 84,
+    "reasoning": "Кандидат очень сильный по GenAI/LLM, agentic systems, FastAPI, Docker, CI/CD, prompt engineering, RAG и production delivery. Также есть релевантный опыт с мультиагентными системами, orchestration, API-интеграциями и финтехом на уровне мобильных продуктов. Однако в резюме не подтверждены ключевые требования вакансии: явный опыт с GigaChat, PostgreSQL/raw SQL, очередями RabbitMQ/Kafka, aiohttp/asyncio как основной стек, а также опыт именно в банковской среде. Для роли Sber/ДомКлик это снижает соответствие, несмотря на высокий общий уровень.",
+    "missing_keywords": [
+      "GigaChat",
+      "PostgreSQL",
+      "raw SQL",
+      "RabbitMQ",
+      "Kafka",
+      "aiohttp",
+      "asyncio",
+      "LLM architecture limitations",
+      "vector databases (Qdrant/Weaviate/Elasticsearch)",
+      "banking/fintech domain in AI projects"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "• Спроектировал и внедрил мультиагентную AI-систему с Hierarchical Orchestration и Planning → Executor, обеспечив полный цикл разработки AI-агентов: от идеи и прототипирования до продакшн-внедрения и интеграции с внешними API и сервисами.",
+      "• Реализовал backend-сервисы для GenAI-продуктов на Python/FastAPI с поддержкой асинхронных пайплайнов, SSE-синхронизации в реальном времени, Docker и CI/CD, что повысило надежность и масштабируемость AI-решений.",
+      "• Внедрил RAG- и LLM-решения для поиска по базе знаний, промпт-инжиниринг и автоматический роутинг запросов между моделями, оптимизируя качество ответов и взаимодействие AI-агентов с прикладными системами."
+    ]
+  },
+  "b2e7983cbca8d87a7c75a7006ac2c622": {
+    "ats_score_percentage": 86,
+    "reasoning": "Кандидат очень сильный для роли Senior ML Engineer в GenBI/Agentization: есть практический опыт LLM/Agents, LangChain/LangGraph, RAG, Graph-RAG, fine-tuning (SFT), PyTorch, MLOps, мультиагентных систем и продакшн-интеграций. Также хорошо совпадают требования к самостоятельной работе, архитектуре и дообучению моделей. Основные пробелы — отсутствие явного опыта с Elasticsearch/OpenSearch и векторными БД, а также недостаточно прямого упоминания классических NLP-архитектур/attention, code review, взаимодействия с бизнес-заказчиками именно в BI-контексте и построения ассистента для поиска дашбордов/отчетов.",
+    "missing_keywords": [
+      "Elasticsearch",
+      "OpenSearch",
+      "vector database",
+      "fine-tuning LLM",
+      "RAG-pipelines",
+      "LangChain",
+      "PyTorch",
+      "NLP architectures",
+      "transformers",
+      "attention mechanisms",
+      "agent systems architecture",
+      "code review",
+      "architecture decisions",
+      "user/business stakeholders",
+      "search and dashboard/report discovery",
+      "MLOps monitoring"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал мультиагентную LLM-систему на базе OpenAI Agents SDK / GPT-Realtime с архитектурой Hierarchical Orchestration и Planning → Executor, обеспечив агентную логику, взаимодействие инструментов и поддержку сценариев end-to-end.",
+      "Реализовал Graph-RAG для поиска по базе знаний: токенизация документов, генерация embeddings и построение поискового контура для точного извлечения релевантного контекста из неструктурированных данных.",
+      "Внедрил LangChain/LangGraph и RAG-подходы в LLM-системах для модерации, генерации и анализа, а также дообучал LLaMA 3 методом SFT под доменную задачу, повышая качество ответов и контролируемость модели."
+    ]
+  },
+  "cf8abe45964f4a120f2fdf23cf1c38bd": {
+    "ats_score_percentage": 58,
+    "reasoning": "Профиль кандидата очень силён в GenAI, LLM, RAG, LangChain/LangGraph, FastAPI, Docker и CI/CD, а также в оркестрации AI-агентов — это хорошо совпадает с направлением вакансии. Однако вакансия Сбера ориентирована на senior backend engineer для enterprise-platform с явным упором на Python backend-стек, REST API, микросервисы, PostgreSQL/Redis, Kubernetes/Linux и эксплуатационную инфраструктуру. В резюме почти нет подтверждённого опыта именно классической backend-разработки в этих технологиях и отсутствуют DRF, PostgreSQL, Redis, Kubernetes, Linux, code review и production backend-ownership в нужной терминологии. Поэтому матч средний: сильное совпадение по GenAI, но неполное по core backend требованиям.",
+    "missing_keywords": [
+      "Python 3.11+",
+      "Django Rest Framework",
+      "PostgreSQL",
+      "Redis",
+      "Kubernetes",
+      "Linux",
+      "микросервисная архитектура",
+      "REST API backend-разработка",
+      "code review",
+      "архитектурные решения",
+      "ELK",
+      "gRPC",
+      "aiohttp",
+      "asyncio",
+      "RedHat OS"
+    ],
+    "is_good_match": false,
+    "adapted_bullets": [
+      "Разработал backend-часть AI-платформы на Python/FastAPI: отдельные сервисы с REST API, Pydantic-валидацией и интеграцией LLM/GenAI-компонентов, обеспечив удобную сервисную логику для модерации, генерации и анализа данных.",
+      "Спроектировал и внедрил backend supervisor мультиагентной системы с поддержкой SSE-синхронизации в реальном времени, паттернов Hierarchical Orchestration и Planning → Executor, что повысило устойчивость end-to-end сценариев автоматизации AI-агентов.",
+      "Реализовал асинхронные пайплайны и event-driven backend для масштабирования тяжёлых inference-задач, с контейнеризацией через Docker и практиками CI/CD/MLOps для продакшен-выкатки и поддержки GenAI-сервисов."
+    ]
+  },
+  "840919d6044a2c051225c2fd8d691501": {
+    "ats_score_percentage": 84,
+    "reasoning": "Кандидат очень сильный по ключевой части вакансии: есть практический опыт LLM-приложений, ИИ-агентов, multi-agent orchestration, RAG, embeddings, LangGraph/LangChain, FastAPI, Docker и CI/CD, а также продуктовая разработка AI-сервисов. Это хорошо совпадает с задачами Сбера по проектированию и внедрению агентных систем. Снижают матч отсутствие явных упоминаний PostgreSQL/MongoDB, Django/Flask/NumPy, unit- и integration testing, Kubernetes, а также отсутствуют прямые сигналы про tool-using/function calling и опыт планирования затрат/закупки GPU-инфраструктуры на уровне лидирования продукта. В целом это сильный кандидат для роли, но с некоторыми пробелами в инфраструктурно-продуктовом и Python-экосистемном наборе.",
+    "missing_keywords": [
+      "PostgreSQL",
+      "MongoDB",
+      "Django",
+      "Flask",
+      "NumPy",
+      "unit-тестирование",
+      "интеграционное тестирование",
+      "Kafka",
+      "Kubernetes",
+      "function calling",
+      "tool-using",
+      "cloud GPU procurement",
+      "планирование затрат",
+      "внешняя инфраструктура"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Проектирование и разработка мультиагентной системы на базе OpenAI Agents SDK / GPT-Realtime / GPT-4o с паттернами Hierarchical Orchestration и Planning → Executor, а также поддержкой SSE-синхронизации в реальном времени.",
+      "Разработка агентов поиска в базе знаний Graph-RAG, включая токенизацию документов и генерацию embeddings, для построения RAG-пайплайна и повышения качества ответа ИИ-агентов.",
+      "Реализация MCP-сервера на Python (FastMCP) и Agent Tools с поддержкой Perplexity Search / Deep Research, что соответствует разработке tool-using и интеграции внешних сервисов в агентные сценарии."
+    ]
+  },
+  "29628cd24cfc4882a151f1cb849c21bc": {
+    "ats_score_percentage": 67,
+    "reasoning": "Кандидат очень сильный по GenAI, NLP, LLM, аудио, PyTorch, MLOps и дообучению моделей, что хорошо совпадает с частью вакансии. Также есть релевантный опыт с голосовыми системами, A/B-тестами и продакшен-пайплайнами. Однако вакансия Сбера ориентирована на прикладной ML/NLP для банковского бизнеса: поведенческая аналитика, sequence modeling, работа с clickstream/аудиопотоками, классический ML (LightGBM/CatBoost), SQL, Spark/Hadoop, production ML в индустриальном контуре и финтех-контекст. Эти ключевые требования в резюме отражены слабо или не отражены вовсе.",
+    "missing_keywords": [
+      "Hadoop",
+      "Spark",
+      "SQL",
+      "LightGBM",
+      "CatBoost",
+      "A/B-тесты",
+      "sequence modeling",
+      "sequence-to-one",
+      "sequence-to-many",
+      "поведенческая аналитика",
+      "clickstream",
+      "аудиопотоки",
+      "LLM",
+      "дообучение генеративных моделей",
+      "GigaChat",
+      "трансформеры",
+      "production-pipeline",
+      "мониторинг моделей",
+      "Kafka",
+      "Flink",
+      "banking / fintech domain",
+      "предиктивный анализ обращений клиентов"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "• Внедрил воспроизводимые ML-пайплайны полного цикла для анализа аудиоданных и генеративных сценариев: от подготовки данных до валидации метрик и оптимизации инференса, с использованием PyTorch, W&B, ClearML, Docker и CI/CD.",
+      "• Спроектировал и реализовал голосовую Omni-modal AI-систему с низкой задержкой на базе WebRTC, обеспечив обработку аудиопотоков в реальном времени и TTFT менее секунды; опыт релевантен задачам предиктивного анализа обращений клиентов и sequence modeling.",
+      "• Проводил эксперименты с генеративными моделями и их дообучением под прикладные домены: применял SFT, LoRA/QLoRA и prompt engineering для адаптации LLM/GenAI-моделей, а также запускал гипотезы и оценивал качество решений через A/B-эксперименты.",
+      "• Разрабатывал multi-agent и RAG-решения на Python/FastAPI с продуманной архитектурой и production-ready развертыванием, что соответствует требованиям по интеграции моделей в промышленный контур и обоснованию архитектурных решений."
+    ]
+  },
+  "0f124855fccb239d11ff77fe25098edd": {
+    "ats_score_percentage": 58,
+    "reasoning": "Резюме хорошо совпадает с GenAI-частью вакансии: есть сильный опыт в LLM, agents, RAG, prompt engineering, прототипировании пайплайнов, оценке качества моделей и запуске RnD-экспериментов. Также есть релевантный продуктовый опыт в B2B/B2C, A/B-тестах, аналитике и постановке задач. Однако вакансия явно бизнес-аналитическая, а в резюме доминирует инженерная роль; не раскрыты SQL, формализация бизнес-требований, ТЗ, работа с клиентскими интервью/опросами и анализ бизнес-процессов в банковском B2B-контексте. Из-за этого match средний, но не высокий.",
+    "missing_keywords": [
+      "бизнес-аналитик / продуктовый аналитик",
+      "SQL",
+      "Python для прототипирования и расчётов",
+      "сбор и формализация бизнес-требований",
+      "написание понятных ТЗ",
+      "управление жизненным циклом продуктовых гипотез",
+      "локальное тестирование технических пайплайнов",
+      "метрики качества продукта",
+      "таргеты для массовых опросов клиентов",
+      "анализ бизнес-процессов и улучшения",
+      "интеграция инсайтов в продуктовую стратегию",
+      "LLM prompting и ограничения моделей",
+      "оценка качества ответов LLM",
+      "структурирование неформализованных данных",
+      "RAG-системы",
+      "NLP / классификация / извлечение сущностей",
+      "предпринимательство",
+      "CJM клиентов банков B2B"
+    ],
+    "is_good_match": false,
+    "adapted_bullets": [
+      "Спроектировал и прототипировал end-to-end ML/LLM-пайплайны полного цикла: от сбора и подготовки данных до валидации метрик и оптимизации инференса, что соответствует задаче локального тестирования технических пайплайнов перед промышленной реализацией.",
+      "Реализовал мультиагентные LLM-системы и Graph-RAG для поиска в базе знаний, включая токенизацию документов, генерацию embeddings и интеграцию knowledge signals в продуктовую логику.",
+      "В рамках B2B/B2C мобильных продуктов формировал backlog, описывал задачи с ТЗ, проводил Scrum-церемонии и исследовал аудиторию и конкурентов, что близко к сбору и формализации бизнес-требований и анализу возможностей улучшения процессов."
+    ]
+  },
+  "bccdef2a41517cc802a48f9274e76535": {
+    "ats_score_percentage": 82,
+    "reasoning": "Кандидат очень сильный по GenAI, LLM, агентым системам, LangChain/LangGraph, RAG, FastAPI, Python и продакшен-ML/MLOps. Это хорошо совпадает с ядром вакансии. Однако в резюме почти не раскрыты конкретные инфраструктурные технологии из описания вакансии: OpenSearch/Qdrant, Redis/Kafka, gRPC, Prometheus/Grafana/Loki, а также явно не подтверждено коммерческое использование Python 3.10+ в роли backend-разработчика под LegalTech. В целом совпадение высокое за счет релевантного AI/agent experience, но есть заметные пробелы по стеку и доменной специфике.",
+    "missing_keywords": [
+      "FastAPI",
+      "Python 3.10+",
+      "OpenSearch",
+      "Redis",
+      "Kafka",
+      "gRPC",
+      "Prometheus",
+      "Grafana",
+      "Loki",
+      "Qdrant",
+      "GigaChat",
+      "OpenAI",
+      "Gemini",
+      "LegalTech",
+      "REST/gRPC API",
+      "асинхронное программирование",
+      "очереди сообщений",
+      "микросервисная архитектура",
+      "мониторинг",
+      "трейсинг",
+      "CI/CD",
+      "контейнеризация"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Разработал мультиагентные LLM-системы для модерации, генерации рекламы и анализа рабочих чатов в Telegram на базе LangChain/LangGraph, реализовав orchestration, routing и conversation memory в промышленном Python/FastAPI-сервисе.",
+      "Развернул отдельные сервисы для каждого проекта с API на Python/FastAPI и Pydantic, внедрив RAG для поиска правил модерации и организовав интеграцию LLM-моделей и внешних API в микросервисной архитектуре.",
+      "В Северстали спроектировал Graph-RAG для поиска по базе знаний, включая токенизацию документов и генерацию embeddings, а также построил backend supervisor мультиагентной системы с hierarchical orchestration и Planning → Executor логикой."
+    ]
+  },
+  "57cb03bb97cfc4b6286bf90a37a2120e": {
+    "ats_score_percentage": 78,
+    "reasoning": "Кандидат очень силён в ML/DL, GenAI, LLM, agents, RAG, оптимизации инференса, Docker/CI/CD и продакшен-внедрении. Это хорошо совпадает с задачами Senior ML-инженера в Сбере. Однако в резюме недостаточно явно раскрыт классический data/analytics стек для табличных данных: SQL, pandas/polars, pySpark, временные ряды, витрины данных, а также корпоративные инструменты и процессы (Jira, Confluence, Bitbucket, gitflow). Для данной вакансии, где акцент на end-to-end ML в аналитике и отчетности, именно эти keywords критичны. В целом профиль близок, но требуется доупаковка под data/ML engineering в enterprise-формате.",
+    "missing_keywords": [
+      "SQL",
+      "pandas/polars",
+      "pySpark",
+      "табличные данные",
+      "временные ряды",
+      "gitflow/github flow",
+      "Jira",
+      "Confluence",
+      "Bitbucket",
+      "RAG",
+      "LangGraph",
+      "LLM agents",
+      "инференс-серверы Triton/TorchServe",
+      "мониторинг дрейфа данных",
+      "объяснимость для бизнеса / презентация результатов"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Умею собирать воспроизводимые ML-пайплайны полного цикла: от подготовки данных и проверки гипотез до валидации метрик, оптимизации инференса и подготовки решения к промышленному внедрению (Docker, CI/CD, MLOps, Triton).",
+      "Реализовал мультиагентные LLM-системы и RAG-решения для поиска по базе знаний и модерации, используя LangChain/LangGraph, FastAPI и промпт-инжиниринг (Prompt Chaining, Chain-of-Thought, few-shot).",
+      "Проектировал и запускал end-to-end AI-решения с поддержкой низколатентного инференса и мониторинга качества моделей, включая квантизацию, ONNX, xFormers/Flash-Attention и системную интеграцию через API."
+    ]
+  },
+  "587fb3185a9340847456701fddccd3cd": {
+    "ats_score_percentage": 86,
+    "reasoning": "Профиль очень сильный для GenAI/MLE: есть LLM, RAG, LangChain/LangGraph, агенты, SFT, LoRA, FastAPI, Docker, CI/CD, MLOps, воспроизводимые пайплайны и продакшен-ориентированная разработка. Также хорошо совпадают мультиязычные/мультимодальные AI-системы и оптимизация инференса. Основной разрыв с вакансией — мало явных подтверждений классического data engineering стека Сбера (SQL на продвинутом уровне, Spark/Hive/HDFS), а также части про time series, A/B, мониторинг качества и формальное техлидерство в формате code review/менторинга. В целом кандидат хорошо подходит под GenAI-часть роли, но не полностью закрывает весь expected stack Tech Lead MLE.",
+    "missing_keywords": [
+      "SQL",
+      "Spark / Pyspark",
+      "Hive / HDFS",
+      "оконные функции",
+      "FastAPI",
+      "Rest / Async API",
+      "LLM-in-production / вывод в ПРОМ",
+      "code review",
+      "менторинг",
+      "A/B тестирование",
+      "Time Series",
+      "rerankers",
+      "chunking",
+      "latency control",
+      "cost control",
+      "PEP8",
+      "техническое лидерство"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "• Спроектировал end-to-end AI-решение для голосового взаимодействия: от бизнес-сценария до вывода в продакшен, обеспечив low-latency обработку аудиопотока через WebRTC и достижение TTFT менее секунды.",
+      "• Реализовал мультиагентную LLM-систему с оркестрацией агентов, self-correction loop и retrieval-подходом для внутренних сценариев; применял LangChain/LangGraph, Graph-RAG и embeddings для поиска по базе знаний.",
+      "• Доводил GenAI и ML-сервисы до production-ready состояния: API-сервисы на FastAPI, Docker, CI/CD, воспроизводимые ML-пайплайны, оптимизация инференса через KV-cache, квантизацию, xFormers/Flash-Attention и контроль latency.",
+      "• Выполнял дообучение LLaMA 3 через SFT и применял LoRA/QLoRA для адаптации моделей под доменную задачу, включая оценку качества и оптимизацию баланса между качеством, стоимостью и ресурсами."
+    ]
+  },
+  "26019127b8e50ee60ce31f9151f90533": {
+    "ats_score_percentage": 62,
+    "reasoning": "Профиль хорошо совпадает по LLM/GenAI, agents, инференсу, оптимизации моделей, Docker и CI/CD. Есть релевантный опыт FastAPI, Node.js, orchestration и наблюдаемости на уровне ML/MLOps. Однако в резюме почти нет явных DevOps-терминов из вакансии: Kubernetes, Grafana, monitoring/alerts, health checks, trace_id, production infrastructure for LLM inference (vLLM/TGI/TensorRT-LLM/llama.cpp), а также управления dev/stage/prod и Prompt Hub. Поэтому кандидат выглядит сильным GenAI/ML инженером, но не полностью закрывает Senior DevOps LLM профиль.",
+    "missing_keywords": [
+      "Kubernetes",
+      "Docker Compose",
+      "vLLM",
+      "TGI",
+      "TensorRT-LLM",
+      "llama.cpp",
+      "Open Source LLM deployment",
+      "GPU optimization",
+      "VRAM",
+      "batching",
+      "latency",
+      "observability",
+      "metrics",
+      "Grafana",
+      "health checks",
+      "ready/live probes",
+      "alerts",
+      "tracing",
+      "trace_id",
+      "log correlation",
+      "custom metrics",
+      "FastAPI",
+      "Node.js",
+      "dev/stage/prod",
+      "CI/CD pipelines",
+      "Prompt Hub",
+      "E2E tests",
+      "agent monitoring"
+    ],
+    "is_good_match": false,
+    "adapted_bullets": [
+      "Собираю воспроизводимые ML/LLM-пайплайны полного цикла: от подготовки данных до валидации метрик и оптимизации инференса; использую W&B, ClearML, Docker и CI/CD для доведения экспериментов до production-ready поставки.",
+      "Оптимизировал инференс генеративных моделей с применением Triton, xFormers/Flash-Attention, KV-cache и квантизации, добиваясь лучшего баланса между latency и throughput при ограничениях по ресурсам.",
+      "Развёртывал отдельные backend-сервисы для LLM/GenAI-проектов на FastAPI и Node.js, проектировал модульную архитектуру и асинхронные пайплайны для масштабируемой обработки запросов и интеграции AI-компонентов."
+    ]
+  },
+  "d64b7977defb1f9c815ac4f4da8b94a4": {
+    "ats_score_percentage": 62,
+    "reasoning": "Кандидат очень силён в GenAI, мультиагентных системах, RAG, LangChain/LangGraph, MCP, SFT и выводе AI-решений в production. Это хорошо совпадает с ядром вакансии по Agentic AI. Однако роль в Сбере — TechLead платформенной backend/mesh-команды, а у кандидата почти нет явного опыта Golang, Kubernetes, Istio, высоконагруженных микросервисов и системного team leadership в production-разработке. Также не хватает прямых LLMOps/observability/guardrails и опыта управления командой разработки от 2 лет в контексте инженерной платформы. Поэтому совпадение хорошее по AI-части, но среднее по платформенной и лидерской части.",
+    "missing_keywords": [
+      "Golang",
+      "Kubernetes / K8s",
+      "микросервисы",
+      "backend",
+      "high-load / высоконагруженная архитектура",
+      "управление командой разработки",
+      "code review",
+      "architecture review",
+      "delivery",
+      "LLMOps",
+      "observability",
+      "trace / tracing",
+      "guardrails",
+      "RAG chunking",
+      "reranking",
+      "function calling / tool use",
+      "LangGraph",
+      "MCP",
+      "ReAct",
+      "A2A",
+      "LLM production",
+      "Istio Service Mesh",
+      "Kubernetes operators",
+      "cloudnative",
+      "project management / product hypothesis"
+    ],
+    "is_good_match": false,
+    "adapted_bullets": [
+      "Разработал мультиагентную voice AI-систему на базе OpenAI Agents SDK / GPT-Realtime, спроектировав hierarchical orchestration, planning → executor и агентные tool-сценарии, что соответствует production-подходу к Agentic AI и сложной оркестрации.",
+      "Реализовал Graph-RAG для поиска в базе знаний: токенизация документов, генерация embeddings и построение RAG-пайплайна, усилив управляемость контекста и качество ответов LLM-системы.",
+      "Развёртывал отдельные AI-сервисы с API на Python/FastAPI, интегрировал LangChain/LangGraph, внедрял RAG и SFT, а также доводил решения до production через Docker, CI/CD и MLOps-практики."
+    ]
+  },
+  "0e099710a5f2489b2b069ddf8da2d220": {
+    "ats_score_percentage": 68,
+    "reasoning": "Кандидат хорошо совпадает по AI/LLM, промышленной разработке на Python, MLOps, Docker/CI/CD, пайплайнам, построению AI-агентов и продакшн-подходу. Также есть сильный опыт в архитектуре, сервисной разработке и работе с продовыми ML-системами. Однако в резюме не хватает явных ключевых требований вакансии Сбера: опыт именно Python/Java в промышленной разработке 5+ лет, REST/очереди/SQL, работа с Feature Store и Model Registry, тестированием моделей и пайплайнов, мониторингом/алертингом/трейсингом, а также акцента на надежность и масштабируемость в финансовом домене. Это хороший, но не идеальный матч: сильный ML/GenAI профиль, но часть инфраструктурных и enterprise-терминов выражена недостаточно явно.",
+    "missing_keywords": [
+      "Python/Java промышленная разработка 5+ лет",
+      "REST API",
+      "асинхронность",
+      "очереди",
+      "SQL/NoSQL",
+      "оптимизация запросов",
+      "Feature Store",
+      "Model Registry",
+      "эксперименты / experiment tracking",
+      "тестирование моделей и пайплайнов",
+      "мониторинг",
+      "алертинг",
+      "логирование",
+      "трейсинг",
+      "code review",
+      "архитектурные стандарты",
+      "отказоустойчивость",
+      "масштабируемость",
+      "продуктовая AI-фича end-to-end"
+    ],
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Спроектировал и реализовал кроссплатформенную AI-экосистему с модульным ядром на базе Domain-Driven Design, отделив доменную логику от инфраструктуры и обеспечив архитектурную чистоту и переиспользуемость компонентов.",
+      "Разработал backend-сервисы на Node.js (NestJS) и Python/FastAPI для LLM/AI-функций, включая единые API, асинхронные пайплайны обработки и интеграцию с внешними AI-провайдерами, доводя решения до production-ready состояния.",
+      "Построил воспроизводимые ML-пайплайны полного цикла: подготовка данных, валидация метрик, оптимизация инференса, логирование экспериментов в W&B/ClearML, а также контейнеризация и CI/CD для продакшен-выкатки."
+    ]
+  },
+  "c5cd7a286e1da69337cae933ae497015": {
+    "ats_score_percentage": 87,
+    "sphere": "Unknown",
+    "matched_keywords": [],
+    "missing_keywords": [
+      "A/B",
+      "holdout",
+      "SbS",
+      "SQL",
+      "инкрементальная выручка",
+      "мониторинг в проде",
+      "LLM-as-a-judge",
+      "instruction tuning",
+      "ASR/TTS"
+    ],
+    "reasoning": "Профиль очень сильный для роли: есть богатый опыт GenAI/LLM, multi-agent orchestration, RAG, prompt engineering, PEFT/LoRA, оптимизация inference, production/MLOps и работа с текстовыми, голосовыми и диалоговыми сценариями. Также есть опыт A/B-тестирования и доведения решений до продакшена. Основные пробелы — явное упоминание SQL, end-to-end ML/LLM monitoring, holdout/SbS и более продуктовые метрики/инкрементальная выручка. В целом это высокий матч для senior ML/LLM роли в sales automation.",
+    "is_good_match": true,
+    "adapted_bullets": [
+      "Спроектировал мультиагентную AI-систему для голосового взаимодействия в реальном времени: реализовал orchestration агентов, WebRTC-аудиоканал с низкой задержкой и сценарии самокоррекции для поддержки диалогов и голосовых AI-ассистентов.",
+      "Разработал end-to-end LLM-пайплайн для генерации и контроля качества контента: prompt engineering, RAG, автоматический routing между моделями, оценка качества результата и последующая оптимизация продакшен-решений.",
+      "Внедрил PEFT (LoRA/QLoRA) и SFT для адаптации LLaMA 3 под доменные задачи, а также оптимизировал inference через KV-cache, xFormers/Flash-Attention и Triton для повышения стабильности и latency в продакшене."
+    ]
   }
 }

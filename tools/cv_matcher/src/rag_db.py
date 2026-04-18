@@ -34,7 +34,13 @@ class RAGDatabase:
         
         ids = [str(v["id"]) for v in vacancies]
         texts = [f"Title: {v['title']}\nCompany: {v['company']}\nDate: {v.get('pub_date', 'Неизвестно')}\n\nDescription:\n{v['description']}" for v in vacancies]
-        metadatas = [{"title": v["title"], "company": v["company"], "link": v["link"], "pub_date": v.get("pub_date", "Неизвестно")} for v in vacancies]
+        metadatas = [{
+            "title": v["title"], 
+            "company": v["company"], 
+            "link": v["link"], 
+            "pub_date": v.get("pub_date", "Неизвестно"),
+            "sphere": v.get("sphere", "Unknown")
+        } for v in vacancies]
         
         # Check existing ids to prevent duplicates
         existing_res = self.collection.get(ids=ids)
@@ -90,8 +96,24 @@ class RAGDatabase:
             
         return matched_jobs
 
-    def export_3d_embeddings(self, cv_text: str) -> List[Dict[str, Any]]:
+    def get_all_ids(self) -> set:
+        """Возвращает множество всех ID вакансий, хранящихся в базе."""
+        try:
+            res = self.collection.get(include=[])
+            return set(res.get("ids", []))
+        except Exception as e:
+            print(f"⚠️ Ошибка при получении ID из базы: {e}")
+            return set()
+
+    def export_3d_embeddings(self, cv_text: str, ats_scores: Dict[str, int] = None, bt_statuses: Dict[str, bool] = None, foreign_statuses: Dict[str, bool] = None) -> List[Dict[str, Any]]:
         print("🌀 Запуск PCA для экспорта 3D пространства эмбеддингов...")
+        if ats_scores is None:
+            ats_scores = {}
+        if bt_statuses is None:
+            bt_statuses = {}
+        if foreign_statuses is None:
+            foreign_statuses = {}
+            
         try:
             # Получаем все векторы из ChromaDB
             data = self.collection.get(include=["embeddings", "metadatas", "documents"])
@@ -124,18 +146,26 @@ class RAGDatabase:
                 "title": "ВАШЕ РЕЗЮМЕ",
                 "company": "Вы",
                 "is_cv": True,
+                "is_big_tech": False,
+                "is_foreign": False,
                 "x": float(pca_result[0][0]),
                 "y": float(pca_result[0][1]),
                 "z": float(pca_result[0][2]),
+                "ats_score": 100
             })
             
             # Vacancy Points (Index 1 to N)
             for idx, vec3d in enumerate(pca_result[1:]):
+                job_id = db_ids[idx]
                 scatter_data.append({
-                    "id": db_ids[idx],
+                    "id": job_id,
                     "title": db_metadatas[idx].get("title", "Unknown"),
                     "company": db_metadatas[idx].get("company", "Unknown"),
                     "link": db_metadatas[idx].get("link", "#"),
+                    "sphere": db_metadatas[idx].get("sphere", "Other"),
+                    "ats_score": ats_scores.get(job_id, 0),
+                    "is_big_tech": bt_statuses.get(job_id, False),
+                    "is_foreign": foreign_statuses.get(job_id, False),
                     "is_cv": False,
                     "x": float(vec3d[0]),
                     "y": float(vec3d[1]),

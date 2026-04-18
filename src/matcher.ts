@@ -10,12 +10,17 @@ interface Vacancy {
     missing_keywords: string[];
     is_good_match: boolean;
     adapted_bullets?: string[];
+    sphere?: string;
+    matched_keywords?: string[];
+    origin_queries?: string[];
 }
 
 interface ScatterPoint {
     id: string;
     title: string;
     company: string;
+    sphere?: string;
+    ats_score?: number;
     is_cv: boolean;
     x: number;
     y: number;
@@ -115,6 +120,27 @@ function renderHtml(v: Vacancy): string {
         `;
     }
     
+    let matchedKeywordsHtml = '';
+    if (v.matched_keywords && v.matched_keywords.length > 0) {
+        matchedKeywordsHtml = `
+            <div style="margin-top: 5px;">
+                <strong style="font-size: 12px; color: #28a745;">✅ Matched Skills:</strong>
+                <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px;">
+                    ${v.matched_keywords.map(k => `<span class="badge" style="background: #d4edda; color: #155724; border: 1px solid #c3e6cb; font-size: 11px; padding: 2px 6px;">${k}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    let originQueriesHtml = '';
+    if (v.origin_queries && v.origin_queries.length > 0) {
+        originQueriesHtml = `
+            <div style="margin-top: 10px; font-size: 11px; color: #999; border-top: 1px dashed #eee; pt: 5px;">
+                🔍 Found via: ${v.origin_queries.join(', ')}
+            </div>
+        `;
+    }
+
     return `
         <div class="vacancy-card">
             <div class="v-header">
@@ -122,6 +148,7 @@ function renderHtml(v: Vacancy): string {
                     <a href="${v.link}" target="_blank" class="v-title">${v.title}</a>
                     <div class="v-company">🏢 ${v.company} &bull; 🕒 ${v.pub_date || 'Неизвестно'} ${goodMatchBadge}</div>
                 </div>
+                <div style="font-size: 12px; color: #666; background: #f0f0f0; padding: 2px 8px; border-radius: 10px;">${v.sphere || 'Other'}</div>
             </div>
             <div class="scores">
                 <span class="badge ${scoreClass}">ATS Score: ${v.ats_score}%</span>
@@ -130,8 +157,10 @@ function renderHtml(v: Vacancy): string {
             <div class="reasoning">
                 <strong>AI Review:</strong> ${v.reasoning}
             </div>
+            ${matchedKeywordsHtml}
             ${missingKeywordsHtml}
             ${adaptedBulletsHtml}
+            ${originQueriesHtml}
         </div>
     `;
 }
@@ -168,42 +197,96 @@ function render3DChart() {
     const Plotly = (window as any).Plotly;
     if (!Plotly) return;
 
-    const cvTrace = {
-        x: cvPoint ? [cvPoint.x] : [],
-        y: cvPoint ? [cvPoint.y] : [],
-        z: cvPoint ? [cvPoint.z] : [],
-        mode: 'markers+text',
-        type: 'scatter3d',
-        name: 'My CV',
-        text: ['⭐ YOUR RESUME'],
-        textposition: 'top center',
-        marker: { size: 12, color: 'red', symbol: 'diamond' },
-        hoverinfo: 'text'
+    // Группируем вакансии по сферам
+    const spheres = [...new Set(jobPoints.map(p => p.sphere || 'Other'))];
+    
+    // Цветовая палитра для сфер
+    const colorMap: Record<string, string> = {
+        'GenAI / LLM': '#FFD700',      // Gold
+        'Computer Vision': '#2ECC71',  // Emerald Green
+        'ML / Data Science': '#9B59B6', // Amethyst Purple
+        'Audio / Speech': '#E67E22',   // Carrot Orange
+        'Backend': '#3498DB',          // Peter River Blue
+        'Mobile': '#1ABC9C',           // Turquoise
+        'Product / Management': '#F1C40F', // Sun Flower Yellow
+        'Other': '#BDC3C7'             // Silver
     };
 
-    const jobsTrace = {
-        x: jobPoints.map(p => p.x),
-        y: jobPoints.map(p => p.y),
-        z: jobPoints.map(p => p.z),
-        mode: 'markers',
-        type: 'scatter3d',
-        name: 'Vacancies',
-        text: jobPoints.map(p => `${p.title}<br>${p.company}`),
-        marker: { size: 6, color: '#007bff', opacity: 0.8 },
-        hoverinfo: 'text'
-    };
+    const traces: any[] = [];
+
+    // Трейс для Резюме
+    if (cvPoint) {
+        traces.push({
+            x: [cvPoint.x],
+            y: [cvPoint.y],
+            z: [cvPoint.z],
+            mode: 'markers+text',
+            type: 'scatter3d',
+            name: '⭐ ВАШЕ РЕЗЮМЕ',
+            text: ['ВАШЕ РЕЗЮМЕ'],
+            textposition: 'top center',
+            marker: { size: 10, color: '#E74C3C', symbol: 'diamond', line: { color: 'white', width: 2 } },
+            hoverinfo: 'text'
+        });
+    }
+
+    // Трейсы для каждой сферы
+    spheres.forEach(sphere => {
+        const points = jobPoints.filter(p => (p.sphere || 'Other') === sphere);
+        
+        // Вычисляем размеры на основе ats_score (от 4 до 15)
+        const sizes = points.map(p => {
+            const score = p.ats_score || 0;
+            return 4 + (score / 100) * 12; 
+        });
+
+        // Вычисляем прозрачность на основе ats_score (от 0.3 до 1.0)
+        const opacities = points.map(p => {
+            const score = p.ats_score || 0;
+            return 0.3 + (score / 100) * 0.7;
+        });
+
+        traces.push({
+            x: points.map(p => p.x),
+            y: points.map(p => p.y),
+            z: points.map(p => p.z),
+            mode: 'markers',
+            type: 'scatter3d',
+            name: sphere,
+            text: points.map(p => `${p.title}<br>${p.company}<br>Сфера: ${sphere}<br>ATS Match: ${p.ats_score || 0}%`),
+            marker: { 
+                size: sizes, 
+                color: colorMap[sphere] || '#7F8C8D', 
+                opacity: opacities,
+                line: {
+                    color: colorMap[sphere] || '#7F8C8D',
+                    width: 0.5
+                }
+            },
+            hoverinfo: 'text'
+        });
+    });
 
     const layout = {
         margin: { l: 0, r: 0, b: 0, t: 30 },
-        title: '3D Semantic Space (PCA) of Vacancies & CV',
+        paper_bgcolor: '#f4f7f6',
         scene: {
-            xaxis: { title: 'PCA 1' },
-            yaxis: { title: 'PCA 2' },
-            zaxis: { title: 'PCA 3' }
+            xaxis: { title: 'PCA 1', gridcolor: '#eee' },
+            yaxis: { title: 'PCA 2', gridcolor: '#eee' },
+            zaxis: { title: 'PCA 3', gridcolor: '#eee' },
+            bgcolor: '#ffffff'
+        },
+        legend: {
+            orientation: 'h',
+            y: 0
+        },
+        title: {
+            text: 'Семантическая карта рынка (кластеризация по сферам)',
+            font: { size: 16, color: '#2c3e50' }
         }
     };
 
-    Plotly.newPlot('scatter-3d-plot', [cvTrace, jobsTrace], layout);
+    Plotly.newPlot('scatter-3d-plot', traces, layout);
 }
 
 // Attach Event Listeners

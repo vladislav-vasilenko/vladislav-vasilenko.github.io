@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import json
 import argparse
@@ -15,14 +16,60 @@ from dotenv import load_dotenv
 load_dotenv()
 from langchain_core.prompts import PromptTemplate
 
+# Версия логики оценки (инкрементировать при изменении промпта или структуры данных)
+PROMPT_VERSION = "v9" 
+
+# Список Tier-1 IT компаний (Big Tech)
+BIG_TECH_COMPANIES = [
+    "Яндекс", "Yandex", "Сбер", "Sber", "Т-Банк", "T-Bank", "Тинькофф", "Tinkoff",
+    "VK", "Mail.ru", "Авито", "Avito", "Ozon", "Озон", "Альфа-Банк", "Alfa-Bank",
+    "ВТБ", "VTB", "Касперский", "Kaspersky", "Positive Technologies", "Wildberries",
+    "МТС", "MTS", "МегаФон", "MegaFon", "Билайн", "Beeline", "Ростелеком", "Rostelecom", 
+    "X5", "X5 Tech", "Циан", "Cian", "Selectel", "HeadHunter", "HH", "Газпромбанк", "GPB",
+    "2ГИС", "2GIS", "Lamoda", "Ламода", "Совкомбанк", "Raiffeisen", "Райффайзен"
+]
+
+# Глобальные тех-гиганты (International Big Tech)
+GLOBAL_TECH_GIANTS = [
+    "Google", "Alphabet", "Meta", "Facebook", "Amazon", "Microsoft", "Apple", "Netflix",
+    "OpenAI", "Anthropic", "Mistral", "Cohere", "NVIDIA", "Tesla", "Twitter", "X.com",
+    "Cisco", "IBM", "Intel", "AMD", "Oracle", "Uber", "Airbnb", "Spotify", "Spotify",
+    "DeepMind", "DeepL", "HuggingFace", "Palantir", "Databricks", "Snowflake"
+]
+
+def is_big_tech(company_name: str) -> bool:
+    name_lower = company_name.lower()
+    return any(bt.lower() in name_lower for bt in BIG_TECH_COMPANIES + GLOBAL_TECH_GIANTS)
+
+def get_is_foreign(company_name: str, link: str) -> bool:
+    # 1. Проверка по списку глобальных гигантов
+    name_lower = company_name.lower()
+    if any(gt.lower() in name_lower for gt in GLOBAL_TECH_GIANTS):
+        return True
+        
+    # 2. Проверка по домену ссылки
+    if not link:
+        return False
+        
+    # Если ссылка содержит международные домены и не содержит .ru
+    domain_match = re.search(r'\.(com|io|net|dev|ai|org|edu|gov|eu|uk|us)\b', link.lower())
+    russian_match = re.search(r'\.(ru|su|рф)\b', link.lower())
+    
+    if domain_match and not russian_match:
+        return True
+        
+    return False
+
 # Импорт модулей
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from src.scraper import SberScraper
+import src.scraper as scr
 from src.rag_db import RAGDatabase
 
 class ATSResult(BaseModel):
     is_good_match: bool = Field(description="Подходит ли кандидат на вакансию более чем на 70%?")
     ats_score_percentage: int = Field(description="Процентное совпадение CV и JD")
+    sphere: str = Field(description="Сфера вакансии")
+    matched_keywords: List[str] = Field(description="Найденные в вакансии навыки из вашего резюме")
     missing_keywords: List[str] = Field(description="Критичные отсутствующие ключевые слова")
     reasoning: str = Field(description="Почему дана такая оценка (1-2 предложения)")
     adapted_bullets: List[str] = Field(
@@ -32,9 +79,11 @@ class ATSResult(BaseModel):
 def main():
     parser = argparse.ArgumentParser(description="AI RAG CV Matcher")
     parser.add_argument("--skip-scraping", action="store_true", help="Пропустить парсинг сайта Сбера и использовать кэшированные данные из БД")
+    parser.add_argument("--only-yandex", action="store_true", help="Scrape only Yandex (skip Sber)")
     parser.add_argument("--use-openai", action="store_true", help="Использовать OpenAI API вместо локального Ollama")
     parser.add_argument("--use-cloud-api", action="store_true", help="Использовать Vercel API Gateway (скрывает OpenAI ключ)")
     parser.add_argument("--openai-model", type=str, default="gpt-5.4-mini", help="Модель OpenAI (по умолчанию gpt-5.4-mini)")
+    parser.add_argument("--clear-cache", action="store_true", help="Полностью очистить локальный кэш LLM-ответов")
     args = parser.parse_args()
 
     print("🔥 Запуск RAG-пайплайна матчинга вакансий...")
@@ -60,7 +109,13 @@ def main():
             sys.exit(1)
         
     db = RAGDatabase(db_path="./chroma_db")
-    scraper = SberScraper()
+    
+    # Получаем список уже изученных вакансий (Scraping Cache)
+    existing_ids = db.get_all_ids()
+    print(f"📊 В базе уже есть {len(existing_ids)} вакансий. Они будут пропущены при сборе.")
+    
+    sber_scraper = scr.SberScraper()
+    yandex_scraper = scr.YandexScraper()
     
     # Список самых актуальных R&D запросов для парсинга
     queries = [
@@ -78,14 +133,63 @@ def main():
     
     if not args.skip_scraping:
         print("\n--- ЭТАП 1: СКРЕЙПИНГ ВАКАНСИЙ ---")
+        
+        # 1. Сбер (пропускаем если указано --only-yandex)
+        if not args.only_yandex:
+            print("🔍 Запуск парсинга Сбера...")
+            for q in queries:
+                jobs = sber_scraper.fetch_jobs(q, existing_ids=existing_ids)
+                all_jobs.extend(jobs)
+        else:
+            print("⏭️ Пропуск парсинга Сбера (--only-yandex)")
+            
+        # 2. Яндекс (всегда если не --skip-scraping)
+        yandex_url = "https://yandex.ru/jobs/vacancies?professions=backend-developer&professions=database-developer&professions=desktop-developer&professions=frontend-developer&professions=full-stack-developer&professions=ml-developer&professions=mob-app-developer&professions=mob-app-developer-android&professions=mob-app-developer-ios&professions=noc-developer&professions=system-developer"
+        yandex_jobs = yandex_scraper.fetch_jobs(yandex_url, existing_ids=existing_ids)
+        all_jobs.extend(yandex_jobs)
+        
+        # 3. HeadHunter (парсим топ по запросам)
+        print("🔍 Запуск парсинга HeadHunter...")
+        hh_scraper = scr.HHScraper(limit=30)
         for q in queries:
-            jobs = scraper.fetch_jobs(q)
+            jobs = hh_scraper.fetch_jobs(q, existing_ids=existing_ids)
             all_jobs.extend(jobs)
             
-        unique_jobs = {job["id"]: job for job in all_jobs}.values()
+        # 4. Ozon Careers
+        print("🔍 Запуск парсинга Ozon...")
+        ozon_scraper = scr.OzonScraper(limit=20)
+        # Озон хорошо ищет по коротким запросам
+        for q in ["ML", "Machine Learning", "Python"]:
+            jobs = ozon_scraper.fetch_jobs(q, existing_ids=existing_ids)
+            all_jobs.extend(jobs)
+            
+        # 5. Avito Careers
+        print("🔍 Запуск парсинга Avito...")
+        avito_scraper = scr.AvitoScraper(limit=20)
+        # Авито хорошо ищет по современным тегам
+        for q in ["LLM", "Generative AI", "ML"]:
+            jobs = avito_scraper.fetch_jobs(q, existing_ids=existing_ids)
+            all_jobs.extend(jobs)
+            
+        # Агрегация уникальных вакансий и их источников
+        unique_jobs_map = {}
+        for job in all_jobs:
+            jid = job["id"]
+            if jid in unique_jobs_map:
+                # Добавляем новый источник, если его еще нет
+                q = job.get("origin_query", "unknown")
+                if "origin_queries" not in unique_jobs_map[jid]:
+                     unique_jobs_map[jid]["origin_queries"] = [unique_jobs_map[jid].get("origin_query", "unknown")]
+                if q not in unique_jobs_map[jid]["origin_queries"]:
+                    unique_jobs_map[jid]["origin_queries"].append(q)
+            else:
+                job["origin_queries"] = [job.get("origin_query", "unknown")]
+                unique_jobs_map[jid] = job
+        
+        unique_jobs = list(unique_jobs_map.values())
         
         print("\n--- ЭТАП 2: ВЕКТОРИЗАЦИЯ И РАЗМЕЩЕНИЕ В БД ---")
-        db.add_vacancies(list(unique_jobs))
+        db.add_vacancies(unique_jobs)
     else:
         print("\n--- ЭТАП 1 & 2 ПРОПУЩЕНЫ: Используем существующие вакансии из ChromaDB ---")
     
@@ -153,6 +257,11 @@ def main():
     
     # Загружаем кэш
     cache_path = "./ai_cache.json"
+    
+    if args.clear_cache and os.path.exists(cache_path):
+        print("🗑️ Очистка локального кэша по запросу (--clear-cache)...")
+        os.remove(cache_path)
+        
     ai_cache = {}
     if os.path.exists(cache_path):
         try:
@@ -160,6 +269,9 @@ def main():
                 ai_cache = json.load(f)
         except:
             pass
+
+    # Хеш резюме для кэширования
+    cv_hash = hashlib.md5(cv_search_text.encode('utf-8')).hexdigest()
 
     if llm:
         structured_llm = llm.with_structured_output(ATSResult)
@@ -184,18 +296,24 @@ Candidate Resume:
     os.makedirs(cv_exports_dir, exist_ok=True)
     
     for job in top_jobs:
-        # Уникальный хеш для пары "Вакансия + Резюме"
-        combo_text = job["document"] + cv_search_text
-        job_hash = hashlib.md5(combo_text.encode('utf-8')).hexdigest()
+        # Уникальный стабильный ключ для кэша: Job ID + CV Hash + Version
+        job_id = job["id"]
+        job_hash = hashlib.md5(f"{job_id}_{cv_hash}_{PROMPT_VERSION}".encode('utf-8')).hexdigest()
         
         try:
             # 1. Проверяем кэш
-            if job_hash in ai_cache:
+            # Также проверяем наличие поля matched_keywords, если мы хотим принудительно обновить старый кэш
+            is_in_cache = job_hash in ai_cache
+            has_new_fields = is_in_cache and "matched_keywords" in ai_cache[job_hash]
+            
+            if is_in_cache and has_new_fields:
                 print(f"⚡ КЭШ: {job['metadata']['title']} (извлечено за 0мс)")
                 ats_val_dict = ai_cache[job_hash]
             else:
-                # 2. Идем в LLM или Cloud API
-                print(f"🤖 Оценка: {job['metadata']['title']} (Cosine Dist: {job['distance']:.4f})...")
+                if is_in_cache and not has_new_fields:
+                    print(f"🔄 ОБНОВЛЕНИЕ: {job['metadata']['title']} (добавление новых полей)...")
+                else:
+                    print(f"🤖 Оценка: {job['metadata']['title']} (Cosine Dist: {job['distance']:.4f})...")
                 
                 if args.use_cloud_api:
                     api_secret = os.environ.get("API_SECRET", "")
@@ -219,8 +337,10 @@ Candidate Resume:
                     
                     ats_val_dict = {
                         "ats_score_percentage": data.get("ats_score_percentage", 0),
-                        "reasoning": data.get("reasoning", ""),
+                        "sphere": data.get("sphere", "Unknown"),
+                        "matched_keywords": data.get("matched_keywords", []),
                         "missing_keywords": data.get("missing_keywords", []),
+                        "reasoning": data.get("reasoning", ""),
                         "is_good_match": data.get("is_good_match", False),
                         "adapted_bullets": data.get("adapted_bullets", [])
                     }
@@ -231,10 +351,12 @@ Candidate Resume:
                     })
                     ats_val_dict = {
                         "ats_score_percentage": ats_val.ats_score_percentage,
-                        "reasoning": ats_val.reasoning,
+                        "sphere": ats_val.sphere,
+                        "matched_keywords": getattr(ats_val, "matched_keywords", []),
                         "missing_keywords": ats_val.missing_keywords,
-                        "is_good_match": ats_val.is_good_match,
-                        "adapted_bullets": ats_val.adapted_bullets
+                        "reasoning": ats_val.reasoning,
+                        "adapted_bullets": ats_val.adapted_bullets,
+                        "is_good_match": ats_val.is_good_match
                     }
                     
                 # Сохраняем результат в кэш словарь
@@ -348,19 +470,30 @@ Candidate Resume:
             with open(cv_html_path, "w", encoding="utf-8") as f:
                 f.write(full_html)
                 
+            job_id = job["id"]
+            company_name = job["metadata"]["company"]
+            job_link = job["metadata"].get("link", "")
+            big_tech_status = is_big_tech(company_name)
+            foreign_status = get_is_foreign(company_name, job_link)
+            
             # Добавляем в JSON выдачу
             ranked_results.append({
-                "id": job["id"],
+                "id": job_id,
                 "title": job["metadata"]["title"],
-                "company": job["metadata"]["company"],
-                "link": job["metadata"]["link"],
+                "company": company_name,
+                "is_big_tech": big_tech_status,
+                "is_foreign": foreign_status,
                 "pub_date": job["metadata"].get("pub_date", "Неизвестно"),
-                "ats_score": ats_val_dict["ats_score_percentage"],
+                "sphere": ats_val_dict.get("sphere", "Unknown"),
+                "matched_keywords": ats_val_dict.get("matched_keywords", []),
+                "missing_keywords": ats_val_dict.get("missing_keywords", []),
+                "origin_queries": job["metadata"].get("origin_queries", []),
+                "link": job["metadata"]["link"],
+                "ats_score": ats_val_dict.get("ats_score_percentage", 0),
                 "cosine_distance": float(job["distance"]),
-                "reasoning": ats_val_dict["reasoning"],
-                "missing_keywords": ats_val_dict["missing_keywords"],
-                "is_good_match": ats_val_dict["is_good_match"],
-                "adapted_bullets": ats_val_dict.get("adapted_bullets", [])
+                "reasoning": ats_val_dict.get("reasoning", ""),
+                "is_good_match": ats_val_dict.get("is_good_match", False),
+                "adapted_bullets": adapted_cv_bullets
             })
         except Exception as e:
             err_str = str(e)
@@ -378,10 +511,69 @@ Candidate Resume:
     
     # 5.1 Генерация 3D Scatter (PCA)
     print("\n--- ГЕНЕРАЦИЯ 3D ПРОСТРАНСТВА (PCA) ---")
-    scatter_3d_data = db.export_3d_embeddings(cv_search_text)
+    ats_score_map = {res["id"]: res["ats_score"] for res in ranked_results}
+    bt_status_map = {res["id"]: res.get("is_big_tech", False) for res in ranked_results}
+    foreign_status_map = {res["id"]: res.get("is_foreign", False) for res in ranked_results}
     
-    print("\n--- ЭТАП 5: ЭКСПОРТ В JSON ДЛЯ ФРОНТЕНДА ---")
+    scatter_3d_data = db.export_3d_embeddings(
+        cv_search_text, 
+        ats_scores=ats_score_map, 
+        bt_statuses=bt_status_map,
+        foreign_statuses=foreign_status_map
+    )
+    
+    # 5. ГЕНЕРАЦИЯ СОПРОВОДИТЕЛЬНЫХ ПИСЕМ (ТОП-3)
+    print("\n--- ЭТАП 5: ГЕНЕРАЦИЯ COVER LETTERS (TOP-3) ---")
     output_dir = "../../public"
+    cl_dir = os.path.join(output_dir, "cover_letters")
+    os.makedirs(cl_dir, exist_ok=True)
+    
+    # Сортируем по ATS баллу
+    top_matches = sorted(ranked_results, key=lambda x: x["ats_score"], reverse=True)[:3]
+    
+    for match in top_matches:
+        if match["ats_score"] < 50:
+            continue
+            
+        cl_filename = f"cl_{match['id']}.txt"
+        cl_path = os.path.join(cl_dir, cl_filename)
+        
+        if os.path.exists(cl_path):
+            print(f"⚡ CL КЭШ: Сопроводительное для {match['title']} уже есть.")
+            match["cl_path"] = f"cover_letters/{cl_filename}"
+            continue
+            
+        print(f"🤖 Генерируем Cover Letter для {match['title']} ({match['company']})...")
+        try:
+            cl_api_url = os.environ.get("CV_API_URL", "").replace("/ats", "/coverletter")
+            if not cl_api_url:
+                cl_api_url = "https://vladislav-vasilenko.github.io/api/coverletter"
+                
+            cl_payload = {
+                "vacancyText": next(j["document"] for j in search_results if j["id"] == match["id"]),
+                "matchedKeywords": match.get("matched_keywords", []),
+                "sphere": match.get("sphere", "General"),
+                "lang": "ru" # Или детектировать по языку вакансии
+            }
+            
+            headers = {"Content-Type": "application/json"}
+            api_secret = os.environ.get("API_SECRET", "")
+            if api_secret:
+                headers["Authorization"] = f"Bearer {api_secret}"
+
+            res = requests.post(cl_api_url, json=cl_payload, headers=headers)
+            res.raise_for_status()
+            cl_text = res.json().get("coverLetter", "")
+            
+            with open(cl_path, "w", encoding="utf-8") as f:
+                f.write(cl_text)
+            
+            match["cl_path"] = f"cover_letters/{cl_filename}"
+            print(f"✅ Готово: {cl_filename}")
+        except Exception as e:
+            print(f"❌ Ошибка генерации CL для {match['id']}: {e}")
+
+    print("\n--- ЭТАП 6: ЭКСПОРТ В JSON ДЛЯ ФРОНТЕНДА ---")
     os.makedirs(output_dir, exist_ok=True)
     json_path = os.path.join(output_dir, "matcher_data.json")
     
