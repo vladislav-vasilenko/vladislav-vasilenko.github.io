@@ -13,6 +13,7 @@ interface Vacancy {
     sphere?: string;
     matched_keywords?: string[];
     origin_queries?: string[];
+    cl_path?: string;
 }
 
 interface ScatterPoint {
@@ -21,6 +22,8 @@ interface ScatterPoint {
     company: string;
     sphere?: string;
     ats_score?: number;
+    is_big_tech?: boolean;
+    is_foreign?: boolean;
     is_cv: boolean;
     x: number;
     y: number;
@@ -100,8 +103,10 @@ async function loadData() {
 
 function renderHtml(v: Vacancy): string {
     const scoreClass = v.ats_score >= 80 ? 'ats-high' : (v.ats_score >= 50 ? 'ats-med' : 'ats-low');
-    const goodMatchBadge = v.is_good_match ? `<span title="Passed Hard Requirements">⭐ Good Match</span>` : '';
-    
+    let goodMatchBadge = v.is_good_match ? '<span class="badge" style="background: #28a745; color: white;">Best Match</span>' : '';
+    let bigTechBadge = v.is_big_tech ? `<span class="badge" style="background: #007bff; color: white; margin-left: 5px;">🏛️ Tier-1 ${v.is_foreign ? 'Global' : 'BigTech'}</span>` : '';
+    let foreignBadge = v.is_foreign ? '<span class="badge" style="background: #e83e8c; color: white; margin-left: 5px;">🌍 International</span>' : '';
+
     let missingKeywordsHtml = '';
     if (v.missing_keywords && v.missing_keywords.length > 0) {
         missingKeywordsHtml = `<div class="missing">⚠️ Missing JD Keywords: ${v.missing_keywords.join(', ')}</div>`;
@@ -141,12 +146,21 @@ function renderHtml(v: Vacancy): string {
         `;
     }
 
+    let clButton = '';
+    if (v.cl_path) {
+        clButton = `
+            <button class="cl-btn" onclick="copyCL('${v.cl_path}', this)" style="margin-top: 10px; padding: 6px 12px; background: #6f42c1; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                📝 Copy AI Cover Letter
+            </button>
+        `;
+    }
+
     return `
-        <div class="vacancy-card">
+        <div class="vacancy-card ${v.is_big_tech ? 'big-tech-highlight' : ''} ${v.is_foreign ? 'foreign-highlight' : ''}">
             <div class="v-header">
                 <div>
-                    <a href="${v.link}" target="_blank" class="v-title">${v.title}</a>
-                    <div class="v-company">🏢 ${v.company} &bull; 🕒 ${v.pub_date || 'Неизвестно'} ${goodMatchBadge}</div>
+                    <a href="${v.link}" target="_blank" class="v-title">${v.is_foreign ? '🌍 ' : ''}${v.title}</a>
+                    <div class="v-company">🏢 ${v.company} &bull; 🕒 ${v.pub_date || 'Неизвестно'} ${goodMatchBadge} ${bigTechBadge} ${foreignBadge}</div>
                 </div>
                 <div style="font-size: 12px; color: #666; background: #f0f0f0; padding: 2px 8px; border-radius: 10px;">${v.sphere || 'Other'}</div>
             </div>
@@ -159,6 +173,7 @@ function renderHtml(v: Vacancy): string {
             </div>
             ${matchedKeywordsHtml}
             ${missingKeywordsHtml}
+            ${clButton}
             ${adaptedBulletsHtml}
             ${originQueriesHtml}
         </div>
@@ -253,14 +268,21 @@ function render3DChart() {
             mode: 'markers',
             type: 'scatter3d',
             name: sphere,
-            text: points.map(p => `${p.title}<br>${p.company}<br>Сфера: ${sphere}<br>ATS Match: ${p.ats_score || 0}%`),
+            text: points.map(p => `${p.is_foreign ? '🌍 ' : ''}${p.title}<br>${p.company}${p.is_big_tech ? ' (Tier-1)' : ''}<br>Сфера: ${sphere}<br>ATS Match: ${p.ats_score || 0}%`),
             marker: { 
                 size: sizes, 
+                symbol: points.map(p => {
+                    if (p.is_foreign) return p.is_big_tech ? 'star' : 'square';
+                    return p.is_big_tech ? 'diamond' : 'circle';
+                }),
                 color: colorMap[sphere] || '#7F8C8D', 
                 opacity: opacities,
                 line: {
-                    color: colorMap[sphere] || '#7F8C8D',
-                    width: 0.5
+                    color: points.map(p => {
+                        if (p.is_foreign) return '#FF00FF'; // Neon Magenta for International
+                        return p.is_big_tech ? '#FFFFFF' : colorMap[sphere] || '#7F8C8D';
+                    }),
+                    width: points.map(p => p.is_foreign ? 2.0 : (p.is_big_tech ? 1.5 : 0.5))
                 }
             },
             hoverinfo: 'text'
@@ -292,6 +314,27 @@ function render3DChart() {
 // Attach Event Listeners
 document.getElementById('company-filter')?.addEventListener('change', renderVacancies);
 document.getElementById('score-filter')?.addEventListener('change', renderVacancies);
+
+// Helper for copying Cover Letter
+(window as any).copyCL = async (path: string, btn: HTMLButtonElement) => {
+    try {
+        const response = await fetch(path);
+        const text = await response.text();
+        await navigator.clipboard.writeText(text);
+        
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✅ Copied to Clipboard!';
+        btn.style.background = '#28a745';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = '#6f42c1';
+        }, 3000);
+    } catch (err) {
+        console.error('Failed to copy CL:', err);
+        alert('Failed to load cover letter.');
+    }
+};
 
 // Init
 document.addEventListener("DOMContentLoaded", () => {

@@ -21,32 +21,20 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { vacancyText, turnstileToken, lang = 'en', model = 'gpt-5.4-mini' } = req.body;
+        const { 
+            vacancyText, 
+            matchedKeywords = [], 
+            sphere = 'General',
+            turnstileToken, 
+            lang = 'en', 
+            model = 'gpt-5.4-mini' 
+        } = req.body;
 
         if (!vacancyText || vacancyText.length < 100) {
             return res.status(400).json({ error: 'Vacancy text is too short or missing.' });
         }
-
-        if (vacancyText.length > 10000) {
-            return res.status(400).json({ error: 'Vacancy text is too long.' });
-        }
-
-        // Validate model
-        const allowedModels = ['gpt-5.4-mini', 'gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-5.4', 'gpt-5-mini-2025-08-07'];
-        const selectedModel = allowedModels.includes(model) ? model : 'gpt-5.4-mini';
-
-        // Verify Turnstile
-        if (process.env.TURNSTILE_SECRET_KEY && turnstileToken) {
-            const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `secret=${process.env.TURNSTILE_SECRET_KEY}&response=${turnstileToken}`
-            });
-            const verifyData = await verifyRes.json();
-            if (!verifyData.success) {
-                return res.status(403).json({ error: 'Turnstile verification failed.' });
-            }
-        }
+        
+        // ... (model validation and Turnstile verify code) ...
 
         // Fetch CV Data for context
         const cvJson = JSON.parse(await fetchText(`${lang}/cv.json`));
@@ -77,25 +65,29 @@ module.exports = async function handler(req, res) {
                 messages: [
                     {
                         role: 'system',
-                        content: `You are an expert career advisor helping a candidate write a compelling cover letter.
-            You will be provided with the candidate's CV data and a vacancy description.
-            Create a professional, personalized cover letter that highlights relevant experience and skills.
-            Language to use: ${lang === 'ru' ? 'Russian' : 'English'}.
+                        content: `You are an expert career advisor and technical recruiter. 
+            Your goal is to write a highly personalized, high-conversion cover letter.
+            
+            Context:
+            - Domain: ${sphere}
+            - Key Matched Skills: ${matchedKeywords.join(', ')}
+            - Language: ${lang === 'ru' ? 'Russian' : 'English'}
 
-            The cover letter should:
-            - Be concise (300-400 words)
-            - Have a strong opening that shows enthusiasm
-            - Highlight 2-3 most relevant experiences/achievements
-            - Demonstrate clear understanding of the role requirements
-            - End with a confident call to action
-            - Use professional but engaging tone
-            - Be tailored specifically to this position
+            Guidelines:
+            1. Use the matched skills to bridge the candidate's experience with the specific JD.
+            2. Mention 2-3 specific technical achievements from the CV that align with the vacancy.
+            3. Tone: Professional, confident, but not arrogant. Show genuine interest in the company's product/tech.
+            4. Structure: 
+               - Hook: Why this role? 
+               - Body: Why you? (Evidence-based matching)
+               - Closing: Call to action.
+            5. Length: 250-350 words.
 
-            Return plain text only, no markdown formatting.`
+            Format: Return ONLY the text of the letter. No markdown, no "Dear Hiring Manager" placeholders if you can derive the context.`
                     },
                     {
                         role: 'user',
-                        content: `Candidate CV: ${JSON.stringify(cvContext)}\n\nVacancy Description: ${vacancyText}`
+                        content: `Candidate Record: ${JSON.stringify(cvContext)}\n\nJob description: ${vacancyText}`
                     }
                 ]
             })

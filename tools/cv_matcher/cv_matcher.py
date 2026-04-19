@@ -17,7 +17,8 @@ load_dotenv()
 from langchain_core.prompts import PromptTemplate
 
 # Версия логики оценки (инкрементировать при изменении промпта или структуры данных)
-PROMPT_VERSION = "v9" 
+# v10: rubric-based scoring (4 axes), is_good_match детерминирован в Python, adapted_bullets guardrails.
+PROMPT_VERSION = "v10"
 
 # Список Tier-1 IT компаний (Big Tech)
 BIG_TECH_COMPANIES = [
@@ -66,24 +67,48 @@ import src.scraper as scr
 from src.rag_db import RAGDatabase
 
 class ATSResult(BaseModel):
-    is_good_match: bool = Field(description="Подходит ли кандидат на вакансию более чем на 70%?")
-    ats_score_percentage: int = Field(description="Процентное совпадение CV и JD")
-    sphere: str = Field(description="Сфера вакансии")
-    matched_keywords: List[str] = Field(description="Найденные в вакансии навыки из вашего резюме")
-    missing_keywords: List[str] = Field(description="Критичные отсутствующие ключевые слова")
-    reasoning: str = Field(description="Почему дана такая оценка (1-2 предложения)")
+    # Computed by Python from ats_score_percentage — LLM should not decide this.
+    is_good_match: bool = Field(
+        default=False,
+        description="IGNORE — runtime sets this to (ats_score_percentage >= 70). Always output false."
+    )
+    ats_score_percentage: int = Field(
+        description="Integer 0-100. Sum of four 25-pt axes from the rubric: tech stack, seniority, domain fit, soft signals."
+    )
+    sphere: str = Field(description="Сфера вакансии: NLP / LLM, Audio ML, Backend Go, Data Eng и т.д.")
+    matched_keywords: List[str] = Field(
+        description="Навыки/инструменты, явно присутствующие И в CV, И в JD (до 12 элементов)."
+    )
+    missing_keywords: List[str] = Field(
+        description="Критичные требования JD, НЕ подтверждённые в CV (до 8 элементов)."
+    )
+    reasoning: str = Field(
+        description="1-2 предложения на русском со ссылкой на конкретные оси рубрики, которые определили балл."
+    )
     adapted_bullets: List[str] = Field(
-        description="2-3 улучшенных буллита для резюме кандидата. Ваша задача - переформулировать реальный опыт кандидата, переложив его на терминологию вакансии (например, добавив проставленные метрики или правильные ключевые слова, которых изначально не было, но которые подразумеваются его задачами)."
+        description=(
+            "2-3 буллита из существующего опыта кандидата, переформулированных под терминологию JD. "
+            "ЗАПРЕЩЕНО выдумывать технологии, команды, метрики, которых нет в CV. "
+            "Разрешено: заменять эквивалентные термины, выносить метрики, уже подразумеваемые достижениями. "
+            "Вывод на русском."
+        )
     )
 
 def main():
     parser = argparse.ArgumentParser(description="AI RAG CV Matcher")
-    parser.add_argument("--skip-scraping", action="store_true", help="Пропустить парсинг сайта Сбера и использовать кэшированные данные из БД")
-    parser.add_argument("--only-yandex", action="store_true", help="Scrape only Yandex (skip Sber)")
+    parser.add_argument("--skip-scraping", action="store_true", help="Пропустить скрейпинг и использовать кэшированные вакансии из ChromaDB")
+    parser.add_argument(
+        "--sources",
+        type=str,
+        default="yandex,hh,ozon,avito,tinkoff,vk,x5",
+        help="CSV-список источников для скрейпинга. Доступно: yandex,hh,ozon,avito,tinkoff,vk,x5,sber (sber по умолчанию отключён — anti-bot).",
+    )
     parser.add_argument("--use-openai", action="store_true", help="Использовать OpenAI API вместо локального Ollama")
     parser.add_argument("--use-cloud-api", action="store_true", help="Использовать Vercel API Gateway (скрывает OpenAI ключ)")
     parser.add_argument("--openai-model", type=str, default="gpt-5.4-mini", help="Модель OpenAI (по умолчанию gpt-5.4-mini)")
     parser.add_argument("--clear-cache", action="store_true", help="Полностью очистить локальный кэш LLM-ответов")
+    parser.add_argument("--top-k", type=int, default=40, help="Сколько вакансий взять из RAG-поиска для ATS-оценки (по умолчанию 40)")
+    parser.add_argument("--rag-pooling", choices=["min", "mean"], default="min", help="Стратегия пулинга дистанций между чанками CV и вакансиями: 'min' (лучший матч любого чанка) или 'mean' (усреднение)")
     args = parser.parse_args()
 
     print("🔥 Запуск RAG-пайплайна матчинга вакансий...")
@@ -114,10 +139,7 @@ def main():
     existing_ids = db.get_all_ids()
     print(f"📊 В базе уже есть {len(existing_ids)} вакансий. Они будут пропущены при сборе.")
     
-    sber_scraper = scr.SberScraper()
-    yandex_scraper = scr.YandexScraper()
-    
-    # Список самых актуальных R&D запросов для парсинга
+    # Список R&D запросов для keyword-based источников.
     queries = [
         "ML",
         "LLM",
@@ -127,49 +149,53 @@ def main():
         "Diffusion",
         "RLHF",
         "Kandinsky",
-        "Machine Learning Engineer"
+        "Machine Learning Engineer",
     ]
+
+    # Более короткий набор — для сайтов с меньшим объёмом вакансий.
+    short_queries = ["ML", "LLM", "Generative AI"]
+
+    # Специальный URL для Яндекса — фильтр по всем dev-профессиям разом.
+    yandex_listing_url = (
+        "https://yandex.ru/jobs/vacancies?"
+        "professions=backend-developer&professions=database-developer"
+        "&professions=desktop-developer&professions=frontend-developer"
+        "&professions=full-stack-developer&professions=ml-developer"
+        "&professions=mob-app-developer&professions=mob-app-developer-android"
+        "&professions=mob-app-developer-ios&professions=noc-developer"
+        "&professions=system-developer"
+    )
+
+    # Конфиг: source_key → (фабрика, список запросов).
+    # Каждый вызов фабрики должен возвращать свежий scraper (каждый держит свою сессию Playwright).
+    source_plan = {
+        "yandex": (lambda: scr.YandexScraper(limit=200), [yandex_listing_url]),
+        "hh":     (lambda: scr.HHScraper(limit=30), queries),
+        "ozon":   (lambda: scr.OzonScraper(limit=20), ["ML", "Machine Learning", "Python"]),
+        "avito":  (lambda: scr.AvitoScraper(limit=20), short_queries),
+        "tinkoff":(lambda: scr.TinkoffScraper(limit=20), short_queries),
+        "vk":     (lambda: scr.VKScraper(limit=20), short_queries),
+        "x5":     (lambda: scr.X5RetailScraper(limit=20), short_queries),
+        "sber":   (lambda: scr.SberScraper(limit=20), ["ML"]),
+    }
+
+    requested_sources = [s.strip().lower() for s in args.sources.split(",") if s.strip()]
+    unknown = [s for s in requested_sources if s not in source_plan]
+    if unknown:
+        print(f"⚠️ Неизвестные источники: {unknown}. Доступно: {list(source_plan)}")
+        requested_sources = [s for s in requested_sources if s in source_plan]
+
     all_jobs = []
-    
+
     if not args.skip_scraping:
-        print("\n--- ЭТАП 1: СКРЕЙПИНГ ВАКАНСИЙ ---")
-        
-        # 1. Сбер (пропускаем если указано --only-yandex)
-        if not args.only_yandex:
-            print("🔍 Запуск парсинга Сбера...")
-            for q in queries:
-                jobs = sber_scraper.fetch_jobs(q, existing_ids=existing_ids)
+        print(f"\n--- ЭТАП 1: СКРЕЙПИНГ ВАКАНСИЙ (sources: {','.join(requested_sources)}) ---")
+        for key in requested_sources:
+            factory, qs = source_plan[key]
+            print(f"🔍 Запуск парсинга {key} ({len(qs)} запросов)...")
+            scraper = factory()
+            for q in qs:
+                jobs = scraper.fetch_jobs(q, existing_ids=existing_ids)
                 all_jobs.extend(jobs)
-        else:
-            print("⏭️ Пропуск парсинга Сбера (--only-yandex)")
-            
-        # 2. Яндекс (всегда если не --skip-scraping)
-        yandex_url = "https://yandex.ru/jobs/vacancies?professions=backend-developer&professions=database-developer&professions=desktop-developer&professions=frontend-developer&professions=full-stack-developer&professions=ml-developer&professions=mob-app-developer&professions=mob-app-developer-android&professions=mob-app-developer-ios&professions=noc-developer&professions=system-developer"
-        yandex_jobs = yandex_scraper.fetch_jobs(yandex_url, existing_ids=existing_ids)
-        all_jobs.extend(yandex_jobs)
-        
-        # 3. HeadHunter (парсим топ по запросам)
-        print("🔍 Запуск парсинга HeadHunter...")
-        hh_scraper = scr.HHScraper(limit=30)
-        for q in queries:
-            jobs = hh_scraper.fetch_jobs(q, existing_ids=existing_ids)
-            all_jobs.extend(jobs)
-            
-        # 4. Ozon Careers
-        print("🔍 Запуск парсинга Ozon...")
-        ozon_scraper = scr.OzonScraper(limit=20)
-        # Озон хорошо ищет по коротким запросам
-        for q in ["ML", "Machine Learning", "Python"]:
-            jobs = ozon_scraper.fetch_jobs(q, existing_ids=existing_ids)
-            all_jobs.extend(jobs)
-            
-        # 5. Avito Careers
-        print("🔍 Запуск парсинга Avito...")
-        avito_scraper = scr.AvitoScraper(limit=20)
-        # Авито хорошо ищет по современным тегам
-        for q in ["LLM", "Generative AI", "ML"]:
-            jobs = avito_scraper.fetch_jobs(q, existing_ids=existing_ids)
-            all_jobs.extend(jobs)
             
         # Агрегация уникальных вакансий и их источников
         unique_jobs_map = {}
@@ -204,41 +230,49 @@ def main():
     with open(cv_json_path, "r", encoding="utf-8") as f:
         cv_data = json.load(f)
 
-    # Собираем полный текст для RAG-поиска (все файлы)
-    cv_search_text = ""
+    # Собираем отдельные чанки CV для multi-chunk RAG-поиска.
+    # about.md и каждая позиция — отдельный вектор. Поиск пулится (min/mean)
+    # чтобы, например, NLP-вакансия находила релевантный кусок даже если
+    # большая часть опыта в резюме — backend.
+    cv_chunks: List[str] = []
     structured_experience = [] # Для красивого рендеринга в HTML
-    
-    # Сначала добавим информацию "Обо мне" из файла (если есть)
+
     about_path = "../../content/ru/about.md"
     about_text = ""
     if os.path.exists(about_path):
         with open(about_path, "r", encoding="utf-8") as f:
             about_text = f.read()
-            cv_search_text += f"{about_text}\n\n"
+            if about_text.strip():
+                cv_chunks.append(about_text)
 
-    # Теперь проходим по опыту работы из JSON
+    # Регэкспы для определения текущей позиции. Поддерживаем ru/en формулировки
+    # и обозначения вроде "2020 — н.в." и "2020 – present".
+    _current_position_markers = re.compile(
+        r"(настоящ|по\s+настоящ|н\.\s*в\.|present|current|now)", re.IGNORECASE
+    )
+
     for exp in cv_data.get("experience", []):
         exp_id = exp["id"]
         period = exp.get("period", "")
-        
-        # Фильтр на 8 лет (от 2018 года)
-        # Ищем любые 4 цифры года в строке периода
+
+        # Фильтр: оставляем опыт ≥ 2018 г. ИЛИ любую текущую позицию.
         years = [int(s) for s in period.split() if s.isdigit() and len(s) == 4]
-        # Если в периоде есть годы, и все они меньше 2018 - пропускаем (кроме случаев 'настоящее время')
-        if years and max(years) < 2018 and "настоящее" not in period.lower():
+        is_current = bool(_current_position_markers.search(period))
+        if years and max(years) < 2018 and not is_current:
             continue
 
         md_path = os.path.join(cv_dir, f"{exp_id}.md")
-        
+
         description_md = ""
         if os.path.exists(md_path):
             with open(md_path, "r", encoding="utf-8") as f:
                 description_md = f.read()
-        
-        # Добавляем в текст для поиска
-        cv_search_text += f"Company: {exp['company']}\nRole: {exp['role']}\n{description_md}\n\n"
-        
-        # Сохраняем структуру для HTML
+
+        # Отдельный чанк на каждую позицию.
+        cv_chunks.append(
+            f"Company: {exp['company']}\nRole: {exp['role']}\nPeriod: {period}\n\n{description_md}"
+        )
+
         structured_experience.append({
             "company": exp["company"],
             "role": exp["role"],
@@ -246,8 +280,16 @@ def main():
             "desc_html": markdown.markdown(description_md)
         })
 
-    print("\n--- ЭТАП 3: КОСИНУСНЫЙ ПОИСК ВАКАНСИЙ (RAG) ---")
-    top_jobs = db.search_similar_vacancies(query_text=cv_search_text, top_k=40)
+    # Объединённый текст сохраняем для обратной совместимости с ATS-оценкой,
+    # кэш-хешем и 3D-PCA — туда нужен единый текст.
+    cv_search_text = "\n\n".join(cv_chunks)
+
+    print("\n--- ЭТАП 3: КОСИНУСНЫЙ ПОИСК ВАКАНСИЙ (RAG, multi-chunk) ---")
+    top_jobs = db.search_similar_vacancies_multi_chunk(
+        cv_chunks=cv_chunks,
+        top_k=args.top_k,
+        pooling=args.rag_pooling,
+    )
     
     if not top_jobs:
         print("⚠️ Нет вакансий в базе для поиска.")
@@ -275,8 +317,7 @@ def main():
 
     if llm:
         structured_llm = llm.with_structured_output(ATSResult)
-        prompt = PromptTemplate.from_template("""You are a FAANG-level ATS Recruiter AI. 
-Evaluate the candidate's Resume against the provided Job Description.
+        prompt = PromptTemplate.from_template("""You are a FAANG-level ATS Recruiter AI. Evaluate the candidate's Resume against the provided Job Description and output a calibrated, structured assessment.
 
 Job Description:
 {vacancy}
@@ -284,10 +325,40 @@ Job Description:
 Candidate Resume:
 {cv}
 
-1. Determine the match percentage.
-2. Identify critical missing keywords.
-3. Provide brief reasoning.
-4. Provide 'adapted_bullets': rewrite 2-3 specific bullet points from the candidate's actual experience to perfectly align with the vacancy's specific terminology and missing keywords. Do NOT invent new experience, just re-frame their existing technical achievements using the language of the Job Description (e.g., if they built audio streaming, frame it as TTFAT/barge-in optimization if the job asks for it). Output these clearly in Russian.""")
+## Scoring rubric (MUST follow)
+Score on a 0-100 scale using FOUR equal axes (each worth 25 points):
+  • Tech stack overlap (25 pts) — languages, frameworks, libraries, ML techniques explicitly required.
+  • Seniority / scope (25 pts) — level (Junior/Middle/Senior/Staff), team size, project complexity.
+  • Domain fit (25 pts) — industry, product area (NLP / CV / audio / search / recsys / backend / etc.).
+  • Soft signals (25 pts) — language (RU/EN), location/remote fit, leadership, research / production profile.
+
+Bucket interpretation (for self-calibration — the final number is the sum of axes):
+  • 90-100: near-perfect fit, candidate can start immediately.
+  • 70-89: strong match, 1-2 minor gaps.
+  • 50-69: partial match, notable gaps in 1-2 axes.
+  • <50: weak match, fundamental mismatch on stack/seniority/domain.
+Be strict: do NOT inflate scores. A Senior ML role with 0% NLP experience in the CV cannot exceed 65.
+
+## Output fields (enforce all)
+  • ats_score_percentage — integer 0-100 (sum of the four axes above).
+  • sphere — short category label (e.g. "NLP / LLM", "Audio ML", "Backend Go", "Data Eng").
+  • matched_keywords — concrete skills/tools that appear in BOTH the CV and the JD (≤12 items).
+  • missing_keywords — critical JD requirements NOT evidenced in the CV (≤8 items).
+  • reasoning — 1-2 sentences in Russian referencing the specific axes that drove the score.
+  • adapted_bullets — 2-3 rewritten CV bullets (see rules below).
+  • is_good_match — leave for the runtime to compute; set to false by default.
+
+## adapted_bullets rules (CRITICAL)
+Rewrite 2-3 of the candidate's EXISTING bullet points using the JD's terminology.
+DO NOT INVENT new experience, technologies, companies, or metrics the candidate never mentioned.
+You may:
+  • substitute equivalent terms (e.g. "real-time audio streaming" → "TTFAT / barge-in latency optimization" IF JD asks for it);
+  • surface metrics/scales already implied by the candidate's achievements;
+  • translate Russian bullets to English or vice-versa if JD is in a different language.
+You MUST NOT:
+  • claim experience with a tool/framework not mentioned in the CV;
+  • fabricate numbers, team sizes, user counts.
+Output adapted_bullets in Russian.""")
         chain = prompt | structured_llm
 
     ranked_results = []
@@ -309,6 +380,9 @@ Candidate Resume:
             if is_in_cache and has_new_fields:
                 print(f"⚡ КЭШ: {job['metadata']['title']} (извлечено за 0мс)")
                 ats_val_dict = ai_cache[job_hash]
+                # Всегда пересчитываем is_good_match из актуального скора — старые
+                # записи кэша могли нести LLM-решение, которое расходится со скором.
+                ats_val_dict["is_good_match"] = ats_val_dict.get("ats_score_percentage", 0) >= 70
             else:
                 if is_in_cache and not has_new_fields:
                     print(f"🔄 ОБНОВЛЕНИЕ: {job['metadata']['title']} (добавление новых полей)...")
@@ -341,12 +415,11 @@ Candidate Resume:
                         "matched_keywords": data.get("matched_keywords", []),
                         "missing_keywords": data.get("missing_keywords", []),
                         "reasoning": data.get("reasoning", ""),
-                        "is_good_match": data.get("is_good_match", False),
-                        "adapted_bullets": data.get("adapted_bullets", [])
+                        "adapted_bullets": data.get("adapted_bullets", []),
                     }
                 else:
                     ats_val: ATSResult = chain.invoke({
-                        "vacancy": job["document"], 
+                        "vacancy": job["document"],
                         "cv": cv_search_text
                     })
                     ats_val_dict = {
@@ -356,9 +429,11 @@ Candidate Resume:
                         "missing_keywords": ats_val.missing_keywords,
                         "reasoning": ats_val.reasoning,
                         "adapted_bullets": ats_val.adapted_bullets,
-                        "is_good_match": ats_val.is_good_match
                     }
-                    
+
+                # is_good_match вычисляется Python'ом — не доверяем LLM.
+                ats_val_dict["is_good_match"] = ats_val_dict.get("ats_score_percentage", 0) >= 70
+
                 # Сохраняем результат в кэш словарь
                 ai_cache[job_hash] = ats_val_dict
                 # Инкрементальное сохранение кэша на случай отмены (Ctrl+C)
@@ -498,10 +573,16 @@ Candidate Resume:
         except Exception as e:
             err_str = str(e)
             if "404" in err_str and not args.use_openai and not args.use_cloud_api:
-                print(f"❌ ОШИБКА ДЕМОНА OLLAMA: Локальная модель Ollama не найдена.")
+                print(f"❌ ОШИБКА ДЕМОНА OLLAMA: Локальная модель Ollama не найдена. Убедитесь, что Ollama запущена.")
                 sys.exit(1)
+            elif "re' is not defined" in err_str:
+                print(f"❌ ОШИБКА ВНУТРЕННЕЙ ЛОГИКИ: Библиотека 're' не инициализирована. {e}")
             else:
-                print(f"❌ СЕТЕВАЯ ОШИБКА (Vercel API) для вакансии {job['metadata']['title']}: {e}")
+                # Если ошибка пришла от API
+                if args.use_cloud_api:
+                    print(f"❌ СЕТЕВАЯ ОШИБКА (Vercel API) для вакансии {job['metadata']['title']}: {e}")
+                else:
+                    print(f"❌ ОШИБКА ОБРАБОТКИ для вакансии {job['metadata']['title']}: {e}")
                 
                 if args.use_cloud_api and "404" in err_str:
                      print("   -> Подсказка: Vercel возвращает 404. Возможно вы ошиблись в домене CV_API_URL в .env, или деплой на Vercel еще не завершился! Подождите 1 минуту.")

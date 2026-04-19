@@ -76,16 +76,16 @@ class RAGDatabase:
     def search_similar_vacancies(self, query_text: str, top_k: int = 5) -> List[Dict[str, Any]]:
         print(f"🔍 Векторный поиск топ-{top_k} подходящих вакансий...")
         query_vector = self.embeddings.embed_query(query_text)
-        
+
         results = self.collection.query(
             query_embeddings=[query_vector],
             n_results=top_k
         )
-        
+
         matched_jobs = []
         if not results["ids"] or not results["ids"][0]:
             return matched_jobs
-            
+
         for i in range(len(results["ids"][0])):
             matched_jobs.append({
                 "id": results["ids"][0][i],
@@ -93,8 +93,74 @@ class RAGDatabase:
                 "metadata": results["metadatas"][0][i],
                 "distance": results["distances"][0][i] # Cosine distance
             })
-            
+
         return matched_jobs
+
+    def search_similar_vacancies_multi_chunk(
+        self,
+        cv_chunks: List[str],
+        top_k: int = 40,
+        pooling: str = "min",
+        per_chunk_k: int = None,
+    ) -> List[Dict[str, Any]]:
+        """Search by embedding each CV chunk separately, then pool distances per vacancy.
+
+        `pooling="min"` surfaces vacancies matching any single chunk strongly
+        (a resume with backend+NLP experience won't bury NLP vacancies just
+        because most positions were backend). `pooling="mean"` rewards
+        breadth across the whole CV.
+        """
+        if not cv_chunks:
+            return []
+        if per_chunk_k is None:
+            # Fetch more per chunk so aggregated top_k has good coverage.
+            per_chunk_k = max(top_k, 50)
+
+        print(
+            f"🔍 Multi-chunk поиск: {len(cv_chunks)} чанков CV, "
+            f"top_k={top_k}, pooling={pooling}, per_chunk_k={per_chunk_k}"
+        )
+        vectors = self.embeddings.embed_documents(cv_chunks)
+        res = self.collection.query(query_embeddings=vectors, n_results=per_chunk_k)
+
+        if not res.get("ids"):
+            return []
+
+        # Aggregate: job_id -> list of distances (one per chunk that surfaced it)
+        job_dists: Dict[str, List[float]] = {}
+        job_payload: Dict[str, Dict[str, Any]] = {}
+
+        for chunk_idx in range(len(cv_chunks)):
+            ids = res["ids"][chunk_idx] if chunk_idx < len(res["ids"]) else []
+            if not ids:
+                continue
+            docs = res["documents"][chunk_idx]
+            metas = res["metadatas"][chunk_idx]
+            dists = res["distances"][chunk_idx]
+            for j, jid in enumerate(ids):
+                job_dists.setdefault(jid, []).append(float(dists[j]))
+                if jid not in job_payload:
+                    job_payload[jid] = {
+                        "id": jid,
+                        "document": docs[j],
+                        "metadata": metas[j],
+                    }
+
+        pooled = []
+        for jid, dlist in job_dists.items():
+            if pooling == "min":
+                score = min(dlist)
+            elif pooling == "mean":
+                score = sum(dlist) / len(dlist)
+            else:
+                raise ValueError(f"unknown pooling '{pooling}' (use 'min' or 'mean')")
+            p = dict(job_payload[jid])
+            p["distance"] = score
+            p["matched_chunks"] = len(dlist)
+            pooled.append(p)
+
+        pooled.sort(key=lambda x: x["distance"])
+        return pooled[:top_k]
 
     def get_all_ids(self) -> set:
         """Возвращает множество всех ID вакансий, хранящихся в базе."""
