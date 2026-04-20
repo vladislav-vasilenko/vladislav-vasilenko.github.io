@@ -8,6 +8,7 @@ import { renderFullPage } from './render';
 import { showLocalToast } from './features/toast';
 import { initializeCompliance } from './features/compliance';
 import { initializeCoverLetter } from './features/coverletter';
+import { initializeHowToApply } from './features/howToApply';
 import { initializeExport } from './features/exportUI';
 import { initializeSkills } from './features/skillsUI';
 
@@ -27,6 +28,7 @@ function renderPage(lang: Lang): void {
   // --- Feature Initializations ---
   initializeCompliance(app, lang);
   initializeCoverLetter(app, lang);
+  initializeHowToApply(app, lang, cv.experience);
   initializeExport(app, cv, currentViewMode);
   const skillsResult = initializeSkills(app, cv);
 

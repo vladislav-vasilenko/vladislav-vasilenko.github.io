@@ -91,6 +91,7 @@ interface CVJson {
     profileCollapse: string;
     scheduleCall: string;
     checkCompliance: string;
+    howToApply: string;
   };
   employment: string;
   experience: (Omit<Experience, 'descriptionHtml' | 'descriptionMd'>)[];

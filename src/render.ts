@@ -168,6 +168,13 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
             </svg>
             <span class="btn-text desktop-only">${cv.labels.checkCompliance}</span>
           </button>
+          <button class="how-to-apply-btn" aria-label="${cv.labels.howToApply}" title="${cv.labels.howToApply}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            <span class="btn-text desktop-only">${cv.labels.howToApply}</span>
+          </button>
           <button class="coverletter-btn" aria-label="${lang === 'ru' ? 'Сопроводительное письмо' : 'Cover Letter'}" title="${lang === 'ru' ? 'Сопроводительное письмо' : 'Cover Letter'}">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -327,6 +334,42 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
         <div class="stack-orbit">${renderOrbitView(cv, lang)}</div>
       </section>
 
+    </div>
+
+    <!-- How to Apply Modal -->
+    <div id="how-to-apply-modal" class="modal no-print">
+      <div class="modal-content modal-content-wide">
+        <div class="modal-header">
+          <h2>${cv.labels.howToApply}</h2>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-hint">${lang === 'ru'
+      ? 'Вставьте текст вакансии — ИИ подскажет, что поправить в резюме, переформулирует буллиты опыта и подготовит готовый текст отклика для модальной формы работодателя.'
+      : 'Paste the vacancy text — AI will point out what to fix in the CV, rewrite experience bullets for this JD, and draft a ready-to-paste application message.'}</p>
+
+          <select id="how-to-apply-model-select" class="model-select">
+            <option value="openai:gpt-5.4">GPT-5.4 (OpenAI)</option>
+            <option value="claude:claude-opus-4-7">Claude Opus 4.7 (Anthropic)</option>
+          </select>
+
+          <textarea id="how-to-apply-vacancy-input" placeholder="${lang === 'ru' ? 'Текст вакансии...' : 'Vacancy text...'}" class="modern-textarea"></textarea>
+
+          <div id="how-to-apply-turnstile-container" class="turnstile-wrapper"></div>
+
+          <div class="modal-actions">
+            <button id="how-to-apply-btn-run" class="primary-btn">${lang === 'ru' ? 'Проанализировать и подготовить отклик' : 'Analyze and prepare application'}</button>
+          </div>
+
+          <div id="how-to-apply-results" class="analysis-results hidden">
+            <div class="analysis-loader">
+              <div class="spinner"></div>
+              <span>${lang === 'ru' ? 'Готовим советы и текст отклика...' : 'Preparing tips and application text...'}</span>
+            </div>
+            <div class="how-to-apply-content"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Compliance Modal -->

@@ -14,6 +14,10 @@ interface Vacancy {
     matched_keywords?: string[];
     origin_queries?: string[];
     cl_path?: string;
+    is_big_tech?: boolean;
+    is_foreign?: boolean;
+    improvement_tips?: string[];
+    application_message?: string;
 }
 
 interface ScatterPoint {
@@ -155,6 +159,34 @@ function renderHtml(v: Vacancy): string {
         `;
     }
 
+    let improvementTipsHtml = '';
+    if (v.improvement_tips && v.improvement_tips.length > 0) {
+        improvementTipsHtml = `
+            <div style="margin-top: 10px; padding: 15px; background: #fff8e1; border-left: 4px solid #f0ad4e; border-radius: 4px;">
+                <strong style="color: #8a6d3b; font-size: 13px;">🛠️ Что поправить в CV под первый этап отсева:</strong>
+                <ol style="margin: 5px 0 0 0; padding-left: 22px; font-size: 13px; color: #444; line-height: 1.5;">
+                    ${v.improvement_tips.map(t => `<li style="margin-bottom: 5px;">${t}</li>`).join('')}
+                </ol>
+            </div>
+        `;
+    }
+
+    let applicationMessageHtml = '';
+    if (v.application_message && v.application_message.trim().length > 0) {
+        const encoded = encodeURIComponent(v.application_message);
+        applicationMessageHtml = `
+            <div style="margin-top: 10px; padding: 15px; background: #e8f5e9; border-left: 4px solid #28a745; border-radius: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="color: #1b5e20; font-size: 13px;">✉️ Текст отклика (для модальной формы):</strong>
+                    <button onclick="copyApplicationMsg(decodeURIComponent('${encoded}'), this)" style="padding: 5px 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
+                        📋 Скопировать
+                    </button>
+                </div>
+                <div style="font-size: 13px; color: #2e3b2e; white-space: pre-wrap; line-height: 1.5; background: white; padding: 10px; border-radius: 4px; border: 1px solid #c8e6c9;">${v.application_message}</div>
+            </div>
+        `;
+    }
+
     return `
         <div class="vacancy-card ${v.is_big_tech ? 'big-tech-highlight' : ''} ${v.is_foreign ? 'foreign-highlight' : ''}">
             <div class="v-header">
@@ -173,6 +205,8 @@ function renderHtml(v: Vacancy): string {
             </div>
             ${matchedKeywordsHtml}
             ${missingKeywordsHtml}
+            ${improvementTipsHtml}
+            ${applicationMessageHtml}
             ${clButton}
             ${adaptedBulletsHtml}
             ${originQueriesHtml}
@@ -314,6 +348,19 @@ function render3DChart() {
 // Attach Event Listeners
 document.getElementById('company-filter')?.addEventListener('change', renderVacancies);
 document.getElementById('score-filter')?.addEventListener('change', renderVacancies);
+
+// Helper for copying the application message (modal form text)
+(window as any).copyApplicationMsg = async (text: string, btn: HTMLButtonElement) => {
+    try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.innerHTML;
+        btn.innerHTML = '✅ Скопировано';
+        setTimeout(() => { btn.innerHTML = original; }, 2500);
+    } catch (err) {
+        console.error('Clipboard failed:', err);
+        alert('Не удалось скопировать в буфер обмена.');
+    }
+};
 
 // Helper for copying Cover Letter
 (window as any).copyCL = async (path: string, btn: HTMLButtonElement) => {

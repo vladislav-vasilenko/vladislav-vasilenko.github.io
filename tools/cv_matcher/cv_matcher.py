@@ -11,6 +11,10 @@ from pydantic import BaseModel, Field
 from typing import List
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
+try:
+    from langchain_anthropic import ChatAnthropic
+except ImportError:
+    ChatAnthropic = None
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,7 +22,10 @@ from langchain_core.prompts import PromptTemplate
 
 # Версия логики оценки (инкрементировать при изменении промпта или структуры данных)
 # v10: rubric-based scoring (4 axes), is_good_match детерминирован в Python, adapted_bullets guardrails.
-PROMPT_VERSION = "v10"
+# v11: + improvement_tips (что поправить в CV под первый этап ATS-отсева) и application_message
+#      (готовый текст отклика для модальной формы работодателя). Рассуждения рассчитаны на топ-модели
+#      (Claude Opus 4.7 / GPT-5.4).
+PROMPT_VERSION = "v11"
 
 # Список Tier-1 IT компаний (Big Tech)
 BIG_TECH_COMPANIES = [
@@ -93,6 +100,25 @@ class ATSResult(BaseModel):
             "Вывод на русском."
         )
     )
+    improvement_tips: List[str] = Field(
+        default_factory=list,
+        description=(
+            "3-5 точечных советов, что поменять/добавить в резюме, чтобы пройти первый этап ATS-отсева "
+            "именно этой вакансии. Фокус — на формулировках, ключевых словах из JD, порядке блоков, "
+            "секциях headline/summary/skills. Каждый совет — одно действие с конкретикой "
+            "(что именно дописать/перенести/переформулировать). Без общих фраз. Вывод на русском."
+        )
+    )
+    application_message: str = Field(
+        default="",
+        description=(
+            "Готовый текст отклика (120-220 слов), который кандидат вставит в модальную форму отклика "
+            "на сайте работодателя. Формат: короткое приветствие → почему именно эта роль "
+            "(1-2 сигнала из JD) → 3 конкретных подтверждения опыта из CV (через запятую, не буллитами) → "
+            "готовность к следующему шагу (созвон, тестовое). Без markdown, без шапки 'Dear Hiring Manager', "
+            "без вставных плейсхолдеров. Язык — совпадает с языком вакансии (RU/EN)."
+        )
+    )
 
 def main():
     parser = argparse.ArgumentParser(description="AI RAG CV Matcher")
@@ -104,8 +130,10 @@ def main():
         help="CSV-список источников для скрейпинга. Доступно: yandex,hh,ozon,avito,tinkoff,vk,x5,sber (sber по умолчанию отключён — anti-bot).",
     )
     parser.add_argument("--use-openai", action="store_true", help="Использовать OpenAI API вместо локального Ollama")
+    parser.add_argument("--use-claude", action="store_true", help="Использовать Anthropic Claude API (топ-модель для reasoning)")
     parser.add_argument("--use-cloud-api", action="store_true", help="Использовать Vercel API Gateway (скрывает OpenAI ключ)")
-    parser.add_argument("--openai-model", type=str, default="gpt-5.4-mini", help="Модель OpenAI (по умолчанию gpt-5.4-mini)")
+    parser.add_argument("--openai-model", type=str, default="gpt-5.4", help="Модель OpenAI (по умолчанию gpt-5.4 — топ-модель)")
+    parser.add_argument("--claude-model", type=str, default="claude-opus-4-7", help="Модель Anthropic Claude (по умолчанию claude-opus-4-7)")
     parser.add_argument("--clear-cache", action="store_true", help="Полностью очистить локальный кэш LLM-ответов")
     parser.add_argument("--top-k", type=int, default=40, help="Сколько вакансий взять из RAG-поиска для ATS-оценки (по умолчанию 40)")
     parser.add_argument("--rag-pooling", choices=["min", "mean"], default="min", help="Стратегия пулинга дистанций между чанками CV и вакансиями: 'min' (лучший матч любого чанка) или 'mean' (усреднение)")
@@ -120,7 +148,16 @@ def main():
         print("☁️ Выбран облачный Vercel API Gateway. Ланчейн не инициализируем.")
     else:
         try:
-            if args.use_openai:
+            if args.use_claude:
+                if ChatAnthropic is None:
+                    print("❌ ОШИБКА: langchain-anthropic не установлен. Запустите: uv pip install langchain-anthropic")
+                    sys.exit(1)
+                if not os.environ.get("ANTHROPIC_API_KEY"):
+                    print("❌ ОШИБКА: ANTHROPIC_API_KEY не установлен в .env")
+                    sys.exit(1)
+                print(f"🧠 Инициализация Anthropic Claude ({args.claude_model})...")
+                llm = ChatAnthropic(model=args.claude_model, temperature=0.1, max_tokens=4096)
+            elif args.use_openai:
                 if not os.environ.get("OPENAI_API_KEY"):
                     print("❌ ОШИБКА: OPENAI_API_KEY не установлен в .env")
                     sys.exit(1)
@@ -346,6 +383,8 @@ Be strict: do NOT inflate scores. A Senior ML role with 0% NLP experience in the
   • missing_keywords — critical JD requirements NOT evidenced in the CV (≤8 items).
   • reasoning — 1-2 sentences in Russian referencing the specific axes that drove the score.
   • adapted_bullets — 2-3 rewritten CV bullets (see rules below).
+  • improvement_tips — 3-5 точечных советов по CV (см. правила ниже).
+  • application_message — готовый текст отклика для модальной формы (см. правила ниже).
   • is_good_match — leave for the runtime to compute; set to false by default.
 
 ## adapted_bullets rules (CRITICAL)
@@ -358,7 +397,33 @@ You may:
 You MUST NOT:
   • claim experience with a tool/framework not mentioned in the CV;
   • fabricate numbers, team sizes, user counts.
-Output adapted_bullets in Russian.""")
+Output adapted_bullets in Russian.
+
+## improvement_tips rules
+Дай 3-5 конкретных, действенных советов, что изменить/добавить в резюме, чтобы пройти
+ПЕРВЫЙ ЭТАП ATS-отсева по этой вакансии. Каждый совет — одно действие с конкретикой.
+Фокусируйся на:
+  • ключевых словах из JD, которых не хватает в CV, — где именно их поднять (headline / summary / skills / bullet конкретной позиции);
+  • переформулировках, где у кандидата есть эквивалентный опыт, но он назван иначе;
+  • структурных сигналах (seniority, scope, команда, production/research);
+  • порядке и приоритизации опыта под данную JD.
+Запрещено: советовать выдумывать опыт, технологии, метрики. Только перегруппировка/переформулировка РЕАЛЬНОГО опыта.
+Формат каждого совета: "Действие + место в CV + конкретная формулировка". Русский.
+Пример: "В headline добавь 'Realtime LLM WebRTC' — у тебя Severstal GPT-Realtime это прямо подтверждает, но сейчас не видно в первой строке профиля."
+
+## application_message rules
+Составь текст отклика (120-220 слов), который кандидат дословно вставит в модальную форму на сайте работодателя.
+Структура (одним связным текстом, без markdown, без подзаголовков):
+  1. Короткое приветствие (1 строка).
+  2. Почему именно эта роль — 1-2 конкретных сигнала из JD (продукт / стэк / задача).
+  3. 3 подтверждения из реального опыта CV — плотно, через запятую, с тех-стэком и ролью.
+  4. Готовность к следующему шагу (созвон / тестовое / доступ к код-сэмплам).
+Требования:
+  • язык совпадает с языком JD (русский JD → русский отклик; английский JD → английский);
+  • НЕ использовать «Уважаемый работодатель», «Dear Hiring Manager» и подобные штампы-плейсхолдеры;
+  • НЕ выдумывать то, чего нет в CV;
+  • тон — уверенный, конкретный, без канцелярита и без самохвальства;
+  • финал — одно короткое предложение с call-to-action.""")
         chain = prompt | structured_llm
 
     ranked_results = []
@@ -416,6 +481,8 @@ Output adapted_bullets in Russian.""")
                         "missing_keywords": data.get("missing_keywords", []),
                         "reasoning": data.get("reasoning", ""),
                         "adapted_bullets": data.get("adapted_bullets", []),
+                        "improvement_tips": data.get("improvement_tips", []),
+                        "application_message": data.get("application_message", ""),
                     }
                 else:
                     ats_val: ATSResult = chain.invoke({
@@ -429,6 +496,8 @@ Output adapted_bullets in Russian.""")
                         "missing_keywords": ats_val.missing_keywords,
                         "reasoning": ats_val.reasoning,
                         "adapted_bullets": ats_val.adapted_bullets,
+                        "improvement_tips": getattr(ats_val, "improvement_tips", []),
+                        "application_message": getattr(ats_val, "application_message", ""),
                     }
 
                 # is_good_match вычисляется Python'ом — не доверяем LLM.
@@ -568,7 +637,9 @@ Output adapted_bullets in Russian.""")
                 "cosine_distance": float(job["distance"]),
                 "reasoning": ats_val_dict.get("reasoning", ""),
                 "is_good_match": ats_val_dict.get("is_good_match", False),
-                "adapted_bullets": adapted_cv_bullets
+                "adapted_bullets": adapted_cv_bullets,
+                "improvement_tips": ats_val_dict.get("improvement_tips", []),
+                "application_message": ats_val_dict.get("application_message", ""),
             })
         except Exception as e:
             err_str = str(e)
