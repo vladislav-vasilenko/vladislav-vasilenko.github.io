@@ -32,7 +32,9 @@
     "profileCollapse": "Collapse Descriptions",
     "scheduleCall": "Schedule call via Calendly",
     "checkCompliance": "Check Vacancy Compliance",
-    "howToApply": "How to Apply"
+    "howToApply": "How to Apply",
+    "shareLink": "Copy Share Link",
+    "linkCopied": "Link copied to clipboard"
   },
   "employment": "Full-time, part-time, project-based. On-site, remote, or hybrid.",
   "experience": [

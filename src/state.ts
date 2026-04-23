@@ -7,11 +7,11 @@ export const SHORT_VIEW_KEY = 'cv-short-view';
 export const COLLAPSE_VIEW_KEY = 'cv-collapse-view';
 export const TECH_PROFILE_KEY = 'cv-tech-profile';
 
-export type TechProfileMode = 'audio' | 'vision' | 'multimodal' | 'multiagent' | 'ios';
+export type TechProfileMode = 'audio' | 'vision' | 'multimodal' | 'multiagent' | 'ios' | 'llm';
 
 export function getTechProfile(): TechProfileMode {
     const v = localStorage.getItem(TECH_PROFILE_KEY);
-    if (v === 'audio' || v === 'vision' || v === 'multimodal' || v === 'multiagent' || v === 'ios') return v;
+    if (v === 'audio' || v === 'vision' || v === 'multimodal' || v === 'multiagent' || v === 'ios' || v === 'llm') return v;
     return 'vision';
 }
 

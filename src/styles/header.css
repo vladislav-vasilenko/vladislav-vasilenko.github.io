@@ -84,7 +84,8 @@
 
 .export-btn,
 .compliance-btn,
-.coverletter-btn {
+.coverletter-btn,
+.how-to-apply-btn {
     display: flex;
     align-items: center;
     gap: 0.35rem;
@@ -102,7 +103,8 @@
 
 .export-btn:hover,
 .compliance-btn:hover,
-.coverletter-btn:hover {
+.coverletter-btn:hover,
+.how-to-apply-btn:hover {
     color: rgba(255, 255, 255, 0.9);
     background: rgba(255, 255, 255, 0.08);
     border-color: var(--color-accent);

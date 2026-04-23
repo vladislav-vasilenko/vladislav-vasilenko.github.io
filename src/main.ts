@@ -121,7 +121,30 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// Apply URL query params (share links) — overrides localStorage on load
+function applyUrlParams(): void {
+  const params = new URLSearchParams(window.location.search);
+  const urlLang = params.get('lang');
+  const urlView = params.get('view');
+  const urlTech = params.get('tech');
+
+  if (urlLang === 'en' || urlLang === 'ru') {
+    currentLang = urlLang;
+    setLang(urlLang);
+  }
+  if (urlView === 'technical' || urlView === 'product') {
+    currentViewMode = urlView;
+    setViewMode(urlView);
+  }
+  const validTech: TechProfileMode[] = ['audio', 'vision', 'multimodal', 'multiagent', 'ios', 'llm'];
+  if (urlTech && (validTech as string[]).includes(urlTech)) {
+    currentTechProfile = urlTech as TechProfileMode;
+    setTechProfile(urlTech as TechProfileMode);
+  }
+}
+
 // Initial Render
+applyUrlParams();
 const initialLang = getLang();
 setLang(initialLang);
 renderPage(initialLang);

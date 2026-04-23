@@ -144,6 +144,7 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
       <button class="tech-btn ${techProfile === 'audio' ? 'active' : ''}" data-tech="audio">Audio / Speech</button>
       <button class="tech-btn ${techProfile === 'multimodal' ? 'active' : ''}" data-tech="multimodal">MultiModal</button>
       <button class="tech-btn ${techProfile === 'multiagent' ? 'active' : ''}" data-tech="multiagent">MultiAgent</button>
+      <button class="tech-btn ${techProfile === 'llm' ? 'active' : ''}" data-tech="llm">NLP / LLM</button>
       <button class="tech-btn ${techProfile === 'ios' ? 'active' : ''}" data-tech="ios">iOS Swift</button>
     </div>
   ` : '';
@@ -193,6 +194,7 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
               <button class="export-option" data-action="pdf">${cv.labels.exportPdf}</button>
               <button class="export-option" data-action="doc">${cv.labels.exportDoc}</button>
               <button class="export-option" data-action="md">${cv.labels.exportMd}</button>
+              <button class="export-option" data-action="share">${cv.labels.shareLink}</button>
             </div>
           </div>
           <div class="lang-toggle">
