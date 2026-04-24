@@ -17,6 +17,7 @@ class GoogleCareersScraper(BaseScraper):
 
     company_name = "Google"
     id_prefix = "goog"
+    stealth = True  # datacenter IPs + aggressive bot detection
 
     def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
         listing_url = (
@@ -96,6 +97,7 @@ class MetaCareersScraper(BaseScraper):
 
     company_name = "Meta"
     id_prefix = "meta"
+    stealth = True
 
     def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
         listing_url = f"https://www.metacareers.com/jobs?q={quote(query)}"

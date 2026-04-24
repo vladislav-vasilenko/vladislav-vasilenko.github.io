@@ -639,18 +639,91 @@ class AlfaScraper(BaseScraper):
 
 
 # ---------------------------------------------------------------------------
-# Сбер (placeholder — anti-bot shield)
+# Сбер (stealth-enabled — requires stealth=True to pass anti-bot)
 # ---------------------------------------------------------------------------
 class SberScraper(BaseScraper):
-    """Placeholder: rabota.sber.ru uses an anti-bot shield that requires JS
-    challenge solving. Kept as no-op for now."""
+    """rabota.sber.ru — карьерный портал Сбера. Без stealth upload падает в JS-challenge."""
 
     company_name = "Сбер"
     id_prefix = "sber"
+    stealth = True  # requires stealth to bypass the JS challenge
 
     def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
-        print("  Сбер: скрейпер отключён (anti-bot shield). Используйте другие источники.")
-        return []
+        import random
+        listing_url = f"https://rabota.sber.ru/search/vacancy?text={quote(query)}"
+        page.goto(listing_url, wait_until="domcontentloaded", timeout=60000)
+        # human-like settle time — anti-bot checks timing of first interaction
+        page.wait_for_timeout(3500 + int(random.random() * 1500))
+
+        # sometimes a challenge page shows up — detect and bail early
+        html_head = (page.content() or "").lower()[:2000]
+        if "проверк" in html_head and ("человек" in html_head or "робот" in html_head):
+            print("  ⚠️ Сбер: JS-challenge detected — requires storage_state or headed mode")
+            return []
+
+        link_selector = "a[href*='/vacancy/'], a[href*='/search/vacancy/']"
+        _scroll_until_stable(
+            page,
+            max_attempts=10,
+            delay_ms=1800,
+            show_more_re=re.compile(r"Показать|Загрузить|Ещё|Еще", re.I),
+            link_selector=link_selector,
+            target_count=self.limit * 2,
+        )
+
+        hrefs = page.eval_on_selector_all(link_selector, "els => els.map(e => e.href)")
+        id_re = re.compile(r"/vacancy/([A-Za-z0-9\-_]+)(?:/|$|\?)")
+        seen, links = set(), []
+        for h in hrefs:
+            clean = h.split("?")[0].rstrip("/")
+            m = id_re.search(clean)
+            if not m or clean in seen:
+                continue
+            seen.add(clean)
+            links.append((clean, m.group(1)))
+        print(f"  Сбер: {len(links)} ссылок")
+
+        q_lower = query.lower()
+        vacancies = []
+        for job_url, vid in links:
+            if len(vacancies) >= self.limit:
+                break
+            jid = f"{self.id_prefix}_{vid}"
+            if jid in existing_ids:
+                continue
+            try:
+                page.goto(job_url, wait_until="domcontentloaded", timeout=40000)
+                # jittered pacing — Sber rate-limits bursts
+                page.wait_for_timeout(1500 + int(random.random() * 2000))
+                title = _first_non_empty_text(page, [
+                    "h1",
+                    "[class*='vacancy-title' i]",
+                    "[data-qa*='title']",
+                ]) or "Sber Vacancy"
+                body = _first_non_empty_text(page, [
+                    "[class*='vacancy-description' i]",
+                    "[data-qa*='description']",
+                    "main",
+                    "article",
+                    "body",
+                ])
+                clean = " ".join(body.split())
+                if q_lower and q_lower not in clean.lower() and q_lower not in title.lower():
+                    continue
+                vacancies.append({
+                    "id": jid,
+                    "title": title,
+                    "company": self.company_name,
+                    "pub_date": _extract_date(clean),
+                    "description": clean[:3500],
+                    "link": job_url,
+                    "origin_query": query,
+                })
+                self._emit("vacancy", id=jid, title=title, company=self.company_name, link=job_url)
+                print(f"  ✓ {title}")
+            except Exception as e:
+                print(f"  ⚠️ {job_url}: {e}")
+        return vacancies
 
 
 # ---------------------------------------------------------------------------

@@ -2,10 +2,12 @@
 
 import os
 import re
-import random
+import random  # noqa: F401  — used by scrapers downstream
 from typing import List, Dict, Any, Optional, Set, Callable
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs  # noqa: F401  — used by scrapers downstream
 from playwright.sync_api import sync_playwright, Browser, Page, TimeoutError as PWTimeout  # noqa: F401
+
+from ._stealth import stealth_context_kwargs, apply_stealth
 
 
 UA = (
@@ -108,16 +110,23 @@ class BaseScraper:
     headless: bool = True
     storage_state_path: Optional[str] = None
     event_sink: Optional[Callable[[Dict[str, Any]], None]] = None
+    # When True, the context is built from rotating UA/viewport + navigator patches
+    # are injected before the first goto(). Sub-classes can set as a class default
+    # (Sber/Google/Meta do this); callers can override via __init__.
+    stealth: bool = False
 
     def __init__(self, limit: int = 20, headless: bool = True,
                  storage_state_path: Optional[str] = None,
-                 event_sink: Optional[Callable[[Dict[str, Any]], None]] = None):
+                 event_sink: Optional[Callable[[Dict[str, Any]], None]] = None,
+                 stealth: Optional[bool] = None):
         self.limit = limit
         self.headless = headless
         if storage_state_path:
             self.storage_state_path = storage_state_path
         if event_sink is not None:
             self.event_sink = event_sink
+        if stealth is not None:
+            self.stealth = stealth
 
     def _emit(self, event_type: str, **data: Any) -> None:
         """Push a live event through the optional event_sink (no-op if unset)."""
@@ -130,7 +139,11 @@ class BaseScraper:
             print(f"  ⚠️ event_sink error: {e}")
 
     def _context_kwargs(self) -> Dict[str, Any]:
-        kwargs: Dict[str, Any] = {"user_agent": UA}
+        if self.stealth:
+            kwargs = stealth_context_kwargs()
+            print(f"  🥷 {self.company_name}: stealth mode ON ({kwargs['user_agent'][:60]}…)")
+        else:
+            kwargs = {"user_agent": UA}
         if self.storage_state_path and os.path.exists(self.storage_state_path):
             kwargs["storage_state"] = self.storage_state_path
             print(f"  🔐 {self.company_name}: использую storage_state → {self.storage_state_path}")
@@ -147,6 +160,8 @@ class BaseScraper:
             with sync_playwright() as p:
                 browser = _launch_browser(p, headless=self.headless)
                 context = browser.new_context(**self._context_kwargs())
+                if self.stealth:
+                    apply_stealth(context)
                 page = context.new_page()
                 try:
                     result = self._scrape(page, query, existing_ids)

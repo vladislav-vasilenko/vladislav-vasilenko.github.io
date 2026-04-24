@@ -1,23 +1,44 @@
 import os
 import chromadb
 from chromadb.config import Settings
-from langchain_ollama import OllamaEmbeddings
 from typing import List, Dict, Any
 from dotenv import load_dotenv
 from sklearn.decomposition import PCA
 
 load_dotenv()
 
+
+def _init_embeddings():
+    """Pick embedding backend based on env.
+
+    EMBEDDINGS_PROVIDER=openai     → text-embedding-3-small/large via OpenAI API
+                      =ollama (default) → local Ollama embeddinggemma
+
+    OPENAI_EMBEDDING_MODEL controls which OpenAI model (default: text-embedding-3-small).
+    """
+    provider = (os.environ.get("EMBEDDINGS_PROVIDER") or "ollama").strip().lower()
+    if provider == "openai":
+        from langchain_openai import OpenAIEmbeddings
+        model = os.environ.get("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
+        print(f"🔌 Embeddings: OpenAI ({model})")
+        return OpenAIEmbeddings(model=model)
+    # default — local Ollama
+    from langchain_ollama import OllamaEmbeddings
+    model = os.environ.get("OLLAMA_EMBEDDING_MODEL", "embeddinggemma")
+    print(f"🔌 Embeddings: Ollama ({model})")
+    return OllamaEmbeddings(model=model)
+
+
 class RAGDatabase:
     def __init__(self, db_path: str = "./chroma_db"):
         self.db_path = db_path
         os.makedirs(db_path, exist_ok=True)
-        
+
         # Initialize Local ChromaDB
         self.client = chromadb.PersistentClient(path=self.db_path)
-        
-        # We will use Local Ollama Embeddings
-        self.embeddings = OllamaEmbeddings(model="embeddinggemma")
+
+        # Embeddings backend — Ollama for local, OpenAI for online (Actions) runs
+        self.embeddings = _init_embeddings()
         self.collection_name = "vacancies"
         
         # Get or create collection
