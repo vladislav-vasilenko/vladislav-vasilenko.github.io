@@ -6,6 +6,7 @@ const JOB_KEY = "scrape_job_id";
 // ---------------------------------------------------------------------------
 const serverBadge  = document.getElementById("server-badge")!;
 const offlineNotice = document.getElementById("offline-notice")!;
+const remoteNotice  = document.getElementById("remote-notice")!;
 const sourceGroups = document.getElementById("source-groups")!;
 const chipArea     = document.getElementById("chip-area")!;
 const chipInput    = document.getElementById("chip-input") as HTMLInputElement;
@@ -35,7 +36,21 @@ const last5: { title: string; company: string; link: string }[] = [];
 // ---------------------------------------------------------------------------
 // Health check + source loading
 // ---------------------------------------------------------------------------
+function isLocalOrigin(): boolean {
+    const h = location.hostname;
+    return h === "localhost" || h === "127.0.0.1" || h === "0.0.0.0";
+}
+
 async function init() {
+    if (!isLocalOrigin()) {
+        serverBadge.textContent = "Local-only tool";
+        serverBadge.className = "server-badge err";
+        remoteNotice.classList.add("visible");
+        remoteNotice.style.display = "block";
+        startBtn.disabled = true;
+        startBtn.textContent = "Unavailable on deployed site";
+        return;
+    }
     try {
         const r = await fetch(`${SERVER}/health`, { signal: AbortSignal.timeout(3000) });
         if (!r.ok) throw new Error();

@@ -15,7 +15,20 @@
         <span id="server-badge" class="server-badge wait">Connecting to local server…</span>
     </div>
 
-    <!-- Offline notice — shown when server is unreachable -->
+    <!-- Non-local origin notice (hides everything when viewed on github.io) -->
+    <div id="remote-notice" class="offline-notice" style="display:none">
+        <strong>⚠️ This page is a local dev tool.</strong><br>
+        Browsers block <code>http://localhost</code> requests from HTTPS pages, so scraping control
+        can't work on the deployed site. To use it:
+        <ol style="margin:.6rem 0 0 1.2rem;padding:0;line-height:1.6">
+            <li>Clone the repo: <code>git clone https://github.com/vladislav-vasilenko/vladislav-vasilenko.github.io</code></li>
+            <li>Start the scraping backend: <code>cd tools/cv_matcher &amp;&amp; uv run python server.py</code></li>
+            <li>Start the dev server: <code>npm run dev</code></li>
+            <li>Open <code>http://localhost:5173/scrape.html</code></li>
+        </ol>
+    </div>
+
+    <!-- Offline notice — shown when running locally but server is down -->
     <div id="offline-notice" class="offline-notice">
         <strong>Local scraping server is not running.</strong><br>
         Start it with: <code>cd tools/cv_matcher &amp;&amp; uv run python server.py</code>

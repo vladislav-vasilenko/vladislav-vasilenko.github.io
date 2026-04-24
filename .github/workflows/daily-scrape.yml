@@ -1,0 +1,106 @@
+name: Daily vacancy scrape
+
+# Runs the Playwright-based online scraper (Yandex, Sber, Google, Meta) once a day.
+# Commits public/online_scraped.json back to main so GitHub Pages picks it up.
+#
+# Secrets expected (all optional — missing ones degrade gracefully):
+#   GOOGLE_STORAGE_STATE_B64  — base64(storage_state.json) from authed careers.google.com
+#   META_STORAGE_STATE_B64    — base64(storage_state.json) from authed metacareers.com
+#
+# To generate a storage state locally:
+#   cd tools/cv_matcher
+#   uv run playwright codegen --save-storage=google_state.json https://careers.google.com
+#   base64 -i google_state.json -o google_state.b64  # copy contents into the GH secret
+
+on:
+  schedule:
+    - cron: '0 7 * * *'      # 07:00 UTC daily
+  workflow_dispatch:           # manual trigger button
+
+concurrency:
+  group: daily-scrape
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: tools/cv_matcher/uv.lock
+
+      - name: Install Python deps
+        working-directory: tools/cv_matcher
+        run: uv sync --frozen
+
+      - name: Install Playwright browsers + system deps
+        working-directory: tools/cv_matcher
+        run: uv run playwright install --with-deps chromium
+
+      - name: Decode storage states
+        working-directory: tools/cv_matcher
+        env:
+          GOOGLE_STATE_B64: ${{ secrets.GOOGLE_STORAGE_STATE_B64 }}
+          META_STATE_B64: ${{ secrets.META_STORAGE_STATE_B64 }}
+        run: |
+          mkdir -p .auth
+          if [ -n "$GOOGLE_STATE_B64" ]; then
+            echo "$GOOGLE_STATE_B64" | base64 -d > .auth/google_state.json
+            echo "GOOGLE_STORAGE_STATE=$GITHUB_WORKSPACE/tools/cv_matcher/.auth/google_state.json" >> "$GITHUB_ENV"
+            echo "✓ Google storage_state loaded"
+          else
+            echo "⚠️ No GOOGLE_STORAGE_STATE_B64 — Google scrape will run unauthenticated"
+          fi
+          if [ -n "$META_STATE_B64" ]; then
+            echo "$META_STATE_B64" | base64 -d > .auth/meta_state.json
+            echo "META_STORAGE_STATE=$GITHUB_WORKSPACE/tools/cv_matcher/.auth/meta_state.json" >> "$GITHUB_ENV"
+            echo "✓ Meta storage_state loaded"
+          else
+            echo "⚠️ No META_STORAGE_STATE_B64 — Meta scrape will run unauthenticated"
+          fi
+
+      - name: Run scraper
+        working-directory: tools/cv_matcher
+        run: uv run python scripts/scrape_online.py
+        # don't fail the workflow on per-source errors; script returns 0
+        continue-on-error: false
+
+      - name: Commit results
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/online_scraped.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          TOTAL=$(python3 -c "import json; d=json.load(open('public/online_scraped.json')); print(d.get('total',0))")
+          git commit -m "chore(scrape): daily run — ${TOTAL} vacancies [skip ci]"
+          git push
+
+      - name: Upload log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrape-logs
+          path: tools/cv_matcher/*.log
+          if-no-files-found: ignore
+          retention-days: 7
