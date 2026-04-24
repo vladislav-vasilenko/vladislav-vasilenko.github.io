@@ -73,10 +73,10 @@ function renderPage(lang: Lang): void {
     });
   });
 
-  // Tech profile toggle (Audio, Vision, etc.)
-  app.querySelectorAll<HTMLButtonElement>('.tech-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const newTechProfile = btn.dataset.tech as TechProfileMode;
+  // Tech profile selector (Audio, Vision, etc.)
+  app.querySelectorAll<HTMLSelectElement>('.tech-select').forEach((sel) => {
+    sel.addEventListener('change', () => {
+      const newTechProfile = sel.value as TechProfileMode;
       if (newTechProfile && newTechProfile !== currentTechProfile) {
         currentTechProfile = newTechProfile;
         setTechProfile(newTechProfile);
@@ -84,6 +84,20 @@ function renderPage(lang: Lang): void {
       }
     });
   });
+
+  // AI Tools dropdown
+  const toolsBtn = app.querySelector<HTMLButtonElement>('.tools-btn');
+  const toolsMenu = app.querySelector<HTMLDivElement>('.tools-menu');
+  if (toolsBtn && toolsMenu) {
+    toolsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toolsMenu.classList.toggle('open');
+      app.querySelector('.export-menu')?.classList.remove('open');
+    });
+    toolsMenu.querySelectorAll<HTMLElement>('.tools-option').forEach((item) => {
+      item.addEventListener('click', () => toolsMenu.classList.remove('open'));
+    });
+  }
 
   // Email copy button
   const emailBtn = app.querySelector<HTMLButtonElement>('.social-link--email');
@@ -115,9 +129,10 @@ function renderPage(lang: Lang): void {
 // Global dropdown closer (Outside renderPage to avoid duplicates)
 document.addEventListener('click', (e) => {
   const target = e.target as HTMLElement;
-  if (!target.closest('.view-toggle') && !target.closest('.export-dropdown')) {
+  if (!target.closest('.view-toggle') && !target.closest('.export-dropdown') && !target.closest('.tools-dropdown')) {
     document.querySelector('.export-menu')?.classList.remove('open');
     document.querySelector('.view-menu')?.classList.remove('open');
+    document.querySelector('.tools-menu')?.classList.remove('open');
   }
 });
 

@@ -1,5 +1,11 @@
 const REPO_RAW = 'https://raw.githubusercontent.com/vladislav-vasilenko/vladislav-vasilenko.github.io/main/content';
 
+const OPENAI_DEFAULT_MODEL = 'gpt-5.4-mini';
+const ALLOWED_OPENAI_MODELS = new Set([
+    'gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano',
+    'gpt-4o-mini'
+]);
+
 async function fetchText(path) {
     const res = await fetch(`${REPO_RAW}/${path}`);
     if (!res.ok) return '';
@@ -21,20 +27,32 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { 
-            vacancyText, 
-            matchedKeywords = [], 
+        const {
+            vacancyText,
+            matchedKeywords = [],
             sphere = 'General',
-            turnstileToken, 
-            lang = 'en', 
-            model = 'gpt-5.4-mini' 
+            turnstileToken,
+            lang = 'en',
+            model
         } = req.body;
 
         if (!vacancyText || vacancyText.length < 100) {
             return res.status(400).json({ error: 'Vacancy text is too short or missing.' });
         }
-        
-        // ... (model validation and Turnstile verify code) ...
+
+        const selectedModel = ALLOWED_OPENAI_MODELS.has(model) ? model : OPENAI_DEFAULT_MODEL;
+
+        if (process.env.TURNSTILE_SECRET_KEY && turnstileToken) {
+            const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `secret=${process.env.TURNSTILE_SECRET_KEY}&response=${turnstileToken}`
+            });
+            const verifyData = await verifyRes.json();
+            if (!verifyData.success) {
+                return res.status(403).json({ error: 'Turnstile verification failed.' });
+            }
+        }
 
         // Fetch CV Data for context
         const cvJson = JSON.parse(await fetchText(`${lang}/cv.json`));

@@ -126,9 +126,15 @@ def main():
     parser.add_argument(
         "--sources",
         type=str,
-        default="yandex,hh,ozon,avito,tinkoff,vk,x5",
-        help="CSV-список источников для скрейпинга. Доступно: yandex,hh,ozon,avito,tinkoff,vk,x5,sber (sber по умолчанию отключён — anti-bot).",
+        default="ru",
+        help=(
+            "CSV-список источников или groupname. Группы: 'ru', 'international', 'all'. "
+            "RU: yandex,hh,ozon,avito,tinkoff,vk,x5,wildberries,mts,alfa,sber. "
+            "International: remoteok,wwr,hn,linkedin,indeed,wttj,wellfound. "
+            "sber отключён по умолчанию (anti-bot). linkedin/wellfound ожидают storage_state — см. LINKEDIN_STORAGE_STATE / WELLFOUND_STORAGE_STATE в .env."
+        ),
     )
+    parser.add_argument("--international", action="store_true", help="Shortcut: добавить группу 'international' к текущему --sources")
     parser.add_argument("--use-openai", action="store_true", help="Использовать OpenAI API вместо локального Ollama")
     parser.add_argument("--use-claude", action="store_true", help="Использовать Anthropic Claude API (топ-модель для reasoning)")
     parser.add_argument("--use-cloud-api", action="store_true", help="Использовать Vercel API Gateway (скрывает OpenAI ключ)")
@@ -203,24 +209,70 @@ def main():
         "&professions=system-developer"
     )
 
+    # storage_state paths — для LinkedIn/Wellfound ожидаем, что пользователь
+    # один раз залогинился вручную и сохранил состояние:
+    #   playwright codegen --save-storage=linkedin_state.json https://linkedin.com
+    linkedin_state = os.environ.get("LINKEDIN_STORAGE_STATE")
+    wellfound_state = os.environ.get("WELLFOUND_STORAGE_STATE")
+    indeed_state = os.environ.get("INDEED_STORAGE_STATE")  # optional — anti-bot bypass
+
+    # Запросы для международных источников — плюс чуть шире по ролям.
+    intl_queries = ["Machine Learning Engineer", "LLM Engineer", "GenAI", "Applied Scientist"]
+
     # Конфиг: source_key → (фабрика, список запросов).
     # Каждый вызов фабрики должен возвращать свежий scraper (каждый держит свою сессию Playwright).
     source_plan = {
-        "yandex": (lambda: scr.YandexScraper(limit=200), [yandex_listing_url]),
-        "hh":     (lambda: scr.HHScraper(limit=30), queries),
-        "ozon":   (lambda: scr.OzonScraper(limit=20), ["ML", "Machine Learning", "Python"]),
-        "avito":  (lambda: scr.AvitoScraper(limit=20), short_queries),
-        "tinkoff":(lambda: scr.TinkoffScraper(limit=20), short_queries),
-        "vk":     (lambda: scr.VKScraper(limit=20), short_queries),
-        "x5":     (lambda: scr.X5RetailScraper(limit=20), short_queries),
-        "sber":   (lambda: scr.SberScraper(limit=20), ["ML"]),
+        # RU
+        "yandex":      (lambda: scr.YandexScraper(limit=200), [yandex_listing_url]),
+        "hh":          (lambda: scr.HHScraper(limit=30), queries),
+        "ozon":        (lambda: scr.OzonScraper(limit=20), ["ML", "Machine Learning", "Python"]),
+        "avito":       (lambda: scr.AvitoScraper(limit=20), short_queries),
+        "tinkoff":     (lambda: scr.TinkoffScraper(limit=20), short_queries),
+        "vk":          (lambda: scr.VKScraper(limit=20), short_queries),
+        "x5":          (lambda: scr.X5RetailScraper(limit=20), short_queries),
+        "sber":        (lambda: scr.SberScraper(limit=20), ["ML"]),
+        "wildberries": (lambda: scr.WildberriesTechScraper(limit=20), short_queries),
+        "mts":         (lambda: scr.MTSScraper(limit=20), short_queries),
+        "alfa":        (lambda: scr.AlfaScraper(limit=20), short_queries),
+        # International
+        "remoteok":    (lambda: scr.RemoteOKScraper(limit=30), intl_queries),
+        "wwr":         (lambda: scr.WeWorkRemotelyScraper(limit=30), intl_queries),
+        "hn":          (lambda: scr.HackerNewsHiringScraper(limit=30), intl_queries),
+        "linkedin":    (lambda: scr.LinkedInScraper(limit=25, storage_state_path=linkedin_state), intl_queries),
+        "indeed":      (lambda: scr.IndeedScraper(limit=20, storage_state_path=indeed_state), intl_queries),
+        "wttj":        (lambda: scr.WelcomeJungleScraper(limit=20), intl_queries),
+        "wellfound":   (lambda: scr.WellfoundScraper(limit=20, storage_state_path=wellfound_state), intl_queries),
     }
 
-    requested_sources = [s.strip().lower() for s in args.sources.split(",") if s.strip()]
+    def _expand_sources(raw: str) -> List[str]:
+        out: List[str] = []
+        for tok in raw.split(","):
+            t = tok.strip().lower()
+            if not t:
+                continue
+            if t in scr.SOURCE_GROUPS:
+                out.extend(scr.SOURCE_GROUPS[t])
+            else:
+                out.append(t)
+        # dedupe preserving order
+        seen = set()
+        return [s for s in out if not (s in seen or seen.add(s))]
+
+    requested_sources = _expand_sources(args.sources)
+    if args.international:
+        for s in scr.SOURCE_GROUPS["international"]:
+            if s not in requested_sources:
+                requested_sources.append(s)
+    # sber всегда отключён по умолчанию — только если юзер его явно запросил
+    if "sber" in requested_sources and "sber" not in [t.strip().lower() for t in args.sources.split(",")]:
+        requested_sources.remove("sber")
+
     unknown = [s for s in requested_sources if s not in source_plan]
     if unknown:
         print(f"⚠️ Неизвестные источники: {unknown}. Доступно: {list(source_plan)}")
         requested_sources = [s for s in requested_sources if s in source_plan]
+
+    print(f"📋 Источники этого запуска: {', '.join(requested_sources) or '∅'}")
 
     all_jobs = []
 
@@ -702,7 +754,7 @@ Output adapted_bullets in Russian.
                 cl_api_url = "https://vladislav-vasilenko.github.io/api/coverletter"
                 
             cl_payload = {
-                "vacancyText": next(j["document"] for j in search_results if j["id"] == match["id"]),
+                "vacancyText": next(j["document"] for j in top_jobs if j["id"] == match["id"]),
                 "matchedKeywords": match.get("matched_keywords", []),
                 "sphere": match.get("sphere", "General"),
                 "lang": "ru" # Или детектировать по языку вакансии

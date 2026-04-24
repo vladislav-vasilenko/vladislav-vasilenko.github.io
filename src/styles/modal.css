@@ -360,3 +360,200 @@
         justify-content: center;
     }
 }
+
+/* =========================================================================
+   "How to apply" — Adapt CV section (checkbox lists)
+   ========================================================================= */
+.apply-block {
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border, #e1e4e8);
+    border-radius: 8px;
+    background: #fbfcfd;
+}
+
+.apply-block h4 {
+    margin: 0 0 0.25rem;
+    font-size: 0.95rem;
+}
+
+.apply-hint {
+    margin: 0 0 0.9rem;
+    font-size: 0.82rem;
+    color: #6a737d;
+    line-height: 1.45;
+}
+
+.adapt-cv-section-group {
+    margin-bottom: 1rem;
+}
+
+.adapt-cv-section-group > strong {
+    display: block;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #586069;
+    margin-bottom: 0.5rem;
+}
+
+/* General sections: inline wrap */
+.adapt-cv-sections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+}
+
+.adapt-cv-sections label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.88rem;
+    cursor: pointer;
+    padding: 0.25rem 0.1rem;
+    user-select: none;
+}
+
+.adapt-cv-sections input[type="checkbox"] {
+    accent-color: var(--accent, #3498db);
+    cursor: pointer;
+}
+
+/* Experience positions: 2-column grid, each item a compact card */
+.adapt-cv-exp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.adapt-cv-exp-toggles {
+    display: inline-flex;
+    gap: 0.35rem;
+}
+
+.adapt-cv-exp-toggles button {
+    background: transparent;
+    border: 1px solid #d1d5da;
+    color: #444;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+}
+
+.adapt-cv-exp-toggles button:hover {
+    background: #f0f3f6;
+    border-color: #959da5;
+}
+
+.adapt-cv-experience {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.adapt-cv-exp-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto auto;
+    column-gap: 0.6rem;
+    row-gap: 0.15rem;
+    align-items: start;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+    min-height: 0;
+}
+
+.adapt-cv-exp-item:hover {
+    border-color: #b0b8c0;
+    background: #f8fafc;
+}
+
+.adapt-cv-exp-item:has(input:checked) {
+    border-color: var(--accent, #3498db);
+    background: #eef5fc;
+    box-shadow: 0 0 0 1px var(--accent, #3498db) inset;
+}
+
+.adapt-cv-exp-checkbox {
+    grid-row: 1 / span 3;
+    align-self: center;
+    margin: 0;
+    accent-color: var(--accent, #3498db);
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+.adapt-cv-exp-company {
+    grid-column: 2;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #24292e;
+    line-height: 1.25;
+}
+
+.adapt-cv-exp-role {
+    grid-column: 2;
+    font-size: 0.8rem;
+    color: #444;
+    line-height: 1.3;
+}
+
+.adapt-cv-exp-period {
+    grid-column: 2;
+    font-size: 0.72rem;
+    color: #868e96;
+    letter-spacing: 0.01em;
+}
+
+.adapt-cv-tone {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0 0.75rem;
+    font-size: 0.85rem;
+}
+
+.adapt-cv-tone select {
+    padding: 0.3rem 0.5rem;
+    border: 1px solid #d1d5da;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.adapt-cv-btn {
+    width: 100%;
+    margin-top: 0.25rem;
+}
+
+.adapt-cv-output {
+    margin-top: 0.85rem;
+    padding: 0.75rem;
+    background: #f6f8fa;
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.78rem;
+    white-space: pre-wrap;
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.adapt-cv-output.hidden {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .adapt-cv-experience {
+        grid-template-columns: 1fr;
+    }
+}

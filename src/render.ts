@@ -138,14 +138,24 @@ export function renderSocialBar(lang: Lang, cv: CVContent): string {
 }
 
 export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewMode, skillsView: string, isShortView: boolean, isCollapsed: boolean, techProfile: string = 'vision'): string {
+  const techOptions: Array<[string, string]> = [
+    ['vision', 'Vision & GenAI'],
+    ['audio', 'Audio / Speech'],
+    ['multimodal', 'MultiModal'],
+    ['multiagent', 'MultiAgent'],
+    ['llm', 'NLP / LLM'],
+    ['ios', 'iOS Swift'],
+  ];
   const getTechToggleHtml = (displayClass: string) => currentViewMode === 'technical' ? `
     <div class="tech-profile-toggle ${displayClass} no-print">
-      <button class="tech-btn ${techProfile === 'vision' ? 'active' : ''}" data-tech="vision">Vision & GenAI</button>
-      <button class="tech-btn ${techProfile === 'audio' ? 'active' : ''}" data-tech="audio">Audio / Speech</button>
-      <button class="tech-btn ${techProfile === 'multimodal' ? 'active' : ''}" data-tech="multimodal">MultiModal</button>
-      <button class="tech-btn ${techProfile === 'multiagent' ? 'active' : ''}" data-tech="multiagent">MultiAgent</button>
-      <button class="tech-btn ${techProfile === 'llm' ? 'active' : ''}" data-tech="llm">NLP / LLM</button>
-      <button class="tech-btn ${techProfile === 'ios' ? 'active' : ''}" data-tech="ios">iOS Swift</button>
+      <label class="tech-select-label">
+        <span>${lang === 'ru' ? 'Профиль:' : 'Profile:'}</span>
+        <select class="tech-select">
+          ${techOptions.map(([val, label]) =>
+            `<option value="${val}" ${techProfile === val ? 'selected' : ''}>${label}</option>`
+          ).join('')}
+        </select>
+      </label>
     </div>
   ` : '';
 
@@ -162,26 +172,21 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
             </button>
           </div>
           ${getTechToggleHtml('mobile-only')}
-          <button class="compliance-btn" aria-label="${cv.labels.checkCompliance}" title="${cv.labels.checkCompliance}">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            <span class="btn-text desktop-only">${cv.labels.checkCompliance}</span>
-          </button>
-          <button class="how-to-apply-btn" aria-label="${cv.labels.howToApply}" title="${cv.labels.howToApply}">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 11l3 3L22 4"/>
-              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-            </svg>
-            <span class="btn-text desktop-only">${cv.labels.howToApply}</span>
-          </button>
-          <button class="coverletter-btn" aria-label="${lang === 'ru' ? 'Сопроводительное письмо' : 'Cover Letter'}" title="${lang === 'ru' ? 'Сопроводительное письмо' : 'Cover Letter'}">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-            </svg>
-            <span class="btn-text desktop-only">${lang === 'ru' ? 'Письмо' : 'Cover Letter'}</span>
-          </button>
+          <div class="tools-dropdown">
+            <button class="tools-btn" aria-label="AI Tools">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              </svg>
+              AI Tools
+            </button>
+            <div class="tools-menu">
+              <button class="tools-option compliance-btn">${cv.labels.checkCompliance}</button>
+              <button class="tools-option how-to-apply-btn">${cv.labels.howToApply}</button>
+              <button class="tools-option coverletter-btn">${lang === 'ru' ? 'Сопроводительное письмо' : 'Cover Letter'}</button>
+              <a class="tools-option" href="/matcher.html">${lang === 'ru' ? '🎯 Matcher вакансий' : '🎯 Vacancy Matcher'}</a>
+              <a class="tools-option" href="/scrape.html">${lang === 'ru' ? '🚀 Запустить скрэпинг' : '🚀 Run Scraping'}</a>
+            </div>
+          </div>
           <div class="export-dropdown">
             <button class="export-btn" aria-label="${cv.labels.export}">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -414,11 +419,10 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
           <p class="modal-disclaimer">⚠️ ${lang === 'ru' ? '<strong>Демо-функция:</strong> Это портфолио-проект, демонстрирующий интеграцию с AI. Для реальных заявок я пишу персонализированные письма.' : '<strong>Demo Feature:</strong> This is a portfolio project showcasing AI integration. For actual applications, I write personalized cover letters.'}</p>
 
           <select id="coverletter-model-select" class="model-select">
-            <option value="gpt-4o-mini">${lang === 'ru' ? 'GPT-4o Mini (Быстро)' : 'GPT-4o Mini (Fast)'}</option>
-            <option value="gpt-4o">${lang === 'ru' ? 'GPT-4o (Сбалансировано)' : 'GPT-4o (Balanced)'}</option>
-            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+            <option value="gpt-4o-mini">${lang === 'ru' ? 'GPT-4o Mini (Дёшево)' : 'GPT-4o Mini (Cheap)'}</option>
+            <option value="gpt-5.4-nano">${lang === 'ru' ? 'GPT-5.4 Nano (Быстро)' : 'GPT-5.4 Nano (Fast)'}</option>
+            <option value="gpt-5.4-mini" selected>${lang === 'ru' ? 'GPT-5.4 Mini (Сбалансировано)' : 'GPT-5.4 Mini (Balanced)'}</option>
             <option value="gpt-5.4">${lang === 'ru' ? 'GPT-5.4 (Премиум)' : 'GPT-5.4 (Premium)'}</option>
-            <option value="gpt-5-mini-2025-08-07">GPT-5 Mini</option>
           </select>
 
           <textarea id="coverletter-vacancy-input" placeholder="${lang === 'ru' ? 'Текст вакансии...' : 'Vacancy text...'}" class="modern-textarea"></textarea>

@@ -4,8 +4,8 @@ const OPENAI_DEFAULT_MODEL = 'gpt-5.4';
 const CLAUDE_DEFAULT_MODEL = 'claude-opus-4-7';
 
 const ALLOWED_OPENAI_MODELS = new Set([
-    'gpt-5.4', 'gpt-5.4-mini', 'gpt-5-mini-2025-08-07',
-    'gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'
+    'gpt-5.4', 'gpt-5.4-mini', 'gpt-5.4-nano',
+    'gpt-4o-mini'
 ]);
 const ALLOWED_CLAUDE_MODELS = new Set([
     'claude-opus-4-7', 'claude-sonnet-4-6', 'claude-haiku-4-5-20251001'

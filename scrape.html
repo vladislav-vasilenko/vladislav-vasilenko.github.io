@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scraping Control Panel</title>
+    <link rel="stylesheet" href="/src/styles/scrape.css" />
+</head>
+<body>
+<div class="page-wrap">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h1>Scraping Control Panel</h1>
+        <span id="server-badge" class="server-badge wait">Connecting to local server…</span>
+    </div>
+
+    <!-- Offline notice — shown when server is unreachable -->
+    <div id="offline-notice" class="offline-notice">
+        <strong>Local scraping server is not running.</strong><br>
+        Start it with: <code>cd tools/cv_matcher &amp;&amp; uv run python server.py</code>
+        — then reload this page.
+    </div>
+
+    <!-- ── Source selection ── -->
+    <div class="section">
+        <p class="section-title">Sources</p>
+        <div id="source-groups" class="source-groups">
+            <!-- Rendered by scrape.ts after /scrape/sources -->
+            <em style="color:#999;font-size:.85rem">Loading sources…</em>
+        </div>
+    </div>
+
+    <!-- ── Query mode ── -->
+    <div class="section">
+        <p class="section-title">Queries</p>
+        <div class="mode-radios">
+            <label class="mode-radio">
+                <input type="radio" name="mode" value="cv-matched" checked />
+                CV-matched (recommended)
+            </label>
+            <label class="mode-radio">
+                <input type="radio" name="mode" value="custom" />
+                Custom
+            </label>
+        </div>
+
+        <!-- CV-matched: editable chips -->
+        <div id="panel-cv" class="query-panel active">
+            <div class="chip-area" id="chip-area">
+                <!-- chips populated by scrape.ts from DEFAULT_QUERIES -->
+                <input class="chip-input" id="chip-input" placeholder="Add query…" />
+            </div>
+            <p style="font-size:.78rem;color:#888;margin:.4rem 0 0">
+                Edit the keyword set (press Enter to add, × to remove).
+            </p>
+        </div>
+
+        <!-- Custom: textarea -->
+        <div id="panel-custom" class="query-panel">
+            <textarea class="queries-textarea" id="custom-queries"
+                placeholder="One query per line&#10;Machine Learning Engineer&#10;LLM Engineer"></textarea>
+        </div>
+
+        <!-- Settings -->
+        <div class="settings-row">
+            <label>
+                Limit per source/query:
+                <input type="number" id="limit-input" value="20" min="1" max="200" />
+            </label>
+        </div>
+    </div>
+
+    <!-- ── Start button ── -->
+    <button id="start-btn" class="start-btn" disabled>Start Scraping</button>
+
+    <!-- ── Live panel ── -->
+    <div id="live-panel" class="live-panel">
+        <div class="section" style="margin-top:1rem">
+            <div class="progress-header">
+                <span class="progress-label" id="progress-label">Waiting…</span>
+                <span class="progress-count" id="progress-count"></span>
+            </div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <p class="last5-title">Recent vacancies</p>
+            <ul class="last5-list" id="last5-list">
+                <li style="color:#999;border:none;background:none">No vacancies yet…</li>
+            </ul>
+
+            <div class="log-wrap" id="log-wrap"></div>
+        </div>
+    </div>
+
+    <!-- ── Done banner ── -->
+    <div id="done-banner" class="done-banner">
+        <p id="done-text">Scraping complete!</p>
+        <a href="/matcher.html" class="open-matcher-btn">Open Matcher →</a>
+    </div>
+
+</div>
+
+<script type="module" src="/src/scrape.ts"></script>
+</body>
+</html>
