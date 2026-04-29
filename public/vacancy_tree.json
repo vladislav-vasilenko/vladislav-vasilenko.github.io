@@ -1,0 +1,2454 @@
+{
+  "company": "Meta",
+  "generated_at": "2026-04-29T20:32:01.673043+00:00",
+  "stats": {
+    "total_jobs": 50,
+    "teams": 16,
+    "sub_teams": 35,
+    "with_compensation": 46,
+    "research_roles": 7,
+    "product_roles": 5,
+    "engineering_roles": 16,
+    "category_counts": {
+      "operations": 11,
+      "engineering": 16,
+      "research": 7,
+      "tpm": 3,
+      "product": 5,
+      "data": 4,
+      "finance": 1,
+      "gtm": 2,
+      "design": 1
+    },
+    "cross_team_bridges": 2
+  },
+  "categories": [
+    {
+      "id": "research",
+      "emoji": "🔬",
+      "label": "Research"
+    },
+    {
+      "id": "design",
+      "emoji": "🎨",
+      "label": "Design"
+    },
+    {
+      "id": "data",
+      "emoji": "📊",
+      "label": "Data"
+    },
+    {
+      "id": "product",
+      "emoji": "📦",
+      "label": "Product"
+    },
+    {
+      "id": "legal",
+      "emoji": "⚖️",
+      "label": "Legal/Policy"
+    },
+    {
+      "id": "finance",
+      "emoji": "💰",
+      "label": "Finance"
+    },
+    {
+      "id": "people",
+      "emoji": "👥",
+      "label": "People"
+    },
+    {
+      "id": "tpm",
+      "emoji": "📋",
+      "label": "Program Mgmt"
+    },
+    {
+      "id": "gtm",
+      "emoji": "💼",
+      "label": "GTM"
+    },
+    {
+      "id": "operations",
+      "emoji": "🏗️",
+      "label": "Operations"
+    },
+    {
+      "id": "security",
+      "emoji": "🛡️",
+      "label": "Security/Trust"
+    },
+    {
+      "id": "engineering",
+      "emoji": "⚙️",
+      "label": "Engineering"
+    }
+  ],
+  "clusters": [
+    {
+      "name": "Data Center",
+      "size": 9,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "operations": 9
+      },
+      "dominant_category": "operations",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Data Center Operations",
+          "size": 5,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "operations": 5
+          },
+          "dominant_category": "operations",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 5,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1081929713616144",
+                  "title": "Controls Subject Matter Expert",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "controls subject matter expert",
+                  "locations": [
+                    "Rayville, LA",
+                    "Jeffersonville, IN",
+                    "Lebanon, IN",
+                    "El Paso, TX"
+                  ],
+                  "compensation": "$143,000/year to $198,000/year",
+                  "link": "https://www.metacareers.com/jobs/1081929713616144/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_831663409504316",
+                  "title": "Leased Facility Engineer",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "leased facility engineer",
+                  "locations": [
+                    "New Albany, OH"
+                  ],
+                  "compensation": "$104,998/year to $151,008/year",
+                  "link": "https://www.metacareers.com/jobs/831663409504316/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_983697370981438",
+                  "title": "Mechanical Subject Matter Expert",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "mechanical subject matter expert",
+                  "locations": [
+                    "Menlo Park, CA",
+                    "New Albany, OH"
+                  ],
+                  "compensation": "$114,000/year to $168,000/year",
+                  "link": "https://www.metacareers.com/jobs/983697370981438/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_1734358140739006",
+                  "title": "Network Engineer, Deployment & Support",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "network engineer",
+                  "locations": [
+                    "Mesa, AZ",
+                    "Temple, TX",
+                    "Rayville, LA",
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$135,000/year to $191,000/year",
+                  "link": "https://www.metacareers.com/jobs/1734358140739006/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_1201679578735137",
+                  "title": "Network Engineer, Foundations and Support",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "network engineer",
+                  "locations": [
+                    "Aiken, SC",
+                    "Cedar Rapids, IA",
+                    "Rosemount, MN"
+                  ],
+                  "compensation": "$106,995/year to $159,000/year",
+                  "link": "https://www.metacareers.com/jobs/1201679578735137/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Data Center Design, Engineering, & Construction",
+          "size": 2,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "operations": 2
+          },
+          "dominant_category": "operations",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 2,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1565004731662609",
+                  "title": "Network Engineer, Foundation and Support (Edge/Backbone Infrastructure Design)",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "network engineer",
+                  "locations": [
+                    "Denver, CO",
+                    "Reston, VA"
+                  ],
+                  "compensation": "$106,995/year to $159,000/year",
+                  "link": "https://www.metacareers.com/jobs/1565004731662609/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_967054659642370",
+                  "title": "Site Loss Control Specialist - Construction Safety",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "site loss control specialist - construction safety",
+                  "locations": [
+                    "Bowling Green, OH"
+                  ],
+                  "compensation": "$123,000/year to $176,000/year",
+                  "link": "https://www.metacareers.com/jobs/967054659642370/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Data Center Strategy",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "operations": 1
+          },
+          "dominant_category": "operations",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_830259092876766",
+                  "title": "Data Center Strategy & Planning Manager",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "data center strategy & planning",
+                  "locations": [
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "San Francisco, CA"
+                  ],
+                  "compensation": "$202,000/year to $273,000/year",
+                  "link": "https://www.metacareers.com/jobs/830259092876766/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Artificial Intelligence",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "operations": 1
+          },
+          "dominant_category": "operations",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_26416278451374679",
+                  "title": "Commercial Sourcing Manager, Data Center Connectivity",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "commercial sourcing",
+                  "locations": [
+                    "Fremont, CA"
+                  ],
+                  "compensation": "$151,000/year to $210,000/year",
+                  "link": "https://www.metacareers.com/jobs/26416278451374679/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Software Engineering",
+      "size": 6,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "engineering": 6
+      },
+      "dominant_category": "engineering",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Engineering",
+          "size": 5,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 5
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 5,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_2486789151677735",
+                  "title": "Software Engineer, Infrastructure",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "software engineer",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "Washington, DC",
+                    "Boston, MA",
+                    "New York, NY",
+                    "Fremont, CA"
+                  ],
+                  "compensation": "$183,997/year to $257,000/year",
+                  "link": "https://www.metacareers.com/jobs/2486789151677735/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_1368969190886166",
+                  "title": "Software Engineer, Machine Learning",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "software engineer",
+                  "locations": [
+                    "Sausalito, CA",
+                    "Sunnyvale, CA",
+                    "San Mateo, CA",
+                    "Bellevue, WA",
+                    "Redmond, WA",
+                    "Foster City, CA",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "Burlingame, CA",
+                    "Santa Clara, CA",
+                    "Newark, CA",
+                    "New York, NY",
+                    "San Francisco, CA",
+                    "Fremont, CA",
+                    "Mountain View, CA"
+                  ],
+                  "compensation": "$121,992/year to $181,000/year",
+                  "link": "https://www.metacareers.com/jobs/1368969190886166/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_1079158160340219",
+                  "title": "Software Engineer, Product",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "software engineer",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Los Angeles, CA",
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "Burlingame, CA",
+                    "New York, NY",
+                    "San Francisco, CA"
+                  ],
+                  "compensation": "$154,003/year to $217,000/year",
+                  "link": "https://www.metacareers.com/jobs/1079158160340219/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_9657291271065759",
+                  "title": "Software Engineer, Product",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "software engineer",
+                  "locations": [
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "Burlingame, CA",
+                    "Remote, US",
+                    "New York, NY",
+                    "San Francisco, CA"
+                  ],
+                  "compensation": "$183,997/year to $257,000/year",
+                  "link": "https://www.metacareers.com/jobs/9657291271065759/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_727671609895617",
+                  "title": "Software Engineer, Product",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "software engineer",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "Burlingame, CA",
+                    "New York, NY"
+                  ],
+                  "compensation": "$121,992/year to $181,000/year",
+                  "link": "https://www.metacareers.com/jobs/727671609895617/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Machine Learning",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 1
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_998357492128826",
+                  "title": "Software Engineer, Machine Learning",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "software engineer",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "San Mateo, CA",
+                    "Los Angeles, CA",
+                    "Remote, US",
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "Burlingame, CA",
+                    "Santa Clara, CA",
+                    "Washington, DC",
+                    "Boston, MA",
+                    "New York, NY",
+                    "San Francisco, CA",
+                    "Chicago, IL",
+                    "Fremont, CA"
+                  ],
+                  "compensation": "$183,997/year to $257,000/year",
+                  "link": "https://www.metacareers.com/jobs/998357492128826/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AI Research",
+      "size": 5,
+      "research_count": 5,
+      "product_count": 0,
+      "category_counts": {
+        "research": 5
+      },
+      "dominant_category": "research",
+      "is_research_dominant": true,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Artificial Intelligence",
+          "size": 3,
+          "research_count": 3,
+          "product_count": 0,
+          "category_counts": {
+            "research": 3
+          },
+          "dominant_category": "research",
+          "is_research_dominant": true,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 3,
+              "research_count": 3,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_2321017468376143",
+                  "title": "Research Engineer, Monetization AI",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "research engineer",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Redmond, WA",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "New York, NY"
+                  ],
+                  "compensation": "$121,992/year to $181,000/year",
+                  "link": "https://www.metacareers.com/jobs/2321017468376143/",
+                  "category": "research",
+                  "category_emoji": "🔬",
+                  "category_label": "Research",
+                  "is_research": true,
+                  "research_score": 7,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🔬",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_1070564468548321",
+                  "title": "Research Engineer, Monetization AI",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "research engineer",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "Burlingame, CA",
+                    "Boston, MA",
+                    "New York, NY",
+                    "San Francisco, CA",
+                    "Remote, US"
+                  ],
+                  "compensation": "$183,997/year to $257,000/year",
+                  "link": "https://www.metacareers.com/jobs/1070564468548321/",
+                  "category": "research",
+                  "category_emoji": "🔬",
+                  "category_label": "Research",
+                  "is_research": true,
+                  "research_score": 7,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🔬",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_26607795362252983",
+                  "title": "Research Scientist, AI Language",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "research scientist",
+                  "locations": [
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$184,000/year to $257,000/year",
+                  "link": "https://www.metacareers.com/jobs/26607795362252983/",
+                  "category": "research",
+                  "category_emoji": "🔬",
+                  "category_label": "Research",
+                  "is_research": true,
+                  "research_score": 6,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🔬",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Engineering",
+          "size": 1,
+          "research_count": 1,
+          "product_count": 0,
+          "category_counts": {
+            "research": 1
+          },
+          "dominant_category": "research",
+          "is_research_dominant": true,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 1,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1382136746900637",
+                  "title": "Research Engineer - AI Trust - Meta Superintelligence Labs",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "research engineer - ai trust - meta superintelligence labs",
+                  "locations": [
+                    "Bellevue, WA",
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$154,003/year to $217,000/year",
+                  "link": "https://www.metacareers.com/jobs/1382136746900637/",
+                  "category": "research",
+                  "category_emoji": "🔬",
+                  "category_label": "Research",
+                  "is_research": true,
+                  "research_score": 7,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🔬",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Research",
+          "size": 1,
+          "research_count": 1,
+          "product_count": 0,
+          "category_counts": {
+            "research": 1
+          },
+          "dominant_category": "research",
+          "is_research_dominant": true,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 1,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1380974339703907",
+                  "title": "AI Research Scientist, CoreML - Monetization AI",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ai research scientist",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "New York, NY"
+                  ],
+                  "compensation": "$154,000/year to $217,000/year",
+                  "link": "https://www.metacareers.com/jobs/1380974339703907/",
+                  "category": "research",
+                  "category_emoji": "🔬",
+                  "category_label": "Research",
+                  "is_research": true,
+                  "research_score": 7,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🔬",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AR/VR",
+      "size": 5,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "engineering": 4,
+        "tpm": 1
+      },
+      "dominant_category": "engineering",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Hardware",
+          "size": 2,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 2
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1323081066387055",
+                  "title": "Strategic Sourcing Manager – Camera, Depth & Optics (Smartglasses/AR)",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "strategic sourcing – camera",
+                  "locations": [
+                    "Sunnyvale, CA"
+                  ],
+                  "compensation": "$168,000/year to $234,000/year",
+                  "link": "https://www.metacareers.com/jobs/1323081066387055/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            },
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_936152909409005",
+                  "title": "Hardware Electrical Engineer",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "hardware electrical engineer",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Redmond, WA"
+                  ],
+                  "compensation": "$144,000/year to $204,000/year",
+                  "link": "https://www.metacareers.com/jobs/936152909409005/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": "meta_1323081066387055"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Business Marketing",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 1
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_776672288833325",
+                  "title": "Solutions Architect",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "solutions architect",
+                  "locations": [
+                    "Burlingame, CA",
+                    "Seattle, WA"
+                  ],
+                  "compensation": "$152,000/year to $214,000/year",
+                  "link": "https://www.metacareers.com/jobs/776672288833325/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Analytics",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "tpm": 1
+          },
+          "dominant_category": "tpm",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1245547964185672",
+                  "title": "Operations Program Manager (Core Technologies)",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "operations program (core technologies)",
+                  "locations": [
+                    "Sunnyvale, CA"
+                  ],
+                  "compensation": "$168,000/year to $234,000/year",
+                  "link": "https://www.metacareers.com/jobs/1245547964185672/",
+                  "category": "tpm",
+                  "category_emoji": "📋",
+                  "category_label": "Program Mgmt",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "📋",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Operations",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 1
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1470153134896953",
+                  "title": "Silicon Technologies Strategic Partnerships & Sourcing Manager",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "silicon technologies strategic partnerships & sourcing",
+                  "locations": [
+                    "Sunnyvale, CA"
+                  ],
+                  "compensation": "$199,000/year to $272,000/year",
+                  "link": "https://www.metacareers.com/jobs/1470153134896953/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Product Management",
+      "size": 4,
+      "research_count": 0,
+      "product_count": 4,
+      "category_counts": {
+        "product": 4
+      },
+      "dominant_category": "product",
+      "is_research_dominant": false,
+      "is_product_dominant": true,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Product Strategy",
+          "size": 2,
+          "research_count": 0,
+          "product_count": 2,
+          "category_counts": {
+            "product": 2
+          },
+          "dominant_category": "product",
+          "is_research_dominant": false,
+          "is_product_dominant": true,
+          "buckets": [
+            {
+              "name": "VP (9)",
+              "level": "VP",
+              "level_rank": 9,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 1,
+              "roles": [
+                {
+                  "id": "meta_1901428130562220",
+                  "title": "VP, Product Threads",
+                  "level": "VP",
+                  "level_rank": 9,
+                  "stem": "",
+                  "locations": [
+                    "San Francisco, CA"
+                  ],
+                  "compensation": "$483,000/year to $508,000/year",
+                  "link": "https://www.metacareers.com/jobs/1901428130562220/",
+                  "category": "product",
+                  "category_emoji": "📦",
+                  "category_label": "Product",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": true,
+                  "product_score": 5,
+                  "marker": "📦",
+                  "manager_id": null
+                }
+              ]
+            },
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 1,
+              "roles": [
+                {
+                  "id": "meta_1238249364564427",
+                  "title": "Product Manager",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "product",
+                  "locations": [
+                    "Los Angeles, CA",
+                    "Remote, US",
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "Burlingame, CA",
+                    "New York, NY"
+                  ],
+                  "compensation": "$173,000/year to $241,000/year",
+                  "link": "https://www.metacareers.com/jobs/1238249364564427/",
+                  "category": "product",
+                  "category_emoji": "📦",
+                  "category_label": "Product",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": true,
+                  "product_score": 5,
+                  "marker": "📦",
+                  "manager_id": "meta_1901428130562220"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "IT",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 1,
+          "category_counts": {
+            "product": 1
+          },
+          "dominant_category": "product",
+          "is_research_dominant": false,
+          "is_product_dominant": true,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 1,
+              "roles": [
+                {
+                  "id": "meta_1303890458343560",
+                  "title": "Product Manager",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "product",
+                  "locations": [
+                    "New York, NY"
+                  ],
+                  "compensation": "$229,108/year to $235,620/year",
+                  "link": "https://www.metacareers.com/jobs/1303890458343560/",
+                  "category": "product",
+                  "category_emoji": "📦",
+                  "category_label": "Product",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": true,
+                  "product_score": 5,
+                  "marker": "📦",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Analytics",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 1,
+          "category_counts": {
+            "product": 1
+          },
+          "dominant_category": "product",
+          "is_research_dominant": false,
+          "is_product_dominant": true,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 1,
+              "roles": [
+                {
+                  "id": "meta_778079741366883",
+                  "title": "Manager, Product Growth",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "",
+                  "locations": [
+                    "Menlo Park, CA",
+                    "Remote, US"
+                  ],
+                  "compensation": "$280,955/year to $305,800/year",
+                  "link": "https://www.metacareers.com/jobs/778079741366883/",
+                  "category": "product",
+                  "category_emoji": "📦",
+                  "category_label": "Product",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": true,
+                  "product_score": 2,
+                  "marker": "📦",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Data & Analytics",
+      "size": 4,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "data": 4
+      },
+      "dominant_category": "data",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Data Science",
+          "size": 2,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "data": 2
+          },
+          "dominant_category": "data",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 2,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_435020605866341",
+                  "title": "Data Scientist, Product Analytics",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "data scientist",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "New York, NY",
+                    "Remote, US"
+                  ],
+                  "compensation": "$147,000/year to $208,000/year",
+                  "link": "https://www.metacareers.com/jobs/435020605866341/",
+                  "category": "data",
+                  "category_emoji": "📊",
+                  "category_label": "Data",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "📊",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_1070147800777577",
+                  "title": "Data Scientist, Product Analytics",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "data scientist",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Austin, TX",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "Burlingame, CA",
+                    "New York, NY",
+                    "San Francisco, CA",
+                    "Remote, US"
+                  ],
+                  "compensation": "$177,000/year to $247,000/year",
+                  "link": "https://www.metacareers.com/jobs/1070147800777577/",
+                  "category": "data",
+                  "category_emoji": "📊",
+                  "category_label": "Data",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "📊",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Analytics",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "data": 1
+          },
+          "dominant_category": "data",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_613354727793690",
+                  "title": "Data Scientist, Analytics (Technical Leadership)",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "data scientist",
+                  "locations": [
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "Washington, DC",
+                    "New York, NY",
+                    "San Francisco, CA",
+                    "Remote, US"
+                  ],
+                  "compensation": "$210,000/year to $281,000/year",
+                  "link": "https://www.metacareers.com/jobs/613354727793690/",
+                  "category": "data",
+                  "category_emoji": "📊",
+                  "category_label": "Data",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "📊",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Engineering",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "data": 1
+          },
+          "dominant_category": "data",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1444468166826558",
+                  "title": "Data Engineer",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "data engineer",
+                  "locations": [
+                    "Austin, TX"
+                  ],
+                  "compensation": "$215,078/year to $240,460/year",
+                  "link": "https://www.metacareers.com/jobs/1444468166826558/",
+                  "category": "data",
+                  "category_emoji": "📊",
+                  "category_label": "Data",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "📊",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Legal, Finance, Facilities & Admin",
+      "size": 3,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "engineering": 2,
+        "finance": 1
+      },
+      "dominant_category": "engineering",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "G and A",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 1
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1770870020490643",
+                  "title": "Executive Administrative Partner",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "executive administrative partner",
+                  "locations": [
+                    "Menlo Park, CA",
+                    "New York, NY",
+                    "San Francisco, CA"
+                  ],
+                  "compensation": "$86,091/year to $118,310/year",
+                  "link": "https://www.metacareers.com/jobs/1770870020490643/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Facilities",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 1
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Lead (5)",
+              "level": "Lead",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_2447379849027934",
+                  "title": "Global Design Guidelines & Engagement Lead",
+                  "level": "Lead",
+                  "level_rank": 5,
+                  "stem": "global design guidelines & engagement",
+                  "locations": [
+                    "London, UK"
+                  ],
+                  "compensation": "",
+                  "link": "https://www.metacareers.com/jobs/2447379849027934/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Finance",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "finance": 1
+          },
+          "dominant_category": "finance",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_3922111931428934",
+                  "title": "PayMeta Tax Manager",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "paymeta tax",
+                  "locations": [
+                    "Dublin, Ireland"
+                  ],
+                  "compensation": "",
+                  "link": "https://www.metacareers.com/jobs/3922111931428934/",
+                  "category": "finance",
+                  "category_emoji": "💰",
+                  "category_label": "Finance",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "💰",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AI Infrastructure",
+      "size": 3,
+      "research_count": 0,
+      "product_count": 1,
+      "category_counts": {
+        "engineering": 2,
+        "product": 1
+      },
+      "dominant_category": "engineering",
+      "is_research_dominant": false,
+      "is_product_dominant": true,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Engineering",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 1
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1075389717795087",
+                  "title": "Software Engineer (Technical Leadership) - Machine Learning",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "software engineer (technical leadership) - machine learning",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Redmond, WA",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "Burlingame, CA",
+                    "Remote, US",
+                    "New York, NY",
+                    "San Francisco, CA"
+                  ],
+                  "compensation": "$219,000/year to $301,000/year",
+                  "link": "https://www.metacareers.com/jobs/1075389717795087/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Product Strategy",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 1,
+          "category_counts": {
+            "product": 1
+          },
+          "dominant_category": "product",
+          "is_research_dominant": false,
+          "is_product_dominant": true,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 1,
+              "roles": [
+                {
+                  "id": "meta_1420853345578936",
+                  "title": "Product Manager",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "product",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "Burlingame, CA",
+                    "Remote, US",
+                    "New York, NY",
+                    "San Francisco, CA"
+                  ],
+                  "compensation": "$205,000/year to $277,000/year",
+                  "link": "https://www.metacareers.com/jobs/1420853345578936/",
+                  "category": "product",
+                  "category_emoji": "📦",
+                  "category_label": "Product",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": true,
+                  "product_score": 3,
+                  "marker": "📦",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Artificial Intelligence",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 1
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_596583419835692",
+                  "title": "Software Engineer - AI SysML (Technical Leadership)",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "software engineer - ai sysml (technical leadership)",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$219,000/year to $301,000/year",
+                  "link": "https://www.metacareers.com/jobs/596583419835692/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sales & Marketing",
+      "size": 2,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "gtm": 2
+      },
+      "dominant_category": "gtm",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Consumer Marketing",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "gtm": 1
+          },
+          "dominant_category": "gtm",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1341339068053539",
+                  "title": "Brand Partnerships Manager, Reality Labs",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "brand partnerships",
+                  "locations": [
+                    "Menlo Park, CA",
+                    "New York, NY"
+                  ],
+                  "compensation": "$97,000/year to $146,000/year",
+                  "link": "https://www.metacareers.com/jobs/1341339068053539/",
+                  "category": "gtm",
+                  "category_emoji": "💼",
+                  "category_label": "GTM",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "💼",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Media",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "gtm": 1
+          },
+          "dominant_category": "gtm",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Director (8)",
+              "level": "Director",
+              "level_rank": 8,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_849551784823465",
+                  "title": "Director, Campaign Effectiveness",
+                  "level": "Director",
+                  "level_rank": 8,
+                  "stem": "",
+                  "locations": [
+                    "Menlo Park, CA",
+                    "New York, NY"
+                  ],
+                  "compensation": "$227,000/year to $296,000/year",
+                  "link": "https://www.metacareers.com/jobs/849551784823465/",
+                  "category": "gtm",
+                  "category_emoji": "💼",
+                  "category_label": "GTM",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "💼",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Infrastructure",
+      "size": 2,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "tpm": 1,
+        "engineering": 1
+      },
+      "dominant_category": "tpm",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Data Center Operations",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "tpm": 1
+          },
+          "dominant_category": "tpm",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1277009131113341",
+                  "title": "NPI Program Manager",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "npi program",
+                  "locations": [
+                    "Fremont, CA"
+                  ],
+                  "compensation": "$168,000/year to $234,000/year",
+                  "link": "https://www.metacareers.com/jobs/1277009131113341/",
+                  "category": "tpm",
+                  "category_emoji": "📋",
+                  "category_label": "Program Mgmt",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "📋",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Artificial Intelligence",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 1
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_3414246448833665",
+                  "title": "Software Engineer, Systems ML",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "software engineer",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$183,997/year to $257,000/year",
+                  "link": "https://www.metacareers.com/jobs/3414246448833665/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Advertising Technology",
+      "size": 2,
+      "research_count": 1,
+      "product_count": 0,
+      "category_counts": {
+        "research": 1,
+        "engineering": 1
+      },
+      "dominant_category": "research",
+      "is_research_dominant": true,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Artificial Intelligence",
+          "size": 2,
+          "research_count": 1,
+          "product_count": 0,
+          "category_counts": {
+            "research": 1,
+            "engineering": 1
+          },
+          "dominant_category": "research",
+          "is_research_dominant": true,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 2,
+              "research_count": 1,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_556388847084173",
+                  "title": "Research Engineer, Monetization AI",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "research engineer",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Bellevue, WA",
+                    "Menlo Park, CA",
+                    "Seattle, WA",
+                    "Burlingame, CA",
+                    "New York, NY",
+                    "San Francisco, CA"
+                  ],
+                  "compensation": "$154,003/year to $217,000/year",
+                  "link": "https://www.metacareers.com/jobs/556388847084173/",
+                  "category": "research",
+                  "category_emoji": "🔬",
+                  "category_label": "Research",
+                  "is_research": true,
+                  "research_score": 5,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🔬",
+                  "manager_id": null
+                },
+                {
+                  "id": "meta_1835582317134298",
+                  "title": "Solutions Architect, Business AI",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "solutions architect",
+                  "locations": [
+                    "São Paulo, Brazil"
+                  ],
+                  "compensation": "",
+                  "link": "https://www.metacareers.com/jobs/1835582317134298/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Creative",
+      "size": 1,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "design": 1
+      },
+      "dominant_category": "design",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Design",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "design": 1
+          },
+          "dominant_category": "design",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Director (8)",
+              "level": "Director",
+              "level_rank": 8,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1310020567974002",
+                  "title": "Creative Director, Performance Marketing",
+                  "level": "Director",
+                  "level_rank": 8,
+                  "stem": "creative",
+                  "locations": [
+                    "Los Angeles, CA",
+                    "Menlo Park, CA",
+                    "New York, NY",
+                    "San Francisco, CA"
+                  ],
+                  "compensation": "$149,000/year to $209,000/year",
+                  "link": "https://www.metacareers.com/jobs/1310020567974002/",
+                  "category": "design",
+                  "category_emoji": "🎨",
+                  "category_label": "Design",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🎨",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Global Operations",
+      "size": 1,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "operations": 1
+      },
+      "dominant_category": "operations",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Operations",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "operations": 1
+          },
+          "dominant_category": "operations",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1379656217515033",
+                  "title": "Site Manager, Robotics Teleoperation",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "site",
+                  "locations": [
+                    "Burlingame, CA"
+                  ],
+                  "compensation": "$99,000/year to $144,000/year",
+                  "link": "https://www.metacareers.com/jobs/1379656217515033/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Research",
+      "size": 1,
+      "research_count": 1,
+      "product_count": 0,
+      "category_counts": {
+        "research": 1
+      },
+      "dominant_category": "research",
+      "is_research_dominant": true,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Research",
+          "size": 1,
+          "research_count": 1,
+          "product_count": 0,
+          "category_counts": {
+            "research": 1
+          },
+          "dominant_category": "research",
+          "is_research_dominant": true,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 1,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1335549648414435",
+                  "title": "Electrical Engineer: Robotics Hardware Engineering",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "electrical engineer: robotics hardware engineering",
+                  "locations": [
+                    "Redmond, WA"
+                  ],
+                  "compensation": "$173,000/year to $245,000/year",
+                  "link": "https://www.metacareers.com/jobs/1335549648414435/",
+                  "category": "research",
+                  "category_emoji": "🔬",
+                  "category_label": "Research",
+                  "is_research": true,
+                  "research_score": 2,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🔬",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Facebook Reality Labs",
+      "size": 1,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "operations": 1
+      },
+      "dominant_category": "operations",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Engineering",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "operations": 1
+          },
+          "dominant_category": "operations",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_660780803565125",
+                  "title": "Manufacturing Design Engineer - Mechanical",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "manufacturing design engineer - mechanical",
+                  "locations": [
+                    "Sunnyvale, CA"
+                  ],
+                  "compensation": "$144,000/year to $204,000/year",
+                  "link": "https://www.metacareers.com/jobs/660780803565125/",
+                  "category": "operations",
+                  "category_emoji": "🏗️",
+                  "category_label": "Operations",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "🏗️",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Technical Program Management",
+      "size": 1,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "tpm": 1
+      },
+      "dominant_category": "tpm",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "Engineering",
+          "size": 1,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "tpm": 1
+          },
+          "dominant_category": "tpm",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1184014840399689",
+                  "title": "Technical Program Manager - Business Engineering",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "technical program - business engineering",
+                  "locations": [
+                    "Singapore"
+                  ],
+                  "compensation": "",
+                  "link": "https://www.metacareers.com/jobs/1184014840399689/",
+                  "category": "tpm",
+                  "category_emoji": "📋",
+                  "category_label": "Program Mgmt",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "📋",
+                  "manager_id": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "cross_team_bridges": [
+    {
+      "title": "Product Manager",
+      "team_pairs": [
+        "AI Infrastructure",
+        "Product Management"
+      ]
+    },
+    {
+      "title": "Research Engineer, Monetization AI",
+      "team_pairs": [
+        "AI Research",
+        "Advertising Technology"
+      ]
+    }
+  ],
+  "peer_groups": {
+    "software engineer": [
+      "meta_1079158160340219",
+      "meta_1368969190886166",
+      "meta_2486789151677735",
+      "meta_9657291271065759",
+      "meta_727671609895617",
+      "meta_998357492128826",
+      "meta_3414246448833665"
+    ],
+    "product": [
+      "meta_1238249364564427",
+      "meta_1303890458343560",
+      "meta_1420853345578936"
+    ],
+    "research engineer": [
+      "meta_556388847084173",
+      "meta_2321017468376143",
+      "meta_1070564468548321"
+    ],
+    "": [
+      "meta_1901428130562220",
+      "meta_849551784823465",
+      "meta_778079741366883"
+    ],
+    "network engineer": [
+      "meta_1734358140739006",
+      "meta_1201679578735137",
+      "meta_1565004731662609"
+    ],
+    "data scientist": [
+      "meta_435020605866341",
+      "meta_1070147800777577",
+      "meta_613354727793690"
+    ],
+    "solutions architect": [
+      "meta_776672288833325",
+      "meta_1835582317134298"
+    ]
+  }
+}

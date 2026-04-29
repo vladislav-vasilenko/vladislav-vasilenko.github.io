@@ -1,15 +1,18 @@
 """FAANG scrapers (iter 1: Google + Meta; Amazon/Netflix/Apple — TODO)."""
 
+import asyncio
 import json
 import re
 import random
 import time
-from typing import List, Dict, Any, Set, Optional
+from typing import List, Dict, Any, Set, Optional, Awaitable, Callable
 from urllib.parse import quote
 from html import unescape
 from playwright.sync_api import Page
+from pydantic import BaseModel, Field, ValidationError
 
 from ._base import BaseScraper, _scroll_until_stable, _first_non_empty_text
+from ._stealth import STEALTH_INIT_JS
 
 
 class GoogleCareersScraper(BaseScraper):
@@ -192,17 +195,63 @@ def _build_full_description(parts: Dict[str, Any]) -> str:
     return "\n\n".join(blocks)
 
 
+class MetaVacancy(BaseModel):
+    """Validated Meta job record. Catches schema drift early — if Meta renames
+    a JSON-LD field, ``description`` (required) becomes empty and validation
+    raises instead of writing a half-broken row downstream."""
+
+    id: str = Field(min_length=5)
+    title: str = Field(min_length=1)
+    company: str = "Meta"
+    locations: List[str] = Field(default_factory=list)
+    teams: List[str] = Field(default_factory=list)
+    sub_teams: List[str] = Field(default_factory=list)
+    compensation: str = ""
+    description: str = Field(min_length=50)
+    link: str = Field(pattern=r"^https://www\.metacareers\.com/jobs/\d+/?$")
+    pub_date: str = "Recently"
+    origin_query: str = ""
+
+
+async def _retry_async(
+    coro_fn: Callable[[], Awaitable[Any]],
+    attempts: int = 3,
+    base_delay: float = 0.6,
+    label: str = "",
+) -> Any:
+    """Run ``coro_fn()`` with exponential backoff (0.6s, 1.2s, 2.4s).
+
+    Each attempt is fully independent — the caller is responsible for setting
+    up/tearing down per-attempt resources (e.g. a fresh ``Page``) inside the
+    coroutine.
+    """
+    last_err: Optional[BaseException] = None
+    for i in range(attempts):
+        try:
+            return await coro_fn()
+        except Exception as e:
+            last_err = e
+            if i < attempts - 1:
+                wait = base_delay * (2 ** i)
+                print(f"  ⤳ retry {label} in {wait:.1f}s ({type(e).__name__}: {e})")
+                await asyncio.sleep(wait)
+    assert last_err is not None
+    raise last_err
+
+
 class MetaCareersScraper(BaseScraper):
-    """metacareers.com — full-board scraper.
+    """metacareers.com — full-board scraper with concurrent detail fetching.
 
     Approach (works around Meta's anti-bot + Relay/SSR quirks):
       1. Navigate to https://www.metacareers.com/jobs and intercept the
-         GraphQL response that returns ``job_search_with_featured_jobs.all_jobs``.
-         A single response carries all ~552 active vacancies (the UI's
-         ``?page=N`` is a client-side slice of the same payload).
-      2. For each vacancy, fetch the detail HTML and parse the JSON-LD
-         ``JobPosting`` block embedded in the SSR markup. Avoids waiting for
-         React hydration.
+         GraphQL response carrying ``job_search_with_featured_jobs.all_jobs`` —
+         a single payload covers all ~552 active vacancies (the UI's
+         ``?page=N`` is a client-side slice of the same data).
+      2. Concurrently fetch each detail page (``detail_concurrency`` parallel
+         pages on one ``BrowserContext``); parse the JSON-LD ``JobPosting``
+         block embedded in the SSR markup. Avoids waiting for React hydration.
+      3. Each detail fetch retries with exponential backoff on transient
+         failures; result is validated via :class:`MetaVacancy` before return.
 
     When ``query`` is empty, returns the full board. When set, filters by
     case-insensitive substring against title/description/teams.
@@ -216,32 +265,87 @@ class MetaCareersScraper(BaseScraper):
     paginated_url_tpl = "https://www.metacareers.com/jobsearch?source=cp_chatbot&page={page}"
     detail_url_tpl = "https://www.metacareers.com/jobs/{job_id}/"
 
-    # Per-job navigation budget. Detail pages render in ~1–2s with images blocked.
     detail_timeout_ms = 30000
-    inter_request_pause_ms = (250, 800)
+    inter_request_pause_ms = (200, 600)
+    detail_concurrency = 5
+    detail_attempts = 3
 
-    # Hard cap on how many `?page=N` walks we'll try as fallback if the single
-    # GraphQL response is incomplete. Each page navigation costs ~3s.
     pagination_fallback_limit = 60
 
-    def _capture_listing(self, page: Page) -> List[Dict[str, Any]]:
-        """Capture the listing.
+    # ---- Public sync entry point — overrides BaseScraper.fetch_jobs ----
 
-        Primary path: navigate to /jobs and intercept the GraphQL response — a
-        single payload contains all ~552 active vacancies, so the UI's
-        ``?page=N`` paging is a no-op.
+    def fetch_jobs(self, query: str, existing_ids: Optional[Set[str]] = None) -> List[Dict[str, Any]]:
+        if existing_ids is None:
+            existing_ids = set()
+        print(
+            f"🔍 {self.company_name}: запрос '{query}' "
+            f"(limit={self.limit}, headless={self.headless}, "
+            f"concurrency={self.detail_concurrency})"
+        )
+        self._emit("source_start", company=self.company_name, query=query, limit=self.limit)
+        try:
+            result = asyncio.run(self._async_scrape(query, existing_ids))
+            self._emit("source_done", company=self.company_name, query=query, count=len(result))
+            return result
+        except Exception as e:
+            print(f"❌ {self.company_name}: ошибка — {e}")
+            self._emit("error", company=self.company_name, query=query, message=str(e))
+            return []
 
-        Fallback: if that response doesn't materialise (or returns far fewer
-        jobs than the page header advertises), walk ``?page=N`` URLs until we
-        either catch the full payload or exhaust ``pagination_fallback_limit``.
-        """
+    # ---- Async core ----
+
+    async def _async_scrape(self, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
+        from playwright.async_api import async_playwright  # local to avoid hard import in sync paths
+
+        async with async_playwright() as p:
+            common_args = [
+                "--disable-dev-shm-usage", "--no-sandbox",
+                "--disable-gpu", "--disable-software-rasterizer",
+            ]
+            try:
+                browser = await p.chromium.launch(channel="chrome", headless=self.headless, args=common_args)
+            except Exception as e:
+                print(f"      ⚠️ Системный Chrome недоступен ({e}), используем bundled chromium")
+                browser = await p.chromium.launch(headless=self.headless, args=["--disable-gpu"])
+
+            ctx_kwargs = self._context_kwargs()
+            context = await browser.new_context(**ctx_kwargs)
+            if self.stealth:
+                await context.add_init_script(STEALTH_INIT_JS)
+
+            async def block_heavy(route):
+                t = route.request.resource_type
+                if t in ("image", "media", "font"):
+                    await route.abort()
+                else:
+                    await route.continue_()
+            await context.route("**/*", block_heavy)
+
+            try:
+                raw_jobs = await self._capture_listing_async(context)
+                print(f"  Meta: {len(raw_jobs)} вакансий получено из GraphQL")
+                self._emit("listing_captured", company=self.company_name, count=len(raw_jobs))
+                if not raw_jobs:
+                    return []
+                results = await self._fetch_details_async(context, raw_jobs, query, existing_ids)
+                print(f"  Meta: ✓ {len(results)} вакансий собрано")
+                return results
+            finally:
+                try:
+                    await context.close()
+                finally:
+                    await browser.close()
+
+    async def _capture_listing_async(self, context) -> List[Dict[str, Any]]:
+        """Open /jobs, capture the GraphQL listing payload (with pagination fallback)."""
         captured: List[Dict[str, Any]] = []
+        page = await context.new_page()
 
-        def on_response(resp):
+        async def handle_response(resp):
             if "graphql" not in resp.url.lower():
                 return
             try:
-                body = resp.text()
+                body = await resp.text()
             except Exception:
                 return
             if "job_search_with_featured_jobs" not in body:
@@ -261,29 +365,25 @@ class MetaCareersScraper(BaseScraper):
                 )
                 if jobs:
                     captured.extend(jobs)
-                    break
+                    return
 
-        page.on("response", on_response)
+        page.on("response", lambda r: asyncio.create_task(handle_response(r)))
         try:
-            page.goto(self.listing_url, wait_until="domcontentloaded", timeout=60000)
-            page.wait_for_timeout(2500)
-            # Wait up to 15s for the listing payload to land.
+            await page.goto(self.listing_url, wait_until="domcontentloaded", timeout=60000)
+            await page.wait_for_timeout(2500)
             for _ in range(30):
                 if captured:
                     break
-                page.wait_for_timeout(500)
+                await page.wait_for_timeout(500)
 
             by_id = self._dedup_by_id(captured)
-            expected = self._read_total_from_pagination(page)
-            # Trigger fallback only on a *significant* shortfall (<90% of expected).
-            # Meta's "Page X of Y" rounds up — last page is partial, so 553 unique
-            # vs 560 (=56*10) is normal and shouldn't kick off a 60-page walk.
+            expected = await self._read_total_from_pagination_async(page)
             if expected and len(by_id) < int(expected * 0.9):
                 print(
                     f"  ⚠️ Meta: GraphQL gave {len(by_id)} jobs, page header says ~{expected}. "
                     "Falling back to page-by-page walk."
                 )
-                self._walk_pagination(page, captured, expected)
+                await self._walk_pagination_async(page, captured, expected)
                 by_id = self._dedup_by_id(captured)
             elif expected:
                 print(
@@ -291,10 +391,107 @@ class MetaCareersScraper(BaseScraper):
                 )
             return list(by_id.values())
         finally:
+            await page.close()
+
+    async def _fetch_details_async(
+        self, context, raw_jobs: List[Dict[str, Any]], query: str, existing_ids: Set[str],
+    ) -> List[Dict[str, Any]]:
+        """Concurrent detail fetch + parse + validate. Stops early once cap is met."""
+        q_lower = (query or "").strip().lower()
+        cap = self.limit if self.limit and self.limit > 0 else len(raw_jobs)
+
+        candidates = [
+            r for r in raw_jobs
+            if r.get("id") and f"{self.id_prefix}_{r['id']}" not in existing_ids
+        ]
+
+        sem = asyncio.Semaphore(self.detail_concurrency)
+        results: List[Dict[str, Any]] = []
+        idx = 0
+        total = len(candidates)
+        # Process in chunks of `detail_concurrency` so we can stop early when
+        # `cap` is hit (without query, every candidate yields a result).
+        while idx < total and len(results) < cap:
+            batch = candidates[idx: idx + self.detail_concurrency]
+            idx += self.detail_concurrency
+            tasks = [self._fetch_one_async(context, raw, query, q_lower, sem) for raw in batch]
+            outputs = await asyncio.gather(*tasks, return_exceptions=True)
+            for raw, out in zip(batch, outputs):
+                if isinstance(out, Exception):
+                    print(f"  ⚠️ meta_{raw.get('id')}: {type(out).__name__}: {out}")
+                    continue
+                if out is None:
+                    continue  # query-filtered or validation rejected
+                results.append(out)
+                self._emit(
+                    "vacancy",
+                    id=out["id"], title=out["title"], company=self.company_name,
+                    link=out["link"], locations=out["locations"], teams=out["teams"],
+                    compensation=out["compensation"],
+                )
+                if len(results) >= cap:
+                    break
+            print(f"  … {min(idx, total)}/{total} обработано, {len(results)} принято")
+        return results
+
+    async def _fetch_one_async(
+        self, context, raw: Dict[str, Any], query: str, q_lower: str, sem: asyncio.Semaphore,
+    ) -> Optional[Dict[str, Any]]:
+        async with sem:
+            vid = str(raw.get("id"))
+            job_url = self.detail_url_tpl.format(job_id=vid)
+
+            async def attempt() -> Dict[str, Any]:
+                page = await context.new_page()
+                try:
+                    await page.goto(job_url, wait_until="domcontentloaded", timeout=self.detail_timeout_ms)
+                    detail = _meta_parse_detail(await page.content())
+                    if not detail.get("description"):
+                        await page.wait_for_timeout(800)
+                        detail = _meta_parse_detail(await page.content())
+                    if not detail.get("description"):
+                        # Treat as transient — let the retry layer re-attempt.
+                        raise RuntimeError("empty description on this attempt")
+                    return detail
+                finally:
+                    await page.close()
+
             try:
-                page.remove_listener("response", on_response)
-            except Exception:
-                pass
+                detail = await _retry_async(
+                    attempt, attempts=self.detail_attempts, base_delay=0.6, label=f"meta:{vid}",
+                )
+            except Exception as e:
+                print(f"  ⚠️ {job_url} failed after {self.detail_attempts} attempts: {e}")
+                return None
+
+            if not self._matches_query(raw, detail, q_lower):
+                return None
+
+            title = detail.get("title") or raw.get("title") or "Meta Vacancy"
+            full_desc = _build_full_description(detail) or raw.get("title", "")
+            try:
+                vac = MetaVacancy(
+                    id=f"{self.id_prefix}_{vid}",
+                    title=title,
+                    locations=list(raw.get("locations") or []),
+                    teams=list(raw.get("teams") or []),
+                    sub_teams=list(raw.get("sub_teams") or []),
+                    compensation=detail.get("compensation", ""),
+                    description=full_desc,
+                    link=job_url,
+                    pub_date=detail.get("date_posted") or "Recently",
+                    origin_query=query or "",
+                )
+            except ValidationError as e:
+                # Schema drift — log loudly so it shows up in CI logs.
+                print(f"  ⚠️ schema validation failed for meta_{vid}: {e}")
+                return None
+
+            lo, hi = self.inter_request_pause_ms
+            await asyncio.sleep(random.uniform(lo, hi) / 1000.0)
+            return vac.model_dump()
+
+    # ---- Helpers ----
 
     @staticmethod
     def _dedup_by_id(jobs: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
@@ -306,41 +503,33 @@ class MetaCareersScraper(BaseScraper):
         return out
 
     @staticmethod
-    def _read_total_from_pagination(page: Page) -> Optional[int]:
-        """Parse 'Page X of Y' from the listing UI; multiply by 10 jobs/page.
-
-        Returns ``None`` if the indicator is absent (e.g. site redesign).
-        """
+    async def _read_total_from_pagination_async(page) -> Optional[int]:
+        """Parse 'Page X of Y' from the listing UI (Y * 10 = approx total)."""
         try:
-            html = page.content()
+            html = await page.content()
         except Exception:
             return None
         m = re.search(r"Page\s+\d+\s+of\s+(\d+)", html)
         if not m:
             return None
         try:
-            pages = int(m.group(1))
-            # Meta paginates 10/page; round up for the tail.
-            return pages * 10
+            return int(m.group(1)) * 10
         except ValueError:
             return None
 
-    def _walk_pagination(
-        self, page: Page, sink: List[Dict[str, Any]], expected: int,
-    ) -> None:
+    async def _walk_pagination_async(self, page, sink: List[Dict[str, Any]], expected: int) -> None:
         """Walk ``?page=N`` until ``sink`` reaches ``expected``, plateaus, or is capped.
 
-        The on-response listener keeps appending into ``sink``. We stop early
-        if three consecutive pages add zero new jobs (Meta's pagination loops
-        the same payload).
+        Stops early after 3 consecutive pages add zero new jobs (Meta loops the
+        same payload on subsequent navigations).
         """
         last_unique = len(self._dedup_by_id(sink))
         plateau = 0
         for n in range(1, self.pagination_fallback_limit + 1):
             try:
                 url = self.paginated_url_tpl.format(page=n)
-                page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                page.wait_for_timeout(1500)
+                await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                await page.wait_for_timeout(1500)
             except Exception as e:
                 print(f"  ⚠️ Meta page {n}: {e}")
                 continue
@@ -370,94 +559,3 @@ class MetaCareersScraper(BaseScraper):
             detail.get("qualifications", ""),
         ]
         return any(q_lower in (h or "").lower() for h in haystacks)
-
-    def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
-        # Block heavy resources on the listing page too — speeds up cold start.
-        def block_heavy(route):
-            t = route.request.resource_type
-            if t in ("image", "media", "font"):
-                route.abort()
-            else:
-                route.continue_()
-
-        try:
-            page.route("**/*", block_heavy)
-        except Exception:
-            pass
-
-        raw_jobs = self._capture_listing(page)
-        print(f"  Meta: {len(raw_jobs)} вакансий получено из GraphQL")
-        self._emit("listing_captured", company=self.company_name, count=len(raw_jobs))
-
-        if not raw_jobs:
-            return []
-
-        q_lower = (query or "").strip().lower()
-        results: List[Dict[str, Any]] = []
-        cap = self.limit if self.limit and self.limit > 0 else len(raw_jobs)
-
-        for i, raw in enumerate(raw_jobs):
-            if len(results) >= cap:
-                break
-            vid = str(raw.get("id") or "")
-            if not vid:
-                continue
-            jid = f"{self.id_prefix}_{vid}"
-            if jid in existing_ids:
-                continue
-
-            job_url = self.detail_url_tpl.format(job_id=vid)
-            detail: Dict[str, Any] = {}
-            try:
-                page.goto(job_url, wait_until="domcontentloaded", timeout=self.detail_timeout_ms)
-                # Hand the SSR HTML straight to the parser; no hydration wait needed.
-                html = page.content()
-                detail = _meta_parse_detail(html)
-                # Some pages take an extra tick for ld+json to be in DOM; one short retry.
-                if not detail.get("description"):
-                    page.wait_for_timeout(800)
-                    detail = _meta_parse_detail(page.content())
-            except Exception as e:
-                print(f"  ⚠️ {job_url}: {e}")
-                continue
-
-            if not self._matches_query(raw, detail, q_lower):
-                continue
-
-            title = detail.get("title") or raw.get("title") or "Meta Vacancy"
-            full_desc = _build_full_description(detail) or raw.get("title", "")
-
-            vacancy = {
-                "id": jid,
-                "title": title,
-                "company": self.company_name,
-                "locations": list(raw.get("locations") or []),
-                "teams": list(raw.get("teams") or []),
-                "sub_teams": list(raw.get("sub_teams") or []),
-                "compensation": detail.get("compensation", ""),
-                "description": full_desc,
-                "link": job_url,
-                "pub_date": detail.get("date_posted") or "Recently",
-                "origin_query": query or "",
-            }
-            results.append(vacancy)
-            self._emit(
-                "vacancy",
-                id=jid,
-                title=title,
-                company=self.company_name,
-                link=job_url,
-                locations=vacancy["locations"],
-                teams=vacancy["teams"],
-                compensation=vacancy["compensation"],
-            )
-
-            if (i + 1) % 25 == 0:
-                print(f"  … {len(results)}/{len(raw_jobs)} обработано")
-
-            # gentle jitter — keeps us under any per-IP rate trap
-            lo, hi = self.inter_request_pause_ms
-            time.sleep(random.uniform(lo, hi) / 1000.0)
-
-        print(f"  Meta: ✓ {len(results)} вакансий собрано")
-        return results

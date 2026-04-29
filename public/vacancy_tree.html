@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Meta — Vacancy Cluster Tree</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root {
+    --bg: #0e1116;
+    --bg-elev: #161b22;
+    --bg-elev2: #1c2128;
+    --fg: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --bridge: #d2a8ff;
+    --node-bg: #21262d;
+    --border: #30363d;
+    --hl: #f0f6fc;
+    /* category colors — keep in sync with builder CATEGORIES order */
+    --c-research: #f9a23c;
+    --c-design: #f778ba;
+    --c-data: #a5d6ff;
+    --c-product: #7ee787;
+    --c-legal: #a371f7;
+    --c-finance: #ffa657;
+    --c-people: #ff7b72;
+    --c-tpm: #79c0ff;
+    --c-gtm: #d29922;
+    --c-operations: #6e7681;
+    --c-security: #ff5b5b;
+    --c-engineering: #6cc6a3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  header {
+    position: sticky; top: 0; z-index: 10; background: var(--bg-elev);
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  }
+  header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+  header .stats { font-size: 12px; color: var(--muted); }
+  header .stats b { color: var(--fg); font-weight: 600; }
+  header label, header select, header input[type=search] {
+    font-size: 12px; color: var(--muted);
+  }
+  header label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+  header input[type=checkbox] { accent-color: var(--accent); }
+  header input[type=search] {
+    background: var(--node-bg); color: var(--fg); border: 1px solid var(--border);
+    padding: 4px 8px; border-radius: 4px; font: inherit; min-width: 160px;
+  }
+  header .chip {
+    display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
+    border: 1px solid var(--border); border-radius: 999px; cursor: pointer;
+    background: var(--node-bg); user-select: none;
+  }
+  header .chip.off { opacity: 0.35; }
+  header .chip:hover { border-color: var(--fg); }
+
+  #wrap { display: grid; grid-template-columns: 240px 1fr 320px; height: calc(100vh - 56px); }
+  #teams { border-right: 1px solid var(--border); background: var(--bg-elev); overflow-y: auto; }
+  #teams h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 14px 14px 6px; }
+  #teams .team {
+    padding: 8px 14px; cursor: pointer; border-left: 3px solid transparent;
+    font-size: 13px;
+  }
+  #teams .team:hover { background: var(--bg-elev2); }
+  #teams .team.active { background: var(--bg-elev2); border-left-color: var(--accent); }
+  #teams .team .nm { display: flex; align-items: center; gap: 6px; }
+  #teams .team .nm .ico { font-size: 14px; }
+  #teams .team .nm .sz { color: var(--muted); margin-left: auto; font-size: 11px; }
+  #teams .team .bar { display: flex; height: 4px; border-radius: 2px; overflow: hidden; margin-top: 5px; background: var(--border); }
+  #teams .team .bar div { height: 100%; }
+
+  #viz { position: relative; overflow: hidden; }
+  #viz svg { display: block; width: 100%; height: 100%; cursor: grab; }
+  #viz svg:active { cursor: grabbing; }
+
+  #panel {
+    border-left: 1px solid var(--border); background: var(--bg-elev);
+    padding: 14px 16px; overflow-y: auto; font-size: 13px;
+  }
+  #panel h2 { font-size: 14px; margin: 0 0 6px 0; }
+  #panel .muted { color: var(--muted); }
+  #panel .row { margin: 6px 0; }
+  #panel .pill {
+    display: inline-block; padding: 1px 6px; margin: 2px 4px 2px 0;
+    background: var(--node-bg); border: 1px solid var(--border);
+    border-radius: 999px; font-size: 11px; color: var(--muted);
+  }
+  #panel a { color: var(--accent); text-decoration: none; }
+  #panel a:hover { text-decoration: underline; }
+  #panel .ladder { margin: 8px 0; }
+  #panel .ladder .step { padding: 4px 8px; background: var(--node-bg); border: 1px solid var(--border); border-radius: 4px; margin: 4px 0; font-size: 12px; }
+  #panel .ladder .step .lvl { color: var(--muted); font-size: 11px; }
+
+  /* d3 elements */
+  .link { fill: none; stroke: var(--border); stroke-width: 1.2; }
+  .link.peer { stroke: var(--bridge); stroke-dasharray: 3 3; opacity: .35; }
+  .link.mgr { stroke: var(--accent); stroke-width: 1.5; opacity: .55; }
+  .node circle { stroke: var(--bg); stroke-width: 1.5; }
+  .node--internal circle { fill: var(--node-bg); stroke: var(--border); }
+  .node--leaf circle { fill: var(--c-engineering); }
+  .node text {
+    fill: var(--fg); font-size: 11px; paint-order: stroke;
+    stroke: var(--bg); stroke-width: 3; stroke-linejoin: round;
+  }
+  .node.dim circle, .node.dim text { opacity: .12; }
+  .link.dim { opacity: .04; }
+  .node--cluster text { font-weight: 600; font-size: 12px; fill: var(--accent); }
+  .node--cluster.focus circle { stroke: var(--accent); stroke-width: 2.5; }
+  #empty { padding: 30px; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Meta · Vacancy Cluster Tree</h1>
+  <span class="stats" id="stats">…</span>
+  <span id="catChips"></span>
+  <label><input type="checkbox" id="showBridges" /> Cross-team bridges</label>
+  <label><input type="checkbox" id="showMgr" /> Manager edges</label>
+  <input type="search" id="search" placeholder="filter title…" />
+</header>
+<div id="wrap">
+  <nav id="teams"><h3>Teams</h3><div id="teamList"></div></nav>
+  <div id="viz"><div id="empty">Loading vacancy_tree.json…</div></div>
+  <aside id="panel"><div class="muted">Click a node or team for details.</div></aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script>
+(async function () {
+  const data = await fetch("./vacancy_tree.json").then(r => r.ok ? r.json() : null);
+  const empty = document.getElementById("empty");
+  if (!data) { empty.textContent = "vacancy_tree.json not found — run scripts/build_vacancy_tree.py"; return; }
+  empty.remove();
+
+  const cats = data.categories || [];
+  const catColor = id => `var(--c-${id})`;
+  const catEmoji = id => (cats.find(c => c.id === id) || {}).emoji || "❓";
+  const catLabel = id => (cats.find(c => c.id === id) || {}).label || id;
+
+  // ── Stats line ────────────────────────────────────────────────────
+  const s = data.stats || {};
+  document.getElementById("stats").innerHTML =
+    `<b>${s.total_jobs}</b> jobs · <b>${s.teams}</b> teams · `
+    + `<b>${s.cross_team_bridges}</b> bridges · `
+    + `${new Date(data.generated_at).toLocaleDateString()}`;
+
+  // ── Category chips (multi-toggle filter) ──────────────────────────
+  const chipsEl = document.getElementById("catChips");
+  const enabledCats = new Set(cats.map(c => c.id));
+  cats.forEach(c => {
+    const n = (s.category_counts || {})[c.id] || 0;
+    if (n === 0) return;
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.style.color = catColor(c.id);
+    chip.innerHTML = `${c.emoji} ${c.label} <span style="color:var(--muted);">${n}</span>`;
+    chip.addEventListener("click", () => {
+      if (enabledCats.has(c.id)) { enabledCats.delete(c.id); chip.classList.add("off"); }
+      else { enabledCats.add(c.id); chip.classList.remove("off"); }
+      applyFilters();
+    });
+    chipsEl.appendChild(chip);
+  });
+
+  // ── Team sidebar ──────────────────────────────────────────────────
+  const teamListEl = document.getElementById("teamList");
+  data.clusters.forEach(c => {
+    const dom = c.dominant_category || "engineering";
+    const div = document.createElement("div");
+    div.className = "team";
+    div.dataset.team = c.name;
+    const total = c.size || 1;
+    const segs = Object.entries(c.category_counts || {})
+      .sort((a,b) => b[1]-a[1])
+      .map(([cid, n]) =>
+        `<div style="width:${(n/total*100).toFixed(1)}%;background:${catColor(cid)}" title="${catLabel(cid)}: ${n}"></div>`
+      ).join("");
+    div.innerHTML = `
+      <div class="nm"><span class="ico">${catEmoji(dom)}</span><span>${c.name}</span><span class="sz">${c.size}</span></div>
+      <div class="bar">${segs}</div>
+    `;
+    div.addEventListener("click", () => focusOnTeam(c.name));
+    teamListEl.appendChild(div);
+  });
+
+  // ── Build d3 hierarchy ────────────────────────────────────────────
+  const root = {
+    name: data.company || "Meta", kind: "root",
+    children: data.clusters.map(c => ({
+      name: c.name, kind: "cluster", _data: c,
+      children: c.sub_clusters.map(sc => ({
+        name: sc.name, kind: "sub_cluster", _data: sc,
+        children: sc.buckets.map(b => ({
+          name: b.name, kind: "bucket", _data: b,
+          children: b.roles.map(r => ({
+            name: r.category_emoji + " " + r.title,
+            kind: "role", _data: r,
+          })),
+        })),
+      })),
+    })),
+  };
+
+  const viz = document.getElementById("viz");
+  const W = viz.clientWidth, H = viz.clientHeight;
+  const radius = Math.min(W, H) / 2 - 90;
+
+  const svg = d3.select("#viz").append("svg").attr("viewBox", [-W/2, -H/2, W, H]);
+  const g = svg.append("g");
+  const zoom = d3.zoom().scaleExtent([0.3, 5]).on("zoom", e => g.attr("transform", e.transform));
+  svg.call(zoom);
+
+  const tree = d3.cluster().size([2 * Math.PI, radius])
+    .separation((a, b) => (a.parent === b.parent ? 1 : 2.2) / Math.max(a.depth, 1));
+  const hroot = d3.hierarchy(root)
+    .sort((a, b) => d3.ascending(
+      a.data.kind === "role" ? -a.data._data.level_rank : 0,
+      b.data.kind === "role" ? -b.data._data.level_rank : 0
+    ) || d3.ascending(a.data.name, b.data.name));
+  tree(hroot);
+
+  function pol(x, y) { return [Math.cos(x - Math.PI/2)*y, Math.sin(x - Math.PI/2)*y]; }
+
+  // ── Tree edges ────────────────────────────────────────────────────
+  const linkArc = d3.linkRadial().angle(d => d.x).radius(d => d.y);
+  const linkLayer = g.append("g").attr("class", "links");
+  const links = linkLayer.selectAll("path.link").data(hroot.links())
+    .join("path").attr("class", "link").attr("d", linkArc);
+
+  // ── Manager edges (within sub_cluster) ────────────────────────────
+  const idToNode = new Map();
+  hroot.each(n => { if (n.data.kind === "role") idToNode.set(n.data._data.id, n); });
+  const mgrEdges = [];
+  for (const [id, n] of idToNode) {
+    const mid = n.data._data.manager_id;
+    if (mid && idToNode.has(mid)) {
+      mgrEdges.push({ source: idToNode.get(mid), target: n });
+    }
+  }
+  const mgrLayer = g.append("g").attr("class", "mgr-edges");
+  const mgrSel = mgrLayer.selectAll("path.link.mgr").data(mgrEdges)
+    .join("path").attr("class", "link mgr").attr("d", d => {
+      const [sx, sy] = pol(d.source.x, d.source.y);
+      const [tx, ty] = pol(d.target.x, d.target.y);
+      // gentler curve for short manager edges
+      return `M${sx},${sy}Q${(sx+tx)/2*0.6},${(sy+ty)/2*0.6} ${tx},${ty}`;
+    });
+
+  // ── Cross-team bridges ────────────────────────────────────────────
+  const bridges = [];
+  for (const b of (data.cross_team_bridges || [])) {
+    const matches = [];
+    hroot.each(n => { if (n.data.kind === "role" && n.data._data.title === b.title) matches.push(n); });
+    if (matches.length >= 2) bridges.push({source: matches[0], target: matches[1]});
+  }
+  const bridgeLayer = g.append("g").attr("class", "bridges");
+  const bridgeSel = bridgeLayer.selectAll("path.link.peer").data(bridges)
+    .join("path").attr("class", "link peer").attr("d", d => {
+      const [sx, sy] = pol(d.source.x, d.source.y);
+      const [tx, ty] = pol(d.target.x, d.target.y);
+      return `M${sx},${sy}Q0,0 ${tx},${ty}`;
+    });
+
+  // ── Nodes ─────────────────────────────────────────────────────────
+  const nodeLayer = g.append("g").attr("class", "nodes");
+  const nodes = nodeLayer.selectAll("g.node").data(hroot.descendants())
+    .join("g")
+    .attr("class", d => {
+      const cls = ["node"];
+      cls.push(d.children ? "node--internal" : "node--leaf");
+      if (d.data.kind === "cluster") cls.push("node--cluster");
+      return cls.join(" ");
+    })
+    .attr("data-team", d => d.data.kind === "cluster" ? d.data.name : null)
+    .attr("transform", d => { const [x, y] = pol(d.x, d.y); return `translate(${x},${y})`; })
+    .on("click", (_, d) => showDetail(d.data));
+
+  nodes.append("circle")
+    .attr("r", d => {
+      if (d.data.kind === "root") return 6;
+      if (d.data.kind === "cluster") return 5 + Math.min(8, Math.sqrt(d.data._data.size));
+      if (d.data.kind === "sub_cluster") return 3 + Math.min(5, Math.sqrt(d.data._data.size));
+      if (d.data.kind === "bucket") return 2.5;
+      return 3.2;
+    })
+    .style("fill", d => {
+      if (d.data.kind === "role") return catColor(d.data._data.category);
+      if (d.data.kind === "sub_cluster") return catColor(d.data._data.dominant_category || "engineering");
+      if (d.data.kind === "cluster") return catColor(d.data._data.dominant_category || "engineering");
+      return null;
+    });
+
+  nodes.append("text")
+    .attr("dy", "0.31em")
+    .attr("x", d => d.x < Math.PI ? 8 : -8)
+    .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+    .attr("transform", d => `rotate(${(d.x * 180/Math.PI - 90)})` + (d.x >= Math.PI ? " rotate(180)" : ""))
+    .text(d => {
+      if (d.data.kind === "root") return d.data.name;
+      if (d.data.kind === "cluster") return `${catEmoji(d.data._data.dominant_category)} ${d.data.name} (${d.data._data.size})`;
+      if (d.data.kind === "sub_cluster") return `${d.data.name} · ${d.data._data.size}`;
+      if (d.data.kind === "bucket") return d.data.name;
+      return d.data.name;
+    });
+
+  // ── Detail panel ──────────────────────────────────────────────────
+  const panel = document.getElementById("panel");
+  function showDetail(nd) {
+    if (nd.kind === "role") {
+      const r = nd._data;
+      panel.innerHTML = `
+        <h2>${r.category_emoji} ${escape(r.title)}</h2>
+        <div class="muted">${r.id}</div>
+        <div class="row">
+          <span class="pill" style="color:${catColor(r.category)};border-color:${catColor(r.category)}">${catLabel(r.category)}</span>
+          <span class="pill">level: ${r.level} (${r.level_rank})</span>
+          ${r.is_research ? '<span class="pill" style="color:var(--c-research);border-color:var(--c-research)">PhD/papers</span>' : ''}
+          ${r.is_product ? '<span class="pill" style="color:var(--c-product);border-color:var(--c-product)">PM-track</span>' : ''}
+        </div>
+        ${r.compensation ? `<div class="row"><b>Compensation:</b> ${escape(r.compensation)}</div>` : ""}
+        ${r.locations?.length ? `<div class="row"><b>Locations:</b><br>${r.locations.map(l => `<span class="pill">${escape(l)}</span>`).join("")}</div>` : ""}
+        ${r.manager_id ? `<div class="row muted">Reports to: <code>${r.manager_id}</code></div>` : ""}
+        <div class="row"><a href="${r.link}" target="_blank" rel="noopener">Open on metacareers.com →</a></div>
+      `;
+      return;
+    }
+    if (nd.kind === "cluster") {
+      const c = nd._data;
+      const ladder = buildClusterLadder(c);
+      panel.innerHTML = `
+        <h2>${catEmoji(c.dominant_category)} ${escape(c.name)}</h2>
+        <div class="row">
+          ${Object.entries(c.category_counts).sort((a,b)=>b[1]-a[1]).map(([cid,n]) =>
+            `<span class="pill" style="color:${catColor(cid)};border-color:${catColor(cid)}">${catEmoji(cid)} ${n}</span>`
+          ).join("")}
+        </div>
+        ${c.summary ? `<div class="row">${escape(c.summary)}</div>` : `<div class="row muted">(LLM summary not generated)</div>`}
+        ${c.career_path ? `<div class="row"><b>Career path:</b> ${escape(c.career_path)}</div>` : ""}
+        ${ladder ? `<div class="row"><b>Seniority ladder:</b><div class="ladder">${ladder}</div></div>` : ""}
+      `;
+      return;
+    }
+    if (nd.kind === "sub_cluster") {
+      const sc = nd._data;
+      panel.innerHTML = `
+        <h2>${catEmoji(sc.dominant_category)} ${escape(sc.name)}</h2>
+        <div class="row">
+          <span class="pill">${sc.size} role(s)</span>
+          ${Object.entries(sc.category_counts).sort((a,b)=>b[1]-a[1]).map(([cid,n]) =>
+            `<span class="pill" style="color:${catColor(cid)};border-color:${catColor(cid)}">${catEmoji(cid)} ${n}</span>`
+          ).join("")}
+        </div>
+      `;
+      return;
+    }
+    panel.innerHTML = `<h2>${escape(nd.name)}</h2><div class="muted">${nd.kind}</div>`;
+  }
+
+  function buildClusterLadder(c) {
+    const counts = {};
+    c.sub_clusters.forEach(sc => sc.buckets.forEach(b => {
+      counts[b.level] = (counts[b.level] || 0) + b.size;
+    }));
+    const order = ["VP","Director","Head","Principal","Manager","Lead","Staff","Senior","IC","Junior","Intern"];
+    return order.filter(l => counts[l]).map(l =>
+      `<div class="step">${l} <span class="lvl">— ${counts[l]} role(s)</span></div>`
+    ).join("");
+  }
+
+  function escape(s) {
+    return String(s).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+  }
+
+  // ── Filters ──────────────────────────────────────────────────────
+  const showBridges = document.getElementById("showBridges");
+  const showMgr = document.getElementById("showMgr");
+  const searchInput = document.getElementById("search");
+  let activeTeam = null;
+
+  function applyFilters() {
+    const q = searchInput.value.trim().toLowerCase();
+    nodes.classed("dim", d => {
+      if (d.data.kind === "role") {
+        const r = d.data._data;
+        if (!enabledCats.has(r.category)) return true;
+        if (q && !r.title.toLowerCase().includes(q)) return true;
+      }
+      if (activeTeam) {
+        // dim everything not on the path of activeTeam's subtree
+        let n = d;
+        while (n.parent && n.data.kind !== "cluster") n = n.parent;
+        if (n.data.kind === "cluster" && n.data.name !== activeTeam) return true;
+      }
+      return false;
+    });
+    links.classed("dim", l => {
+      const child = l.target;
+      if (child.data.kind === "role") {
+        const r = child.data._data;
+        if (!enabledCats.has(r.category)) return true;
+        if (q && !r.title.toLowerCase().includes(q)) return true;
+      }
+      if (activeTeam) {
+        let n = child;
+        while (n.parent && n.data.kind !== "cluster") n = n.parent;
+        if (n.data.kind === "cluster" && n.data.name !== activeTeam) return true;
+      }
+      return false;
+    });
+    bridgeSel.style("display", showBridges.checked ? null : "none");
+    mgrSel.style("display", showMgr.checked ? null : "none");
+  }
+  showBridges.addEventListener("change", applyFilters);
+  showMgr.addEventListener("change", applyFilters);
+  searchInput.addEventListener("input", applyFilters);
+
+  // ── Team focus (sidebar click) ────────────────────────────────────
+  function focusOnTeam(name) {
+    if (activeTeam === name) {
+      activeTeam = null;
+      document.querySelectorAll("#teams .team").forEach(t => t.classList.remove("active"));
+      svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+    } else {
+      activeTeam = name;
+      document.querySelectorAll("#teams .team").forEach(t =>
+        t.classList.toggle("active", t.dataset.team === name));
+      // pan/zoom toward the cluster centroid
+      const c = hroot.children?.find(n => n.data.name === name);
+      if (c) {
+        const [cx, cy] = pol(c.x, c.y);
+        const k = 1.6;
+        svg.transition().duration(600).call(
+          zoom.transform,
+          d3.zoomIdentity.scale(k).translate(-cx, -cy)
+        );
+      }
+    }
+    applyFilters();
+  }
+
+  applyFilters();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+[
+  {
+    "id": "1341339068053539",
+    "title": "Brand Partnerships Manager, Reality Labs",
+    "locations": [
+      "Menlo Park, CA",
+      "New York, NY"
+    ],
+    "teams": [
+      "Sales & Marketing"
+    ],
+    "sub_teams": [
+      "Consumer Marketing"
+    ]
+  },
+  {
+    "id": "1310020567974002",
+    "title": "Creative Director, Performance Marketing",
+    "locations": [
+      "Los Angeles, CA",
+      "Menlo Park, CA",
+      "New York, NY",
+      "San Francisco, CA"
+    ],
+    "teams": [
+      "Creative"
+    ],
+    "sub_teams": [
+      "Design"
+    ]
+  },
+  {
+    "id": "1379656217515033",
+    "title": "Site Manager, Robotics Teleoperation",
+    "locations": [
+      "Burlingame, CA"
+    ],
+    "teams": [
+      "Global Operations"
+    ],
+    "sub_teams": [
+      "Operations"
+    ]
+  },
+  {
+    "id": "1079158160340219",
+    "title": "Software Engineer, Product",
+    "locations": [
+      "Sunnyvale, CA",
+      "Los Angeles, CA",
+      "Bellevue, WA",
+      "Menlo Park, CA",
+      "Seattle, WA",
+      "Burlingame, CA",
+      "New York, NY",
+      "San Francisco, CA"
+    ],
+    "teams": [
+      "Software Engineering"
+    ],
+    "sub_teams": [
+      "Engineering"
+    ]
+  },
+  {
+    "id": "1238249364564427",
+    "title": "Product Manager",
+    "locations": [
+      "Los Angeles, CA",
+      "Remote, US",
+      "Bellevue, WA",
+      "Menlo Park, CA",
+      "Seattle, WA",
+      "Burlingame, CA",
+      "New York, NY"
+    ],
+    "teams": [
+      "Product Management"
+    ],
+    "sub_teams": [
+      "Product Strategy"
+    ]
+  },
+  {
+    "id": "1335549648414435",
+    "title": "Electrical Engineer: Robotics Hardware Engineering",
+    "locations": [
+      "Redmond, WA"
+    ],
+    "teams": [
+      "Research"
+    ],
+    "sub_teams": [
+      "Research"
+    ]
+  },
+  {
+    "id": "1368969190886166",
+    "title": "Software Engineer, Machine Learning",
+    "locations": [
+      "Sausalito, CA",
+      "Sunnyvale, CA",
+      "San Mateo, CA",
+      "Bellevue, WA",
+      "Redmond, WA",
+      "Foster City, CA",
+      "Menlo Park, CA",
+      "Seattle, WA",
+      "Burlingame, CA",
+      "Santa Clara, CA",
+      "Newark, CA",
+      "New York, NY",
+      "San Francisco, CA",
+      "Fremont, CA",
+      "Mountain View, CA"
+    ],
+    "teams": [
+      "Software Engineering"
+    ],
+    "sub_teams": [
+      "Engineering"
+    ]
+  },
+  {
+    "id": "830259092876766",
+    "title": "Data Center Strategy & Planning Manager",
+    "locations": [
+      "Bellevue, WA",
+      "Menlo Park, CA",
+      "San Francisco, CA"
+    ],
+    "teams": [
+      "Data Center"
+    ],
+    "sub_teams": [
+      "Data Center Strategy"
+    ]
+  },
+  {
+    "id": "660780803565125",
+    "title": "Manufacturing Design Engineer - Mechanical",
+    "locations": [
+      "Sunnyvale, CA"
+    ],
+    "teams": [
+      "Facebook Reality Labs"
+    ],
+    "sub_teams": [
+      "Engineering",
+      "Hardware",
+      "Operations"
+    ]
+  },
+  {
+    "id": "1277009131113341",
+    "title": "NPI Program Manager",
+    "locations": [
+      "Fremont, CA"
+    ],
+    "teams": [
+      "Infrastructure"
+    ],
+    "sub_teams": [
+      "Data Center Operations"
+    ]
+  },
+  {
+    "id": "556388847084173",
+    "title": "Research Engineer, Monetization AI",
+    "locations": [
+      "Sunnyvale, CA",
+      "Bellevue, WA",
+      "Menlo Park, CA",
+      "Seattle, WA",
+      "Burlingame, CA",
+      "New York, NY",
+      "San Francisco, CA"
+    ],
+    "teams": [
+      "Advertising Technology"
+    ],
+    "sub_teams": [
+      "Artificial Intelligence"
+    ]
+  },
+  {
+    "id": "1770870020490643",
+    "title": "Executive Administrative Partner",
+    "locations": [
+      "Menlo Park, CA",
+      "New York, NY",
+      "San Francisco, CA"
+    ],
+    "teams": [
+      "Legal, Finance, Facilities & Admin"
+    ],
+    "sub_teams": [
+      "G and A"
+    ]
+  },
+  {
+    "id": "2486789151677735",
+    "title": "Software Engineer, Infrastructure",
+    "locations": [
+      "Sunnyvale, CA",
+      "Bellevue, WA",
+      "Menlo Park, CA",
+      "Seattle, WA",
+      "Washington, DC",
+      "Boston, MA",
+      "New York, NY",
+      "Fremont, CA"
+    ],
+    "teams": [
+      "Software Engineering"
+    ],
+    "sub_teams": [
+      "Engineering"
+    ]
+  },
+  {
+    "id": "1901428130562220",
+    "title": "VP, Product Threads",
+    "locations": [
+      "San Francisco, CA"
+    ],
+    "teams": [
+      "Product Management"
+    ],
+    "sub_teams": [
+      "Product Strategy"
+    ]
+  },
+  {
+    "id": "9657291271065759",
+    "title": "Software Engineer, Product",
+    "locations": [
+      "Bellevue, WA",
+      "Menlo Park, CA",
+      "Seattle, WA",
+      "Burlingame, CA",
+      "Remote, US",
+      "New York, NY",
+      "San Francisco, CA"
+    ],
+    "teams": [
+      "Software Engineering"
+    ],
+    "sub_teams": [
+      "Engineering"
+    ]
+  },
+  {
+    "id": "2321017468376143",
+    "title": "Research Engineer, Monetization AI",
+    "locations": [
+      "Sunnyvale, CA",
+      "Bellevue, WA",
+      "Redmond, WA",
+      "Menlo Park, CA",
+      "Seattle, WA",
+      "New York, NY"
+    ],
+    "teams": [
+      "AI Research",
+      "Artificial Intelligence",
+      "Advertising Technology",
+      "Generative AI",
+      "Research",
+      "Software Engineering"
+    ],
+    "sub_teams": [
+      "Artificial Intelligence",
+      "Engineering",
+      "Machine Learning",
+      "Research"
+    ]
+  },
+  {
+    "id": "1382136746900637",
+    "title": "Research Engineer - AI Trust - Meta Superintelligence Labs",
+    "locations": [
+      "Bellevue, WA",
+      "Menlo Park, CA"
+    ],
+    "teams": [
+      "AI Research"
+    ],
+    "sub_teams": [
+      "Engineering",
+      "Research"
+    ]
+  },
+  {
+    "id": "1075389717795087",
+    "title": "Software Engineer (Technical Leadership) - Machine Learning",
+    "locations": [
+      "Sunnyvale, CA",
+      "Bellevue, WA",
+      "Redmond, WA",
+      "Menlo Park, CA",
+      "Seattle, WA",
+      "Burlingame, CA",
+      "Remote, US",
+      "New York, NY",
+      "San Francisco, CA"
+    ],
+    "teams": [
+      "AI Infrastructure",
+      "Artificial Intelligence",
+      "Facebook",
+      "Generative AI",
+      "Instagram",
+      "Messenger",
+      "Software Engineering",
+      "WhatsApp"
+    ],
+    "sub_teams": [
+      "Engineering",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": "26416278451374679",
+    "title": "Commercial Sourcing Manager, Data Center Connectivity",
+    "locations": [
+      "Fremont, CA"
+    ],
+    "teams": [
+      "Data Center"
+    ],
+    "sub_teams": [
+      "Artificial Intelligence"
+    ]
+  },
+  {
+    "id": "1734358140739006",
+    "title": "Network Engineer, Deployment & Support",
+    "locations": [
+      "Mesa, AZ",
+      "Temple, TX",
+      "Rayville, LA",
+      "Menlo Park, CA"
+    ],
+    "teams": [
+      "Data Center"
+    ],
+    "sub_teams": [
+      "Data Center Operations",
+      "Network Engineering"
+    ]
+  }
+]
