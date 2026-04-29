@@ -60,9 +60,12 @@ def _source_plan():
         ("google",
          lambda: GoogleCareersScraper(limit=20, stealth=True, storage_state_path=google_state),
          QUERIES),
+        # Meta's GraphQL listing returns the entire job board (~552 jobs) in a
+        # single response, so we fetch it once with an empty query instead of
+        # iterating per keyword. limit=0 → no cap.
         ("meta",
-         lambda: MetaCareersScraper(limit=20, stealth=True, storage_state_path=meta_state),
-         QUERIES),
+         lambda: MetaCareersScraper(limit=0, stealth=True, storage_state_path=meta_state),
+         [""]),
     ]
 
 
