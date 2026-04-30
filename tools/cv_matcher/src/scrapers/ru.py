@@ -71,9 +71,11 @@ class YandexScraper(BaseScraper):
         print(f"  Яндекс: запрос к API {full_api_url}")
         
         try:
-            page.goto(full_api_url, wait_until="networkidle", timeout=30000)
-            content = page.locator("pre").inner_text()
-            data = json.loads(content)
+            time.sleep(1.0)
+            response = page.request.get(full_api_url, timeout=30000)
+            if not response.ok:
+                raise Exception(f"HTTP {response.status}")
+            data = response.json()
         except Exception as e:
             print(f"  ⚠️ Яндекс API error: {e}. Falling back to old-school scrape.")
             return self._scrape_fallback(page, query, existing_ids)

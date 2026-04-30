@@ -1,22 +1,24 @@
 {
-  "company": "Meta",
+  "company": "Google + Meta + Яндекс",
   "companies": [
-    "Meta"
+    "Google",
+    "Meta",
+    "Яндекс"
   ],
-  "generated_at": "2026-04-30T14:34:19.678579+00:00",
+  "generated_at": "2026-04-30T15:38:18.588976+00:00",
   "stats": {
-    "total_jobs": 541,
-    "teams": 26,
-    "sub_teams": 124,
-    "with_compensation": 432,
+    "total_jobs": 566,
+    "teams": 27,
+    "sub_teams": 125,
+    "with_compensation": 434,
     "research_roles": 107,
     "product_roles": 23,
-    "engineering_roles": 160,
+    "engineering_roles": 185,
     "category_counts": {
       "operations": 108,
       "gtm": 55,
       "research": 107,
-      "engineering": 160,
+      "engineering": 185,
       "tpm": 16,
       "design": 25,
       "finance": 9,
@@ -25,7 +27,7 @@
       "data": 22,
       "security": 2
     },
-    "cross_team_bridges": 24
+    "cross_team_bridges": 25
   },
   "categories": [
     {
@@ -4459,11 +4461,11 @@
     },
     {
       "name": "AR/VR",
-      "size": 61,
+      "size": 62,
       "research_count": 10,
       "product_count": 0,
       "category_counts": {
-        "engineering": 31,
+        "engineering": 32,
         "research": 10,
         "tpm": 6,
         "operations": 10,
@@ -4478,11 +4480,11 @@
       "sub_clusters": [
         {
           "name": "Hardware",
-          "size": 16,
+          "size": 17,
           "research_count": 4,
           "product_count": 0,
           "category_counts": {
-            "engineering": 12,
+            "engineering": 13,
             "research": 4
           },
           "dominant_category": "engineering",
@@ -4526,7 +4528,7 @@
               "name": "IC (2)",
               "level": "IC",
               "level_rank": 2,
-              "size": 11,
+              "size": 12,
               "research_count": 0,
               "product_count": 0,
               "roles": [
@@ -4693,6 +4695,30 @@
                   "marker": "⚙️",
                   "manager_id": "meta_1323081066387055",
                   "description": "At Reality Labs we aim to bring together cross-disciplinary minds in one place to deliver on our mission: build tools that help people feel connected, anytime, anywhere. As a Product Design Engineer, you will take a critical role in developing hardware systems for VR, AR, or New Technology Initiatives. You will become part of a team exploring developing concepts through prototyping and into mass-production consumer electronics. You will work as part of a cross functional team requiring collaboration in domains other than mechanical engineering. Our teams support mechanical engineering fundamentals, prototyping skills, CAD fluency, manufacturing process knowledge, and experience designing consumer electronics.\n\nResponsibilities:\nContribute to mechanical solutions as part of a highly cross-functional team Model, build, test, and refine prototypes and characterization test systems Work across the full product development cycle, from concept inception to shipping product Collaborate and manage work with Asia-based Supply Chain Push state-of-the-art technologies and approaches to solving complex mechanical problems while working with cross functional technical teams Travel to external vendors up to 20%\n\nQualifications:\nBS in Mechanical Engineering or equivalent industry experience 2+ years of experience in related/relevant fields Experience in Design for Manufacturability (DFM), Design for Assembly (DFA), statistical tolerance analysis techniques, functional dimensioning, GD&T, and 3D/2D CAD Working knowledge in material properties, such as plastics, metal, adhesive, and glass Testing and analysis experience (FEA, Simulation, Design of Experiments, etc.) Knowledge of high-volume manufacturing techniques (stamping, machining, 3D printing, injection molding, etc.) Proven technical communication skills MS or PhD in Mechanical Engineering 2+ years of product design and development experience of handheld and/or wearable high volume consumer electronics, including complex subsystems and/or full systems ownership Experience with NX CAD Experience with highly cosmetic products and working with Industrial Design Fluency in a Mandarin and/or Cantonese language is preferred, as this role reviews regional content where usual language is in a regional language Experience designing for human factors Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$118,000/year to $170,000/year"
+                },
+                {
+                  "id": "meta_1514192513630315",
+                  "title": "Signal Integrity / Power Integrity Engineer - Wearables",
+                  "company": "Meta",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "signal integrity / power integrity engineer - wearables",
+                  "locations": [
+                    "Sunnyvale, CA",
+                    "Redmond, WA"
+                  ],
+                  "compensation": "$173,000/year to $245,000/year + bonus + equity + benefits",
+                  "link": "https://www.metacareers.com/jobs/1514192513630315/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": "meta_1323081066387055",
+                  "description": "Signal Integrity and Power Integrity (SIPI) Engineers at Meta design, analyze, and validate SIPI aspects of electrical systems for next-generation hardware products and platforms. They collaborate with multidisciplinary teams and external partners to deliver robust, high-performance solutions from concept through deployment, ensuring Meta’s hardware meets the highest standards for performance, reliability, and electromagnetic compatibility across both product and infrastructure domains.\n\nYou will architect and drive SIPI technical strategy across multiple projects and teams, influence system architecture and organizational direction, and serve as a recognized technical leader and mentor for complex, high-impact hardware initiatives.\n\nResponsibilities:\nArchitect and lead system-level Signal Integrity Power Integrity design, simulation, and validation for advanced hardware products, including pre-layout and post-layout analysis of high-speed interfaces and power distribution networks (PDN) Develop, implement, and continuously improve SIPI methodologies, standards, and guidelines for design, simulation, and validation Drive SIPI technical strategy and influence system architecture, design trade-offs, and manufacturing processes across multiple projects and teams Lead cross-functional collaboration with electrical, silicon, packaging, PCB layout, firmware, mechanical, software, manufacturing, and external partners to deliver integrated solutions Guide vendors and suppliers in developing and validating high-speed signaling solutions, including interconnects, substrates, and compliance testing Own SIPI validation strategy, including advanced engineering test plans, lab measurements, and compliance for high-speed interfaces (e.g., PCIe, DDR, MIPI, USB, Ethernet, etc.) Troubleshoot and resolve complex SIPI-related design issues using simulation and lab data; drive failure analysis, root cause investigations, and design of experiments Mentor and develop engineers, foster knowledge sharing, and contribute to organizational initiatives and process improvements Communicate technical findings, recommendations, and reports clearly to cross-functional stakeholders and leadership Stay current with industry trends, emerging technologies, and best practices in SIPI, and proactively assess and integrate new approaches to maintain Meta’s leadership in hardware engineering\n\nQualifications:\nBachelor's or Master’s degree in Electrical Engineering, or relevant technical field, and/or equivalent practical experience 8+ years of experience in SIPI simulation, measurement, or electrical design or a relevant technical field Experience delivering electrical products, subsystems, or research prototypes from concept through validation, and into high-volume manufacturing, large-scale deployment, or successful technology transfer to product teams Advanced knowledge of SIPI fundamentals, including impedance control, transmission line theory, PDN characterization, and/or electromagnetic compatibility Expertise with industry-standard SIPI simulation and modeling tools (e.g., Cadence Sigrity, Ansys SIwave, Keysight ADS, HFSS, Hyperlynx, CST Microwave Studio, HSPICE, or similar) Experience with advanced lab equipment for SIPI validation (e.g., TDR, VNA, high-speed oscilloscopes, spectrum analyzers, compliance test fixtures, or similar) Experience with PCB and/or flex design and manufacturing processes, or similar technology Experience with high-speed electrical interfaces (e.g., DDR, PCIe, MIPI, USB, Ethernet, or similar) Effective communication and collaboration skills for cross-functional teamwork and/or external partner engagement Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies Master’s in electrical engineering, Physics, Mathematics, or related field and/or equivalent experience 8+ years of experience in EM simulation and measurement areas Experience with different instruments such as network analyzer, oscilloscope, signal generator, scope and other related test equipment to measure the eye-diagram Previous experience with Consumer Electronics\n\n$173,000/year to $245,000/year + bonus + equity + benefits"
                 },
                 {
                   "id": "meta_1694826561881194",
@@ -7657,11 +7683,11 @@
     },
     {
       "name": "Software Engineering",
-      "size": 40,
+      "size": 41,
       "research_count": 2,
       "product_count": 0,
       "category_counts": {
-        "engineering": 37,
+        "engineering": 38,
         "research": 2,
         "finance": 1
       },
@@ -7673,11 +7699,11 @@
       "sub_clusters": [
         {
           "name": "Engineering",
-          "size": 30,
+          "size": 31,
           "research_count": 0,
           "product_count": 0,
           "category_counts": {
-            "engineering": 30
+            "engineering": 31
           },
           "dominant_category": "engineering",
           "is_research_dominant": false,
@@ -7720,7 +7746,7 @@
               "name": "IC (2)",
               "level": "IC",
               "level_rank": 2,
-              "size": 29,
+              "size": 30,
               "research_count": 0,
               "product_count": 0,
               "roles": [
@@ -7909,6 +7935,29 @@
                   "marker": "⚙️",
                   "manager_id": "meta_1564855494765081",
                   "description": "Meta Platforms, Inc. (Meta), formerly known as Facebook Inc., builds technologies that help people connect, find communities, and grow businesses. When Facebook launched in 2004, it changed the way people connect. Apps and services like Messenger, Instagram, and WhatsApp further empowered billions around the world. Now, Meta is moving beyond 2D screens toward immersive experiences like augmented and virtual reality to help build the next evolution in social technology. To apply, click “Apply to Job” online on this web page.\n\nResponsibilities:\nResearch, design, develop, build and test operating systems-level software, compilers, and network distribution software for large distributed components that run applications. Build new features and improve existing products. Work on problems of moderate scope. Push code, drive the development of the systems behind our products, create web applications that reach billions of people, build high volume servers, and be a part of a team to connect people around the globe. Develop a strong understanding of relevant product area, codebase, and/or systems. Demonstrate proficiency in data analysis, programming and software engineering. Produce high quality code with good test coverage, using modern abstractions and frameworks. Receive general instructions on routine work and detailed instructions on new projects or assignments, work independently, use available resources to get unblocked, and complete tasks on-schedule by exercising strong judgment and problem solving skills. Master internal development standards from developing to releasing code in order to take on tasks and projects with increasing levels of complexity. Actively seek and give feedback in alignment with company Performance Philosophy.\n\nQualifications:\nBachelor’s degree (or foreign equivalent) in Computer Science or related field Requires completion of one graduate-level course, one research project, or one internship involving the following: Coding in one of the following industry-standard languages: C, C++, C#, Python, or Java Relational databases and SQL Software development tools: Code editors (VIM or Emacs), and revision control systems (Subversion, GIT, or Perforce) Linux, UNIX, or other *nix-like OS including memory management, process management, and TCP/IP Core web technologies: HTML, or CSS Building highly-scalable performant solutions Distributed systems including sharding, consistency, and availability Algorithms\n\n$222,950/year to $250,250/year"
+                },
+                {
+                  "id": "meta_978903851762450",
+                  "title": "Software Engineer (Technical Leadership)",
+                  "company": "Meta",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "software engineer (technical leadership)",
+                  "locations": [
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$271,000/year to $347,000/year + bonus + equity + benefits",
+                  "link": "https://www.metacareers.com/jobs/978903851762450/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": "meta_1564855494765081",
+                  "description": "We are the teams who create all of Facebook’s product used by more than 1.5 billion people around the world. Want to build new features and improve existing products like Commerce, Ads, Video, Groups, News Feed, Search, and more? Want to solve unique, large scale, highly complex technical problems? Facebook is seeking experienced full-stack software engineers to join our product teams. You can help build products that help us connect the next billion people, create new features that have billions of interactions per day, and be a part of a team that’s working to help people connect around the globe. Join us!\n\nResponsibilities:\nDrive the team's goals and technical direction to pursue opportunities that make your larger organization more efficient Effectively communicate complex features and systems in detail Understand industry & company-wide trends to help assess & develop new technologies Partner & collaborate with organization leaders to help improve the level of performance of the team & organization Identify new opportunities for the larger organization & influence the appropriate people for staffing/prioritizing these new ideas Create consumer products and features on a large scale Lead long term technical vision and roadmap for large cross-company efforts Partner closely with infrastructure and operations teams to build and scale back-end services\n\nQualifications:\nBachelor's degree in Computer Science, Computer Engineering, relevant technical field, or equivalent practical experience Experience communicating and working across functions to drive solutions Experience in mentoring/influencing engineers across organizations 12+ years of experience with building large-scale applications, or similar experience Proven track record of planning multi-year roadmap in which shorter-term projects ladder to the long-term vision 8+ years of experience with web or mobile technologies Experience leading projects with industry-wide impact 12+ years of programming experience Experience in driving large cross-functional/industry-wide engineering efforts Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$271,000/year to $347,000/year + bonus + equity + benefits"
                 },
                 {
                   "id": "meta_699608119727078",
@@ -8849,13 +8898,13 @@
     },
     {
       "name": "Legal, Finance, Facilities & Admin",
-      "size": 24,
+      "size": 25,
       "research_count": 0,
       "product_count": 0,
       "category_counts": {
-        "engineering": 14,
-        "legal": 3,
-        "finance": 7
+        "engineering": 15,
+        "finance": 7,
+        "legal": 3
       },
       "dominant_category": "engineering",
       "is_research_dominant": false,
@@ -8863,6 +8912,293 @@
       "summary": "",
       "career_path": "",
       "sub_clusters": [
+        {
+          "name": "Finance",
+          "size": 10,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 2,
+            "finance": 7,
+            "legal": 1
+          },
+          "dominant_category": "finance",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "Director (8)",
+              "level": "Director",
+              "level_rank": 8,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_866533876198184",
+                  "title": "Director of Treasury Technology, Controls & Infrastructure",
+                  "company": "Meta",
+                  "level": "Director",
+                  "level_rank": 8,
+                  "stem": "of treasury technology",
+                  "locations": [
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$219,000/year to $288,000/year",
+                  "link": "https://www.metacareers.com/jobs/866533876198184/",
+                  "category": "finance",
+                  "category_emoji": "💰",
+                  "category_label": "Finance",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "💰",
+                  "manager_id": null,
+                  "description": "Meta’s Treasury team partners closely with the company’s cross-functional leaders to deliver Treasury services focused on strategic value creation. Our team interfaces with a multitude of business partners and financial institutions to deliver innovative solutions at scale.\n\nWe are seeking a treasury leader to drive the technology, systems, and controls that enable treasury operations, while also influencing industry standards and shaping the future of treasury practice. This is a high-impact global role for someone who combines treasury expertise—cash, payments, liquidity, and risk—with modernizing systems, implementing AI and automation, and setting industry benchmarks.\n\nThis leader will own the roadmap for treasury systems and banking systems infrastructure, design process frameworks and controls, and lead initiatives that leverage AI and automation to move toward highly automated treasury operations and insights. This role will work closely with internal teams and banking partners to ensure integration, reliability, and performance of all treasury technology and processes to enable better, faster, and safer treasury decisions.\n\nResponsibilities:\nLead treasury technology and infrastructure: Own the roadmap, integration, and business performance of treasury systems and banking connectivity Design process frameworks and controls: Develop and enforce treasury process standards, internal controls, and regulatory compliance measures Drive highly automated treasury operations: Lead initiatives leveraging AI, automation, and next-generation technology to reduce manual intervention and enable real-time treasury processes Monitor performance: Build dashboards and reporting to provide transparency into system performance, operational efficiency, and process compliance Collaborate across teams: Partner with cash management, liquidity, markets, engineering, and finance teams to deliver seamless, secure, and efficient treasury processes Influence the industry: Represent the organization in industry forums, working groups, and partnerships to share best practices, shape standards, and influence treasury technology evolution globally Manage vendor and banking relationships: Act as the primary point of contact for system or infrastructure-related matters with banks and external providers\n\nQualifications:\nBachelor’s degree in Finance or Technology related discipline 12+ years experience in treasury digital transformation programs with 5+ years in leadership positions Experience in Open Banking, fintech, or emerging treasury technology solutions Demonstrated understanding of cash management, payments, liquidity, and treasury risk, combined with technology and controls expertise Strategic thinker that will lead treasury teams through systems, processes, and controls Effective communication and collaboration skills with experience managing internal teams and external vendors/banks to align on requirements, timelines, testing and implementation activities Experience presenting to executive leadership Master’s degree in Finance or Technology related discipline Experience providing technology solutions for In-house Banking structures Experience with Treasury Management Systems (ie. FIS Quantum), Oracle Accounting, FX trading and settlement, Investment Accounting/Custody, Payments and other financial technology products Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$219,000/year to $288,000/year"
+                }
+              ]
+            },
+            {
+              "name": "Manager (5)",
+              "level": "Manager",
+              "level_rank": 5,
+              "size": 7,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_988632290513668",
+                  "title": "Finance Business Operations Manager, Strategic Cloud Deals",
+                  "company": "Meta",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "finance business operations",
+                  "locations": [
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$162,000/year to $229,000/year",
+                  "link": "https://www.metacareers.com/jobs/988632290513668/",
+                  "category": "finance",
+                  "category_emoji": "💰",
+                  "category_label": "Finance",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "💰",
+                  "manager_id": "meta_866533876198184",
+                  "description": "The Finance & Business Planning (FBP) team is the strategic engine behind Meta's bold investments. We manage the company's entire budget and drive data-informed decisions that shape the future of Meta and our family of products. At the forefront of this mission is our Infrastructure FBP team — our investments in infrastructure are foundational to enabling the next generation of artificial intelligence technologies, including super intelligence, set to transform how billions of people experience our products and services.\n\nWe're looking for a Strategic Cloud Deals Manager to join our Infrastructure FBP team, focused on strategic financial and commercial efforts related to large-scale infrastructure investments. In this high-impact role, you'll build complex financial and commercial models, develop structuring analyses, and deliver decision support for high-stakes, multi-billion-dollar transactions — with a particular focus on Cloud capacity while also covering component agreements and leasing. You will work closely with relevant teams in the Infrastructure Data Center group (IDC), as well as with other Finance, Legal, Policy, and Tax teams to secure cost-competitive and strategic resources for Meta's continued global growth and AI product rollouts.\n\nResponsibilities:\nDevelop and maintain advanced financial and commercial models to analyze, structure, and review deal terms for Meta's largest infrastructure transactions, including major Cloud capacity procurements, lease agreements, and multi-year component agreements Partner closely with deal leads and Infrastructure teams during negotiations to ensure the company achieves competitive pricing, sound risk allocation, and long-term economic value Drive analysis and preparation of commercial and financial deal terms in collaboration with Infra leads and external partners Build and maintain programmatic financial benchmarks for assessing CapEx and OpEx across Cloud, site, and server transactions Develop a plan to incorporate AI into financial models, benchmarking tools, and day-to-day deal workflows Collaborate with Corporate Finance, Legal, and Tax teams to identify and mitigate financial, tax, and legal risks through thoughtful structures and guardrails Prepare high-quality memos and materials to support the internal financial approval process, engaging key internal and external stakeholders Translate complex commercial, market, and contractual developments in the Cloud and major component supply industries into clear, actionable insights for Finance leadership Serve as a thought partner to business leaders — contributing your perspective on the right set of actions to drive strategic infrastructure deals forward\n\nQualifications:\n10+ years of professional experience in strategic finance, commercial roles, investment banking, or strategy consulting, with a focus on structuring and analyzing large-scale, complex deals (e.g., technology, infrastructure, energy, or utilities) Bachelor's degree in Finance, Business, Economics, or a related field Experience building and working with detailed financial models, identifying key risks and sensitivities, and supporting financial due diligence for high-stakes transactions Experience contributing to the negotiation of complex commercial and financial terms with external counterparties Demonstrated foundation in spreadsheet-based financial modeling and experience in translating open-ended business questions into structured, analytical models Experience driving processes and influencing decision-making across levels and functions (i.e., Finance, Legal, Policy, and Infrastructure) Analytical problem-solving skills with a track record of success in time sensitive, hands-on work environments and developing complex solutions across multiple stakeholders Effective collaborator and skilled cross-functional communicator of commercial, market, and contractual details to all organizational levels Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies MBA, JD, or other relevant advanced degree Experience in the Cloud or data center industry with direct involvement in deal analysis and negotiation support Experience in data center, infrastructure, or project finance at an investment bank or financial sponsor\n\n$162,000/year to $229,000/year"
+                },
+                {
+                  "id": "meta_3269411016541258",
+                  "title": "Finance Manager, Infrastructure",
+                  "company": "Meta",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "finance",
+                  "locations": [
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$120,000/year to $175,000/year",
+                  "link": "https://www.metacareers.com/jobs/3269411016541258/",
+                  "category": "finance",
+                  "category_emoji": "💰",
+                  "category_label": "Finance",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "💰",
+                  "manager_id": "meta_866533876198184",
+                  "description": "The FP&A team manages Meta’s entire budget of revenue and expenses, overseeing our investments in headcount, operating expenses, and capital investments etc. We focus on using our unique view into ‘the numbers’ to recognize trends and opportunities that are developing within Meta and within related industries. As Meta continues to push the boundaries of artificial intelligence, our data centers are at the forefront of this revolution. The FP&A team plays a critical role in fueling this growth by managing the financial planning and analysis for our Network Infrastructure Hardware investments. We're not just talking about numbers - we're talking about building the backbone of the future.\n\nIn this high-stakes environment, we need a Finance Manager who can help us navigate the complexities of hyper- scaling our data center infrastructure. As part of our team, you'll be responsible for budgeting, tracking, reporting, and analyzing investments in capital expenditures and operating expenses for our Network Infrastructure organization. You'll work closely with leaders across multiple functional teams and business partners to drive financially sound outcomes and create long-term sustainable economic value for the company.\n\nAs a key contributor to our growing Finance organization, you'll have the opportunity to make a significant impact on the future of Meta's AI capabilities. If you're ready to take on the challenge of a lifetime and join the frontlines of the AI capacity revolution, we want to hear from you.\n\nResponsibilities:\nCreate sustainable, trusting partnerships across multiple stakeholders with a focus on the full ownership across financial portfolio including Operating Expenses, Depreciation, Research & Development, Inventory, and Capital Expenditures of several billion dollars Manage all FP&A activities for the business including budgeting, forecasting and long-range planning Provide insights to business partners through standardized reporting & dashboards, variance analysis, scenario-based modeling and portfolio planning Develop tools to automate and streamline reporting, and create financial KPIs/metrics that help business partners and finance leaders make smart fiscal decisions Own ad hoc strategic and operational projects as required, and drive process and system improvements by partnering with cross functional owners Develop and enforce best practices and policies to manage the company’s Networking Infrastructure Understand, impact, and influence business investment decisions through detailed financial analysis Financial close, tracking actuals and variance, developing forecasts, and drafting easily understandable narratives around financial data\n\nQualifications:\n7+ years of experience in hardware finance, business operations, or strategy consulting Bachelor’s degree in finance, Accounting, Business or related field Experience in applicable accounting concepts and financial planning, including Capex and Opex Data visualization and dashboarding Excel, PowerPoint, Google Docs/Sheets/Slides, SQL, Tableau working and problem solving independently, organizing workload and priorities, and completing tasks on time Interest in networking technology, digital infrastructure and data center hyperscaling Demonstrated experience in communication and business partnering Proficient in managing financial close, forecasting, budgeting processes Experience in establishing relationships with cross-functional stakeholders in finance, accounting, legal, engineering and supply chain Hyperion Essbase, Oracle Financials, SQL Understanding of digital infrastructure, hardware and supply chain Experience in navigating through ambiguity and unstructured problems Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$120,000/year to $175,000/year"
+                },
+                {
+                  "id": "meta_26451197637809713",
+                  "title": "Internal Audit Manager",
+                  "company": "Meta",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "internal audit",
+                  "locations": [
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$112,000/year to $161,000/year",
+                  "link": "https://www.metacareers.com/jobs/26451197637809713/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": "meta_866533876198184",
+                  "description": "Meta’s Internal Audit team gives experienced auditors the opportunity to harness Meta’s cutting-edge technology to deliver high-impact audits and drive meaningful improvements. You’ll work in a high-volume, rapidly evolving, technology-enabled environment, collaborating with cross-functional partners to shape risk management and add value across Meta’s global operations. You will be successful in this role if you can clearly and effectively communicate,  can navigate ambiguity, and can deliver results in a fast paced, with shifting priorities and evolving environment.\n\nResponsibilities:\nDevelop comprehensive audit scopes, test plans, and risk assessments Lead end-to-end audit engagements from planning through reporting and follow-up Execute technology focused audits covering Meta’s products and core technology infrastructure stack Leverage analytics tools (e.g., SQL/BI platforms and dashboards) to efficiently conduct data analysis, generate reports, and deliver timely, actionable insights to stakeholders Manage small audit teams consisting of contingent workers Socialize observations and obtain alignment on management action plans Serve as the primary point of contact with engineering, security and product stakeholders for assigned audits Present audit findings and recommendations to Executive stakeholders Maintain ongoing professional relationships with key business partners across Product and Engineering teams Collaborate with other Internal Audit functional leads to execute the department’s strategy and coordinate cross-team audit projects and initiatives Effectively manage relationships with Internal Audit co-sourcing partners to ensure seamless execution as one team\n\nQualifications:\nBachelor’s degree in Management Information Systems, Accounting, Business, Computer Science, Engineering, Data Science, or a related field 7+ years of audit experience at Big 4 accounting firms and/or medium-to-large internal audit functions Demonstrated background in both operational and IT audits that includes one or more of the following: technology, cybersecurity, resiliency, third-party risk management, privacy Demonstrated experience leading small audit teams Experience auditing within technology companies or complex IT environments Experience leveraging data analytics and Artificial Intelligence to streamline audit execution Experience of navigating and influencing within highly matrixed organizations, collaborating across departments Expertise in auditing AI, technology, complex data pipelines, and advanced computing systems Exposure to cybersecurity frameworks such as ISO 27001/27002/NIST, AI auditing or regulatory frameworks or agile auditing practices Functional knowledge of Artificial Intelligence (traditional and Gen AI), data science, engineering systems, or emerging technologies Demonstrated relationship-building skills, establishing trust and delivering substantial business value At least one relevant professional certification ( CISA, CIA, or CISSP) Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$112,000/year to $161,000/year"
+                },
+                {
+                  "id": "meta_781326574627503",
+                  "title": "Manager, SOX Compliance",
+                  "company": "Meta",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "",
+                  "locations": [
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$137,000/year to $197,000/year",
+                  "link": "https://www.metacareers.com/jobs/781326574627503/",
+                  "category": "legal",
+                  "category_emoji": "⚖️",
+                  "category_label": "Legal/Policy",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚖️",
+                  "manager_id": "meta_866533876198184",
+                  "description": "Meta is seeking an experienced manager to fill the position of Manager, SOX (Sarbanes-Oxley Act) Compliance. You will be joining the SOX team responsible for overseeing and strengthening Meta’s global controls to ensure accurate financial reporting and SOX compliance. With a focus on safeguarding the integrity of our financial systems, you will play a pivotal role in ensuring SOX Compliance for multiple business process areas and systems. You will collaborate closely with various cross-functional teams to define, assess, and test solutions that enhance our business processes, systems and controls within an ever-evolving technology and regulatory landscape.\n\nResponsibilities:\nLead the end-to-end process areas including planning, scoping, risk assessment, controls testing, remediation, and reporting Collaborate with internal stakeholders and the external audit team to coordinate walkthroughs and control testing Evaluate IT General Controls (ITGCs), automated business process controls (ITACs), and other business process controls Monitor and drive timely remediation of control deficiencies and recommend enhancements to strengthen internal controls Provide guidance and training to control owners to promote awareness and understanding of SOX compliance requirements Stay current on changes in SOX requirements and leading practices, cybersecurity regulations, and risk management best practices\n\nQualifications:\nBachelor’s degree in Accounting, MIS or a related field or equivalent work experience 8+ years of experience in Internal audit, SOX compliance, or risk management with a focus on business processes and ITGC Experience in identifying, designing, and testing controls to meet compliance requirements Experience leading SOX efforts for process areas including Revenue, Finance Operations and Application Controls Experience in managing key ITGCs and ITACs MBA, MIS, or equivalent advanced degree Certifications such as CIA, CISA, or CPA Experience working at a publicly traded company or a Big Four public accounting firm Experience communicating complex technical risks and control concepts to non-technical stakeholders, including executives and audit committees Leadership, project management, and organizational experience Experience with SOX 404, COBIT principles, IT security standards, and risk management best practices Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$137,000/year to $197,000/year"
+                },
+                {
+                  "id": "meta_3922111931428934",
+                  "title": "PayMeta Tax Manager",
+                  "company": "Meta",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "paymeta tax",
+                  "locations": [
+                    "Dublin, Ireland"
+                  ],
+                  "compensation": "",
+                  "link": "https://www.metacareers.com/jobs/3922111931428934/",
+                  "category": "finance",
+                  "category_emoji": "💰",
+                  "category_label": "Finance",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "💰",
+                  "manager_id": "meta_866533876198184",
+                  "description": "We are seeking an experienced employment and individual income tax manager with global expertise to serve as the subject matter expert across tax technical positions, external and internal audits, risk accruals, SOX compliance, RSU/stock and benefit- reporting, and M&A transactions. This role will be a key strategic partner, providing authoritative guidance to ensure accurate, compliant, and efficient employment and mobility tax operations globally. In this role, you will operate independently in a deadline-focused environment, develop and implement AI-enabled tax solutions, and collaborate proactively with cross-functional teams across the organization.\n\nResponsibilities:\nProblem-Solving & Project Leadership: Identify complex tax issues, develop effective solutions, and lead both tax and technology/AI-focused initiatives to advance the PayMeta Tax team's goals and strategic priorities Global Employment Tax Management:  Supervise all employment tax matters across a global portfolio of countries, including technical position evaluations and implementations, leadership and employee inquiries, internal and external audit representation, global payroll health checks, risk accrual assessments, and SOX compliance requirements Global Mobility Tax Management: Manage tax services programs for mobile employees, including international transferees, new hires, and assignees, ensuring compliance and seamless support across all cross-border employment arrangements Vendor Management: Supervise vendor relationships, monitor performance and employee satisfaction, define key performance indicators, and hold vendors accountable to technology roadmaps, enhancements, and deliverables Financial Oversight: Negotiate contract terms, drive financial forecasting and budgeting, and manage invoice review and approvals to ensure cost efficiency and alignment with business objectives Tax Authority Relations, Tax Controversy Matters & Innovation: Represent Meta in audits and inquiries from global tax and revenue authorities, while developing AI-enabled best practices to drive efficiency and support strategic tax operations Cross-Functional Partnership: Collaborate with cross-functional stakeholders to align on team strategy, drive operational excellence, and deliver on key PayMeta Tax responsibilities\n\nQualifications:\nExperience related to Restricted Stock Units & Stock Option compensation tax reporting, M&A transaction consideration and employee benefit tax treatment Demonstrated experience in managing both external & internal tax audits Bachelor's degree in Tax, Accounting, Finance or related field History of working independently and leading cross-functional initiatives & projects Experience in mobility tax programs & policies and the experience to effectively & concisely communicate tax positions to a wide-ranging audience across Meta leadership, HR/Recruiting, Legal, Finance, mobile employees and candidates 7+ years of experience in employment tax, mobility tax and/or payroll tax programs & compliance with a global company or Big 4 accounting firm In depth knowledge of both employment tax and mobility tax positions, programs and policies, along with vendor management and financial budgeting & planning experience Substantial vendor & financial/budgeting management experience Experience in tax regulations on a global basis, including research, interpretation and implementation, along with Sarbanes-Oxley Act compliance knowledge Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies"
+                },
+                {
+                  "id": "meta_2662422500792936",
+                  "title": "Reality Labs Digital Accounting Manager",
+                  "company": "Meta",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "reality labs digital accounting",
+                  "locations": [
+                    "Austin, TX",
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$114,000/year to $167,000/year",
+                  "link": "https://www.metacareers.com/jobs/2662422500792936/",
+                  "category": "finance",
+                  "category_emoji": "💰",
+                  "category_label": "Finance",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "💰",
+                  "manager_id": "meta_866533876198184",
+                  "description": "Reality Labs (RL) is developing cutting-edge hardware and software that fundamentally transforms the way people work, play, and connect. Our innovative technologies foster a sense of connection between individuals and their surroundings. The RL Digital Content Accounting team oversees financial accounting for media and experiences created for our products and services, such as virtual reality games, videos, and immersive content. As a member of this high-performing team, you will ensure timely and accurate recording and reporting of digital products in accordance with US GAAP, while supporting key business initiatives. You are able to prioritize competing deadlines and adapt to shifting business needs during close cycles and product launches and possess experience managing cross-functional accounting projects, communicating technical conclusions to diverse stakeholders, and partnering with teams across finance, engineering, and operations to problem-solve and provide guidance to cross-functional teams. As a key contributor, you will ensure financial reporting accuracy and compliance with US GAAP and internal controls in a rapidly growing organization. You will independently evaluate complex accounting scenarios and develop scalable processes and solutions to support business growth.\n\nResponsibilities:\nEstablish and maintain an accurate and timely month-end close process for Reality Labs digital accounting areas, including software subscriptions, RL content transactions, and some hardware products Collaborate with Finance, Operations and Business Development teams to understand business models, and accurately account for digital products Identify and pilot AI-driven solutions to automate and enhance the efficiency, accuracy, and scalability of accounting processes specific to the Reality Labs product ecosystem Develop and maintain accounting policies and controls for new RL product launches, ensuring compliance with US GAAP and relevant revenue recognition standards including ASC 606 Investigate product features, data flows, and contractual arrangements across Reality Labs hardware and digital content offerings to identify accounting risks and opportunities Partner with product engineering and operations teams to support system solutions that accurately capture and report financial data for wearable devices and spatial computing platforms Collaborate with cross-functional stakeholders including legal, tax, and FP&A to provide accounting guidance on new business models and go-to-market strategies within the RL space Support analytical review and detective controls over Reality Labs financial results, including variance analysis and management reporting Contribute to short, mid, and long-term accounting process improvement goals aligned to the growth trajectory of the Reality Labs business Communicate complex accounting conclusions and technical positions clearly to both accounting and non-accounting audiences across the organization Support ad-hoc accounting projects and analysis as required, including global close efficiency improvements, process redesign, and automation initiatives\n\nQualifications:\n6+ years of relevant experience in accounting, including experience with hardware, digital content, or technology product accounting Technical accounting background with working knowledge of US GAAP, including ASC 606 revenue recognition Experience developing and maintaining accounting processes and controls for complex, multi-element product offerings Experience communicating technical accounting positions and analysis to cross-functional stakeholders, distilling complex concepts into clear and actionable conclusions Experience managing time-sensitive close processes while balancing evolving priorities and a broad range of stakeholders Experience with ERP systems such as Oracle and data analysis tools such as SQL, Tableau, or Python to support accounting operations and reporting Certified Public Accountant (CPA) license Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies Demonstrated ability to integrate AI tools to redesign accounting workflows and deliver measurable efficiency or quality improvements Experience with hardware and digital content accounting in a consumer electronics or technology company, including familiarity with subscription, marketplace, or platform revenue models Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews)\n\n$114,000/year to $167,000/year"
+                },
+                {
+                  "id": "meta_2009915116625816",
+                  "title": "Strategic Sourcing Manager, Global Workplace Services",
+                  "company": "Meta",
+                  "level": "Manager",
+                  "level_rank": 5,
+                  "stem": "strategic sourcing",
+                  "locations": [
+                    "Dublin, Ireland"
+                  ],
+                  "compensation": "",
+                  "link": "https://www.metacareers.com/jobs/2009915116625816/",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": "meta_866533876198184",
+                  "description": "Meta is seeking an experienced professional to join our Global Strategic Sourcing organization as a Global Sourcing Manager, with a primary focus on the Construction & Projects category and flexibility to support other Workplace Services categories. This is a unique opportunity to work with a wide variety of internal teams and impact the company's growth by providing sourcing solutions.\n\nAs part of the Strategic Sourcing organization within Finance, this team is responsible for end-to-end sourcing, which focuses on three main pillars as part of our Service Model:\n\n- Category Management: Developing and executing category strategies to meet business needs\n- Supplier Management: Building and maintaining strategic relationships with suppliers\n- Stakeholder Engagement: Collaborating with internal stakeholders to understand their requirements and provide tailored solutions\n\nThis role will be responsible primarily for sourcing solutions in the areas of Construction & Projects, and may also support categories such as Facilities, Security, and Culinary. You will work closely with business teams to provide Meta with innovative, efficient, sustainable, and high-value third-party solutions.\n\nThis position supports global projects and may require international travel.\n\nResponsibilities:\nDevelop collaborative relationships with key stakeholders across Meta to strategically develop, implement, and optimize sourcing solutions Serve as a strategic and trusted sourcing advisor by developing comprehensive category strategies, bringing key industry insights, and identifying supply market opportunities Build and cultivate strategic supplier relationships through structured relationship management programs, driving value beyond cost savings Lead complex contract negotiations that optimize value to the company, leveraging deep understanding of cost models and ROI drivers Leverage AI agents and tools to enhance sourcing workflows, improve efficiency, and elevate strategic decision-making Proactively identify, track, and manage risks across projects and categories, ensuring compliance with sourcing policies across the Source-to-Pay journey Collaborate with Strategic Sourcing peers and cross-functional partners to deliver integrated solutions Drive process improvement and innovation initiatives that build scalable, repeatable sourcing capabilities Manage, coordinate, and support special and complex global projects, balancing business requirements with technical constraints\n\nQualifications:\nProven success negotiating complex contracts, breaking down cost models, and understanding ROI drivers in both financial and business contexts History of building and maintaining strategic relationships with business leaders and supplier executives Track record of implementing category strategies, strategic sourcing initiatives, and process improvement programs Knowledge of legal, financial, and technology components of sourcing Bachelor's degree in business, engineering, supply chain, procurement, finance, management, or a related discipline Adaptability and flexibility to navigate and support different sourcing categories as needed Skilled in leveraging quantitative data analysis, industry trends, and spend data to develop strategies and identify optimization opportunities Experience implementing and driving supplier management programs Experience managing global categories and engaging multiple stakeholders across different regions 10+ years of experience in Sourcing & Procurement, with exposure to Workplace Services categories Proven AI literacy with demonstrated ability to apply AI tools in day-to-day sourcing work to drive impactful outcomes Demonstrated ability to drive change, manage conflict, and build consensus across diverse perspectives Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies Demonstrated analytical and critical thinking skills, with experience applying them to resolve issues and identify opportunities strategically Experience designing or improving sourcing workflows using digital tools or AI-based solutions Experience working in a global and virtual environment, both internally and with suppliers Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Experience working with blended teams across multiple geographies and stakeholder groups Background in driving organizational or process transformation initiatives"
+                }
+              ]
+            },
+            {
+              "name": "Lead (5)",
+              "level": "Lead",
+              "level_rank": 5,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_1234576224920284",
+                  "title": "Finance Operations Lead",
+                  "company": "Meta",
+                  "level": "Lead",
+                  "level_rank": 5,
+                  "stem": "finance operations",
+                  "locations": [
+                    "Dublin, Ireland"
+                  ],
+                  "compensation": "",
+                  "link": "https://www.metacareers.com/jobs/1234576224920284/",
+                  "category": "finance",
+                  "category_emoji": "💰",
+                  "category_label": "Finance",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "💰",
+                  "manager_id": "meta_866533876198184",
+                  "description": "The Finance Operations landscape is changing fast — manual processes that defined Order to Cash for decades are being fundamentally reimagined through AI, automation, and intelligent workflows. Reporting to the Head of Finance Operations EMEA, you will combine finance domain expertise with a passion for AI-driven transformation to drive measurable business outcomes for a defined sub-region and product portfolio within EMEA.\n\nThis is a role for someone who is experienced operating in an environment where the playbook is being rewritten in real time.\n\nResponsibilities:\nOwn portfolio KPIs (AR aging, bad debt ratio, collections effectiveness) — with an emphasis on improving them through smarter processes Execute core O2C activities (credit reviews, collections, dispute resolution) while actively working to automate and streamline each one Assess current O2C workflows to identify where AI, automation, and intelligent tooling can eliminate manual effort, reduce cycle times, and improve decision quality across credit decisioning, collections prioritisation, dispute resolution, cash application, and risk monitoring Partner with outsourced teams to drive accountability against SLAs, while identifying which activities can be augmented or replaced through AI and automation Maintain audit-ready documentation and ensure compliance with SOX, internal policies, and regulatory requirements Develop an understanding of the business drivers in your geography — revenue trends,  risks, economic factors, tax and FX exposure — to inform strategy and anticipate challenges before they materialise Serve as a trusted advisor to Sales leadership on Finance implications, bringing data-driven insights and a forward-looking perspective Proactively identify and manage micro and macro risks across the portfolio, using data and predictive analytics to move from reactive to anticipatory risk management Engage proactively with Policy, Legal, Compliance, and Sales Operations to navigate change and ensure AI implementations meet governance standards Partner with Engineering, Data Science, and Product teams to co-develop AI solutions tailored to Finance Operations needs\n\nQualifications:\nExperience in Finance Operations, Order to Cash, or adjacent functions (Revenue Accounting, FP&A, Sales Ops) in a multinational environment Experience effectively leverage AI assistants, prompt engineering, no-code/low-code automation, and intelligent workflows to get better outcomes faster Experience working with data — understanding data quality, interpreting analytics, and using data to drive decisions Experience driving adoption of new tools, processes, or ways of working. You know how to bring people along — through storytelling, demonstration, and persistence Experience building or deploying AI/ML solutions in a finance or operations context Familiarity with prompt engineering, LLM-based tools, or automation platforms Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies"
+                }
+              ]
+            },
+            {
+              "name": "Junior (1)",
+              "level": "Junior",
+              "level_rank": 1,
+              "size": 1,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "meta_928181756302651",
+                  "title": "Finance Associate, Network Hardware Infrastructure",
+                  "company": "Meta",
+                  "level": "Junior",
+                  "level_rank": 1,
+                  "stem": "finance",
+                  "locations": [
+                    "Menlo Park, CA"
+                  ],
+                  "compensation": "$96,000/year to $142,000/year",
+                  "link": "https://www.metacareers.com/jobs/928181756302651/",
+                  "category": "finance",
+                  "category_emoji": "💰",
+                  "category_label": "Finance",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "💰",
+                  "manager_id": "meta_3269411016541258",
+                  "description": "The FP&A team manages Meta’s entire budget of revenue and expenses, overseeing our investments in headcount, operating expenses, and capital investments etc. We focus on using our unique view into ‘the numbers’ to determine trends and opportunities that are developing within Meta and within related industries. As Meta continues to push the boundaries of artificial intelligence, our data centers are at the forefront of this revolution. The FP&A team plays a critical role in fueling this growth by managing the financial planning and analysis for our Network Infrastructure investments. We're not just talking about numbers - we're talking about building the backbone of the future.\n\nIn this high-stakes environment, we need a Finance Associate who can help us navigate the complexities of hyper- scaling our data center infrastructure. As part of our team, you'll be responsible for budgeting, tracking, reporting, and analyzing investments in capital expenditures and operating expenses specifically for our Network Infrastructure organization, with a focus on Data Center Networking. You'll work closely with leaders across multiple functional teams and business partners to drive financially sound outcomes and create long-term sustainable economic value for the company.\n\nAs a key contributor to our growing Finance organization, you'll have the opportunity to make a significant impact on the future of Meta's AI capabilities. If you're ready to take on the challenge of a lifetime and join the frontlines of the AI capacity revolution, we want to hear from you.\n\nResponsibilities:\nCreate sustainable, trusting partnerships across multiple stakeholders with a focus on the full ownership across financial portfolio including Operating Expenses, Depreciation, Research & Development, Inventory, and Capital Expenditures of several billion dollars Owning core monthly processes such as financial close, tracking actuals and variance, developing forecasts, and drafting easily understandable narratives around financial data Manage all FP&A activities for the business including budgeting, forecasting and long-range planning Provide insights to business partners through standardized reporting & dashboards, variance analysis, scenario-based modeling and portfolio planning Develop processes and tools to automate and streamline reporting, and create financial KPIs/metrics that help business partners and finance leaders make smart fiduciary decisions Own ad hoc strategic and operational projects as required, and drive process and system improvements by partnering with cross functional owners Develop and enforce best practices and policies to manage the company’s Networking Infrastructure Understand, impact, and influence business investment decisions through detailed financial analysis\n\nQualifications:\n4+ years of experience in supporting a capital intensive business via finance, business operations, or strategy consulting Bachelor’s degree in finance, Accounting, Business or related field Experience with SQL and Data visualization/dashboarding Experience in applicable accounting concepts and financial planning, including Capex and Opex treatment Excel, PowerPoint, Google Docs/Sheets/Slides Working and problem solving, organizing workload and priorities, and completing tasks on time Interest in networking technology, digital infrastructure, supply chains and data center hyperscaling Demonstrated experience in communication and business partnering Proficient in managing financial close, forecasting, budgeting processes Experience in establishing relationships with cross-functional stakeholders in finance, accounting, legal, engineering and supply chain Hyperion Essbase, Oracle Financials Understanding of digital infrastructure, hardware and supply chain Experience in navigating through ambiguity and unstructured problems Experience with Python and/or similar programming languages Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$96,000/year to $142,000/year"
+                }
+              ]
+            }
+          ]
+        },
         {
           "name": "G and A",
           "size": 10,
@@ -9127,270 +9463,6 @@
                   "marker": "⚙️",
                   "manager_id": "meta_1604218924214255",
                   "description": "Meta is seeking an experienced Executive Administrative Partner to support a VP in the Meta leadership team. The person in this role will need to be a masterful problem-solver and an organizational force given complex calendaring and heavy travel planning. Additionally, the ideal candidate will have exceptional communication skills, and will be resourceful in building relationships across the larger Meta ecosystem. This position is full-time, onsite, and requires time to be split between our Burlingame, Menlo Park and San Francisco offices five days a week.\n\nResponsibilities:\nCoordinate internal and external meetings Manage complex calendar set-up and movement Prepare expense reports and purchase requisitions Coordinate both domestic and international travel arrangements Organize space planning, strategic offsite events and team all-hands meetings Build cross-functional relationships between departments Partner closely with the organizations lead admins Communicate key team and company updates to admins and cross-functional partners General office duties as needed\n\nQualifications:\n4+ years of relevant experience providing administrative support to 1 or more executives 4+ years of relevant experience coordinating travel logistics on behalf of 1 or more executives 4+ years of relevant calendar management and expense report management experience for 1 or more executives Experience prioritizing multiple projects Experience with Microsoft Office and Google Suite BA/BS Experience planning, executing and driving strategic events and offsites at the executive level, including both leadership and larger team offsites Experience supporting a global (APAC, EMEA, NORAM) team across several timezones Experience collaborating and partnering closely with other administrative professionals, executives, business leads, and key cross functional partners Experience maintaining the utmost confidentiality and discretion in all areas of work Experience in multitasking and changing direction quickly, if needed Experience partnering with cross-functional partners as well as HR for admin staffing and alignments Experience driving strategic projects at the executive level Experience supporting tech functions at a large scale tech company Experience in prioritizing multiple assignments quickly and with high autonomy Experience working with external partners Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$100,610/year to $144,602/year"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Finance",
-          "size": 9,
-          "research_count": 0,
-          "product_count": 0,
-          "category_counts": {
-            "finance": 7,
-            "engineering": 1,
-            "legal": 1
-          },
-          "dominant_category": "finance",
-          "is_research_dominant": false,
-          "is_product_dominant": false,
-          "buckets": [
-            {
-              "name": "Director (8)",
-              "level": "Director",
-              "level_rank": 8,
-              "size": 1,
-              "research_count": 0,
-              "product_count": 0,
-              "roles": [
-                {
-                  "id": "meta_866533876198184",
-                  "title": "Director of Treasury Technology, Controls & Infrastructure",
-                  "company": "Meta",
-                  "level": "Director",
-                  "level_rank": 8,
-                  "stem": "of treasury technology",
-                  "locations": [
-                    "Menlo Park, CA"
-                  ],
-                  "compensation": "$219,000/year to $288,000/year",
-                  "link": "https://www.metacareers.com/jobs/866533876198184/",
-                  "category": "finance",
-                  "category_emoji": "💰",
-                  "category_label": "Finance",
-                  "is_research": false,
-                  "research_score": 0,
-                  "is_product": false,
-                  "product_score": 0,
-                  "marker": "💰",
-                  "manager_id": null,
-                  "description": "Meta’s Treasury team partners closely with the company’s cross-functional leaders to deliver Treasury services focused on strategic value creation. Our team interfaces with a multitude of business partners and financial institutions to deliver innovative solutions at scale.\n\nWe are seeking a treasury leader to drive the technology, systems, and controls that enable treasury operations, while also influencing industry standards and shaping the future of treasury practice. This is a high-impact global role for someone who combines treasury expertise—cash, payments, liquidity, and risk—with modernizing systems, implementing AI and automation, and setting industry benchmarks.\n\nThis leader will own the roadmap for treasury systems and banking systems infrastructure, design process frameworks and controls, and lead initiatives that leverage AI and automation to move toward highly automated treasury operations and insights. This role will work closely with internal teams and banking partners to ensure integration, reliability, and performance of all treasury technology and processes to enable better, faster, and safer treasury decisions.\n\nResponsibilities:\nLead treasury technology and infrastructure: Own the roadmap, integration, and business performance of treasury systems and banking connectivity Design process frameworks and controls: Develop and enforce treasury process standards, internal controls, and regulatory compliance measures Drive highly automated treasury operations: Lead initiatives leveraging AI, automation, and next-generation technology to reduce manual intervention and enable real-time treasury processes Monitor performance: Build dashboards and reporting to provide transparency into system performance, operational efficiency, and process compliance Collaborate across teams: Partner with cash management, liquidity, markets, engineering, and finance teams to deliver seamless, secure, and efficient treasury processes Influence the industry: Represent the organization in industry forums, working groups, and partnerships to share best practices, shape standards, and influence treasury technology evolution globally Manage vendor and banking relationships: Act as the primary point of contact for system or infrastructure-related matters with banks and external providers\n\nQualifications:\nBachelor’s degree in Finance or Technology related discipline 12+ years experience in treasury digital transformation programs with 5+ years in leadership positions Experience in Open Banking, fintech, or emerging treasury technology solutions Demonstrated understanding of cash management, payments, liquidity, and treasury risk, combined with technology and controls expertise Strategic thinker that will lead treasury teams through systems, processes, and controls Effective communication and collaboration skills with experience managing internal teams and external vendors/banks to align on requirements, timelines, testing and implementation activities Experience presenting to executive leadership Master’s degree in Finance or Technology related discipline Experience providing technology solutions for In-house Banking structures Experience with Treasury Management Systems (ie. FIS Quantum), Oracle Accounting, FX trading and settlement, Investment Accounting/Custody, Payments and other financial technology products Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$219,000/year to $288,000/year"
-                }
-              ]
-            },
-            {
-              "name": "Manager (5)",
-              "level": "Manager",
-              "level_rank": 5,
-              "size": 6,
-              "research_count": 0,
-              "product_count": 0,
-              "roles": [
-                {
-                  "id": "meta_988632290513668",
-                  "title": "Finance Business Operations Manager, Strategic Cloud Deals",
-                  "company": "Meta",
-                  "level": "Manager",
-                  "level_rank": 5,
-                  "stem": "finance business operations",
-                  "locations": [
-                    "Menlo Park, CA"
-                  ],
-                  "compensation": "$162,000/year to $229,000/year",
-                  "link": "https://www.metacareers.com/jobs/988632290513668/",
-                  "category": "finance",
-                  "category_emoji": "💰",
-                  "category_label": "Finance",
-                  "is_research": false,
-                  "research_score": 0,
-                  "is_product": false,
-                  "product_score": 0,
-                  "marker": "💰",
-                  "manager_id": "meta_866533876198184",
-                  "description": "The Finance & Business Planning (FBP) team is the strategic engine behind Meta's bold investments. We manage the company's entire budget and drive data-informed decisions that shape the future of Meta and our family of products. At the forefront of this mission is our Infrastructure FBP team — our investments in infrastructure are foundational to enabling the next generation of artificial intelligence technologies, including super intelligence, set to transform how billions of people experience our products and services.\n\nWe're looking for a Strategic Cloud Deals Manager to join our Infrastructure FBP team, focused on strategic financial and commercial efforts related to large-scale infrastructure investments. In this high-impact role, you'll build complex financial and commercial models, develop structuring analyses, and deliver decision support for high-stakes, multi-billion-dollar transactions — with a particular focus on Cloud capacity while also covering component agreements and leasing. You will work closely with relevant teams in the Infrastructure Data Center group (IDC), as well as with other Finance, Legal, Policy, and Tax teams to secure cost-competitive and strategic resources for Meta's continued global growth and AI product rollouts.\n\nResponsibilities:\nDevelop and maintain advanced financial and commercial models to analyze, structure, and review deal terms for Meta's largest infrastructure transactions, including major Cloud capacity procurements, lease agreements, and multi-year component agreements Partner closely with deal leads and Infrastructure teams during negotiations to ensure the company achieves competitive pricing, sound risk allocation, and long-term economic value Drive analysis and preparation of commercial and financial deal terms in collaboration with Infra leads and external partners Build and maintain programmatic financial benchmarks for assessing CapEx and OpEx across Cloud, site, and server transactions Develop a plan to incorporate AI into financial models, benchmarking tools, and day-to-day deal workflows Collaborate with Corporate Finance, Legal, and Tax teams to identify and mitigate financial, tax, and legal risks through thoughtful structures and guardrails Prepare high-quality memos and materials to support the internal financial approval process, engaging key internal and external stakeholders Translate complex commercial, market, and contractual developments in the Cloud and major component supply industries into clear, actionable insights for Finance leadership Serve as a thought partner to business leaders — contributing your perspective on the right set of actions to drive strategic infrastructure deals forward\n\nQualifications:\n10+ years of professional experience in strategic finance, commercial roles, investment banking, or strategy consulting, with a focus on structuring and analyzing large-scale, complex deals (e.g., technology, infrastructure, energy, or utilities) Bachelor's degree in Finance, Business, Economics, or a related field Experience building and working with detailed financial models, identifying key risks and sensitivities, and supporting financial due diligence for high-stakes transactions Experience contributing to the negotiation of complex commercial and financial terms with external counterparties Demonstrated foundation in spreadsheet-based financial modeling and experience in translating open-ended business questions into structured, analytical models Experience driving processes and influencing decision-making across levels and functions (i.e., Finance, Legal, Policy, and Infrastructure) Analytical problem-solving skills with a track record of success in time sensitive, hands-on work environments and developing complex solutions across multiple stakeholders Effective collaborator and skilled cross-functional communicator of commercial, market, and contractual details to all organizational levels Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies MBA, JD, or other relevant advanced degree Experience in the Cloud or data center industry with direct involvement in deal analysis and negotiation support Experience in data center, infrastructure, or project finance at an investment bank or financial sponsor\n\n$162,000/year to $229,000/year"
-                },
-                {
-                  "id": "meta_3269411016541258",
-                  "title": "Finance Manager, Infrastructure",
-                  "company": "Meta",
-                  "level": "Manager",
-                  "level_rank": 5,
-                  "stem": "finance",
-                  "locations": [
-                    "Menlo Park, CA"
-                  ],
-                  "compensation": "$120,000/year to $175,000/year",
-                  "link": "https://www.metacareers.com/jobs/3269411016541258/",
-                  "category": "finance",
-                  "category_emoji": "💰",
-                  "category_label": "Finance",
-                  "is_research": false,
-                  "research_score": 0,
-                  "is_product": false,
-                  "product_score": 0,
-                  "marker": "💰",
-                  "manager_id": "meta_866533876198184",
-                  "description": "The FP&A team manages Meta’s entire budget of revenue and expenses, overseeing our investments in headcount, operating expenses, and capital investments etc. We focus on using our unique view into ‘the numbers’ to recognize trends and opportunities that are developing within Meta and within related industries. As Meta continues to push the boundaries of artificial intelligence, our data centers are at the forefront of this revolution. The FP&A team plays a critical role in fueling this growth by managing the financial planning and analysis for our Network Infrastructure Hardware investments. We're not just talking about numbers - we're talking about building the backbone of the future.\n\nIn this high-stakes environment, we need a Finance Manager who can help us navigate the complexities of hyper- scaling our data center infrastructure. As part of our team, you'll be responsible for budgeting, tracking, reporting, and analyzing investments in capital expenditures and operating expenses for our Network Infrastructure organization. You'll work closely with leaders across multiple functional teams and business partners to drive financially sound outcomes and create long-term sustainable economic value for the company.\n\nAs a key contributor to our growing Finance organization, you'll have the opportunity to make a significant impact on the future of Meta's AI capabilities. If you're ready to take on the challenge of a lifetime and join the frontlines of the AI capacity revolution, we want to hear from you.\n\nResponsibilities:\nCreate sustainable, trusting partnerships across multiple stakeholders with a focus on the full ownership across financial portfolio including Operating Expenses, Depreciation, Research & Development, Inventory, and Capital Expenditures of several billion dollars Manage all FP&A activities for the business including budgeting, forecasting and long-range planning Provide insights to business partners through standardized reporting & dashboards, variance analysis, scenario-based modeling and portfolio planning Develop tools to automate and streamline reporting, and create financial KPIs/metrics that help business partners and finance leaders make smart fiscal decisions Own ad hoc strategic and operational projects as required, and drive process and system improvements by partnering with cross functional owners Develop and enforce best practices and policies to manage the company’s Networking Infrastructure Understand, impact, and influence business investment decisions through detailed financial analysis Financial close, tracking actuals and variance, developing forecasts, and drafting easily understandable narratives around financial data\n\nQualifications:\n7+ years of experience in hardware finance, business operations, or strategy consulting Bachelor’s degree in finance, Accounting, Business or related field Experience in applicable accounting concepts and financial planning, including Capex and Opex Data visualization and dashboarding Excel, PowerPoint, Google Docs/Sheets/Slides, SQL, Tableau working and problem solving independently, organizing workload and priorities, and completing tasks on time Interest in networking technology, digital infrastructure and data center hyperscaling Demonstrated experience in communication and business partnering Proficient in managing financial close, forecasting, budgeting processes Experience in establishing relationships with cross-functional stakeholders in finance, accounting, legal, engineering and supply chain Hyperion Essbase, Oracle Financials, SQL Understanding of digital infrastructure, hardware and supply chain Experience in navigating through ambiguity and unstructured problems Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$120,000/year to $175,000/year"
-                },
-                {
-                  "id": "meta_26451197637809713",
-                  "title": "Internal Audit Manager",
-                  "company": "Meta",
-                  "level": "Manager",
-                  "level_rank": 5,
-                  "stem": "internal audit",
-                  "locations": [
-                    "Menlo Park, CA"
-                  ],
-                  "compensation": "$112,000/year to $161,000/year",
-                  "link": "https://www.metacareers.com/jobs/26451197637809713/",
-                  "category": "engineering",
-                  "category_emoji": "⚙️",
-                  "category_label": "Engineering",
-                  "is_research": false,
-                  "research_score": 0,
-                  "is_product": false,
-                  "product_score": 0,
-                  "marker": "⚙️",
-                  "manager_id": "meta_866533876198184",
-                  "description": "Meta’s Internal Audit team gives experienced auditors the opportunity to harness Meta’s cutting-edge technology to deliver high-impact audits and drive meaningful improvements. You’ll work in a high-volume, rapidly evolving, technology-enabled environment, collaborating with cross-functional partners to shape risk management and add value across Meta’s global operations. You will be successful in this role if you can clearly and effectively communicate,  can navigate ambiguity, and can deliver results in a fast paced, with shifting priorities and evolving environment.\n\nResponsibilities:\nDevelop comprehensive audit scopes, test plans, and risk assessments Lead end-to-end audit engagements from planning through reporting and follow-up Execute technology focused audits covering Meta’s products and core technology infrastructure stack Leverage analytics tools (e.g., SQL/BI platforms and dashboards) to efficiently conduct data analysis, generate reports, and deliver timely, actionable insights to stakeholders Manage small audit teams consisting of contingent workers Socialize observations and obtain alignment on management action plans Serve as the primary point of contact with engineering, security and product stakeholders for assigned audits Present audit findings and recommendations to Executive stakeholders Maintain ongoing professional relationships with key business partners across Product and Engineering teams Collaborate with other Internal Audit functional leads to execute the department’s strategy and coordinate cross-team audit projects and initiatives Effectively manage relationships with Internal Audit co-sourcing partners to ensure seamless execution as one team\n\nQualifications:\nBachelor’s degree in Management Information Systems, Accounting, Business, Computer Science, Engineering, Data Science, or a related field 7+ years of audit experience at Big 4 accounting firms and/or medium-to-large internal audit functions Demonstrated background in both operational and IT audits that includes one or more of the following: technology, cybersecurity, resiliency, third-party risk management, privacy Demonstrated experience leading small audit teams Experience auditing within technology companies or complex IT environments Experience leveraging data analytics and Artificial Intelligence to streamline audit execution Experience of navigating and influencing within highly matrixed organizations, collaborating across departments Expertise in auditing AI, technology, complex data pipelines, and advanced computing systems Exposure to cybersecurity frameworks such as ISO 27001/27002/NIST, AI auditing or regulatory frameworks or agile auditing practices Functional knowledge of Artificial Intelligence (traditional and Gen AI), data science, engineering systems, or emerging technologies Demonstrated relationship-building skills, establishing trust and delivering substantial business value At least one relevant professional certification ( CISA, CIA, or CISSP) Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$112,000/year to $161,000/year"
-                },
-                {
-                  "id": "meta_781326574627503",
-                  "title": "Manager, SOX Compliance",
-                  "company": "Meta",
-                  "level": "Manager",
-                  "level_rank": 5,
-                  "stem": "",
-                  "locations": [
-                    "Menlo Park, CA"
-                  ],
-                  "compensation": "$137,000/year to $197,000/year",
-                  "link": "https://www.metacareers.com/jobs/781326574627503/",
-                  "category": "legal",
-                  "category_emoji": "⚖️",
-                  "category_label": "Legal/Policy",
-                  "is_research": false,
-                  "research_score": 0,
-                  "is_product": false,
-                  "product_score": 0,
-                  "marker": "⚖️",
-                  "manager_id": "meta_866533876198184",
-                  "description": "Meta is seeking an experienced manager to fill the position of Manager, SOX (Sarbanes-Oxley Act) Compliance. You will be joining the SOX team responsible for overseeing and strengthening Meta’s global controls to ensure accurate financial reporting and SOX compliance. With a focus on safeguarding the integrity of our financial systems, you will play a pivotal role in ensuring SOX Compliance for multiple business process areas and systems. You will collaborate closely with various cross-functional teams to define, assess, and test solutions that enhance our business processes, systems and controls within an ever-evolving technology and regulatory landscape.\n\nResponsibilities:\nLead the end-to-end process areas including planning, scoping, risk assessment, controls testing, remediation, and reporting Collaborate with internal stakeholders and the external audit team to coordinate walkthroughs and control testing Evaluate IT General Controls (ITGCs), automated business process controls (ITACs), and other business process controls Monitor and drive timely remediation of control deficiencies and recommend enhancements to strengthen internal controls Provide guidance and training to control owners to promote awareness and understanding of SOX compliance requirements Stay current on changes in SOX requirements and leading practices, cybersecurity regulations, and risk management best practices\n\nQualifications:\nBachelor’s degree in Accounting, MIS or a related field or equivalent work experience 8+ years of experience in Internal audit, SOX compliance, or risk management with a focus on business processes and ITGC Experience in identifying, designing, and testing controls to meet compliance requirements Experience leading SOX efforts for process areas including Revenue, Finance Operations and Application Controls Experience in managing key ITGCs and ITACs MBA, MIS, or equivalent advanced degree Certifications such as CIA, CISA, or CPA Experience working at a publicly traded company or a Big Four public accounting firm Experience communicating complex technical risks and control concepts to non-technical stakeholders, including executives and audit committees Leadership, project management, and organizational experience Experience with SOX 404, COBIT principles, IT security standards, and risk management best practices Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$137,000/year to $197,000/year"
-                },
-                {
-                  "id": "meta_3922111931428934",
-                  "title": "PayMeta Tax Manager",
-                  "company": "Meta",
-                  "level": "Manager",
-                  "level_rank": 5,
-                  "stem": "paymeta tax",
-                  "locations": [
-                    "Dublin, Ireland"
-                  ],
-                  "compensation": "",
-                  "link": "https://www.metacareers.com/jobs/3922111931428934/",
-                  "category": "finance",
-                  "category_emoji": "💰",
-                  "category_label": "Finance",
-                  "is_research": false,
-                  "research_score": 0,
-                  "is_product": false,
-                  "product_score": 0,
-                  "marker": "💰",
-                  "manager_id": "meta_866533876198184",
-                  "description": "We are seeking an experienced employment and individual income tax manager with global expertise to serve as the subject matter expert across tax technical positions, external and internal audits, risk accruals, SOX compliance, RSU/stock and benefit- reporting, and M&A transactions. This role will be a key strategic partner, providing authoritative guidance to ensure accurate, compliant, and efficient employment and mobility tax operations globally. In this role, you will operate independently in a deadline-focused environment, develop and implement AI-enabled tax solutions, and collaborate proactively with cross-functional teams across the organization.\n\nResponsibilities:\nProblem-Solving & Project Leadership: Identify complex tax issues, develop effective solutions, and lead both tax and technology/AI-focused initiatives to advance the PayMeta Tax team's goals and strategic priorities Global Employment Tax Management:  Supervise all employment tax matters across a global portfolio of countries, including technical position evaluations and implementations, leadership and employee inquiries, internal and external audit representation, global payroll health checks, risk accrual assessments, and SOX compliance requirements Global Mobility Tax Management: Manage tax services programs for mobile employees, including international transferees, new hires, and assignees, ensuring compliance and seamless support across all cross-border employment arrangements Vendor Management: Supervise vendor relationships, monitor performance and employee satisfaction, define key performance indicators, and hold vendors accountable to technology roadmaps, enhancements, and deliverables Financial Oversight: Negotiate contract terms, drive financial forecasting and budgeting, and manage invoice review and approvals to ensure cost efficiency and alignment with business objectives Tax Authority Relations, Tax Controversy Matters & Innovation: Represent Meta in audits and inquiries from global tax and revenue authorities, while developing AI-enabled best practices to drive efficiency and support strategic tax operations Cross-Functional Partnership: Collaborate with cross-functional stakeholders to align on team strategy, drive operational excellence, and deliver on key PayMeta Tax responsibilities\n\nQualifications:\nExperience related to Restricted Stock Units & Stock Option compensation tax reporting, M&A transaction consideration and employee benefit tax treatment Demonstrated experience in managing both external & internal tax audits Bachelor's degree in Tax, Accounting, Finance or related field History of working independently and leading cross-functional initiatives & projects Experience in mobility tax programs & policies and the experience to effectively & concisely communicate tax positions to a wide-ranging audience across Meta leadership, HR/Recruiting, Legal, Finance, mobile employees and candidates 7+ years of experience in employment tax, mobility tax and/or payroll tax programs & compliance with a global company or Big 4 accounting firm In depth knowledge of both employment tax and mobility tax positions, programs and policies, along with vendor management and financial budgeting & planning experience Substantial vendor & financial/budgeting management experience Experience in tax regulations on a global basis, including research, interpretation and implementation, along with Sarbanes-Oxley Act compliance knowledge Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies"
-                },
-                {
-                  "id": "meta_2662422500792936",
-                  "title": "Reality Labs Digital Accounting Manager",
-                  "company": "Meta",
-                  "level": "Manager",
-                  "level_rank": 5,
-                  "stem": "reality labs digital accounting",
-                  "locations": [
-                    "Austin, TX",
-                    "Menlo Park, CA"
-                  ],
-                  "compensation": "$114,000/year to $167,000/year",
-                  "link": "https://www.metacareers.com/jobs/2662422500792936/",
-                  "category": "finance",
-                  "category_emoji": "💰",
-                  "category_label": "Finance",
-                  "is_research": false,
-                  "research_score": 0,
-                  "is_product": false,
-                  "product_score": 0,
-                  "marker": "💰",
-                  "manager_id": "meta_866533876198184",
-                  "description": "Reality Labs (RL) is developing cutting-edge hardware and software that fundamentally transforms the way people work, play, and connect. Our innovative technologies foster a sense of connection between individuals and their surroundings. The RL Digital Content Accounting team oversees financial accounting for media and experiences created for our products and services, such as virtual reality games, videos, and immersive content. As a member of this high-performing team, you will ensure timely and accurate recording and reporting of digital products in accordance with US GAAP, while supporting key business initiatives. You are able to prioritize competing deadlines and adapt to shifting business needs during close cycles and product launches and possess experience managing cross-functional accounting projects, communicating technical conclusions to diverse stakeholders, and partnering with teams across finance, engineering, and operations to problem-solve and provide guidance to cross-functional teams. As a key contributor, you will ensure financial reporting accuracy and compliance with US GAAP and internal controls in a rapidly growing organization. You will independently evaluate complex accounting scenarios and develop scalable processes and solutions to support business growth.\n\nResponsibilities:\nEstablish and maintain an accurate and timely month-end close process for Reality Labs digital accounting areas, including software subscriptions, RL content transactions, and some hardware products Collaborate with Finance, Operations and Business Development teams to understand business models, and accurately account for digital products Identify and pilot AI-driven solutions to automate and enhance the efficiency, accuracy, and scalability of accounting processes specific to the Reality Labs product ecosystem Develop and maintain accounting policies and controls for new RL product launches, ensuring compliance with US GAAP and relevant revenue recognition standards including ASC 606 Investigate product features, data flows, and contractual arrangements across Reality Labs hardware and digital content offerings to identify accounting risks and opportunities Partner with product engineering and operations teams to support system solutions that accurately capture and report financial data for wearable devices and spatial computing platforms Collaborate with cross-functional stakeholders including legal, tax, and FP&A to provide accounting guidance on new business models and go-to-market strategies within the RL space Support analytical review and detective controls over Reality Labs financial results, including variance analysis and management reporting Contribute to short, mid, and long-term accounting process improvement goals aligned to the growth trajectory of the Reality Labs business Communicate complex accounting conclusions and technical positions clearly to both accounting and non-accounting audiences across the organization Support ad-hoc accounting projects and analysis as required, including global close efficiency improvements, process redesign, and automation initiatives\n\nQualifications:\n6+ years of relevant experience in accounting, including experience with hardware, digital content, or technology product accounting Technical accounting background with working knowledge of US GAAP, including ASC 606 revenue recognition Experience developing and maintaining accounting processes and controls for complex, multi-element product offerings Experience communicating technical accounting positions and analysis to cross-functional stakeholders, distilling complex concepts into clear and actionable conclusions Experience managing time-sensitive close processes while balancing evolving priorities and a broad range of stakeholders Experience with ERP systems such as Oracle and data analysis tools such as SQL, Tableau, or Python to support accounting operations and reporting Certified Public Accountant (CPA) license Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies Demonstrated ability to integrate AI tools to redesign accounting workflows and deliver measurable efficiency or quality improvements Experience with hardware and digital content accounting in a consumer electronics or technology company, including familiarity with subscription, marketplace, or platform revenue models Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews)\n\n$114,000/year to $167,000/year"
-                }
-              ]
-            },
-            {
-              "name": "Lead (5)",
-              "level": "Lead",
-              "level_rank": 5,
-              "size": 1,
-              "research_count": 0,
-              "product_count": 0,
-              "roles": [
-                {
-                  "id": "meta_1234576224920284",
-                  "title": "Finance Operations Lead",
-                  "company": "Meta",
-                  "level": "Lead",
-                  "level_rank": 5,
-                  "stem": "finance operations",
-                  "locations": [
-                    "Dublin, Ireland"
-                  ],
-                  "compensation": "",
-                  "link": "https://www.metacareers.com/jobs/1234576224920284/",
-                  "category": "finance",
-                  "category_emoji": "💰",
-                  "category_label": "Finance",
-                  "is_research": false,
-                  "research_score": 0,
-                  "is_product": false,
-                  "product_score": 0,
-                  "marker": "💰",
-                  "manager_id": "meta_866533876198184",
-                  "description": "The Finance Operations landscape is changing fast — manual processes that defined Order to Cash for decades are being fundamentally reimagined through AI, automation, and intelligent workflows. Reporting to the Head of Finance Operations EMEA, you will combine finance domain expertise with a passion for AI-driven transformation to drive measurable business outcomes for a defined sub-region and product portfolio within EMEA.\n\nThis is a role for someone who is experienced operating in an environment where the playbook is being rewritten in real time.\n\nResponsibilities:\nOwn portfolio KPIs (AR aging, bad debt ratio, collections effectiveness) — with an emphasis on improving them through smarter processes Execute core O2C activities (credit reviews, collections, dispute resolution) while actively working to automate and streamline each one Assess current O2C workflows to identify where AI, automation, and intelligent tooling can eliminate manual effort, reduce cycle times, and improve decision quality across credit decisioning, collections prioritisation, dispute resolution, cash application, and risk monitoring Partner with outsourced teams to drive accountability against SLAs, while identifying which activities can be augmented or replaced through AI and automation Maintain audit-ready documentation and ensure compliance with SOX, internal policies, and regulatory requirements Develop an understanding of the business drivers in your geography — revenue trends,  risks, economic factors, tax and FX exposure — to inform strategy and anticipate challenges before they materialise Serve as a trusted advisor to Sales leadership on Finance implications, bringing data-driven insights and a forward-looking perspective Proactively identify and manage micro and macro risks across the portfolio, using data and predictive analytics to move from reactive to anticipatory risk management Engage proactively with Policy, Legal, Compliance, and Sales Operations to navigate change and ensure AI implementations meet governance standards Partner with Engineering, Data Science, and Product teams to co-develop AI solutions tailored to Finance Operations needs\n\nQualifications:\nExperience in Finance Operations, Order to Cash, or adjacent functions (Revenue Accounting, FP&A, Sales Ops) in a multinational environment Experience effectively leverage AI assistants, prompt engineering, no-code/low-code automation, and intelligent workflows to get better outcomes faster Experience working with data — understanding data quality, interpreting analytics, and using data to drive decisions Experience driving adoption of new tools, processes, or ways of working. You know how to bring people along — through storytelling, demonstration, and persistence Experience building or deploying AI/ML solutions in a finance or operations context Familiarity with prompt engineering, LLM-based tools, or automation platforms Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies"
-                }
-              ]
-            },
-            {
-              "name": "Junior (1)",
-              "level": "Junior",
-              "level_rank": 1,
-              "size": 1,
-              "research_count": 0,
-              "product_count": 0,
-              "roles": [
-                {
-                  "id": "meta_928181756302651",
-                  "title": "Finance Associate, Network Hardware Infrastructure",
-                  "company": "Meta",
-                  "level": "Junior",
-                  "level_rank": 1,
-                  "stem": "finance",
-                  "locations": [
-                    "Menlo Park, CA"
-                  ],
-                  "compensation": "$96,000/year to $142,000/year",
-                  "link": "https://www.metacareers.com/jobs/928181756302651/",
-                  "category": "finance",
-                  "category_emoji": "💰",
-                  "category_label": "Finance",
-                  "is_research": false,
-                  "research_score": 0,
-                  "is_product": false,
-                  "product_score": 0,
-                  "marker": "💰",
-                  "manager_id": "meta_3269411016541258",
-                  "description": "The FP&A team manages Meta’s entire budget of revenue and expenses, overseeing our investments in headcount, operating expenses, and capital investments etc. We focus on using our unique view into ‘the numbers’ to determine trends and opportunities that are developing within Meta and within related industries. As Meta continues to push the boundaries of artificial intelligence, our data centers are at the forefront of this revolution. The FP&A team plays a critical role in fueling this growth by managing the financial planning and analysis for our Network Infrastructure investments. We're not just talking about numbers - we're talking about building the backbone of the future.\n\nIn this high-stakes environment, we need a Finance Associate who can help us navigate the complexities of hyper- scaling our data center infrastructure. As part of our team, you'll be responsible for budgeting, tracking, reporting, and analyzing investments in capital expenditures and operating expenses specifically for our Network Infrastructure organization, with a focus on Data Center Networking. You'll work closely with leaders across multiple functional teams and business partners to drive financially sound outcomes and create long-term sustainable economic value for the company.\n\nAs a key contributor to our growing Finance organization, you'll have the opportunity to make a significant impact on the future of Meta's AI capabilities. If you're ready to take on the challenge of a lifetime and join the frontlines of the AI capacity revolution, we want to hear from you.\n\nResponsibilities:\nCreate sustainable, trusting partnerships across multiple stakeholders with a focus on the full ownership across financial portfolio including Operating Expenses, Depreciation, Research & Development, Inventory, and Capital Expenditures of several billion dollars Owning core monthly processes such as financial close, tracking actuals and variance, developing forecasts, and drafting easily understandable narratives around financial data Manage all FP&A activities for the business including budgeting, forecasting and long-range planning Provide insights to business partners through standardized reporting & dashboards, variance analysis, scenario-based modeling and portfolio planning Develop processes and tools to automate and streamline reporting, and create financial KPIs/metrics that help business partners and finance leaders make smart fiduciary decisions Own ad hoc strategic and operational projects as required, and drive process and system improvements by partnering with cross functional owners Develop and enforce best practices and policies to manage the company’s Networking Infrastructure Understand, impact, and influence business investment decisions through detailed financial analysis\n\nQualifications:\n4+ years of experience in supporting a capital intensive business via finance, business operations, or strategy consulting Bachelor’s degree in finance, Accounting, Business or related field Experience with SQL and Data visualization/dashboarding Experience in applicable accounting concepts and financial planning, including Capex and Opex treatment Excel, PowerPoint, Google Docs/Sheets/Slides Working and problem solving, organizing workload and priorities, and completing tasks on time Interest in networking technology, digital infrastructure, supply chains and data center hyperscaling Demonstrated experience in communication and business partnering Proficient in managing financial close, forecasting, budgeting processes Experience in establishing relationships with cross-functional stakeholders in finance, accounting, legal, engineering and supply chain Hyperion Essbase, Oracle Financials Understanding of digital infrastructure, hardware and supply chain Experience in navigating through ambiguity and unstructured problems Experience with Python and/or similar programming languages Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$96,000/year to $142,000/year"
                 }
               ]
             }
@@ -11181,6 +11253,508 @@
                   "marker": "📊",
                   "manager_id": null,
                   "description": "The Infrastructure Data Center (IDC) organization at Meta is looking for an exceptional and highly experienced technical leader to join our Data Science team as the most senior individual contributor and technical authority for Data Science within IDC. This role reports directly to the Head of IDC Data Science.\n\nYou will define the technical strategy for the organization, drive critical, high-impact data science initiatives across the entire Data Center and Infrastructure domain, and act as a principal storyteller, bridging complex technical concepts with critical business outcomes for leadership and company-wide audiences. This role is crucial for establishing and maintaining how data science is supporting and enabling IDC in the evolving AI landscape.\n\nResponsibilities:\nServe as the foremost technical authority and individual contributor for Data Science within the IDC organization, setting technical direction, standards, and best practices. Lead the development and execution of technical solutions for high-priority IDC initiatives, particularly those leveraging advanced AI, Machine Learning, and foundational Data Science techniques. Represent IDC Data Science and the broader IDC organization in high-stakes technical and engineering discussions with a wide range of cross functional partners, including Infra leadership and other Meta organizations. Act as a technical thought leader, driving innovation in Data Science, Engineering, and analytics specifically tailored to the unique challenges of Data Center and Infrastructure at a hyperscale level. Translate complex technical work into clear, compelling narratives for diverse audiences, demonstrating the business impact of Data Science initiatives to both technical and executive stakeholders. Proactively adapt the team's technical roadmap and capabilities to incorporate the latest developments in AI, both ensuring IDC remains at the cutting edge of AI enabling infrastructure and how AI is being leveraged to significantly increase productivity and effectiveness of the team’s work product. Provide deep technical mentorship and guidance to other Data Scientists and Engineers, raising the overall technical bar of the organization. Collaborate with Engineering and Product teams to drive the full lifecycle of data science solutions, from ideation and experimentation to robust deployment and measurement at scale.\n\nQualifications:\n10+ years of experience in a Data Science, Applied Science, or Analytical Engineering role, with a proven track record of leading large, complex technical programs Exceptional technical background in Data Science, Machine Learning, and statistical methods, demonstrated through industry experience and/or advanced education Extensive experience working in the Data Center, Infrastructure, Cloud, or other relevant hyperscaler domains, demonstrating deep domain knowledge Demonstrated ability to function as a technical storyteller, articulating highly technical concepts and their business implications effectively to technical, business, and executive audiences Proven experience driving technical strategy and thought leadership in a fast-paced, high-growth, and rapidly evolving technical environment, particularly adapting to new AI paradigms Expertise in programming and querying languages (e.g., Python, R, SQL) and experience working with large-scale data systems B.S. or M.S. in a quantitative field such as Computer Science, Engineering, Mathematics, Statistics, Physics, or equivalent practical experience Bachelor's degree in Computer Science, Computer Engineering, relevant technical field, or equivalent practical experience Ph.D. in a quantitative field such as Computer Science, Engineering, Mathematics, Statistics, Physics, or equivalent Prior experience in a Staff or Principal level individual contributor role, serving as the most senior technical voice for a large organization or domain Expertise in capacity planning, reliability engineering, energy management, or supply chain optimization within an Infrastructure or Data Center environment Experience in representing a technical organization externally at conferences, industry working groups, or through publications Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$253,000/year to $314,000/year"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Other",
+      "size": 22,
+      "research_count": 0,
+      "product_count": 0,
+      "category_counts": {
+        "engineering": 22
+      },
+      "dominant_category": "engineering",
+      "is_research_dominant": false,
+      "is_product_dominant": false,
+      "summary": "",
+      "career_path": "",
+      "sub_clusters": [
+        {
+          "name": "General",
+          "size": 22,
+          "research_count": 0,
+          "product_count": 0,
+          "category_counts": {
+            "engineering": 22
+          },
+          "dominant_category": "engineering",
+          "is_research_dominant": false,
+          "is_product_dominant": false,
+          "buckets": [
+            {
+              "name": "IC (2)",
+              "level": "IC",
+              "level_rank": 2,
+              "size": 22,
+              "research_count": 0,
+              "product_count": 0,
+              "roles": [
+                {
+                  "id": "yandex_44920",
+                  "title": "ML Engineer RecSys в Еду",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml engineer recsys в еду",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44920",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_45022",
+                  "title": "ML-инженер в команду аудиоязыковых моделей",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-инженер в команду аудиоязыковых моделей",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/45022",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_44938",
+                  "title": "ML-разработчик в Международный Поиск",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в международный поиск",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44938",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_44630",
+                  "title": "ML-разработчик в Музыку",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в музыку",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44630",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_44997",
+                  "title": "ML-разработчик в Рекламу",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в рекламу",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44997",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_44996",
+                  "title": "ML-разработчик в Рекламу",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в рекламу",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44996",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_44954",
+                  "title": "ML-разработчик в Рекламу",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в рекламу",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44954",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_41276",
+                  "title": "ML-разработчик в Финтех",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в финтех",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/41276",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_38046",
+                  "title": "ML-разработчик в голосовую персонализацию",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в голосовую персонализацию",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/38046",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_43116",
+                  "title": "ML-разработчик в группу обучения с подкреплением (RL)",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в группу обучения с подкреплением (rl)",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/43116",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_25781",
+                  "title": "ML-разработчик в группу претрейна модели планирования движения",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в группу претрейна модели планирования движения",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/25781",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_38464",
+                  "title": "ML-разработчик в группу развития поведенческих нейротехнологий Поиска (Core & Agentic Search)",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в группу развития поведенческих нейротехнологий поиска (core & agentic search)",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/38464",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_44965",
+                  "title": "ML-разработчик в группу релевантности рекламы",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в группу релевантности рекламы",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44965",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_44690",
+                  "title": "ML-разработчик в команду 3D-реконструкции",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в команду 3d-реконструкции",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44690",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_44014",
+                  "title": "ML-разработчик в команду MediaAI Плюс Фантеха",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в команду mediaai плюс фантеха",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44014",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_43875",
+                  "title": "ML-разработчик в команду Медтеха",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в команду медтеха",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/43875",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_36420",
+                  "title": "ML-разработчик в команду распознавания речи (Алиса)",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в команду распознавания речи (алиса)",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/36420",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_17408",
+                  "title": "ML-разработчик в рекламную платформу Маркета",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "ml-разработчик в рекламную платформу маркета",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/17408",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "goog_142249195464467142",
+                  "title": "Machine Learning Engineer Xls Compiler",
+                  "company": "Google",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "machine learning engineer xls compiler",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://www.google.com/about/careers/applications/jobs/results/142249195464467142-machine-learning-engineer-xls-compiler",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 1,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": "Machine Learning Engineer, XLS, Compiler share corporate_fare Google place Chicago, IL, USA bar_chart Mid Apply Minimum qualifications: Bachelor’s degree or equivalent practical experience. 5 years of experience with software development in C++. 3 years of experience testing, maintaining, or launching software products, and 1 year of experience with software design and architecture. 3 years of experience with ML infrastructure (e.g., model deployment, model evaluation, optimization, data processing, debugging). Experience in compiler construction. Preferred qualifications: Master's degree or PhD in Computer Science or a related technical field. 5 years of experience with data structures and algorithms. 1 year of experience in a technical leadership role. Experience with SystemVerilog. About the job Google's software engineers develop the next-generation technologies that change how billions of users connect, explore, and interact with information and one another. Our products need to handle information at massive scale, and extend well beyond web search. We're looking for engineers who bring fresh ideas from all areas, including information retrieval, distributed computing, large-scale system design, networking and data storage, security, artificial intelligence, natural language processing, UI design and mobile; the list goes on and is growing every day. As a software engineer, you will work on a specific project critical to Google’s needs with opportunities to switch teams and projects as you and our fast-paced business grow and evolve. We need our engineers to be versatile, display leadership qualities and be enthusiastic to take on new problems across the full-stack as we continue to push technology forward. Accelerated Language for Synthesis is a mid-level synthesis tool bringing velocity and simplicity to hardware design. Accelerated Language for Synthesis has already been used in multiple chip projects inside of Google and continues to grow in customers and capabilities.The Core team builds the technical foundation behind Google’s flagship products. We are owners and advocates for the underlying design elements, developer platforms, product components, and infrastructure at Google. These are the essential building blocks for excellent, safe, and coherent experiences for our users and drive the pace of innovation for every developer. We look across Google’s products to build central solutions, break down technical barriers and strengthen existing systems. As the Core team, we have a mandate and a unique opportunity to impact important technical decisions across the company. The US base salary range for this full-time position is $174,000-$252,000 + bonus + equity + benefits. Our salary ranges are determined by role, level, and location. Within the range, individual pay is determined by work location and additional factors, including job-related skills, experience, and relevant education or training. Your recruiter can share more about the specific salary range for your preferred location during the hiring process. Please note that the compensation details listed in US role postings reflect the base salary only, and do not include bonus, equity, or benefits. Learn more about benefits at Google. Responsibilities Triage product or system issues and debug, track, and resolve them by analyzing the sources of issues and the impact on hardware, network, or service operations and quality. Design and implement solutions in one or more specialized machine learning (ML) areas, leverage ML infrastructure, and demonstrate expertise in a chosen field. Deliver better hardware and higher velocity for hardware development to Google semiconductor teams. Produce improvements to the Accelerated Language for synthesis compiler. Work in Google infrastructure (including Vizier, Flume, and others) to use artificial intelligence and machine learning to better search the space of potential hardware. Information collected and processed as part of your Google Careers profile, and any job applications you choose to submit is subject to Google's Applicant and Candidate Privacy Policy. Google is proud to be an equal opportunity and affirmative action employer. We are committed to building a workforce that is representative of the users we serve, creating a culture of belonging, and providing an equal employment opportunity regardless of race, creed, color, religion, gender, sexual orientation, gender identity/expression, national origin, disability, age, genetic information, veteran status, marital status, pregnancy or related condition (including breastfeeding), expecting or parents-to-be, criminal histories consistent with legal requirements, or any other basis protected by law. See also Google's EEO Policy, Know your rights: workplace discrimination is illegal, Belonging at Google, and How we hire. If you have a need that requires accommodation, please let us know by completing our Accommodations for Applicants form. Google is a"
+                },
+                {
+                  "id": "yandex_1697",
+                  "title": "Yandex Research ML Residency",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "yandex research ml residency",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/1697",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_44693",
+                  "title": "Разработчик качества поисковой платформы Nova (Core & Agentic Search)",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "разработчик качества поисковой платформы nova (core & agentic search)",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44693",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
+                },
+                {
+                  "id": "yandex_44608",
+                  "title": "Старший ML-разработчик в команду исследований алгоритмов нового поколения (CV)",
+                  "company": "Яндекс",
+                  "level": "IC",
+                  "level_rank": 2,
+                  "stem": "старший ml-разработчик в команду исследований алгоритмов нового поколения (cv)",
+                  "locations": [],
+                  "compensation": "",
+                  "link": "https://yandex.ru/jobs/vacancies/44608",
+                  "category": "engineering",
+                  "category_emoji": "⚙️",
+                  "category_label": "Engineering",
+                  "is_research": false,
+                  "research_score": 0,
+                  "is_product": false,
+                  "product_score": 0,
+                  "marker": "⚙️",
+                  "manager_id": null,
+                  "description": ""
                 }
               ]
             }
@@ -17357,6 +17931,13 @@
   ],
   "cross_team_bridges": [
     {
+      "title": "Software Engineer (Technical Leadership)",
+      "team_pairs": [
+        "AI Infrastructure",
+        "Software Engineering"
+      ]
+    },
+    {
       "title": "Product Manager",
       "team_pairs": [
         "AI Infrastructure",
@@ -17529,6 +18110,15 @@
     }
   ],
   "peer_groups": {
+    "ml-разработчик в рекламу": [
+      "yandex_44997",
+      "yandex_44996",
+      "yandex_44954"
+    ],
+    "software engineer (technical leadership)": [
+      "meta_978903851762450",
+      "meta_1187958502273564"
+    ],
     "software engineer": [
       "meta_1079158160340219",
       "meta_1368969190886166",

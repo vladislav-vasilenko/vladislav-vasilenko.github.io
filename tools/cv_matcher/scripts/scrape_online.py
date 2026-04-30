@@ -13,6 +13,7 @@ Design:
 Behaviour on error: individual scraper failures are logged but don't fail the job.
 """
 
+import argparse
 import json
 import os
 import sys
@@ -54,13 +55,13 @@ def _source_plan():
 
     plan = [
         ("yandex",
-         lambda: YandexScraper(limit=40, stealth=True),
+         lambda limit=0: YandexScraper(limit=limit or 40, stealth=True),
          YANDEX_URLS),
         ("google",
-         lambda: GoogleCareersScraper(limit=20, stealth=True, storage_state_path=google_state),
+         lambda limit=0: GoogleCareersScraper(limit=limit or 20, stealth=True, storage_state_path=google_state),
          QUERIES),
         ("meta",
-         lambda: MetaCareersScraper(limit=0, stealth=True, storage_state_path=meta_state),
+         lambda limit=0: MetaCareersScraper(limit=limit or 0, stealth=True, storage_state_path=meta_state),
          [""]),
     ]
 
@@ -68,7 +69,7 @@ def _source_plan():
     if not os.environ.get("GITHUB_ACTIONS"):
         plan.append((
             "sber",
-            lambda: SberScraper(limit=25, stealth=True),
+            lambda limit=0: SberScraper(limit=limit or 25, stealth=True),
             QUERIES
         ))
 
@@ -98,17 +99,38 @@ def _load_existing() -> dict:
     return kept
 
 
+def _save(by_id: dict, stats: dict, now_iso: str):
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "last_updated": now_iso,
+        "total": len(by_id),
+        "stats_last_run": stats,
+        "vacancies": sorted(by_id.values(), key=lambda v: v.get("first_seen", ""), reverse=True),
+    }
+    OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--scrapers", help="Comma-separated list of scrapers to run (e.g. yandex,google)")
+    parser.add_argument("--limit", type=int, help="Override default vacancy limit per scraper")
+    args = parser.parse_args()
+
     print(f"🚀 Online scrape @ {datetime.now(timezone.utc).isoformat()}")
     by_id = _load_existing()
     stats: dict[str, dict[str, int]] = {}
     now_iso = datetime.now(timezone.utc).isoformat()
 
+    allowed = set(args.scrapers.split(",")) if args.scrapers else None
+
     for key, factory, queries in _source_plan():
+        if allowed and key not in allowed:
+            continue
+            
         stats[key] = {"new": 0, "errors": 0}
         print(f"\n── {key} ──")
         try:
-            scraper = factory()
+            scraper = factory(limit=args.limit or 0)
         except Exception as e:
             print(f"  ✗ {key}: init failed — {e}")
             stats[key]["errors"] += 1
@@ -126,19 +148,13 @@ def main() -> int:
                         stats[key]["new"] += 1
                     else:
                         by_id[jid]["last_seen"] = now_iso
+                # Save after EACH query for maximum safety
+                _save(by_id, stats, now_iso)
             except Exception as e:
                 print(f"  ✗ {key} on '{q}': {e}")
                 traceback.print_exc(limit=2, file=sys.stderr)
                 stats[key]["errors"] += 1
 
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "last_updated": now_iso,
-        "total": len(by_id),
-        "stats_last_run": stats,
-        "vacancies": sorted(by_id.values(), key=lambda v: v.get("first_seen", ""), reverse=True),
-    }
-    OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     total_new = sum(s["new"] for s in stats.values())
     print(f"\n✅ Done. {total_new} new, {len(by_id)} total → {OUTPUT}")
     for k, s in stats.items():
