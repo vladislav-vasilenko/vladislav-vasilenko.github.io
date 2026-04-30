@@ -82,12 +82,28 @@ jobs:
         # don't fail the workflow on per-source errors; script returns 0
         continue-on-error: false
 
+      - name: Index Meta vacancies to ChromaDB
+        working-directory: tools/cv_matcher
+        env:
+          CV_API_URL: ${{ secrets.CV_API_URL }}
+          API_SECRET: ${{ secrets.API_SECRET }}
+        # We use --reset because it's cheap (~$0.007/day) and prevents stale/deleted 
+        # vacancies from piling up in the local DB.
+        run: uv run python scripts/index_meta_to_chroma.py --reset
+
+      - name: Build Cluster Map
+        working-directory: tools/cv_matcher
+        env:
+          CV_API_URL: ${{ secrets.CV_API_URL }}
+          API_SECRET: ${{ secrets.API_SECRET }}
+        run: uv run python scripts/build_cluster_map.py
+
       - name: Commit results
         run: |
           set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/online_scraped.json
+          git add public/online_scraped.json public/cluster_map.json
           if git diff --staged --quiet; then
             echo "No changes to commit."
             exit 0

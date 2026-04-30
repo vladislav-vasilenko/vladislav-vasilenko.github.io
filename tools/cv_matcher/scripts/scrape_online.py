@@ -4,8 +4,9 @@
 Scope (iter 1): Yandex, Sber, Google, Meta — with stealth + optional storage_state.
 
 Design:
-  - No ChromaDB / embeddings in CI (those run locally via cv_matcher.py).
-  - Output: public/online_scraped.json — append-only over runs, deduped by id.
+  - Outputs: public/online_scraped.json — append-only over runs, deduped by id.
+  - Embd/Clusters: GitHub Actions now runs index_meta_to_chroma.py + build_cluster_map.py 
+    after this script, utilizing the cv-api proxy.
   - Each scraper runs with stealth=True and respects STORAGE_STATE env vars.
 
 Behaviour on error: individual scraper failures are logged but don't fail the job.
