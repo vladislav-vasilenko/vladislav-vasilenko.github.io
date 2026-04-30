@@ -223,7 +223,7 @@ def main():
     # Каждый вызов фабрики должен возвращать свежий scraper (каждый держит свою сессию Playwright).
     source_plan = {
         # RU
-        "yandex":      (lambda: scr.YandexScraper(limit=200), [yandex_listing_url]),
+        "yandex":      (lambda: scr.YandexScraper(limit=500), [yandex_listing_url]),
         # HH temporarily disabled — too many transient timeouts under Actions network.
         # Re-enable once the architecture stabilises (Yandex/Sber/Meta + cluster-map).
         # Retry+jitter fix already applied in src/scrapers/ru.py::HHScraper.

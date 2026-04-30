@@ -41,7 +41,9 @@ def main() -> int:
     parser.add_argument("--provider", choices=("cv-api", "openai", "ollama"),
                         default="cv-api")
     parser.add_argument("--reset", action="store_true",
-                        help="Delete only Meta-prefixed ids before indexing")
+                        help="Drop the collection before indexing (rebuild from scratch)")
+    parser.add_argument("--prefixes", default="meta_,yandex_,goog_",
+                        help="Comma-separated id prefixes to include (default: all supported)")
     args = parser.parse_args()
 
     os.environ["EMBEDDINGS_PROVIDER"] = args.provider
@@ -61,11 +63,16 @@ def main() -> int:
         print(f"❌ {in_path} not found — run scripts/scrape_online.py first.")
         return 1
     data = json.loads(in_path.read_text(encoding="utf-8"))
-    meta = [v for v in data.get("vacancies", []) if v.get("id", "").startswith("meta_")]
-    if not meta:
-        print("❌ No Meta vacancies in input.")
+    prefixes = tuple(p.strip() for p in args.prefixes.split(",") if p.strip())
+    selected = [v for v in data.get("vacancies", []) if v.get("id", "").startswith(prefixes)]
+    if not selected:
+        print(f"❌ No vacancies with prefixes {prefixes} in input.")
         return 1
-    print(f"📦 Loaded {len(meta)} Meta vacancies")
+    by_company: dict[str, int] = {}
+    for v in selected:
+        co = v.get("company") or "Unknown"
+        by_company[co] = by_company.get(co, 0) + 1
+    print(f"📦 Loaded {len(selected)} vacancies: {by_company}")
 
     db = RAGDatabase(db_path=args.db)
 
@@ -83,7 +90,7 @@ def main() -> int:
             metadata={"hnsw:space": "cosine"},
         )
 
-    db.add_vacancies(meta)
+    db.add_vacancies(selected)
     print(f"📊 Collection size: {db.collection.count()} total documents")
     return 0
 

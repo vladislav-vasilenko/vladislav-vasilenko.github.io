@@ -41,11 +41,91 @@ def _goto_with_retry(page: Page, url: str, *, timeout: int = 60000,
 # ---------------------------------------------------------------------------
 # Yandex
 # ---------------------------------------------------------------------------
+# Yandex API returns group/service names with NBSP and minor variants (e.g.
+# "Плюс Фантех" vs "Плюс и Фантех") — normalise to merge.
+_YANDEX_NAME_ALIASES = {
+    "Плюс Фантех": "Плюс и Фантех",
+}
+
+
+def _strip_html(s: str) -> str:
+    """Remove inline HTML tags from a Yandex description block."""
+    if not s:
+        return s
+    s = re.sub(r"<br\s*/?>", "\n", s, flags=re.IGNORECASE)
+    s = re.sub(r"</?(?:p|div|li|ul|ol)[^>]*>", "\n", s, flags=re.IGNORECASE)
+    s = re.sub(r"<[^>]+>", "", s)
+    return re.sub(r"[ \t]+", " ", s).strip()
+
+
+def fetch_yandex_detail(page, slug: str) -> Dict[str, str]:
+    """Pull full description blocks from the Yandex detail endpoint.
+
+    Returns a dict with raw section strings (HTML stripped). Caller composes
+    the final `description` text. Returns empty dict on failure.
+    """
+    if not slug:
+        return {}
+    url = f"https://yandex.ru/jobs/api/publications/{slug}"
+    try:
+        resp = page.request.get(url, timeout=20000)
+        if not resp.ok:
+            return {}
+        d = resp.json()
+    except Exception:
+        return {}
+    return {
+        "description": _strip_html(d.get("description") or ""),
+        "duties": _strip_html(d.get("duties") or ""),
+        "key_qualifications": _strip_html(d.get("key_qualifications") or ""),
+        "additional_requirements": _strip_html(d.get("additional_requirements") or ""),
+        "conditions": _strip_html(d.get("conditions") or ""),
+        "our_team": _strip_html(d.get("our_team") or ""),
+        "tech_stack": _strip_html(d.get("tech_stack") or ""),
+    }
+
+
+def compose_yandex_description(short_summary: str, profession: str, detail: Dict[str, str]) -> str:
+    """Combine listing+detail data into one searchable description block."""
+    parts: List[str] = []
+    if short_summary:
+        parts.append(short_summary)
+    if detail.get("description") and detail["description"] != short_summary:
+        parts.append(detail["description"])
+    if detail.get("our_team"):
+        parts.append(f"Наша команда:\n{detail['our_team']}")
+    if detail.get("duties"):
+        parts.append(f"Обязанности:\n{detail['duties']}")
+    if detail.get("key_qualifications"):
+        parts.append(f"Требования:\n{detail['key_qualifications']}")
+    if detail.get("additional_requirements"):
+        parts.append(f"Будет плюсом:\n{detail['additional_requirements']}")
+    if detail.get("conditions"):
+        parts.append(f"Условия:\n{detail['conditions']}")
+    if detail.get("tech_stack"):
+        parts.append(f"Стек: {detail['tech_stack']}")
+    if profession:
+        parts.append(f"Профессия: {profession}")
+    return "\n\n".join(parts)
+
+
+def _normalize_yandex_name(s: str) -> str:
+    if not s:
+        return s
+    # Yandex API occasionally returns literal `\uXXXX` escape sequences
+    # (6 ASCII chars) instead of the real codepoint — decode those first.
+    if "\\u" in s:
+        s = re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), s)
+    cleaned = re.sub(r"\s+", " ", s).strip()
+    return _YANDEX_NAME_ALIASES.get(cleaned, cleaned)
+
+
 class YandexScraper(BaseScraper):
     company_name = "Яндекс"
     id_prefix = "yandex"
 
-    def __init__(self, limit: int = 50, headless: bool = True, **kwargs):
+    def __init__(self, limit: int = 50, headless: bool = True, fetch_details: bool = True, **kwargs):
+        self.fetch_details = fetch_details
         super().__init__(limit=limit, headless=headless, **kwargs)
 
     def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
@@ -111,36 +191,49 @@ class YandexScraper(BaseScraper):
                     continue
 
                 title = item.get("title") or "Yandex Vacancy"
-                slug = item.get("slug") or vid
+                slug = item.get("publication_slug_url") or item.get("slug") or vid
                 link = f"https://yandex.ru/jobs/vacancies/{slug}"
 
-                desc_parts = []
-                if item.get("summary"):
-                    desc_parts.append(item["summary"])
-                for section in item.get("sections", []):
-                    s_title = section.get("title")
-                    s_text = section.get("text")
-                    if s_title and s_text:
-                        desc_parts.append(f"{s_title}:\n{s_text}")
-                full_description = "\n\n".join(desc_parts)
+                # Domain hierarchy: group.name → team, service.name → sub_team.
+                # When group is null (e.g. "Общие сервисы Яндекса"), service stands alone.
+                ps = item.get("public_service") or {}
+                service_name = _normalize_yandex_name(ps.get("name") or "")
+                group = ps.get("group") or {}
+                group_name = _normalize_yandex_name(group.get("name") or "")
+                team_name = group_name or service_name or "Яндекс"
+                sub_team_name = service_name or group_name or "General"
 
-                teams = [t.get("title") for t in item.get("teams", []) if t.get("title")]
-                locations = [l.get("title") for l in item.get("cities", []) if l.get("title")]
+                # Profession sub-categorisation (used as a fallback sub-team grouping
+                # and as a soft signal for the role classifier downstream).
+                vac = item.get("vacancy") or {}
+                profession = (vac.get("profession") or {}).get("name") or ""
+
+                short = item.get("short_summary") or ""
+                # Fetch full description sections from the detail endpoint.
+                # The listing only carries `short_summary`; embedding quality
+                # against an English resume is meaningless without this.
+                slug = item.get("publication_slug_url") or ""
+                detail = fetch_yandex_detail(page, slug) if (slug and self.fetch_details) else {}
+                full_description = compose_yandex_description(short, profession, detail)
+
+                locations = [c.get("title") or c.get("name") or "" for c in vac.get("cities", []) if c]
+                locations = [l for l in locations if l]
 
                 vacancies.append({
                     "id": jid,
                     "title": title,
                     "company": self.company_name,
-                    "pub_date": item.get("publication_date") or "Recently",
+                    "pub_date": item.get("modified") or item.get("published_at") or "Recently",
                     "description": full_description[:5000],
                     "link": link,
-                    "teams": teams,
+                    "teams": [team_name] if team_name else [],
+                    "sub_teams": [sub_team_name] if sub_team_name else [],
                     "locations": locations,
-                    "compensation": item.get("salary_printable") or "",
+                    "compensation": "",
                     "origin_query": query,
                 })
                 self._emit("vacancy", id=jid, title=title, company=self.company_name, link=link)
-                print(f"  ✓ {title}")
+                print(f"  ✓ [{team_name} → {sub_team_name}] {title}")
 
             # The `next` URL points to the internal femida.yandex-team.ru host —
             # rewrite it to the public endpoint, keeping only the cursor.

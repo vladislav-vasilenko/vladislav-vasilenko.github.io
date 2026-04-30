@@ -127,6 +127,10 @@
   .link.dim { opacity: .04; }
   .node--cluster text { font-weight: 600; font-size: 12px; fill: var(--accent); }
   .node--cluster.focus circle { stroke: var(--accent); stroke-width: 2.5; }
+  /* Roles seen in the last 7 days — bright halo + green glow */
+  .node--leaf.fresh circle { stroke: #2ecc71; stroke-width: 2.2; filter: drop-shadow(0 0 3px rgba(46, 204, 113, 0.7)); }
+  .node--leaf.fresh text { fill: #b6f0c8; }
+  #panel .pill.fresh-pill { background: rgba(46,204,113,0.15); border-color: rgba(46,204,113,0.5); color: #2ecc71; font-weight: 600; }
   #empty { padding: 30px; color: var(--muted); text-align: center; }
 </style>
 </head>
@@ -163,15 +167,34 @@
   const catEmoji = id => (cats.find(c => c.id === id) || {}).emoji || "❓";
   const catLabel = id => (cats.find(c => c.id === id) || {}).label || id;
 
+  // Fresh = role first scraped within the last 7 days. Used for the green
+  // halo in the tree and the "🆕" pill in the detail panel.
+  const FRESH_DAYS = 7;
+  const FRESH_MS = FRESH_DAYS * 24 * 3600 * 1000;
+  function freshAge(role) {
+    if (!role || !role.first_seen) return null;
+    const ts = Date.parse(role.first_seen);
+    if (isNaN(ts)) return null;
+    const ageMs = Date.now() - ts;
+    return ageMs >= 0 && ageMs <= FRESH_MS ? Math.floor(ageMs / (24 * 3600 * 1000)) : null;
+  }
+  const isFresh = role => freshAge(role) !== null;
+
   // ── Title ─────────────────────────────────────────────────────────
   document.getElementById("mainTitle").textContent =
     (data.company || "Vacancies") + " · Vacancy Cluster Tree";
 
   // ── Stats line ────────────────────────────────────────────────────
   const s = data.stats || {};
+  // Count fresh roles across the whole tree once for the header badge.
+  let freshTotal = 0;
+  data.clusters.forEach(c => c.sub_clusters.forEach(sc => sc.buckets.forEach(b => b.roles.forEach(r => {
+    if (isFresh(r)) freshTotal++;
+  }))));
   document.getElementById("stats").innerHTML =
     `<b>${s.total_jobs}</b> jobs · <b>${s.teams}</b> teams · `
     + `<b>${s.cross_team_bridges}</b> bridges · `
+    + (freshTotal ? `<span style="color:#2ecc71;font-weight:600">🆕 ${freshTotal} new (≤${FRESH_DAYS}d)</span> · ` : "")
     + `${new Date(data.generated_at).toLocaleDateString()}`;
 
   // ── Category chips (multi-toggle filter) ──────────────────────────
@@ -421,6 +444,7 @@
         const cls = ["node"];
         cls.push(d.children ? "node--internal" : "node--leaf");
         if (d.data.kind === "cluster") cls.push("node--cluster");
+        if (d.data.kind === "role" && isFresh(d.data._data)) cls.push("fresh");
         return cls.join(" ");
       })
       .attr("data-team", d => d.data.kind === "cluster" ? d.data.name : null)

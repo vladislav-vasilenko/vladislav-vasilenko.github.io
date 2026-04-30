@@ -202,17 +202,20 @@ def main() -> int:
 
     from src.rag_db import RAGDatabase  # noqa: E402
 
+    SUPPORTED_PREFIXES = ("meta_", "yandex_", "goog_")
     db = RAGDatabase(db_path=args.db)
     data = db.collection.get(include=["embeddings", "metadatas", "documents"])
-    ids = [i for i in data["ids"] if i.startswith("meta_")]
-    if not ids:
-        print("❌ No Meta vacancies in ChromaDB. Run scripts/index_meta_to_chroma.py first.")
+    keep = [i for i, vid in enumerate(data["ids"]) if vid.startswith(SUPPORTED_PREFIXES)]
+    if not keep:
+        print(f"❌ No supported vacancies in ChromaDB. Run scripts/index_meta_to_chroma.py first.")
         return 1
-    # Filter to Meta-only rows (collection may also contain other companies)
-    keep = [i for i, vid in enumerate(data["ids"]) if vid.startswith("meta_")]
     vacancy_ids = [data["ids"][i] for i in keep]
     vacancy_vecs = np.array([data["embeddings"][i] for i in keep], dtype=np.float32)
-    print(f"📦 Loaded {len(vacancy_ids)} Meta vacancy embeddings (dim={vacancy_vecs.shape[1]})")
+    vacancy_companies = [(data["metadatas"][i] or {}).get("company") or "Unknown" for i in keep]
+    company_counts: Dict[str, int] = {}
+    for c in vacancy_companies:
+        company_counts[c] = company_counts.get(c, 0) + 1
+    print(f"📦 Loaded {len(vacancy_ids)} vacancy embeddings (dim={vacancy_vecs.shape[1]}) — {company_counts}")
 
     # ── Resume embedding ──────────────────────────────────────────────
     resume_text = load_resume_text(CONTENT_EN)
@@ -262,6 +265,7 @@ def main() -> int:
             "x": float(vac_xy[i, 0]),
             "y": float(vac_xy[i, 1]),
             "title": info.get("title", vid),
+            "company": info.get("company") or vacancy_companies[i],
             "team": info.get("team", ""),
             "sub_team": info.get("sub_team", ""),
             "category": info.get("category", "engineering"),
@@ -274,6 +278,7 @@ def main() -> int:
             "is_product": bool(info.get("is_product", False)),
             "cluster": int(cluster_labels[i]),
             "distance_to_cv": float(cos_dist[i]),
+            "first_seen": info.get("first_seen", ""),
         }
         points.append(pt)
         cluster_members.setdefault(int(cluster_labels[i]), []).append(pt)
@@ -300,6 +305,7 @@ def main() -> int:
         {
             "id": vacancy_ids[int(i)],
             "title": points[int(i)]["title"],
+            "company": points[int(i)]["company"],
             "team": points[int(i)]["team"],
             "sub_team": points[int(i)]["sub_team"],
             "category": points[int(i)]["category"],
@@ -314,7 +320,9 @@ def main() -> int:
     ]
 
     payload = {
-        "company": "Meta",
+        "company": " + ".join(sorted(set(vacancy_companies))) if vacancy_companies else "Unknown",
+        "companies": sorted(set(vacancy_companies)),
+        "company_counts": company_counts,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "params": {
             "umap_n_neighbors": args.n_neighbors,

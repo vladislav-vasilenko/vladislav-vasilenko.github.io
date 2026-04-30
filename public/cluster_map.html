@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Meta — Vacancy Cluster Map</title>
+<title>Vacancy Cluster Map</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <style>
   :root {
@@ -128,13 +128,14 @@
 </head>
 <body>
 <header>
-  <h1>Meta · Cluster Map</h1>
+  <h1 id="mainTitle">Cluster Map</h1>
   <span class="nav">
     <a href="vacancy_tree.html">🌲 Tree</a>
     <a href="cluster_map.html" class="active">🗺 Cluster Map</a>
   </span>
   <span class="stats" id="stats">…</span>
   <span id="catChips"></span>
+  <span id="companyChips" style="margin-left: 12px; border-left: 1px solid var(--border); padding-left: 12px;"></span>
   <label><input type="checkbox" id="showLabels" checked /> Cluster labels</label>
   <label><input type="checkbox" id="showHulls" checked /> Hulls</label>
   <input type="search" id="search" placeholder="search title…" />
@@ -160,6 +161,18 @@
   const catEmoji = id => (cats.find(c => c.id === id) || {}).emoji || "❓";
   const catLabel = id => (cats.find(c => c.id === id) || {}).label || id;
 
+  document.getElementById("mainTitle").textContent =
+    (data.company || "Vacancies") + " · Cluster Map";
+
+  function linkLabel(url) {
+    if (!url) return "Open →";
+    if (url.includes("metacareers")) return "Open on metacareers.com →";
+    if (url.includes("yandex")) return "Open on yandex.ru/jobs →";
+    if (url.includes("careers.google")) return "Open on careers.google.com →";
+    try { return "Open on " + new URL(url).hostname + " →"; }
+    catch { return "Open →"; }
+  }
+
   // ── Stats line ────────────────────────────────────────────────────
   const s = data.stats || {};
   document.getElementById("stats").innerHTML =
@@ -184,6 +197,24 @@
       applyFilters();
     });
     chipsEl.appendChild(chip);
+  });
+
+  // ── Company chips (multi-toggle filter) ───────────────────────────
+  const companies = data.companies || [];
+  const companyCounts = {};
+  data.vacancies.forEach(v => { companyCounts[v.company || "Unknown"] = (companyCounts[v.company || "Unknown"] || 0) + 1; });
+  const enabledCompanies = new Set(companies);
+  const compChipsEl = document.getElementById("companyChips");
+  companies.forEach(name => {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.innerHTML = `${escapeHtml(name)} <span style="color:var(--muted);">${companyCounts[name] || 0}</span>`;
+    chip.addEventListener("click", () => {
+      if (enabledCompanies.has(name)) { enabledCompanies.delete(name); chip.classList.add("off"); }
+      else { enabledCompanies.add(name); chip.classList.remove("off"); }
+      applyFilters();
+    });
+    compChipsEl.appendChild(chip);
   });
 
   // ── Compute scale ─────────────────────────────────────────────────
@@ -249,7 +280,7 @@
     })
     .style("fill", v => catColor(v.category))
     .on("mouseenter", (e, v) => {
-      tt.innerHTML = `<b>${escapeHtml(v.title)}</b><div class="m">${v.team || "?"} · ${v.level} · ${v.category_emoji} ${catLabel(v.category)}</div>${v.compensation ? `<div class="m">${escapeHtml(v.compensation)}</div>` : ""}<div class="m">cv-distance: ${v.distance_to_cv.toFixed(3)}</div>`;
+      tt.innerHTML = `<b>${escapeHtml(v.title)}</b><div class="m">${escapeHtml(v.company || "?")} · ${v.team || "?"} · ${v.level} · ${v.category_emoji} ${catLabel(v.category)}</div>${v.compensation ? `<div class="m">${escapeHtml(v.compensation)}</div>` : ""}<div class="m">cv-distance: ${v.distance_to_cv.toFixed(3)}</div>`;
       tt.style.opacity = 1;
     })
     .on("mousemove", (e) => {
@@ -299,7 +330,7 @@
         <div class="match" data-id="${m.id}">
           <span class="sim">${(m.similarity * 100).toFixed(1)}%</span>
           <div class="t">${i + 1}. ${m.category_emoji} ${escapeHtml(m.title)}</div>
-          <div class="m">${escapeHtml(m.team)} · ${m.level} ${m.compensation ? "· " + escapeHtml(m.compensation) : ""}</div>
+          <div class="m">${escapeHtml(m.company || "?")} · ${escapeHtml(m.team)} · ${m.level} ${m.compensation ? "· " + escapeHtml(m.compensation) : ""}</div>
         </div>
       `).join("")}
     `;
@@ -326,9 +357,10 @@
         ${v.is_research ? '<span class="pill" style="color:var(--c-research);border-color:var(--c-research)">PhD/papers</span>' : ""}
         ${v.is_product ? '<span class="pill" style="color:var(--c-product);border-color:var(--c-product)">PM-track</span>' : ""}
       </div>
+      ${v.company ? `<div class="row"><span class="pill" style="border-color:var(--accent);color:var(--accent)">${escapeHtml(v.company)}</span></div>` : ""}
       ${v.compensation ? `<div class="row"><b>Compensation:</b> ${escapeHtml(v.compensation)}</div>` : ""}
       <div class="row"><b>Distance to your resume:</b> ${v.distance_to_cv.toFixed(3)} (cosine)</div>
-      <div class="row"><a href="${v.link}" target="_blank" rel="noopener">Open on metacareers.com →</a></div>
+      <div class="row"><a href="${v.link}" target="_blank" rel="noopener">${linkLabel(v.link)}</a></div>
       <h3>Back</h3>
       <div class="row"><a href="#" id="back">← top matches</a></div>
     `;
@@ -350,7 +382,9 @@
   function applyFilters() {
     const q = search.value.trim().toLowerCase();
     vacSel.classed("dim", v =>
-      !enabledCats.has(v.category) || (q && !v.title.toLowerCase().includes(q))
+      !enabledCats.has(v.category)
+      || (companies.length && !enabledCompanies.has(v.company || "Unknown"))
+      || (q && !v.title.toLowerCase().includes(q))
     );
     labelLayer.style("display", showLabels.checked ? null : "none");
     hullLayer.style("display", showHulls.checked ? null : "none");
