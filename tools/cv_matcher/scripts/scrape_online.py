@@ -55,7 +55,7 @@ def _source_plan():
 
     plan = [
         ("yandex",
-         lambda limit=0: YandexScraper(limit=limit or 40, stealth=True),
+         lambda limit=0: YandexScraper(limit=limit or 500, stealth=True),
          YANDEX_URLS),
         ("google",
          lambda limit=0: GoogleCareersScraper(limit=limit or 20, stealth=True, storage_state_path=google_state),

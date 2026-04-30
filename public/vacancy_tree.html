@@ -326,7 +326,7 @@
     const q = (document.getElementById("search").value || "").trim().toLowerCase();
     const passesRole = r => {
       if (!enabledCats.has(r.category)) return false;
-      if (enabledCompanies && !enabledCompanies.has(r.company)) return false;
+      if (companies.length && !enabledCompanies.has(r.company)) return false;
       if (q && !r.title.toLowerCase().includes(q)) return false;
       return true;
     };

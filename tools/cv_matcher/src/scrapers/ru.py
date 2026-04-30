@@ -52,85 +52,112 @@ class YandexScraper(BaseScraper):
         # Yandex Jobs Internal API endpoint
         # Example: https://yandex.ru/jobs/api/publications?profession=ml-developer&text=Python
         base_api_url = "https://yandex.ru/jobs/api/publications"
-        
+
         # Determine filters from query
         if query.startswith("http"):
             parsed = urlparse(query)
             params = parse_qs(parsed.query)
-            # Remove pagination params to get all
             params.pop("page", None)
+            params.pop("cursor", None)
             api_params = {k: v for k, v in params.items()}
         else:
             api_params = {"text": [query]}
 
-        api_params["page_size"] = [str(max(self.limit, 50))]
-        
-        query_str = "&".join([f"{k}={quote(v[0])}" for k, v in api_params.items()])
-        full_api_url = f"{base_api_url}?{query_str}"
-        
-        print(f"  Яндекс: запрос к API {full_api_url}")
-        
-        try:
-            time.sleep(1.0)
-            response = page.request.get(full_api_url, timeout=30000)
-            if not response.ok:
-                raise Exception(f"HTTP {response.status}")
-            data = response.json()
-        except Exception as e:
-            print(f"  ⚠️ Яндекс API error: {e}. Falling back to old-school scrape.")
-            return self._scrape_fallback(page, query, existing_ids)
+        # Server caps page_size at ~20 regardless of request. Pagination via cursor is mandatory.
+        api_params["page_size"] = ["50"]
 
-        items = data.get("results", [])
-        print(f"  Яндекс API: получено {len(items)} вакансий")
-        
-        vacancies = []
-        for item in items:
-            if len(vacancies) >= self.limit:
+        # Encode each value (multi-value keys like professions=a&professions=b are preserved).
+        def _encode(params):
+            parts = []
+            for k, vs in params.items():
+                for v in vs:
+                    parts.append(f"{k}={quote(str(v))}")
+            return "&".join(parts)
+
+        full_api_url = f"{base_api_url}?{_encode(api_params)}"
+        print(f"  Яндекс: запрос к API {full_api_url}")
+
+        vacancies: List[Dict[str, Any]] = []
+        next_url = full_api_url
+        page_idx = 0
+        max_pages = 50  # safety bound — at ~20/page covers up to 1000 vacancies
+
+        while next_url and len(vacancies) < self.limit and page_idx < max_pages:
+            try:
+                time.sleep(0.6)
+                response = page.request.get(next_url, timeout=30000)
+                if not response.ok:
+                    raise Exception(f"HTTP {response.status}")
+                data = response.json()
+            except Exception as e:
+                if page_idx == 0:
+                    print(f"  ⚠️ Яндекс API error: {e}. Falling back to old-school scrape.")
+                    return self._scrape_fallback(page, query, existing_ids)
+                print(f"  ⚠️ Яндекс pagination stopped at page {page_idx + 1}: {e}")
                 break
-                
-            vid = str(item.get("id"))
-            jid = f"{self.id_prefix}_{vid}"
-            
-            if jid in existing_ids:
-                continue
-                
-            title = item.get("title") or "Yandex Vacancy"
-            slug = item.get("slug") or vid
-            link = f"https://yandex.ru/jobs/vacancies/{slug}"
-            
-            # Extract description parts
-            desc_parts = []
-            if item.get("summary"):
-                desc_parts.append(item["summary"])
-            
-            # Sections: Responsibilities, Requirements, Conditions
-            for section in item.get("sections", []):
-                s_title = section.get("title")
-                s_text = section.get("text")
-                if s_title and s_text:
-                    desc_parts.append(f"{s_title}:\n{s_text}")
-            
-            full_description = "\n\n".join(desc_parts)
-            
-            # Category and Teams
-            teams = [t.get("title") for t in item.get("teams", []) if t.get("title")]
-            locations = [l.get("title") for l in item.get("cities", []) if l.get("title")]
-            
-            vacancies.append({
-                "id": jid,
-                "title": title,
-                "company": self.company_name,
-                "pub_date": item.get("publication_date") or "Recently",
-                "description": full_description[:5000],
-                "link": link,
-                "teams": teams,
-                "locations": locations,
-                "compensation": item.get("salary_printable") or "",
-                "origin_query": query,
-            })
-            self._emit("vacancy", id=jid, title=title, company=self.company_name, link=link)
-            print(f"  ✓ {title}")
-            
+
+            items = data.get("results", [])
+            total = data.get("count")
+            if page_idx == 0 and total is not None:
+                print(f"  Яндекс API: всего {total} вакансий доступно (limit={self.limit})")
+
+            for item in items:
+                if len(vacancies) >= self.limit:
+                    break
+
+                vid = str(item.get("id"))
+                jid = f"{self.id_prefix}_{vid}"
+                if jid in existing_ids:
+                    continue
+
+                title = item.get("title") or "Yandex Vacancy"
+                slug = item.get("slug") or vid
+                link = f"https://yandex.ru/jobs/vacancies/{slug}"
+
+                desc_parts = []
+                if item.get("summary"):
+                    desc_parts.append(item["summary"])
+                for section in item.get("sections", []):
+                    s_title = section.get("title")
+                    s_text = section.get("text")
+                    if s_title and s_text:
+                        desc_parts.append(f"{s_title}:\n{s_text}")
+                full_description = "\n\n".join(desc_parts)
+
+                teams = [t.get("title") for t in item.get("teams", []) if t.get("title")]
+                locations = [l.get("title") for l in item.get("cities", []) if l.get("title")]
+
+                vacancies.append({
+                    "id": jid,
+                    "title": title,
+                    "company": self.company_name,
+                    "pub_date": item.get("publication_date") or "Recently",
+                    "description": full_description[:5000],
+                    "link": link,
+                    "teams": teams,
+                    "locations": locations,
+                    "compensation": item.get("salary_printable") or "",
+                    "origin_query": query,
+                })
+                self._emit("vacancy", id=jid, title=title, company=self.company_name, link=link)
+                print(f"  ✓ {title}")
+
+            # The `next` URL points to the internal femida.yandex-team.ru host —
+            # rewrite it to the public endpoint, keeping only the cursor.
+            raw_next = data.get("next")
+            if not raw_next:
+                next_url = None
+            else:
+                cursor = parse_qs(urlparse(raw_next).query).get("cursor", [None])[0]
+                if not cursor:
+                    next_url = None
+                else:
+                    paged = dict(api_params)
+                    paged["cursor"] = [cursor]
+                    next_url = f"{base_api_url}?{_encode(paged)}"
+            page_idx += 1
+
+        print(f"  Яндекс: собрано {len(vacancies)} вакансий за {page_idx} страниц(ы)")
         return vacancies
 
     def _scrape_fallback(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
