@@ -16,158 +16,248 @@ from ._stealth import STEALTH_INIT_JS
 
 
 class GoogleCareersScraper(BaseScraper):
-    """careers.google.com — DOM scraper with Angular hydration wait.
+    """careers.google.com — SSR Wiz data payload scraper.
 
-    Google Careers is a Wiz/Angular SPA that renders job cards client-side.
-    We must wait for JS hydration before extracting links. Works best with
-    storage_state (GOOGLE_STORAGE_STATE env var) for authenticated access.
-    Detail pages embed JSON-LD JobPosting — we parse that for structured data.
+    Google Careers is a Wiz/Angular SPA, but every listing page embeds the
+    full job data (title, description, responsibilities, qualifications,
+    locations) inside ``AF_initDataCallback`` blocks in the SSR HTML.
+
+    Approach:
+      1. Load the listing page with ``?q=...&page=N``.
+      2. Extract the ``AF_initDataCallback`` JSON payload — 20 jobs per page,
+         each containing complete structured data.
+      3. Paginate via ``&page=N`` until all results are collected or limit hit.
+      4. No per-job detail page loads needed — 10-50× faster than DOM scraping.
     """
 
     company_name = "Google"
     id_prefix = "goog"
     stealth = True
 
+    # Wiz data field indices (discovered via SSR payload analysis)
+    _F_ID = 0
+    _F_TITLE = 1
+    _F_APPLY_URL = 2
+    _F_RESPONSIBILITIES = 3   # [null, "<ul>..."] HTML
+    _F_QUALIFICATIONS = 4     # [null, "<h3>Min...</h3><ul>...<h3>Pref...</h3><ul>..."]
+    _F_COMPANY = 7
+    _F_LOCATIONS = 9          # [[city, [city], short, null, state, country], ...]
+    _F_DESCRIPTION = 10       # [null, "<p>..."] HTML
+    _F_TIMESTAMPS = 12        # [epoch_sec, nano] — created
+    _F_MIN_QUALS = 19         # [null, "<ul>..."]  — minimum qualifications only
+
+    # Wiz top-level array: data[0] = jobs list, data[2] = total count, data[3] = page_size
+    _TOTAL_IDX = 2
+    _PAGE_SIZE = 20
+
+    _BASE_URL = "https://www.google.com/about/careers/applications/jobs/results/"
+    _DETAIL_URL_TPL = "https://www.google.com/about/careers/applications/jobs/results/{job_id}"
+    _HYDRATION_WAIT_MS = 4000
+
     def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
-        listing_url = (
-            "https://www.google.com/about/careers/applications/jobs/results/"
-            f"?q={quote(query)}"
-        )
-        page.goto(listing_url, wait_until="domcontentloaded", timeout=60000)
-        # Wait for Angular/Wiz hydration — job cards appear late
-        page.wait_for_timeout(5000)
-
-        # Google renders job cards as <a> elements with long numeric IDs in the href.
-        # We need to wait for these to appear after JS hydration.
-        # Try multiple selectors Google has used historically:
-        job_link_selectors = [
-            "a[href*='/jobs/results/'][href*='-']",     # /jobs/results/12345-slug
-            "li[data-id] a",                             # list items with data-id
-            "gc-card a[href*='/jobs/']",                  # gc-card components
-        ]
-
-        hrefs = []
-        for sel in job_link_selectors:
-            try:
-                found = page.eval_on_selector_all(sel, "els => els.map(e => e.href)")
-                if found:
-                    hrefs = found
-                    print(f"  Google: found {len(found)} links via '{sel}'")
-                    break
-            except Exception:
-                continue
-
-        if not hrefs:
-            # Last resort: grab ALL links and filter
-            all_hrefs = page.eval_on_selector_all("a", "els => els.map(e => e.href)")
-            hrefs = [h for h in all_hrefs if re.search(r"/jobs/results/\d{10,}", h)]
-            if hrefs:
-                print(f"  Google: found {len(hrefs)} links via full-page scan")
-
-        if not hrefs:
-            print("  ⚠️ Google: no job links found — page may not have hydrated. "
-                  "Try providing GOOGLE_STORAGE_STATE or running --headed.")
-            return []
-
-        # Deduplicate by numeric ID
-        id_re = re.compile(r"/jobs/results/(\d{10,})", re.I)
-        seen, links = set(), []
-        for h in hrefs:
-            m = id_re.search(h)
-            if not m:
-                continue
-            vid = m.group(1)
-            if vid in seen:
-                continue
-            seen.add(vid)
-            links.append((h.split("?")[0], vid))
-        print(f"  Google: {len(links)} unique job links")
-
-        q_lower = query.lower()
         vacancies: List[Dict[str, Any]] = []
-        for job_url, vid in links:
+        page_num = 1
+        total_available = None
+
+        while True:
+            # Build listing URL
+            url = self._BASE_URL + f"?q={quote(query)}&page={page_num}"
+            print(f"  Google: loading page {page_num}... ({url[:100]})")
+            try:
+                page.goto(url, wait_until="domcontentloaded", timeout=60000)
+                page.wait_for_timeout(self._HYDRATION_WAIT_MS)
+            except Exception as e:
+                print(f"  ⚠️ Google page {page_num}: navigation error — {e}")
+                break
+
+            html = page.content()
+            wiz_data = self._extract_wiz_data(html)
+
+            if wiz_data is None:
+                print(f"  ⚠️ Google page {page_num}: no Wiz data found in SSR HTML")
+                # If page 1 fails, try increasing hydration wait and retry once
+                if page_num == 1:
+                    page.wait_for_timeout(3000)
+                    wiz_data = self._extract_wiz_data(page.content())
+                if wiz_data is None:
+                    break
+
+            job_records = wiz_data[0]  # list of job arrays
+            if total_available is None and len(wiz_data) > self._TOTAL_IDX:
+                total_available = wiz_data[self._TOTAL_IDX]
+                print(f"  Google: {total_available} total results for query '{query}'")
+
+            if not job_records:
+                print(f"  Google page {page_num}: empty — done")
+                break
+
+            for record in job_records:
+                if len(vacancies) >= self.limit:
+                    break
+
+                try:
+                    parsed = self._parse_wiz_record(record, query, existing_ids)
+                    if parsed:
+                        vacancies.append(parsed)
+                        self._emit(
+                            "vacancy", id=parsed["id"], title=parsed["title"],
+                            company=self.company_name, link=parsed["link"],
+                        )
+                except Exception as e:
+                    vid = record[self._F_ID] if isinstance(record, list) and len(record) > 0 else "?"
+                    print(f"  ⚠️ Google record {vid}: {e}")
+
+            print(f"  Google page {page_num}: {len(job_records)} records → {len(vacancies)} total accepted")
+
             if len(vacancies) >= self.limit:
                 break
-            jid = f"{self.id_prefix}_{vid}"
-            if jid in existing_ids:
+
+            # Check if there are more pages
+            fetched_so_far = page_num * self._PAGE_SIZE
+            if total_available and fetched_so_far >= total_available:
+                break
+            if len(job_records) < self._PAGE_SIZE:
+                break  # last page was partial
+
+            page_num += 1
+
+        print(f"  Google: ✓ {len(vacancies)} vacancies collected across {page_num} pages")
+        return vacancies
+
+    def _parse_wiz_record(
+        self, record: list, query: str, existing_ids: Set[str],
+    ) -> Optional[Dict[str, Any]]:
+        """Parse a single Wiz data record into a vacancy dict."""
+        if not isinstance(record, list) or len(record) < 11:
+            return None
+
+        vid = str(record[self._F_ID])
+        jid = f"{self.id_prefix}_{vid}"
+        if jid in existing_ids:
+            return None
+
+        title = record[self._F_TITLE] or "Google Vacancy"
+
+        # Extract text sections from HTML
+        desc_html = self._safe_html_field(record, self._F_DESCRIPTION)
+        resp_html = self._safe_html_field(record, self._F_RESPONSIBILITIES)
+        quals_html = self._safe_html_field(record, self._F_QUALIFICATIONS)
+
+        desc = _google_html_to_text(desc_html)
+        resp = _google_html_to_text(resp_html)
+        quals = _google_html_to_text(quals_html)
+
+        # Build full description
+        blocks = []
+        if desc:
+            blocks.append(desc)
+        if resp:
+            blocks.append("Responsibilities:\n" + resp)
+        if quals:
+            blocks.append("Qualifications:\n" + quals)
+
+        full_desc = "\n\n".join(blocks)
+        if not full_desc or len(full_desc) < 30:
+            return None  # skip empty/stub records
+
+        # Note: no client-side query filter — Google's server already returns
+        # only results matching the query. Client-side substring filtering
+        # was too strict (e.g. rejected "ML Engineer" for query "Machine Learning Engineer").
+
+        # Locations
+        locations = []
+        raw_locs = record[self._F_LOCATIONS] if len(record) > self._F_LOCATIONS else []
+        if isinstance(raw_locs, list):
+            for loc in raw_locs:
+                if isinstance(loc, list) and len(loc) > 0 and loc[0]:
+                    loc_name = str(loc[0])
+                    if loc_name not in locations:
+                        locations.append(loc_name)
+
+        # Timestamps — record[12] = [epoch_sec, nano]
+        pub_date = "Recently"
+        if len(record) > self._F_TIMESTAMPS and isinstance(record[self._F_TIMESTAMPS], list):
+            try:
+                import datetime
+                ts = record[self._F_TIMESTAMPS][0]
+                if ts:
+                    pub_date = datetime.datetime.fromtimestamp(ts, tz=datetime.timezone.utc).strftime("%Y-%m-%d")
+            except Exception:
+                pass
+
+        # Job detail URL
+        link = self._DETAIL_URL_TPL.format(job_id=vid)
+
+        return {
+            "id": jid,
+            "title": title,
+            "company": self.company_name,
+            "pub_date": pub_date,
+            "description": full_desc[:5000],
+            "link": link,
+            "locations": locations,
+            "compensation": "",
+            "origin_query": query,
+        }
+
+    @staticmethod
+    def _safe_html_field(record: list, idx: int) -> str:
+        """Extract HTML string from a Wiz [null, html] field."""
+        if len(record) <= idx:
+            return ""
+        field = record[idx]
+        if isinstance(field, list) and len(field) > 1 and isinstance(field[1], str):
+            return field[1]
+        if isinstance(field, str):
+            return field
+        return ""
+
+    @staticmethod
+    def _extract_wiz_data(html: str) -> Optional[list]:
+        """Extract the AF_initDataCallback data payload containing job records.
+
+        Google embeds job data in the SSR HTML as:
+            AF_initDataCallback({key: 'ds:N', ..., data: [JOBS_ARRAY]});
+        where data[0] is a list of job record arrays.
+        """
+        pattern = r"AF_initDataCallback\([^)]*?data:\s*(\[[\s\S]*?)\}\);\s*</script>"
+        for block in re.findall(pattern, html):
+            # Find the matching closing bracket for the data array
+            depth = 0
+            end = 0
+            for ci, ch in enumerate(block):
+                if ch == '[':
+                    depth += 1
+                elif ch == ']':
+                    depth -= 1
+                    if depth == 0:
+                        end = ci + 1
+                        break
+            if end == 0:
                 continue
             try:
-                page.goto(job_url, wait_until="domcontentloaded", timeout=40000)
+                data = json.loads(block[:end])
+            except json.JSONDecodeError:
+                continue
+            # Validate: data[0] should be a list of job record arrays
+            if (isinstance(data, list) and len(data) >= 3
+                    and isinstance(data[0], list) and len(data[0]) > 0
+                    and isinstance(data[0][0], list) and len(data[0][0]) > 1):
+                return data
+        return None
 
-                # Wait for Angular hydration — the real title and JSON-LD
-                # only appear after Wiz renders the detail view.
-                try:
-                    page.wait_for_selector(
-                        "h2[jsname], script[type='application/ld+json']",
-                        timeout=8000,
-                    )
-                except Exception:
-                    pass
-                page.wait_for_timeout(1500)
 
-                html = page.content()
-
-                # ── JSON-LD extraction (same parser as Meta) ──
-                detail = _meta_parse_detail(html)
-
-                title = detail.get("title") or _first_non_empty_text(page, [
-                    "h2[jsname]", "h2", "h1",
-                ]) or "Google Vacancy"
-
-                # If title is the generic page title, extract from URL slug
-                if title in ("Jobs Search Results", "Google Vacancy", "Google Careers"):
-                    slug = job_url.rstrip("/").split("/")[-1]
-                    # Remove numeric prefix: "142249-machine-learning-engineer" → "machine-learning-engineer"
-                    slug_parts = slug.split("-")
-                    text_parts = [p for p in slug_parts if not p.isdigit()]
-                    if text_parts:
-                        title = " ".join(p.capitalize() for p in text_parts)
-
-                full_desc = _build_full_description(detail)
-
-                # If JSON-LD failed, fall back to raw DOM text
-                if not full_desc or len(full_desc) < 50:
-                    body = _first_non_empty_text(page, [
-                        "[jsname='d6wfac']",
-                        "main", "article", "body",
-                    ])
-                    full_desc = " ".join(body.split())
-
-                if q_lower and q_lower not in full_desc.lower() and q_lower not in title.lower():
-                    continue
-
-                # ── Locations ──
-                locations = []
-                try:
-                    loc_els = page.locator(
-                        "[class*='location' i], [data-field='locations'] span, "
-                        "[class*='workplaceType' i]"
-                    ).all()
-                    for el in loc_els[:10]:
-                        t = (el.inner_text() or "").strip()
-                        if t and len(t) < 80 and t not in locations:
-                            locations.append(t)
-                except Exception:
-                    pass
-
-                compensation = detail.get("compensation", "")
-
-                vacancies.append({
-                    "id": jid,
-                    "title": title,
-                    "company": self.company_name,
-                    "pub_date": detail.get("date_posted") or "Recently",
-                    "description": full_desc[:5000],
-                    "link": job_url,
-                    "locations": locations,
-                    "compensation": compensation,
-                    "origin_query": query,
-                })
-                self._emit("vacancy", id=jid, title=title, company=self.company_name, link=job_url)
-                print(f"  ✓ {title}")
-            except Exception as e:
-                print(f"  ⚠️ {job_url}: {e}")
-        return vacancies
+def _google_html_to_text(s: str) -> str:
+    """Strip HTML tags + decode entities from Google Careers fields."""
+    if not s:
+        return ""
+    s = unescape(s)
+    s = re.sub(r"<br\s*/?>", "\n", s, flags=re.I)
+    s = re.sub(r"</p>|</li>|</div>", "\n", s, flags=re.I)
+    s = re.sub(r"<[^>]+>", "", s)
+    s = s.replace("\xa0", " ")
+    s = re.sub(r"\n{3,}", "\n\n", s)
+    return s.strip()
 
 
 

@@ -38,6 +38,17 @@ QUERIES = [
     "Applied Scientist",
 ]
 
+# Google gets server-side filtering so broader queries cover more relevant roles
+GOOGLE_QUERIES = [
+    "Machine Learning",
+    "AI Engineer",
+    "Deep Learning",
+    "NLP",
+    "Computer Vision",
+    "Applied Scientist",
+    "Research Scientist",
+]
+
 # Yandex special — its URL filter is far more efficient than per-keyword iteration
 YANDEX_URLS = [
     (
@@ -58,8 +69,8 @@ def _source_plan():
          lambda limit=0: YandexScraper(limit=limit or 500, stealth=True),
          YANDEX_URLS),
         ("google",
-         lambda limit=0: GoogleCareersScraper(limit=limit or 20, stealth=True, storage_state_path=google_state),
-         QUERIES),
+         lambda limit=0: GoogleCareersScraper(limit=limit or 200, stealth=True),
+         GOOGLE_QUERIES),
         ("meta",
          lambda limit=0: MetaCareersScraper(limit=limit or 0, stealth=True, storage_state_path=meta_state),
          [""]),
