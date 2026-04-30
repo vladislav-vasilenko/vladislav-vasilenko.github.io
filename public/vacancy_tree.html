@@ -193,8 +193,8 @@
     teamListEl.appendChild(div);
   });
 
-  // ── Build d3 hierarchy ────────────────────────────────────────────
-  const root = {
+  // ── Build immutable raw tree data once ────────────────────────────
+  const rawRoot = {
     name: data.company || "Meta", kind: "root",
     children: data.clusters.map(c => ({
       name: c.name, kind: "cluster", _data: c,
@@ -222,96 +222,194 @@
 
   const tree = d3.cluster().size([2 * Math.PI, radius])
     .separation((a, b) => (a.parent === b.parent ? 1 : 2.2) / Math.max(a.depth, 1));
-  const hroot = d3.hierarchy(root)
-    .sort((a, b) => d3.ascending(
-      a.data.kind === "role" ? -a.data._data.level_rank : 0,
-      b.data.kind === "role" ? -b.data._data.level_rank : 0
-    ) || d3.ascending(a.data.name, b.data.name));
-  tree(hroot);
+  const linkArc = d3.linkRadial().angle(d => d.x).radius(d => d.y);
+
+  // Layers (created once, repopulated by render() on each filter change)
+  const linkLayer = g.append("g").attr("class", "links");
+  const bridgeLayer = g.append("g").attr("class", "bridges");
+  const mgrLayer = g.append("g").attr("class", "mgr-edges");
+  const nodeLayer = g.append("g").attr("class", "nodes");
+
+  // Live state
+  let hroot = null;
+  let activeTeam = null;
 
   function pol(x, y) { return [Math.cos(x - Math.PI/2)*y, Math.sin(x - Math.PI/2)*y]; }
 
-  // ── Tree edges ────────────────────────────────────────────────────
-  const linkArc = d3.linkRadial().angle(d => d.x).radius(d => d.y);
-  const linkLayer = g.append("g").attr("class", "links");
-  const links = linkLayer.selectAll("path.link").data(hroot.links())
-    .join("path").attr("class", "link").attr("d", linkArc);
+  // Stable key for d3.join (preserves DOM elements across filter changes
+  // so transitions can move them rather than enter→exit).
+  function nodeKey(d) {
+    if (d.data.kind === "root") return "root";
+    if (d.data.kind === "role") return "role:" + d.data._data.id;
+    return d.ancestors().reverse().map(a => a.data.name).join("|") + ":" + d.data.kind;
+  }
+  function linkKey(l) { return nodeKey(l.source) + "→" + nodeKey(l.target); }
+  function mgrKey(e)  { return "mgr:" + e.source.data._data.id + "→" + e.target.data._data.id; }
+  function bridgeKey(e) {
+    const a = e.source.data._data.id, b = e.target.data._data.id;
+    return "bridge:" + (a < b ? a + "↔" + b : b + "↔" + a);
+  }
 
-  // ── Manager edges (within sub_cluster) ────────────────────────────
-  const idToNode = new Map();
-  hroot.each(n => { if (n.data.kind === "role") idToNode.set(n.data._data.id, n); });
-  const mgrEdges = [];
-  for (const [id, n] of idToNode) {
-    const mid = n.data._data.manager_id;
-    if (mid && idToNode.has(mid)) {
-      mgrEdges.push({ source: idToNode.get(mid), target: n });
+  // ── Pure visual mappers (don't touch the DOM) ─────────────────────
+  const circleR = d => {
+    if (d.data.kind === "root") return 6;
+    if (d.data.kind === "cluster") return 5 + Math.min(8, Math.sqrt(d.data._data.size));
+    if (d.data.kind === "sub_cluster") return 3 + Math.min(5, Math.sqrt(d.data._data.size));
+    if (d.data.kind === "bucket") return 2.5;
+    return 3.2;
+  };
+  const circleFill = d => {
+    if (d.data.kind === "role") return catColor(d.data._data.category);
+    if (d.data.kind === "sub_cluster") return catColor(d.data._data.dominant_category || "engineering");
+    if (d.data.kind === "cluster") return catColor(d.data._data.dominant_category || "engineering");
+    return null;
+  };
+  const textLabel = d => {
+    if (d.data.kind === "root") return d.data.name;
+    if (d.data.kind === "cluster") return `${catEmoji(d.data._data.dominant_category)} ${d.data.name} (${d.data._data.size})`;
+    if (d.data.kind === "sub_cluster") return `${d.data.name} · ${d.data._data.size}`;
+    if (d.data.kind === "bucket") return d.data.name;
+    return d.data.name;
+  };
+  const textRotation = d => `rotate(${(d.x * 180 / Math.PI - 90)})` + (d.x >= Math.PI ? " rotate(180)" : "");
+  const nodeTransform = d => { const [x, y] = pol(d.x, d.y); return `translate(${x},${y})`; };
+  const mgrPath = e => {
+    const [sx, sy] = pol(e.source.x, e.source.y);
+    const [tx, ty] = pol(e.target.x, e.target.y);
+    return `M${sx},${sy}Q${(sx+tx)/2*0.6},${(sy+ty)/2*0.6} ${tx},${ty}`;
+  };
+  const bridgePath = e => {
+    const [sx, sy] = pol(e.source.x, e.source.y);
+    const [tx, ty] = pol(e.target.x, e.target.y);
+    return `M${sx},${sy}Q0,0 ${tx},${ty}`;
+  };
+
+  // ── Filter raw data into a fresh hierarchy ────────────────────────
+  // Drops roles failing the filter, then prunes empty buckets/sub_clusters/clusters.
+  function buildFilteredRoot() {
+    const q = (document.getElementById("search").value || "").trim().toLowerCase();
+    const passesRole = r => {
+      if (!enabledCats.has(r.category)) return false;
+      if (q && !r.title.toLowerCase().includes(q)) return false;
+      return true;
+    };
+    return {
+      ...rawRoot,
+      children: rawRoot.children
+        .filter(c => !activeTeam || c.name === activeTeam)
+        .map(c => ({
+          ...c,
+          children: c.children
+            .map(sc => ({
+              ...sc,
+              children: sc.children
+                .map(b => ({
+                  ...b,
+                  children: b.children.filter(role => passesRole(role._data)),
+                }))
+                .filter(b => b.children.length),
+            }))
+            .filter(sc => sc.children.length),
+        }))
+        .filter(c => c.children.length),
+    };
+  }
+
+  // ── Re-layout on each filter change, with smooth transitions ──────
+  function rebuild() {
+    const filtered = buildFilteredRoot();
+    hroot = d3.hierarchy(filtered)
+      .sort((a, b) => d3.ascending(
+        a.data.kind === "role" ? -a.data._data.level_rank : 0,
+        b.data.kind === "role" ? -b.data._data.level_rank : 0
+      ) || d3.ascending(a.data.name, b.data.name));
+    tree(hroot);
+    render();
+  }
+
+  function render() {
+    const t = svg.transition().duration(550).ease(d3.easeCubicOut);
+
+    // Tree edges
+    linkLayer.selectAll("path.link")
+      .data(hroot.links(), linkKey)
+      .join(
+        enter => enter.append("path").attr("class", "link")
+          .attr("d", linkArc).attr("opacity", 0)
+          .call(s => s.transition(t).attr("opacity", 1)),
+        update => update.call(s => s.transition(t).attr("d", linkArc)),
+        exit => exit.call(s => s.transition(t).attr("opacity", 0).remove())
+      );
+
+    // Manager edges (recomputed against filtered hroot)
+    const idToNode = new Map();
+    hroot.each(n => { if (n.data.kind === "role") idToNode.set(n.data._data.id, n); });
+    const mgrEdges = [];
+    for (const [id, n] of idToNode) {
+      const mid = n.data._data.manager_id;
+      if (mid && idToNode.has(mid)) mgrEdges.push({ source: idToNode.get(mid), target: n });
     }
+    mgrLayer.selectAll("path.link.mgr")
+      .data(mgrEdges, mgrKey)
+      .join(
+        enter => enter.append("path").attr("class", "link mgr")
+          .attr("d", mgrPath).attr("opacity", 0)
+          .call(s => s.transition(t).attr("opacity", 1)),
+        update => update.call(s => s.transition(t).attr("d", mgrPath)),
+        exit => exit.call(s => s.transition(t).attr("opacity", 0).remove())
+      );
+
+    // Cross-team bridges (likewise — only edges where both endpoints survive the filter)
+    const bridges = [];
+    for (const b of (data.cross_team_bridges || [])) {
+      const matches = [];
+      hroot.each(n => { if (n.data.kind === "role" && n.data._data.title === b.title) matches.push(n); });
+      if (matches.length >= 2) bridges.push({ source: matches[0], target: matches[1] });
+    }
+    bridgeLayer.selectAll("path.link.peer")
+      .data(bridges, bridgeKey)
+      .join(
+        enter => enter.append("path").attr("class", "link peer")
+          .attr("d", bridgePath).attr("opacity", 0)
+          .call(s => s.transition(t).attr("opacity", 1)),
+        update => update.call(s => s.transition(t).attr("d", bridgePath)),
+        exit => exit.call(s => s.transition(t).attr("opacity", 0).remove())
+      );
+
+    // Nodes
+    const nodeSel = nodeLayer.selectAll("g.node").data(hroot.descendants(), nodeKey);
+
+    const nodeEnter = nodeSel.enter().append("g")
+      .attr("class", d => {
+        const cls = ["node"];
+        cls.push(d.children ? "node--internal" : "node--leaf");
+        if (d.data.kind === "cluster") cls.push("node--cluster");
+        return cls.join(" ");
+      })
+      .attr("data-team", d => d.data.kind === "cluster" ? d.data.name : null)
+      .attr("transform", nodeTransform)
+      .attr("opacity", 0)
+      .on("click", (_, d) => showDetail(d.data));
+
+    nodeEnter.append("circle").attr("r", circleR).style("fill", circleFill);
+    nodeEnter.append("text")
+      .attr("dy", "0.31em")
+      .attr("x", d => d.x < Math.PI ? 8 : -8)
+      .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+      .attr("transform", textRotation)
+      .text(textLabel);
+
+    nodeSel.exit().call(s => s.transition(t).attr("opacity", 0).remove());
+
+    const merged = nodeEnter.merge(nodeSel);
+    merged.transition(t).attr("transform", nodeTransform).attr("opacity", 1);
+    merged.select("text")
+      .text(textLabel)
+      .transition(t)
+      .attr("x", d => d.x < Math.PI ? 8 : -8)
+      .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+      .attr("transform", textRotation);
   }
-  const mgrLayer = g.append("g").attr("class", "mgr-edges");
-  const mgrSel = mgrLayer.selectAll("path.link.mgr").data(mgrEdges)
-    .join("path").attr("class", "link mgr").attr("d", d => {
-      const [sx, sy] = pol(d.source.x, d.source.y);
-      const [tx, ty] = pol(d.target.x, d.target.y);
-      // gentler curve for short manager edges
-      return `M${sx},${sy}Q${(sx+tx)/2*0.6},${(sy+ty)/2*0.6} ${tx},${ty}`;
-    });
-
-  // ── Cross-team bridges ────────────────────────────────────────────
-  const bridges = [];
-  for (const b of (data.cross_team_bridges || [])) {
-    const matches = [];
-    hroot.each(n => { if (n.data.kind === "role" && n.data._data.title === b.title) matches.push(n); });
-    if (matches.length >= 2) bridges.push({source: matches[0], target: matches[1]});
-  }
-  const bridgeLayer = g.append("g").attr("class", "bridges");
-  const bridgeSel = bridgeLayer.selectAll("path.link.peer").data(bridges)
-    .join("path").attr("class", "link peer").attr("d", d => {
-      const [sx, sy] = pol(d.source.x, d.source.y);
-      const [tx, ty] = pol(d.target.x, d.target.y);
-      return `M${sx},${sy}Q0,0 ${tx},${ty}`;
-    });
-
-  // ── Nodes ─────────────────────────────────────────────────────────
-  const nodeLayer = g.append("g").attr("class", "nodes");
-  const nodes = nodeLayer.selectAll("g.node").data(hroot.descendants())
-    .join("g")
-    .attr("class", d => {
-      const cls = ["node"];
-      cls.push(d.children ? "node--internal" : "node--leaf");
-      if (d.data.kind === "cluster") cls.push("node--cluster");
-      return cls.join(" ");
-    })
-    .attr("data-team", d => d.data.kind === "cluster" ? d.data.name : null)
-    .attr("transform", d => { const [x, y] = pol(d.x, d.y); return `translate(${x},${y})`; })
-    .on("click", (_, d) => showDetail(d.data));
-
-  nodes.append("circle")
-    .attr("r", d => {
-      if (d.data.kind === "root") return 6;
-      if (d.data.kind === "cluster") return 5 + Math.min(8, Math.sqrt(d.data._data.size));
-      if (d.data.kind === "sub_cluster") return 3 + Math.min(5, Math.sqrt(d.data._data.size));
-      if (d.data.kind === "bucket") return 2.5;
-      return 3.2;
-    })
-    .style("fill", d => {
-      if (d.data.kind === "role") return catColor(d.data._data.category);
-      if (d.data.kind === "sub_cluster") return catColor(d.data._data.dominant_category || "engineering");
-      if (d.data.kind === "cluster") return catColor(d.data._data.dominant_category || "engineering");
-      return null;
-    });
-
-  nodes.append("text")
-    .attr("dy", "0.31em")
-    .attr("x", d => d.x < Math.PI ? 8 : -8)
-    .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
-    .attr("transform", d => `rotate(${(d.x * 180/Math.PI - 90)})` + (d.x >= Math.PI ? " rotate(180)" : ""))
-    .text(d => {
-      if (d.data.kind === "root") return d.data.name;
-      if (d.data.kind === "cluster") return `${catEmoji(d.data._data.dominant_category)} ${d.data.name} (${d.data._data.size})`;
-      if (d.data.kind === "sub_cluster") return `${d.data.name} · ${d.data._data.size}`;
-      if (d.data.kind === "bucket") return d.data.name;
-      return d.data.name;
-    });
 
   // ── Detail panel ──────────────────────────────────────────────────
   const panel = document.getElementById("panel");
@@ -385,43 +483,19 @@
   const showBridges = document.getElementById("showBridges");
   const showMgr = document.getElementById("showMgr");
   const searchInput = document.getElementById("search");
-  let activeTeam = null;
 
   function applyFilters() {
-    const q = searchInput.value.trim().toLowerCase();
-    nodes.classed("dim", d => {
-      if (d.data.kind === "role") {
-        const r = d.data._data;
-        if (!enabledCats.has(r.category)) return true;
-        if (q && !r.title.toLowerCase().includes(q)) return true;
-      }
-      if (activeTeam) {
-        // dim everything not on the path of activeTeam's subtree
-        let n = d;
-        while (n.parent && n.data.kind !== "cluster") n = n.parent;
-        if (n.data.kind === "cluster" && n.data.name !== activeTeam) return true;
-      }
-      return false;
-    });
-    links.classed("dim", l => {
-      const child = l.target;
-      if (child.data.kind === "role") {
-        const r = child.data._data;
-        if (!enabledCats.has(r.category)) return true;
-        if (q && !r.title.toLowerCase().includes(q)) return true;
-      }
-      if (activeTeam) {
-        let n = child;
-        while (n.parent && n.data.kind !== "cluster") n = n.parent;
-        if (n.data.kind === "cluster" && n.data.name !== activeTeam) return true;
-      }
-      return false;
-    });
-    bridgeSel.style("display", showBridges.checked ? null : "none");
-    mgrSel.style("display", showMgr.checked ? null : "none");
+    rebuild();
+    updateToggles();
   }
-  showBridges.addEventListener("change", applyFilters);
-  showMgr.addEventListener("change", applyFilters);
+
+  function updateToggles() {
+    bridgeLayer.style("display", showBridges.checked ? null : "none");
+    mgrLayer.style("display", showMgr.checked ? null : "none");
+  }
+
+  showBridges.addEventListener("change", updateToggles);
+  showMgr.addEventListener("change", updateToggles);
   searchInput.addEventListener("input", applyFilters);
 
   // ── Team focus (sidebar click) ────────────────────────────────────
@@ -429,23 +503,24 @@
     if (activeTeam === name) {
       activeTeam = null;
       document.querySelectorAll("#teams .team").forEach(t => t.classList.remove("active"));
+      applyFilters();
       svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
     } else {
       activeTeam = name;
       document.querySelectorAll("#teams .team").forEach(t =>
         t.classList.toggle("active", t.dataset.team === name));
-      // pan/zoom toward the cluster centroid
-      const c = hroot.children?.find(n => n.data.name === name);
-      if (c) {
-        const [cx, cy] = pol(c.x, c.y);
-        const k = 1.6;
-        svg.transition().duration(600).call(
-          zoom.transform,
-          d3.zoomIdentity.scale(k).translate(-cx, -cy)
-        );
-      }
+      
+      applyFilters(); // Rebuilds the tree with ONLY this team
+
+      // Pan/zoom toward its new layout coordinates
+      const c = hroot.children?.find(n => n.data.name === name) || hroot;
+      const [cx, cy] = pol(c.x, c.y);
+      const k = 1.6;
+      svg.transition().duration(600).call(
+        zoom.transform,
+        d3.zoomIdentity.scale(k).translate(-cx, -cy)
+      );
     }
-    applyFilters();
   }
 
   applyFilters();
