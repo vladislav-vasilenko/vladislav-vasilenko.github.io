@@ -1,13 +1,370 @@
 {
-  "last_updated": "2026-04-29T20:37:08.520582+00:00",
-  "total": 541,
+  "last_updated": "2026-04-30T14:30:46.226615+00:00",
+  "total": 564,
   "stats_last_run": {
+    "yandex": {
+      "new": 20,
+      "errors": 0
+    },
+    "google": {
+      "new": 0,
+      "errors": 0
+    },
     "meta": {
-      "new": 541,
+      "new": 3,
+      "errors": 0
+    },
+    "sber": {
+      "new": 0,
       "errors": 0
     }
   },
   "vacancies": [
+    {
+      "id": "yandex_1697",
+      "title": "Yandex Research ML Residency",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/1697",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44997",
+      "title": "ML-разработчик в Рекламу",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44997",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44996",
+      "title": "ML-разработчик в Рекламу",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44996",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44965",
+      "title": "ML-разработчик в группу релевантности рекламы",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44965",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44954",
+      "title": "ML-разработчик в Рекламу",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44954",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44938",
+      "title": "ML-разработчик в Международный Поиск",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44938",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44920",
+      "title": "ML Engineer RecSys в Еду",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44920",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_38464",
+      "title": "ML-разработчик в группу развития поведенческих нейротехнологий Поиска (Core & Agentic Search)",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/38464",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_25781",
+      "title": "ML-разработчик в группу претрейна модели планирования движения",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/25781",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_43875",
+      "title": "ML-разработчик в команду Медтеха",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/43875",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_43116",
+      "title": "ML-разработчик в группу обучения с подкреплением (RL)",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/43116",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_17408",
+      "title": "ML-разработчик в рекламную платформу Маркета",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/17408",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44014",
+      "title": "ML-разработчик в команду MediaAI Плюс Фантеха",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44014",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_41276",
+      "title": "ML-разработчик в Финтех",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/41276",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44693",
+      "title": "Разработчик качества поисковой платформы Nova (Core & Agentic Search)",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44693",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44690",
+      "title": "ML-разработчик в команду 3D-реконструкции",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44690",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44630",
+      "title": "ML-разработчик в Музыку",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44630",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_44608",
+      "title": "Старший ML-разработчик в команду исследований алгоритмов нового поколения (CV)",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/44608",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_38046",
+      "title": "ML-разработчик в голосовую персонализацию",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/38046",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "yandex_36420",
+      "title": "ML-разработчик в команду распознавания речи (Алиса)",
+      "company": "Яндекс",
+      "pub_date": "Recently",
+      "description": "",
+      "link": "https://yandex.ru/jobs/vacancies/36420",
+      "teams": [],
+      "locations": [],
+      "compensation": "",
+      "origin_query": "https://yandex.ru/jobs/vacancies?professions=ml-developer&professions=backend-developer&professions=database-developer",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "meta_2009915116625816",
+      "title": "Strategic Sourcing Manager, Global Workplace Services",
+      "company": "Meta",
+      "locations": [
+        "Dublin, Ireland"
+      ],
+      "teams": [
+        "Legal, Finance, Facilities & Admin"
+      ],
+      "sub_teams": [
+        "Finance"
+      ],
+      "compensation": "",
+      "description": "Meta is seeking an experienced professional to join our Global Strategic Sourcing organization as a Global Sourcing Manager, with a primary focus on the Construction & Projects category and flexibility to support other Workplace Services categories. This is a unique opportunity to work with a wide variety of internal teams and impact the company's growth by providing sourcing solutions.\n\nAs part of the Strategic Sourcing organization within Finance, this team is responsible for end-to-end sourcing, which focuses on three main pillars as part of our Service Model:\n\n- Category Management: Developing and executing category strategies to meet business needs\n- Supplier Management: Building and maintaining strategic relationships with suppliers\n- Stakeholder Engagement: Collaborating with internal stakeholders to understand their requirements and provide tailored solutions\n\nThis role will be responsible primarily for sourcing solutions in the areas of Construction & Projects, and may also support categories such as Facilities, Security, and Culinary. You will work closely with business teams to provide Meta with innovative, efficient, sustainable, and high-value third-party solutions.\n\nThis position supports global projects and may require international travel.\n\nResponsibilities:\nDevelop collaborative relationships with key stakeholders across Meta to strategically develop, implement, and optimize sourcing solutions Serve as a strategic and trusted sourcing advisor by developing comprehensive category strategies, bringing key industry insights, and identifying supply market opportunities Build and cultivate strategic supplier relationships through structured relationship management programs, driving value beyond cost savings Lead complex contract negotiations that optimize value to the company, leveraging deep understanding of cost models and ROI drivers Leverage AI agents and tools to enhance sourcing workflows, improve efficiency, and elevate strategic decision-making Proactively identify, track, and manage risks across projects and categories, ensuring compliance with sourcing policies across the Source-to-Pay journey Collaborate with Strategic Sourcing peers and cross-functional partners to deliver integrated solutions Drive process improvement and innovation initiatives that build scalable, repeatable sourcing capabilities Manage, coordinate, and support special and complex global projects, balancing business requirements with technical constraints\n\nQualifications:\nProven success negotiating complex contracts, breaking down cost models, and understanding ROI drivers in both financial and business contexts History of building and maintaining strategic relationships with business leaders and supplier executives Track record of implementing category strategies, strategic sourcing initiatives, and process improvement programs Knowledge of legal, financial, and technology components of sourcing Bachelor's degree in business, engineering, supply chain, procurement, finance, management, or a related discipline Adaptability and flexibility to navigate and support different sourcing categories as needed Skilled in leveraging quantitative data analysis, industry trends, and spend data to develop strategies and identify optimization opportunities Experience implementing and driving supplier management programs Experience managing global categories and engaging multiple stakeholders across different regions 10+ years of experience in Sourcing & Procurement, with exposure to Workplace Services categories Proven AI literacy with demonstrated ability to apply AI tools in day-to-day sourcing work to drive impactful outcomes Demonstrated ability to drive change, manage conflict, and build consensus across diverse perspectives Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies Demonstrated analytical and critical thinking skills, with experience applying them to resolve issues and identify opportunities strategically Experience designing or improving sourcing workflows using digital tools or AI-based solutions Experience working in a global and virtual environment, both internally and with suppliers Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Experience working with blended teams across multiple geographies and stakeholder groups Background in driving organizational or process transformation initiatives",
+      "link": "https://www.metacareers.com/jobs/2009915116625816/",
+      "pub_date": "2026-04-29T14:48:55-07:00",
+      "origin_query": "",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "meta_1514192513630315",
+      "title": "Signal Integrity / Power Integrity Engineer - Wearables",
+      "company": "Meta",
+      "locations": [
+        "Sunnyvale, CA",
+        "Redmond, WA"
+      ],
+      "teams": [
+        "AR/VR",
+        "Facebook Reality Labs"
+      ],
+      "sub_teams": [
+        "Hardware"
+      ],
+      "compensation": "$173,000/year to $245,000/year + bonus + equity + benefits",
+      "description": "Signal Integrity and Power Integrity (SIPI) Engineers at Meta design, analyze, and validate SIPI aspects of electrical systems for next-generation hardware products and platforms. They collaborate with multidisciplinary teams and external partners to deliver robust, high-performance solutions from concept through deployment, ensuring Meta’s hardware meets the highest standards for performance, reliability, and electromagnetic compatibility across both product and infrastructure domains.\n\nYou will architect and drive SIPI technical strategy across multiple projects and teams, influence system architecture and organizational direction, and serve as a recognized technical leader and mentor for complex, high-impact hardware initiatives.\n\nResponsibilities:\nArchitect and lead system-level Signal Integrity Power Integrity design, simulation, and validation for advanced hardware products, including pre-layout and post-layout analysis of high-speed interfaces and power distribution networks (PDN) Develop, implement, and continuously improve SIPI methodologies, standards, and guidelines for design, simulation, and validation Drive SIPI technical strategy and influence system architecture, design trade-offs, and manufacturing processes across multiple projects and teams Lead cross-functional collaboration with electrical, silicon, packaging, PCB layout, firmware, mechanical, software, manufacturing, and external partners to deliver integrated solutions Guide vendors and suppliers in developing and validating high-speed signaling solutions, including interconnects, substrates, and compliance testing Own SIPI validation strategy, including advanced engineering test plans, lab measurements, and compliance for high-speed interfaces (e.g., PCIe, DDR, MIPI, USB, Ethernet, etc.) Troubleshoot and resolve complex SIPI-related design issues using simulation and lab data; drive failure analysis, root cause investigations, and design of experiments Mentor and develop engineers, foster knowledge sharing, and contribute to organizational initiatives and process improvements Communicate technical findings, recommendations, and reports clearly to cross-functional stakeholders and leadership Stay current with industry trends, emerging technologies, and best practices in SIPI, and proactively assess and integrate new approaches to maintain Meta’s leadership in hardware engineering\n\nQualifications:\nBachelor's or Master’s degree in Electrical Engineering, or relevant technical field, and/or equivalent practical experience 8+ years of experience in SIPI simulation, measurement, or electrical design or a relevant technical field Experience delivering electrical products, subsystems, or research prototypes from concept through validation, and into high-volume manufacturing, large-scale deployment, or successful technology transfer to product teams Advanced knowledge of SIPI fundamentals, including impedance control, transmission line theory, PDN characterization, and/or electromagnetic compatibility Expertise with industry-standard SIPI simulation and modeling tools (e.g., Cadence Sigrity, Ansys SIwave, Keysight ADS, HFSS, Hyperlynx, CST Microwave Studio, HSPICE, or similar) Experience with advanced lab equipment for SIPI validation (e.g., TDR, VNA, high-speed oscilloscopes, spectrum analyzers, compliance test fixtures, or similar) Experience with PCB and/or flex design and manufacturing processes, or similar technology Experience with high-speed electrical interfaces (e.g., DDR, PCIe, MIPI, USB, Ethernet, or similar) Effective communication and collaboration skills for cross-functional teamwork and/or external partner engagement Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies Master’s in electrical engineering, Physics, Mathematics, or related field and/or equivalent experience 8+ years of experience in EM simulation and measurement areas Experience with different instruments such as network analyzer, oscilloscope, signal generator, scope and other related test equipment to measure the eye-diagram Previous experience with Consumer Electronics\n\n$173,000/year to $245,000/year + bonus + equity + benefits",
+      "link": "https://www.metacareers.com/jobs/1514192513630315/",
+      "pub_date": "2026-04-29T10:54:11-07:00",
+      "origin_query": "",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
+    {
+      "id": "meta_978903851762450",
+      "title": "Software Engineer (Technical Leadership)",
+      "company": "Meta",
+      "locations": [
+        "Menlo Park, CA"
+      ],
+      "teams": [
+        "Software Engineering"
+      ],
+      "sub_teams": [
+        "Engineering"
+      ],
+      "compensation": "$271,000/year to $347,000/year + bonus + equity + benefits",
+      "description": "We are the teams who create all of Facebook’s product used by more than 1.5 billion people around the world. Want to build new features and improve existing products like Commerce, Ads, Video, Groups, News Feed, Search, and more? Want to solve unique, large scale, highly complex technical problems? Facebook is seeking experienced full-stack software engineers to join our product teams. You can help build products that help us connect the next billion people, create new features that have billions of interactions per day, and be a part of a team that’s working to help people connect around the globe. Join us!\n\nResponsibilities:\nDrive the team's goals and technical direction to pursue opportunities that make your larger organization more efficient Effectively communicate complex features and systems in detail Understand industry & company-wide trends to help assess & develop new technologies Partner & collaborate with organization leaders to help improve the level of performance of the team & organization Identify new opportunities for the larger organization & influence the appropriate people for staffing/prioritizing these new ideas Create consumer products and features on a large scale Lead long term technical vision and roadmap for large cross-company efforts Partner closely with infrastructure and operations teams to build and scale back-end services\n\nQualifications:\nBachelor's degree in Computer Science, Computer Engineering, relevant technical field, or equivalent practical experience Experience communicating and working across functions to drive solutions Experience in mentoring/influencing engineers across organizations 12+ years of experience with building large-scale applications, or similar experience Proven track record of planning multi-year roadmap in which shorter-term projects ladder to the long-term vision 8+ years of experience with web or mobile technologies Experience leading projects with industry-wide impact 12+ years of programming experience Experience in driving large cross-functional/industry-wide engineering efforts Demonstrated ability to integrate AI tools to optimize/redesign workflows and drive measurable impact (e.g., efficiency gains, quality improvements) Experience adhering to and implementing responsible, ethical AI practices (e.g., risk assessment, bias mitigation, quality and accuracy reviews) Demonstrated ongoing AI skill development (e.g., prompt/context engineering, agent orchestration) and staying current with emerging AI technologies\n\n$271,000/year to $347,000/year + bonus + equity + benefits",
+      "link": "https://www.metacareers.com/jobs/978903851762450/",
+      "pub_date": "2026-04-27T07:51:03-07:00",
+      "origin_query": "",
+      "first_seen": "2026-04-30T14:30:46.226615+00:00",
+      "last_seen": "2026-04-30T14:30:46.226615+00:00"
+    },
     {
       "id": "meta_1341339068053539",
       "title": "Brand Partnerships Manager, Reality Labs",

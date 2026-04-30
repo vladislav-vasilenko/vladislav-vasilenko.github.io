@@ -271,6 +271,7 @@ def build_tree(vacancies: List[Dict[str, Any]]) -> Dict[str, Any]:
         node = {
             "id": v["id"],
             "title": title,
+            "company": v.get("company") or "Unknown",
             "level": level_name,
             "level_rank": level_rank,
             "stem": stem,
@@ -364,8 +365,10 @@ def build_tree(vacancies: List[Dict[str, Any]]) -> Dict[str, Any]:
     # Peer index: stems shared by ≥2 jobs.
     peers = {stem: ids for stem, ids in stem_index.items() if len(ids) > 1}
 
+    companies = sorted(set(v.get("company") or "Unknown" for v in vacancies))
     return {
-        "company": "Meta",
+        "company": " + ".join(companies) if companies else "Unknown",
+        "companies": companies,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "stats": {
             "total_jobs": len(vacancies),
@@ -503,13 +506,18 @@ def main() -> int:
         print(f"❌ {in_path} not found — run scripts/scrape_online.py first.")
         return 1
     data = json.loads(in_path.read_text(encoding="utf-8"))
-    meta = [v for v in data.get("vacancies", []) if v.get("id", "").startswith("meta_")]
-    if not meta:
-        print("❌ no Meta vacancies in input.")
+    # Accept Meta + Yandex (and any future sources)
+    SUPPORTED_PREFIXES = ("meta_", "yandex_", "goog_")
+    selected = [v for v in data.get("vacancies", []) if any(v.get("id", "").startswith(p) for p in SUPPORTED_PREFIXES)]
+    if not selected:
+        print(f"❌ no vacancies with prefixes {SUPPORTED_PREFIXES} in input.")
         return 1
-    print(f"📦 Loaded {len(meta)} Meta vacancies")
+    by_company = defaultdict(int)
+    for v in selected:
+        by_company[v.get("company") or "Unknown"] += 1
+    print(f"📦 Loaded {len(selected)} vacancies: {dict(by_company)}")
 
-    tree = build_tree_full(meta)
+    tree = build_tree_full(selected)
     s = tree["stats"]
     print(
         f"🌲 Tree: {s['teams']} teams, {s['sub_teams']} sub-teams, "

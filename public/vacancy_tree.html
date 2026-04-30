@@ -132,7 +132,7 @@
 </head>
 <body>
 <header>
-  <h1>Meta · Vacancy Cluster Tree</h1>
+  <h1 id="mainTitle">Vacancy Cluster Tree</h1>
   <span class="nav">
     <a href="vacancy_tree.html" class="active">🌲 Tree</a>
     <a href="cluster_map.html">🗺 Cluster Map</a>
@@ -161,6 +161,10 @@
   const catColor = id => `var(--c-${id})`;
   const catEmoji = id => (cats.find(c => c.id === id) || {}).emoji || "❓";
   const catLabel = id => (cats.find(c => c.id === id) || {}).label || id;
+
+  // ── Title ─────────────────────────────────────────────────────────
+  document.getElementById("mainTitle").textContent =
+    (data.company || "Vacancies") + " · Vacancy Cluster Tree";
 
   // ── Stats line ────────────────────────────────────────────────────
   const s = data.stats || {};
@@ -453,7 +457,8 @@
         ${r.compensation ? `<div class="row"><b>Compensation:</b> ${escape(r.compensation)}</div>` : ""}
         ${r.locations?.length ? `<div class="row"><b>Locations:</b><br>${r.locations.map(l => `<span class="pill">${escape(l)}</span>`).join("")}</div>` : ""}
         ${r.manager_id ? `<div class="row muted">Reports to: <code>${r.manager_id}</code></div>` : ""}
-        <div class="row"><a href="${r.link}" target="_blank" rel="noopener">Open on metacareers.com →</a></div>
+        <div class="row"><a href="${r.link}" target="_blank" rel="noopener">Open on ${r.link.includes('metacareers') ? 'metacareers.com' : r.link.includes('yandex') ? 'yandex.ru/jobs' : new URL(r.link).hostname} →</a></div>
+        ${r.company ? `<div class="row"><span class="pill" style="border-color:var(--accent);color:var(--accent)">${escape(r.company)}</span></div>` : ""}
         ${r.description ? `
           <div class="row" style="margin-top: 12px;">
             ${extractSkills(r.description).map(s => `<span class="pill req-tag">${s}</span>`).join("")}

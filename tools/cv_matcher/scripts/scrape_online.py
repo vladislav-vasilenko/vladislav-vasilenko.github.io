@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Online vacancy scraper — runs under GitHub Actions.
 
-Scope (iter 1): Yandex, Sber, Google, Meta — with stealth + optional storage_state.
+Scope (iter 1): Yandex, Google, Meta — with stealth + optional storage_state.
+(Sber removed from automation due to WAF/blocking in CI, run manually from RU IP).
 
 Design:
   - Outputs: public/online_scraped.json — append-only over runs, deduped by id.
@@ -51,23 +52,27 @@ def _source_plan():
     google_state = os.environ.get("GOOGLE_STORAGE_STATE")
     meta_state = os.environ.get("META_STORAGE_STATE")
 
-    return [
+    plan = [
         ("yandex",
          lambda: YandexScraper(limit=40, stealth=True),
          YANDEX_URLS),
-        ("sber",
-         lambda: SberScraper(limit=25, stealth=True),
-         QUERIES),
         ("google",
          lambda: GoogleCareersScraper(limit=20, stealth=True, storage_state_path=google_state),
          QUERIES),
-        # Meta's GraphQL listing returns the entire job board (~552 jobs) in a
-        # single response, so we fetch it once with an empty query instead of
-        # iterating per keyword. limit=0 → no cap.
         ("meta",
          lambda: MetaCareersScraper(limit=0, stealth=True, storage_state_path=meta_state),
          [""]),
     ]
+
+    # Add sensitive RU scrapers only when running locally (not in CI)
+    if not os.environ.get("GITHUB_ACTIONS"):
+        plan.append((
+            "sber",
+            lambda: SberScraper(limit=25, stealth=True),
+            QUERIES
+        ))
+
+    return plan
 
 
 def _load_existing() -> dict:

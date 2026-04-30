@@ -1,6 +1,9 @@
 {
   "company": "Meta",
-  "generated_at": "2026-04-30T14:14:18.965520+00:00",
+  "companies": [
+    "Meta"
+  ],
+  "generated_at": "2026-04-30T14:34:19.678579+00:00",
   "stats": {
     "total_jobs": 541,
     "teams": 26,
@@ -125,6 +128,7 @@
                 {
                   "id": "meta_1457041469462949",
                   "title": "Environmental, Health & Safety Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "environmental",
@@ -149,6 +153,7 @@
                 {
                   "id": "meta_706939532499569",
                   "title": "Lead Building Engineer",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "building engineer",
@@ -172,6 +177,7 @@
                 {
                   "id": "meta_2021373545462932",
                   "title": "Lead Building Engineer",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "building engineer",
@@ -194,6 +200,7 @@
                 {
                   "id": "meta_1604051480563991",
                   "title": "Site Logistics Operations Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "site logistics operations",
@@ -216,6 +223,7 @@
                 {
                   "id": "meta_1943287409548906",
                   "title": "Site Logistics Operations Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "site logistics operations",
@@ -253,6 +261,7 @@
                 {
                   "id": "meta_607741089007139",
                   "title": "Critical Operations Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "critical operations",
@@ -277,6 +286,7 @@
                 {
                   "id": "meta_938273405629990",
                   "title": "Technical Sourcing Manager - AI GPU & Cloud",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "technical sourcing - ai gpu & cloud",
@@ -309,6 +319,7 @@
                 {
                   "id": "meta_1081929713616144",
                   "title": "Controls Subject Matter Expert",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "controls subject matter expert",
@@ -334,6 +345,7 @@
                 {
                   "id": "meta_1217678796398272",
                   "title": "Controls Subject Matter Expert",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "controls subject matter expert",
@@ -358,6 +370,7 @@
                 {
                   "id": "meta_754713570820476",
                   "title": "Critical Facility Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "critical facility engineer",
@@ -381,6 +394,7 @@
                 {
                   "id": "meta_795179610064299",
                   "title": "Critical Facility Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "critical facility engineer",
@@ -404,6 +418,7 @@
                 {
                   "id": "meta_1435494154152569",
                   "title": "Critical Facility Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "critical facility engineer",
@@ -438,6 +453,7 @@
                 {
                   "id": "meta_25433077622978345",
                   "title": "Data Center Production Operations Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data center production operations engineer",
@@ -460,6 +476,7 @@
                 {
                   "id": "meta_1195439005349609",
                   "title": "Data Center Production Operations Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data center production operations engineer",
@@ -482,6 +499,7 @@
                 {
                   "id": "meta_724650760083360",
                   "title": "Electrical Subject Matter Expert",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "electrical subject matter expert",
@@ -510,6 +528,7 @@
                 {
                   "id": "meta_1949481595892560",
                   "title": "Generator Specialist, Subject Matter Expert",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "generator specialist",
@@ -532,6 +551,7 @@
                 {
                   "id": "meta_831663409504316",
                   "title": "Leased Facility Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "leased facility engineer",
@@ -554,6 +574,7 @@
                 {
                   "id": "meta_983697370981438",
                   "title": "Mechanical Subject Matter Expert",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "mechanical subject matter expert",
@@ -577,6 +598,7 @@
                 {
                   "id": "meta_687385904215332",
                   "title": "Mechanical Subject Matter Expert",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "mechanical subject matter expert",
@@ -601,6 +623,7 @@
                 {
                   "id": "meta_1484683386051329",
                   "title": "Mechanical Subject Matter Expert",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "mechanical subject matter expert",
@@ -624,6 +647,7 @@
                 {
                   "id": "meta_1734358140739006",
                   "title": "Network Engineer, Deployment & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -649,6 +673,7 @@
                 {
                   "id": "meta_1944275393083944",
                   "title": "Network Engineer, Deployment & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -677,6 +702,7 @@
                 {
                   "id": "meta_1659499808530134",
                   "title": "Network Engineer, Deployment & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -699,6 +725,7 @@
                 {
                   "id": "meta_1272533978018718",
                   "title": "Network Engineer, Foundation & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -721,6 +748,7 @@
                 {
                   "id": "meta_1281177703893886",
                   "title": "Network Engineer, Foundation & Support (DC Design)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -745,6 +773,7 @@
                 {
                   "id": "meta_1201679578735137",
                   "title": "Network Engineer, Foundations and Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -769,6 +798,7 @@
                 {
                   "id": "meta_925571733723302",
                   "title": "Network Engineer, Operations & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -792,6 +822,7 @@
                 {
                   "id": "meta_1454266803001728",
                   "title": "Network Engineer, Operations & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -814,6 +845,7 @@
                 {
                   "id": "meta_2218235721999708",
                   "title": "Network Engineer, Operations & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -837,6 +869,7 @@
                 {
                   "id": "meta_1407796804128683",
                   "title": "Network Engineer, Operations & Support (OSP)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -859,6 +892,7 @@
                 {
                   "id": "meta_1513314106566237",
                   "title": "Network Engineer, Operations & Support (Subsea)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -881,6 +915,7 @@
                 {
                   "id": "meta_1268821778554702",
                   "title": "Robotics Engineer - Logistics and Material Flow",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "robotics engineer - logistics and material flow",
@@ -903,6 +938,7 @@
                 {
                   "id": "meta_1267891448243568",
                   "title": "Robotics Manipulation Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "robotics manipulation engineer",
@@ -925,6 +961,7 @@
                 {
                   "id": "meta_2018699405745973",
                   "title": "Site Logistics Operations Specialist",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "site logistics operations specialist",
@@ -949,6 +986,7 @@
                 {
                   "id": "meta_573448089134627",
                   "title": "Site Logistics Operations Specialist",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "site logistics operations specialist",
@@ -999,6 +1037,7 @@
                 {
                   "id": "meta_1402404575021400",
                   "title": "Area Project Controls Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "area project controls",
@@ -1021,6 +1060,7 @@
                 {
                   "id": "meta_1453290079211931",
                   "title": "Area Project Controls Lead, Hyperion",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "area project controls",
@@ -1043,6 +1083,7 @@
                 {
                   "id": "meta_945080131354140",
                   "title": "Area Project Controls Lead, Leased Data Centers",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "area project controls",
@@ -1067,6 +1108,7 @@
                 {
                   "id": "meta_968590792368057",
                   "title": "Area Project Controls Lead, Mega Campus",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "area project controls",
@@ -1091,6 +1133,7 @@
                 {
                   "id": "meta_1152714783341468",
                   "title": "Area Schedule Lead - Data Center Design, Engineering and Construction",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "area schedule - data center design",
@@ -1116,6 +1159,7 @@
                 {
                   "id": "meta_1356112026275636",
                   "title": "Area Schedule Lead, Leased Data Centers",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "area schedule",
@@ -1139,6 +1183,7 @@
                 {
                   "id": "meta_1307734557921429",
                   "title": "Area Schedule Lead, Mega Campus",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "area schedule",
@@ -1162,6 +1207,7 @@
                 {
                   "id": "meta_26504700389186009",
                   "title": "Area Schedule Lead, Mega Campus | Responsable de la planification régionale, méga-campus",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "area schedule",
@@ -1184,6 +1230,7 @@
                 {
                   "id": "meta_2764274517243093",
                   "title": "Area Schedule Lead, Project Hyperion",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "area schedule",
@@ -1217,6 +1264,7 @@
                 {
                   "id": "meta_942688768742784",
                   "title": "Area Construction Manager, Data Center",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "area construction",
@@ -1240,6 +1288,7 @@
                 {
                   "id": "meta_1350566577077010",
                   "title": "Campus Construction Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "campus construction",
@@ -1264,6 +1313,7 @@
                 {
                   "id": "meta_1331194851776847",
                   "title": "Campus Construction Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "campus construction",
@@ -1287,6 +1337,7 @@
                 {
                   "id": "meta_1057427173269828",
                   "title": "Construction Manager - Data Center Design, Engineering and Construction",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "construction - data center design",
@@ -1320,6 +1371,7 @@
                 {
                   "id": "meta_760975743579088",
                   "title": "Construction Manager - Data Center Design, Engineering, & Construction",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "construction - data center design",
@@ -1343,6 +1395,7 @@
                 {
                   "id": "meta_1475840544036119",
                   "title": "Construction Manager - Data Center Design, Engineering, and Construction ",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "construction - data center design",
@@ -1365,6 +1418,7 @@
                 {
                   "id": "meta_733224206480023",
                   "title": "Construction Manager | Gestionnaire de construction",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "construction | gestionnaire de construction",
@@ -1387,6 +1441,7 @@
                 {
                   "id": "meta_812449874977786",
                   "title": "Construction Manager, Leased",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "construction",
@@ -1409,6 +1464,7 @@
                 {
                   "id": "meta_973511408461377",
                   "title": "Construction Manager, Leased - Data Center Construction",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "construction",
@@ -1432,6 +1488,7 @@
                 {
                   "id": "meta_1206350587598691",
                   "title": "Mega-Site Construction Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "mega-site construction",
@@ -1457,6 +1514,7 @@
                 {
                   "id": "meta_1209701300291153",
                   "title": "Mega-Site Construction Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "mega-site construction",
@@ -1480,6 +1538,7 @@
                 {
                   "id": "meta_24685460184490030",
                   "title": "On-Site BMS Quality Manager (BQM) - Data Center Design, Engineering and Construction",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "on-site bms quality (bqm) - data center design",
@@ -1504,6 +1563,7 @@
                 {
                   "id": "meta_2192824904462966",
                   "title": "Regional Quality Manager - Data Center Design, Engineering & Construction",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "regional quality - data center design",
@@ -1531,6 +1591,7 @@
                 {
                   "id": "meta_1533953038154910",
                   "title": "Regional Quality Manager - Megasite",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "regional quality - megasite",
@@ -1563,6 +1624,7 @@
                 {
                   "id": "meta_967830298136473",
                   "title": "Connectivity Engineer - Data Center Design, Engineering, & Construction",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "connectivity engineer - data center design",
@@ -1592,6 +1654,7 @@
                 {
                   "id": "meta_1290875762372732",
                   "title": "Connectivity Engineer, Leased - Data Center Construction",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "connectivity engineer",
@@ -1614,6 +1677,7 @@
                 {
                   "id": "meta_1891532841791978",
                   "title": "Connectivity Engineer, Leased - Data Center Design, Engineering, & Construction",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "connectivity engineer",
@@ -1636,6 +1700,7 @@
                 {
                   "id": "meta_1389172613251941",
                   "title": "Failure Analysis Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "failure analysis engineer",
@@ -1660,6 +1725,7 @@
                 {
                   "id": "meta_769709699353828",
                   "title": "Network Engineer, Deployment & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -1684,6 +1750,7 @@
                 {
                   "id": "meta_1565004731662609",
                   "title": "Network Engineer, Foundation and Support (Edge/Backbone Infrastructure Design)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -1707,6 +1774,7 @@
                 {
                   "id": "meta_4055679534697858",
                   "title": "Network Engineer, Foundation and Support (Edge/Backbone Infrastructure Design)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -1730,6 +1798,7 @@
                 {
                   "id": "meta_967054659642370",
                   "title": "Site Loss Control Specialist - Construction Safety",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "site loss control specialist - construction safety",
@@ -1777,6 +1846,7 @@
                 {
                   "id": "meta_973992872214648",
                   "title": "Director of Regional Development",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "of regional development",
@@ -1800,6 +1870,7 @@
                 {
                   "id": "meta_2269194436949203",
                   "title": "Managing Director, Energy Infrastructure Investments",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "managing",
@@ -1834,6 +1905,7 @@
                 {
                   "id": "meta_1570455808415085",
                   "title": "Principal, Energy Infrastructure Investments",
+                  "company": "Meta",
                   "level": "Principal",
                   "level_rank": 6,
                   "stem": "",
@@ -1869,6 +1941,7 @@
                 {
                   "id": "meta_2107551960090122",
                   "title": "Data Center Development Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "data center development",
@@ -1892,6 +1965,7 @@
                 {
                   "id": "meta_1992628721667519",
                   "title": "Data Center Location Strategy Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "data center location strategy",
@@ -1920,6 +1994,7 @@
                 {
                   "id": "meta_1258764892584666",
                   "title": "Data Center Site Selection Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "data center site selection",
@@ -1949,6 +2024,7 @@
                 {
                   "id": "meta_1270129837873902",
                   "title": "Data Center Strategic Partnerships Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "data center strategic partnerships",
@@ -1980,6 +2056,7 @@
                 {
                   "id": "meta_830259092876766",
                   "title": "Data Center Strategy & Planning Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "data center strategy & planning",
@@ -2004,6 +2081,7 @@
                 {
                   "id": "meta_1495296408879608",
                   "title": "Datacenter Site Selection Manager - Leasing",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "datacenter site selection - leasing",
@@ -2042,6 +2120,7 @@
                 {
                   "id": "meta_1647763356230904",
                   "title": "Strategic Partnerships Data Center Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "strategic partnerships data center",
@@ -2073,6 +2152,7 @@
                 {
                   "id": "meta_909526611915160",
                   "title": "Strategic Partnerships Data Center Power Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "strategic partnerships data center power",
@@ -2113,6 +2193,7 @@
                 {
                   "id": "meta_1848366772525487",
                   "title": "Network Engineer, Operations & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -2159,6 +2240,7 @@
                 {
                   "id": "meta_1368839171784149",
                   "title": "Network Engineer - Optical Deployment",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer - optical deployment",
@@ -2181,6 +2263,7 @@
                 {
                   "id": "meta_1686183869464764",
                   "title": "Network Engineer,\nOperations & Support (Subsea)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -2204,6 +2287,7 @@
                 {
                   "id": "meta_606551888496600",
                   "title": "Network Engineer, Deployment & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -2230,6 +2314,7 @@
                 {
                   "id": "meta_1344144467490177",
                   "title": "Network Engineer, Deployment & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -2252,6 +2337,7 @@
                 {
                   "id": "meta_1679534943032662",
                   "title": "Network Engineer, Deployment & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -2274,6 +2360,7 @@
                 {
                   "id": "meta_1701181874626220",
                   "title": "Network Engineer, Deployment & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -2296,6 +2383,7 @@
                 {
                   "id": "meta_1889314011669750",
                   "title": "Network Engineer, Operations & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -2318,6 +2406,7 @@
                 {
                   "id": "meta_812085245170536",
                   "title": "Network Operations Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network operations engineer",
@@ -2367,6 +2456,7 @@
                 {
                   "id": "meta_26416278451374679",
                   "title": "Commercial Sourcing Manager, Data Center Connectivity",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "commercial sourcing",
@@ -2413,6 +2503,7 @@
                 {
                   "id": "meta_958979083210982",
                   "title": "Network Engineer, Deployment & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -2477,6 +2568,7 @@
                 {
                   "id": "meta_1645206443586664",
                   "title": "Research Data Program Manager, MSL",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "research data program",
@@ -2499,6 +2591,7 @@
                 {
                   "id": "meta_816343714639198",
                   "title": "Research Scientist Manager, MetaAI Assistant Measurement",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "research scientist",
@@ -2531,6 +2624,7 @@
                 {
                   "id": "meta_1224406199534798",
                   "title": "Staff Research Engineer, MetaAI Assistant Measurement",
+                  "company": "Meta",
                   "level": "Staff",
                   "level_rank": 4,
                   "stem": "research engineer",
@@ -2558,6 +2652,7 @@
                 {
                   "id": "meta_1102580135347448",
                   "title": "Staff Research Scientist - RL and Agents, Paris",
+                  "company": "Meta",
                   "level": "Staff",
                   "level_rank": 4,
                   "stem": "research scientist - rl and agents",
@@ -2591,6 +2686,7 @@
                 {
                   "id": "meta_1670353460809164",
                   "title": "AI Research Engineer, FAIR Chemistry",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research engineer",
@@ -2613,6 +2709,7 @@
                 {
                   "id": "meta_1372820631269920",
                   "title": "AI Research Engineer, Media - Meta Superintelligence Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research engineer",
@@ -2636,6 +2733,7 @@
                 {
                   "id": "meta_1252374446400654",
                   "title": "AI Research Scientist - FAIR Social Intelligence",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist - fair social intelligence",
@@ -2658,6 +2756,7 @@
                 {
                   "id": "meta_1250945876568739",
                   "title": "AI Research Scientist - FAIR Social Intelligence",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist - fair social intelligence",
@@ -2681,6 +2780,7 @@
                 {
                   "id": "meta_2341443469702506",
                   "title": "AI Research Scientist - MSL FAIR Foundations",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist - msl fair foundations",
@@ -2703,6 +2803,7 @@
                 {
                   "id": "meta_2709819839377555",
                   "title": "AI Research Scientist - MSL FAIR Foundations",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist - msl fair foundations",
@@ -2725,6 +2826,7 @@
                 {
                   "id": "meta_2864638960409054",
                   "title": "AI Research Scientist - Safety Alignment Team",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist - safety alignment team",
@@ -2747,6 +2849,7 @@
                 {
                   "id": "meta_1663048827996120",
                   "title": "AI Research Scientist - Voice AI Team, Meta Superintelligence Lab",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist - voice ai team",
@@ -2769,6 +2872,7 @@
                 {
                   "id": "meta_820579730450107",
                   "title": "AI Research Scientist - Voice AI Team, Meta Superintelligence Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist - voice ai team",
@@ -2793,6 +2897,7 @@
                 {
                   "id": "meta_939282615434416",
                   "title": "AI Research Scientist, Audio-Visual Understanding, FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -2817,6 +2922,7 @@
                 {
                   "id": "meta_2030632494556913",
                   "title": "AI Research Scientist, Computer Vision",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -2839,6 +2945,7 @@
                 {
                   "id": "meta_941167088592273",
                   "title": "AI Research Scientist, CoreML - Monetization AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -2863,6 +2970,7 @@
                 {
                   "id": "meta_1774592767280404",
                   "title": "AI Research Scientist, FAIR | Chercheur(se) en IA, FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -2885,6 +2993,7 @@
                 {
                   "id": "meta_906136745437046",
                   "title": "AI Research Scientist, Media Data Research - MSL FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -2908,6 +3017,7 @@
                 {
                   "id": "meta_1485957726592535",
                   "title": "AI Research Scientist, Reinforcement Learning ",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -2930,6 +3040,7 @@
                 {
                   "id": "meta_4173593806295761",
                   "title": "AI Research Scientist, Robotics",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -2955,6 +3066,7 @@
                 {
                   "id": "meta_954925830524757",
                   "title": "AI Research Scientist, SysML - FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -2979,6 +3091,7 @@
                 {
                   "id": "meta_1437821761070455",
                   "title": "AI Research Scientist, Vision Language Models",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -3002,6 +3115,7 @@
                 {
                   "id": "meta_1807518976538281",
                   "title": "AI Specialist - Product and Applied Research",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai specialist - product and applied research",
@@ -3024,6 +3138,7 @@
                 {
                   "id": "meta_766813029714580",
                   "title": "AI Specialist - Product and Applied Research ",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai specialist - product and applied research",
@@ -3051,6 +3166,7 @@
                 {
                   "id": "meta_1276217727388610",
                   "title": "Fundamental AI Researcher - FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "fundamental ai researcher - fair",
@@ -3075,6 +3191,7 @@
                 {
                   "id": "meta_1273144248096238",
                   "title": "Postdoctoral Researcher, Fundamental AI Research (PhD)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "postdoctoral researcher",
@@ -3097,6 +3214,7 @@
                 {
                   "id": "meta_26493785570302711",
                   "title": "Research Assistant (PhD)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research assistant (phd)",
@@ -3119,6 +3237,7 @@
                 {
                   "id": "meta_1650887963003826",
                   "title": "Research Engineer - FAIR, SGT",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer - fair",
@@ -3141,6 +3260,7 @@
                 {
                   "id": "meta_33826510916964882",
                   "title": "Research Engineer - Multimodal Embodiment Trust (multiple locations)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer - multimodal embodiment trust (multiple locations)",
@@ -3163,6 +3283,7 @@
                 {
                   "id": "meta_1223094479921593",
                   "title": "Research Engineer, Language - Personalization, Meta Superintelligence Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer",
@@ -3185,6 +3306,7 @@
                 {
                   "id": "meta_2321017468376143",
                   "title": "Research Engineer, Monetization AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer",
@@ -3212,6 +3334,7 @@
                 {
                   "id": "meta_1070564468548321",
                   "title": "Research Engineer, Monetization AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer",
@@ -3241,6 +3364,7 @@
                 {
                   "id": "meta_1526715372381017",
                   "title": "Research Engineer, Preparedness - Meta Superintelligence Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer",
@@ -3263,6 +3387,7 @@
                 {
                   "id": "meta_1247986147500123",
                   "title": "Research Scientist - FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist - fair",
@@ -3285,6 +3410,7 @@
                 {
                   "id": "meta_4047129245422755",
                   "title": "Research Scientist – World Models, Robotics & Embodied AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist – world models",
@@ -3307,6 +3433,7 @@
                 {
                   "id": "meta_1815415389242149",
                   "title": "Research Scientist, AI & Systems Co-design (PhD)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist",
@@ -3329,6 +3456,7 @@
                 {
                   "id": "meta_26607795362252983",
                   "title": "Research Scientist, AI Language",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist",
@@ -3351,6 +3479,7 @@
                 {
                   "id": "meta_2230264424380264",
                   "title": "Research Scientist, AI for Reasoning",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist",
@@ -3373,6 +3502,7 @@
                 {
                   "id": "meta_26416287738062231",
                   "title": "Research Scientist, FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist",
@@ -3395,6 +3525,7 @@
                 {
                   "id": "meta_1286818323298472",
                   "title": "Research Scientist, FAIR SGT - Paris",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist",
@@ -3417,6 +3548,7 @@
                 {
                   "id": "meta_1727567115072477",
                   "title": "Research Scientist, Sensor and Systems Robotics (PhD)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist",
@@ -3449,6 +3581,7 @@
                 {
                   "id": "meta_679961588479426",
                   "title": " Research Scientist Intern, Language and Agents (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -3474,6 +3607,7 @@
                 {
                   "id": "meta_2633206137040139",
                   "title": "Research Scientist Intern PhD,  Applied Research",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist phd",
@@ -3498,6 +3632,7 @@
                 {
                   "id": "meta_771948392580541",
                   "title": "Research Scientist Intern, AI/ML, Core Ads Growth (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -3545,6 +3680,7 @@
                 {
                   "id": "meta_2065281677624998",
                   "title": "AI Research Scientist (Technical Leadership), Data Research - MSL FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist (technical leadership)",
@@ -3567,6 +3703,7 @@
                 {
                   "id": "meta_899841383103112",
                   "title": "AI Research Scientist (Technical Leadership), Multimodal - Monetization GenAI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist (technical leadership)",
@@ -3590,6 +3727,7 @@
                 {
                   "id": "meta_1865758441490305",
                   "title": "AI Research Scientist, CoreML - Monetization",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -3617,6 +3755,7 @@
                 {
                   "id": "meta_1435963384723269",
                   "title": "AI Research Scientist, Media - Meta Superintelligence Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -3640,6 +3779,7 @@
                 {
                   "id": "meta_3212685352239662",
                   "title": "AI Research Scientist, Media - Meta Superintelligence Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -3663,6 +3803,7 @@
                 {
                   "id": "meta_1187350126138459",
                   "title": "AI Research Scientist, Media Data Research - MSL FAIR ",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -3685,6 +3826,7 @@
                 {
                   "id": "meta_1927852644809839",
                   "title": "AI Research Scientist, Text Data Research - MSL FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -3709,6 +3851,7 @@
                 {
                   "id": "meta_1382136746900637",
                   "title": "Research Engineer - AI Trust - Meta Superintelligence Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer - ai trust - meta superintelligence labs",
@@ -3756,6 +3899,7 @@
                 {
                   "id": "meta_1240605408142190",
                   "title": "AI Research Scientist - Meta Superintelligence Labs (PhD)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist - meta superintelligence labs (phd)",
@@ -3778,6 +3922,7 @@
                 {
                   "id": "meta_1380974339703907",
                   "title": "AI Research Scientist, CoreML - Monetization AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -3803,6 +3948,7 @@
                 {
                   "id": "meta_1615030889533579",
                   "title": "AI Research Scientist, Robotics",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -3825,6 +3971,7 @@
                 {
                   "id": "meta_2711793419173868",
                   "title": "Research Scientist, AI Research (PhD)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist",
@@ -3847,6 +3994,7 @@
                 {
                   "id": "meta_1442106720912499",
                   "title": "UX Researcher, Mixed Methods",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ux researcher",
@@ -3881,6 +4029,7 @@
                 {
                   "id": "meta_1244916774378744",
                   "title": "Audio Research Scientist Intern",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "audio research scientist",
@@ -3903,6 +4052,7 @@
                 {
                   "id": "meta_26336808892622129",
                   "title": "Research Scientist Intern, Optimization, Privacy and Inference (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -3950,6 +4100,7 @@
                 {
                   "id": "meta_1184652109720068",
                   "title": "AI Research Scientist, Media Data Research - MSL FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -3972,6 +4123,7 @@
                 {
                   "id": "meta_3882902818612530",
                   "title": "AI Research Scientist, VLM (vision language models)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -3995,6 +4147,7 @@
                 {
                   "id": "meta_1647169276484472",
                   "title": "AI Research Scientist, Video Generation and Post Training, FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -4020,6 +4173,7 @@
                 {
                   "id": "meta_3490087297796438",
                   "title": "Research Engineer, Media Data Research - MSL FAIR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer",
@@ -4052,6 +4206,7 @@
                 {
                   "id": "meta_2022109075207025",
                   "title": "Research Scientist Intern, Photorealistic Telepresence (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -4100,6 +4255,7 @@
                 {
                   "id": "meta_997250229310951",
                   "title": "Display Research Scientist ",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "display research scientist",
@@ -4122,6 +4278,7 @@
                 {
                   "id": "meta_1291229609804568",
                   "title": "Display System Architect",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "display system architect",
@@ -4168,6 +4325,7 @@
                 {
                   "id": "meta_1256193859947791",
                   "title": "Research Data Program Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "research data program",
@@ -4200,6 +4358,7 @@
                 {
                   "id": "meta_2916726525182155",
                   "title": "Research Scientist Intern, Monetization Generative AI - LLM (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -4249,6 +4408,7 @@
                 {
                   "id": "meta_1667346154398983",
                   "title": "Data Engineer, PAR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data engineer",
@@ -4271,6 +4431,7 @@
                 {
                   "id": "meta_2195102661318568",
                   "title": "Data Engineer, PAR",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data engineer",
@@ -4339,6 +4500,7 @@
                 {
                   "id": "meta_1323081066387055",
                   "title": "Strategic Sourcing Manager – Camera, Depth & Optics (Smartglasses/AR)",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "strategic sourcing – camera",
@@ -4371,6 +4533,7 @@
                 {
                   "id": "meta_936152909409005",
                   "title": "Hardware Electrical Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "hardware electrical engineer",
@@ -4394,6 +4557,7 @@
                 {
                   "id": "meta_843069325501486",
                   "title": "Hardware Electrical Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "hardware electrical engineer",
@@ -4417,6 +4581,7 @@
                 {
                   "id": "meta_1953343938901157",
                   "title": "Hardware Electrical Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "hardware electrical engineer",
@@ -4440,6 +4605,7 @@
                 {
                   "id": "meta_2467473020365597",
                   "title": "Hardware Test & Automation Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "hardware test & automation engineer",
@@ -4462,6 +4628,7 @@
                 {
                   "id": "meta_1885477878774579",
                   "title": "Materials Scientist — Organic Crystal Growth & Process Engineering",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "materials scientist — organic crystal growth & process engineering",
@@ -4484,6 +4651,7 @@
                 {
                   "id": "meta_1604420380769879",
                   "title": "Power Electrical Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "power electrical engineer",
@@ -4506,6 +4674,7 @@
                 {
                   "id": "meta_1867505357124325",
                   "title": "Product Design Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product design engineer",
@@ -4528,6 +4697,7 @@
                 {
                   "id": "meta_1694826561881194",
                   "title": "Silicon Performance Architect",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "silicon performance architect",
@@ -4553,6 +4723,7 @@
                 {
                   "id": "meta_1184619503498227",
                   "title": "Silicon Power Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "silicon power engineer",
@@ -4575,6 +4746,7 @@
                 {
                   "id": "meta_1282130100491353",
                   "title": "Silicon System Validation Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "silicon system validation engineer",
@@ -4597,6 +4769,7 @@
                 {
                   "id": "meta_2311666192615773",
                   "title": "Silicon Validation Engineer, Reality Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "silicon validation engineer",
@@ -4629,6 +4802,7 @@
                 {
                   "id": "meta_25514049594874160",
                   "title": "Research Scientist Intern, Advanced Materials for Soft Robotics (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -4651,6 +4825,7 @@
                 {
                   "id": "meta_25766888559672059",
                   "title": "Research Scientist Intern, Applied Perception Science (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -4673,6 +4848,7 @@
                 {
                   "id": "meta_24308030212183826",
                   "title": "Research Scientist Intern, Robotic Control Policy (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -4696,6 +4872,7 @@
                 {
                   "id": "meta_1483364746119977",
                   "title": "Research Scientist Intern, Silicon Performance Architecture (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -4746,6 +4923,7 @@
                 {
                   "id": "meta_1610850836788728",
                   "title": "Manufacturing Technical Manager - APAC",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "manufacturing technical - apac",
@@ -4769,6 +4947,7 @@
                 {
                   "id": "meta_806841932435303",
                   "title": "Manufacturing Technical Manager - APAC ",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "manufacturing technical - apac",
@@ -4792,6 +4971,7 @@
                 {
                   "id": "meta_1593695548519562",
                   "title": "NPI Operations Program Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "npi operations program",
@@ -4815,6 +4995,7 @@
                 {
                   "id": "meta_25637373352571650",
                   "title": "Technical Program Manager, EE - AI Glasses ",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "technical program",
@@ -4848,6 +5029,7 @@
                 {
                   "id": "meta_1092822929374881",
                   "title": "Product Design Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product design engineer",
@@ -4870,6 +5052,7 @@
                 {
                   "id": "meta_955432583936869",
                   "title": "Product Design Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product design engineer",
@@ -4892,6 +5075,7 @@
                 {
                   "id": "meta_1616588082932284",
                   "title": "Product Design Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product design engineer",
@@ -4914,6 +5098,7 @@
                 {
                   "id": "meta_1943786999834780",
                   "title": "Product Design Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product design engineer",
@@ -4937,6 +5122,7 @@
                 {
                   "id": "meta_1364419801304682",
                   "title": "Product Design Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product design engineer",
@@ -4959,6 +5145,7 @@
                 {
                   "id": "meta_842857065154845",
                   "title": "Sensor Hardware Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "sensor hardware engineer",
@@ -4981,6 +5168,7 @@
                 {
                   "id": "meta_949328787662145",
                   "title": "Silicon Physical Design Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "silicon physical design engineer",
@@ -5003,6 +5191,7 @@
                 {
                   "id": "meta_2015299229864972",
                   "title": "Software Engineer - Power and Performance (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer - power and performance (technical leadership)",
@@ -5051,6 +5240,7 @@
                 {
                   "id": "meta_876553018176323",
                   "title": "Contract Manufacturing Manager ",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "contract manufacturing",
@@ -5073,6 +5263,7 @@
                 {
                   "id": "meta_850011364727985",
                   "title": "Operations Program Manager (Core Technologies)",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "operations program (core technologies)",
@@ -5097,6 +5288,7 @@
                 {
                   "id": "meta_1470153134896953",
                   "title": "Silicon Technologies Strategic Partnerships & Sourcing Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "silicon technologies strategic partnerships & sourcing",
@@ -5119,6 +5311,7 @@
                 {
                   "id": "meta_862508193528547",
                   "title": "Supply Chain Operations Program Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "supply chain operations program",
@@ -5151,6 +5344,7 @@
                 {
                   "id": "meta_34369358559345541",
                   "title": "Manufacturing Test Engineer (PCBA Test)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "manufacturing test engineer (pcba test)",
@@ -5175,6 +5369,7 @@
                 {
                   "id": "meta_1965575387622877",
                   "title": "Manufacturing Test Engineer (PCBA Test)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "manufacturing test engineer (pcba test)",
@@ -5199,6 +5394,7 @@
                 {
                   "id": "meta_1235270262062016",
                   "title": "Manufacturing Test Engineer - Automation",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "manufacturing test engineer - automation",
@@ -5223,6 +5419,7 @@
                 {
                   "id": "meta_1359325628925781",
                   "title": "Manufacturing Test Engineer - Calibration",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "manufacturing test engineer - calibration",
@@ -5247,6 +5444,7 @@
                 {
                   "id": "meta_2304814673323094",
                   "title": "Manufacturing Test Engineer - Display & Optical",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "manufacturing test engineer - display & optical",
@@ -5271,6 +5469,7 @@
                 {
                   "id": "meta_4866614626886464",
                   "title": "Manufacturing Test Engineer(FATP)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "manufacturing test engineer(fatp)",
@@ -5320,6 +5519,7 @@
                 {
                   "id": "meta_915768267709333",
                   "title": "CMF Developer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "cmf developer",
@@ -5342,6 +5542,7 @@
                 {
                   "id": "meta_770725172471480",
                   "title": "Concept Modeling Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "concept modeling designer",
@@ -5364,6 +5565,7 @@
                 {
                   "id": "meta_1256940803045134",
                   "title": "Industrial Designer - Packaging",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "industrial designer - packaging",
@@ -5386,6 +5588,7 @@
                 {
                   "id": "meta_1950956785536058",
                   "title": "Industrial Designer - RL Hardware",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "industrial designer - rl hardware",
@@ -5433,6 +5636,7 @@
                 {
                   "id": "meta_1629957844676203",
                   "title": "IP Validation Engineer - Machine Learning Accelerators",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ip validation engineer - machine learning accelerators",
@@ -5466,6 +5670,7 @@
                 {
                   "id": "meta_779670167783218",
                   "title": "Research Scientist Intern, Machine Perception for Input and Interaction (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -5489,6 +5694,7 @@
                 {
                   "id": "meta_1468284791260126",
                   "title": "Research Scientist Intern, Multimodal Generative AI and Robotics (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -5537,6 +5743,7 @@
                 {
                   "id": "meta_1975097730055820",
                   "title": "Japan Partner Enablement Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "japan partner enablement",
@@ -5559,6 +5766,7 @@
                 {
                   "id": "meta_948790854490742",
                   "title": "Japan Strategic Account Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "japan strategic account",
@@ -5581,6 +5789,7 @@
                 {
                   "id": "meta_4279589505689340",
                   "title": "Physical Merchandising Program Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "physical merchandising program",
@@ -5627,6 +5836,7 @@
                 {
                   "id": "meta_1304738674872325",
                   "title": "Channel Enablement Manager | Meta Reality Labs India",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "channel enablement | meta reality labs india",
@@ -5649,6 +5859,7 @@
                 {
                   "id": "meta_26024270537191968",
                   "title": "Partner Enablement Manager | Meta Reality Labs DACH",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "partner enablement | meta reality labs dach",
@@ -5671,6 +5882,7 @@
                 {
                   "id": "meta_1223565829861437",
                   "title": "Partner Enablement Manager | Meta Reality Labs Mexico",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "partner enablement | meta reality labs mexico",
@@ -5718,6 +5930,7 @@
                 {
                   "id": "meta_747766728082454",
                   "title": "Field Sales Manager - Japan",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "field sales - japan",
@@ -5750,6 +5963,7 @@
                 {
                   "id": "meta_776672288833325",
                   "title": "Solutions Architect",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "solutions architect",
@@ -5798,6 +6012,7 @@
                 {
                   "id": "meta_3068587003348843",
                   "title": "AI Research Scientist, Robotics",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -5822,6 +6037,7 @@
                 {
                   "id": "meta_1452658876443607",
                   "title": "Manufacturing Test Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "manufacturing test engineer",
@@ -5868,6 +6084,7 @@
                 {
                   "id": "meta_1422892385992613",
                   "title": "Research Scientist Intern, Applied Vision and Image Quality (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -5890,6 +6107,7 @@
                 {
                   "id": "meta_1134286408770089",
                   "title": "Research Scientist Intern, Applied Vision in Augmented Reality (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -5936,6 +6154,7 @@
                 {
                   "id": "meta_1245547964185672",
                   "title": "Operations Program Manager (Core Technologies)",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "operations program (core technologies)",
@@ -5982,6 +6201,7 @@
                 {
                   "id": "meta_1148191640825141",
                   "title": "Research Scientist Manager - ML Modeling & Applied Research",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "research scientist - ml modeling & applied research",
@@ -6029,6 +6249,7 @@
                 {
                   "id": "meta_788152294069957",
                   "title": "Industrial Design Architect (ME/PDE)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "industrial design architect (me/pde)",
@@ -6075,6 +6296,7 @@
                 {
                   "id": "meta_1240329667615291",
                   "title": "Partner Enablement Manager | Meta Reality Labs India",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "partner enablement | meta reality labs india",
@@ -6138,6 +6360,7 @@
                 {
                   "id": "meta_27234074902851552",
                   "title": "Director, Global Enterprise Sales Operations",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "",
@@ -6165,6 +6388,7 @@
                 {
                   "id": "meta_869009276181407",
                   "title": "Enterprise Technical Sales Director, LATAM",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "enterprise technical sales",
@@ -6187,6 +6411,7 @@
                 {
                   "id": "meta_2137838357059518",
                   "title": "Enterprise Technical Sales Director, NORAM",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "enterprise technical sales",
@@ -6224,6 +6449,7 @@
                 {
                   "id": "meta_1423722113102244",
                   "title": "Account Manager, Small and Medium Business Group (SMBG)",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "account",
@@ -6247,6 +6473,7 @@
                 {
                   "id": "meta_3038058366405302",
                   "title": "Client Solution Manager, CEE Tech Apps - 12 Months Contract",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "client solution",
@@ -6269,6 +6496,7 @@
                 {
                   "id": "meta_1589574595368459",
                   "title": "Client Solution Manager, Tech & Commerce, 12 Month Contract",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "client solution",
@@ -6291,6 +6519,7 @@
                 {
                   "id": "meta_4319843798292897",
                   "title": "Client Solution Manager, Tech & Commerce, 12 Month Contract ",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "client solution",
@@ -6313,6 +6542,7 @@
                 {
                   "id": "meta_850640337991442",
                   "title": "Client Solutions Manager (CSM) - Ecommerce & Omni-Channel, Türkiye",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "client solutions (csm) - ecommerce & omni-channel",
@@ -6335,6 +6565,7 @@
                 {
                   "id": "meta_2404000456705123",
                   "title": "Client Solutions Manager - France (STE, 5 months)",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "client solutions - france (ste",
@@ -6357,6 +6588,7 @@
                 {
                   "id": "meta_1960890227789253",
                   "title": "Client Solutions Manager, Tech Apps",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "client solutions",
@@ -6379,6 +6611,7 @@
                 {
                   "id": "meta_2296077574250781",
                   "title": "Enterprise Technical Sales Manager, APAC",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "enterprise technical sales",
@@ -6401,6 +6634,7 @@
                 {
                   "id": "meta_2041354459763514",
                   "title": "Enterprise Technical Sales Manager, NORAM",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "enterprise technical sales",
@@ -6428,6 +6662,7 @@
                 {
                   "id": "meta_930844143206869",
                   "title": "Enterprise Technical Sales Manager, NORAM",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "enterprise technical sales",
@@ -6465,6 +6700,7 @@
                 {
                   "id": "meta_1685307142478977",
                   "title": "GCA EMEA Agency Lead (12 month STE)",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "gca emea agency (12 month ste)",
@@ -6497,6 +6733,7 @@
                 {
                   "id": "meta_927134689939832",
                   "title": "Agency Partner, Japan",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "agency partner",
@@ -6519,6 +6756,7 @@
                 {
                   "id": "meta_952970263773928",
                   "title": "Enterprise Technical Sales Specialist (NORAM)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist (noram)",
@@ -6546,6 +6784,7 @@
                 {
                   "id": "meta_1643819606631284",
                   "title": "Enterprise Technical Sales Specialist, APAC",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6570,6 +6809,7 @@
                 {
                   "id": "meta_2374330646419740",
                   "title": "Enterprise Technical Sales Specialist, APAC",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6594,6 +6834,7 @@
                 {
                   "id": "meta_2091533434973305",
                   "title": "Enterprise Technical Sales Specialist, APAC",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6616,6 +6857,7 @@
                 {
                   "id": "meta_802238939593081",
                   "title": "Enterprise Technical Sales Specialist, APAC",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6638,6 +6880,7 @@
                 {
                   "id": "meta_1235978952034420",
                   "title": "Enterprise Technical Sales Specialist, APAC",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6660,6 +6903,7 @@
                 {
                   "id": "meta_4498978160387018",
                   "title": "Enterprise Technical Sales Specialist, EMEA",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6682,6 +6926,7 @@
                 {
                   "id": "meta_906391792398202",
                   "title": "Enterprise Technical Sales Specialist, EMEA",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6705,6 +6950,7 @@
                 {
                   "id": "meta_2073667836537815",
                   "title": "Enterprise Technical Sales Specialist, LATAM",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6729,6 +6975,7 @@
                 {
                   "id": "meta_821569440304193",
                   "title": "Enterprise Technical Sales Specialist, LATAM",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6752,6 +6999,7 @@
                 {
                   "id": "meta_868134742926332",
                   "title": "Enterprise Technical Sales Specialist, NORAM",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6779,6 +7027,7 @@
                 {
                   "id": "meta_1388106673071978",
                   "title": "Enterprise Technical Sales Specialist, NORAM",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -6830,6 +7079,7 @@
                 {
                   "id": "meta_712777775196261",
                   "title": "Integrated Enterprise Campaigns Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "integrated enterprise campaigns",
@@ -6854,6 +7104,7 @@
                 {
                   "id": "meta_3134663750051955",
                   "title": "MarTech Strategic Operations Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "martech strategic operations",
@@ -6888,6 +7139,7 @@
                 {
                   "id": "meta_2174882726662324",
                   "title": "Marketing Technology Manager, AI",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "marketing technology",
@@ -6936,6 +7188,7 @@
                 {
                   "id": "meta_3975601746073912",
                   "title": "APAC Marketing Strategic Initiatives, Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "apac marketing strategic initiatives",
@@ -6958,6 +7211,7 @@
                 {
                   "id": "meta_2851767148497111",
                   "title": "Marketing Manager, Wearables (India)",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "marketing",
@@ -6980,6 +7234,7 @@
                 {
                   "id": "meta_2098831980910197",
                   "title": "Product Marketing Manager, Creators and Shopping",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product marketing",
@@ -7026,6 +7281,7 @@
                 {
                   "id": "meta_1341339068053539",
                   "title": "Brand Partnerships Manager, Reality Labs",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "brand partnerships",
@@ -7049,6 +7305,7 @@
                 {
                   "id": "meta_1289177016501100",
                   "title": "Consumer Marketing Manager, APAC",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "consumer marketing",
@@ -7096,6 +7353,7 @@
                 {
                   "id": "meta_849551784823465",
                   "title": "Director, Campaign Effectiveness",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "",
@@ -7129,6 +7387,7 @@
                 {
                   "id": "meta_1493576408770360",
                   "title": "Media Strategy and Planning Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "media strategy and planning",
@@ -7177,6 +7436,7 @@
                 {
                   "id": "meta_1253728020159835",
                   "title": "Client Solutions Manager, Travel",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "client solutions",
@@ -7223,6 +7483,7 @@
                 {
                   "id": "meta_1168614265088108",
                   "title": "Marketing Science Consultant",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "marketing science consultant",
@@ -7274,6 +7535,7 @@
                 {
                   "id": "meta_2036684380526452",
                   "title": "Enterprise Technical Sales Manager. LATAM",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "enterprise technical sales. latam",
@@ -7320,6 +7582,7 @@
                 {
                   "id": "meta_26716789344623152",
                   "title": "Strategic Partner Manager, Business Messaging",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "strategic partner",
@@ -7366,6 +7629,7 @@
                 {
                   "id": "meta_899815052813915",
                   "title": "Reseller Program Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "reseller program",
@@ -7430,6 +7694,7 @@
                 {
                   "id": "meta_1564855494765081",
                   "title": "Software Engineering Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "software engineering",
@@ -7462,6 +7727,7 @@
                 {
                   "id": "meta_1763579337950775",
                   "title": "Software Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7484,6 +7750,7 @@
                 {
                   "id": "meta_2182713142498858",
                   "title": "Software Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7506,6 +7773,7 @@
                 {
                   "id": "meta_1926156754682227",
                   "title": "Software Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7528,6 +7796,7 @@
                 {
                   "id": "meta_1216127517207133",
                   "title": "Software Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7550,6 +7819,7 @@
                 {
                   "id": "meta_1267147898274762",
                   "title": "Software Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7572,6 +7842,7 @@
                 {
                   "id": "meta_1058363622156402",
                   "title": "Software Engineer (Leadership) - Machine Learning",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer (leadership) - machine learning",
@@ -7596,6 +7867,7 @@
                 {
                   "id": "meta_925492686925721",
                   "title": "Software Engineer (Product)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer (product)",
@@ -7618,6 +7890,7 @@
                 {
                   "id": "meta_1698310731341673",
                   "title": "Software Engineer (Systems)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer (systems)",
@@ -7640,6 +7913,7 @@
                 {
                   "id": "meta_699608119727078",
                   "title": "Software Engineer - Android (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer - android (technical leadership)",
@@ -7664,6 +7938,7 @@
                 {
                   "id": "meta_1061795906099278",
                   "title": "Software Engineer - iOS (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer - ios (technical leadership)",
@@ -7687,6 +7962,7 @@
                 {
                   "id": "meta_1839712766675935",
                   "title": "Software Engineer, Android",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7709,6 +7985,7 @@
                 {
                   "id": "meta_1394915781774041",
                   "title": "Software Engineer, Android",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7731,6 +8008,7 @@
                 {
                   "id": "meta_2154143301727752",
                   "title": "Software Engineer, Android",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7756,6 +8034,7 @@
                 {
                   "id": "meta_2486789151677735",
                   "title": "Software Engineer, Infrastructure",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7785,6 +8064,7 @@
                 {
                   "id": "meta_1770681236847041",
                   "title": "Software Engineer, Infrastructure",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7812,6 +8092,7 @@
                 {
                   "id": "meta_24425919033670586",
                   "title": "Software Engineer, ML (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7834,6 +8115,7 @@
                 {
                   "id": "meta_1368969190886166",
                   "title": "Software Engineer, Machine Learning",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7870,6 +8152,7 @@
                 {
                   "id": "meta_1048049836887307",
                   "title": "Software Engineer, Machine Learning",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7892,6 +8175,7 @@
                 {
                   "id": "meta_1079158160340219",
                   "title": "Software Engineer, Product",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7921,6 +8205,7 @@
                 {
                   "id": "meta_9657291271065759",
                   "title": "Software Engineer, Product",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7949,6 +8234,7 @@
                 {
                   "id": "meta_727671609895617",
                   "title": "Software Engineer, Product",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7975,6 +8261,7 @@
                 {
                   "id": "meta_1343618287598503",
                   "title": "Software Engineer, Systems",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -7997,6 +8284,7 @@
                 {
                   "id": "meta_1607368957097677",
                   "title": "Software Engineer, Systems",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -8019,6 +8307,7 @@
                 {
                   "id": "meta_1203016587809246",
                   "title": "Software Engineer, iOS",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -8044,6 +8333,7 @@
                 {
                   "id": "meta_2744410602616808",
                   "title": "Software Engineer, iOS",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -8070,6 +8360,7 @@
                 {
                   "id": "meta_1639635147410970",
                   "title": "Software Engineer, iOS",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -8092,6 +8383,7 @@
                 {
                   "id": "meta_968243059056382",
                   "title": "Software Engineer, iOS",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -8114,6 +8406,7 @@
                 {
                   "id": "meta_1780259309366631",
                   "title": "Software Engineering, Machine Learning",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineering",
@@ -8136,6 +8429,7 @@
                 {
                   "id": "meta_644134761796885",
                   "title": "Software Engineering, Machine Learning (Singapore)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineering",
@@ -8182,6 +8476,7 @@
                 {
                   "id": "meta_2552994008431068",
                   "title": "Production Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "production engineer",
@@ -8204,6 +8499,7 @@
                 {
                   "id": "meta_1493928545437883",
                   "title": "Production Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "production engineer",
@@ -8226,6 +8522,7 @@
                 {
                   "id": "meta_2702875640048683",
                   "title": "Production Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "production engineer",
@@ -8272,6 +8569,7 @@
                 {
                   "id": "meta_1648976066135378",
                   "title": "Machine Learning Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "machine learning engineer",
@@ -8294,6 +8592,7 @@
                 {
                   "id": "meta_998357492128826",
                   "title": "Software Engineer, Machine Learning",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -8354,6 +8653,7 @@
                 {
                   "id": "meta_972883978494112",
                   "title": "Applied Research Scientist, Computational Mathematics, Physics, & Controls",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "applied research scientist",
@@ -8376,6 +8676,7 @@
                 {
                   "id": "meta_950098077597575",
                   "title": "Research Scientist",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist",
@@ -8422,6 +8723,7 @@
                 {
                   "id": "meta_1443917747213651",
                   "title": "Digital Finance Systems Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "digital finance systems",
@@ -8468,6 +8770,7 @@
                 {
                   "id": "meta_877951731747100",
                   "title": "Software Engineer, AI Native",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -8517,6 +8820,7 @@
                 {
                   "id": "meta_25141192702199005",
                   "title": "Partner Engineer, Generative AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "partner engineer",
@@ -8583,6 +8887,7 @@
                 {
                   "id": "meta_1604218924214255",
                   "title": "Public Policy Manager, AI Policy",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "public policy",
@@ -8615,6 +8920,7 @@
                 {
                   "id": "meta_4286215408276349",
                   "title": "Executive Administrative Assistant",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "executive administrative assistant",
@@ -8637,6 +8943,7 @@
                 {
                   "id": "meta_1770870020490643",
                   "title": "Executive Administrative Partner",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "executive administrative partner",
@@ -8661,6 +8968,7 @@
                 {
                   "id": "meta_1820736905261471",
                   "title": "Executive Administrative Partner",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "executive administrative partner",
@@ -8683,6 +8991,7 @@
                 {
                   "id": "meta_893303337096218",
                   "title": "Executive Administrative Partner",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "executive administrative partner",
@@ -8705,6 +9014,7 @@
                 {
                   "id": "meta_946712221314676",
                   "title": "Executive Administrative Partner",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "executive administrative partner",
@@ -8727,6 +9037,7 @@
                 {
                   "id": "meta_945550057864673",
                   "title": "Executive Administrative Partner",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "executive administrative partner",
@@ -8749,6 +9060,7 @@
                 {
                   "id": "meta_1256414056470707",
                   "title": "Executive Administrative Partner",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "executive administrative partner",
@@ -8771,6 +9083,7 @@
                 {
                   "id": "meta_1247269954046749",
                   "title": "Executive Administrative Partner",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "executive administrative partner",
@@ -8793,6 +9106,7 @@
                 {
                   "id": "meta_1640661157100613",
                   "title": "Executive Administrative Partner",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "executive administrative partner",
@@ -8843,6 +9157,7 @@
                 {
                   "id": "meta_866533876198184",
                   "title": "Director of Treasury Technology, Controls & Infrastructure",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "of treasury technology",
@@ -8875,6 +9190,7 @@
                 {
                   "id": "meta_988632290513668",
                   "title": "Finance Business Operations Manager, Strategic Cloud Deals",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "finance business operations",
@@ -8897,6 +9213,7 @@
                 {
                   "id": "meta_3269411016541258",
                   "title": "Finance Manager, Infrastructure",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "finance",
@@ -8919,6 +9236,7 @@
                 {
                   "id": "meta_26451197637809713",
                   "title": "Internal Audit Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "internal audit",
@@ -8941,6 +9259,7 @@
                 {
                   "id": "meta_781326574627503",
                   "title": "Manager, SOX Compliance",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "",
@@ -8963,6 +9282,7 @@
                 {
                   "id": "meta_3922111931428934",
                   "title": "PayMeta Tax Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "paymeta tax",
@@ -8985,6 +9305,7 @@
                 {
                   "id": "meta_2662422500792936",
                   "title": "Reality Labs Digital Accounting Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "reality labs digital accounting",
@@ -9018,6 +9339,7 @@
                 {
                   "id": "meta_1234576224920284",
                   "title": "Finance Operations Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "finance operations",
@@ -9050,6 +9372,7 @@
                 {
                   "id": "meta_928181756302651",
                   "title": "Finance Associate, Network Hardware Infrastructure",
+                  "company": "Meta",
                   "level": "Junior",
                   "level_rank": 1,
                   "stem": "finance",
@@ -9096,6 +9419,7 @@
                 {
                   "id": "meta_1604916467312658",
                   "title": "Global Culinary Director, Data Centers",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "global culinary",
@@ -9131,6 +9455,7 @@
                 {
                   "id": "meta_2447379849027934",
                   "title": "Global Design Guidelines & Engagement Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "global design guidelines & engagement",
@@ -9153,6 +9478,7 @@
                 {
                   "id": "meta_2355968491495881",
                   "title": "Project Controls and Portfolio Cost Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "project controls and portfolio cost",
@@ -9187,6 +9513,7 @@
                 {
                   "id": "meta_1008280838529298",
                   "title": "Risk & Controls Systems Advisor",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "risk & controls systems advisor",
@@ -9234,6 +9561,7 @@
                 {
                   "id": "meta_1323808269641987",
                   "title": "Associate General Counsel, Payments Commercial",
+                  "company": "Meta",
                   "level": "Junior",
                   "level_rank": 1,
                   "stem": "general counsel",
@@ -9306,6 +9634,7 @@
                 {
                   "id": "meta_873951755533710",
                   "title": "Research Engineering Manager, Evaluations, Meta Superintelligence Labs",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "research engineering",
@@ -9338,6 +9667,7 @@
                 {
                   "id": "meta_24740065085692536",
                   "title": "AI Specialist - Product and Applied Research",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai specialist - product and applied research",
@@ -9361,6 +9691,7 @@
                 {
                   "id": "meta_1445438187630465",
                   "title": "Business Engineer, Business AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "business engineer",
@@ -9386,6 +9717,7 @@
                 {
                   "id": "meta_1215720570607469",
                   "title": "Linguistic Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "linguistic engineer",
@@ -9408,6 +9740,7 @@
                 {
                   "id": "meta_2769420660122910",
                   "title": "MSL Product Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "msl product designer",
@@ -9431,6 +9764,7 @@
                 {
                   "id": "meta_1233990905370579",
                   "title": "Research Engineer - MSL FAIR Foundations",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer - msl fair foundations",
@@ -9453,6 +9787,7 @@
                 {
                   "id": "meta_874898091996160",
                   "title": "Research Engineer - MSL FAIR Foundations",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer - msl fair foundations",
@@ -9475,6 +9810,7 @@
                 {
                   "id": "meta_1337915113900850",
                   "title": "Software Engineer - Language (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer - language (technical leadership)",
@@ -9499,6 +9835,7 @@
                 {
                   "id": "meta_4369903346590060",
                   "title": "Software Engineer, AI Native",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -9527,6 +9864,7 @@
                 {
                   "id": "meta_860406887033740",
                   "title": "Software Engineer, AI Native",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -9549,6 +9887,7 @@
                 {
                   "id": "meta_1154738753397824",
                   "title": "Software Engineer, AI Specialist - Monetization (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -9581,6 +9920,7 @@
                 {
                   "id": "meta_1782902493113620",
                   "title": "Research Scientist Intern, AI Alignment",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -9608,6 +9948,7 @@
                 {
                   "id": "meta_1652088078837457",
                   "title": "Research Scientist Intern, Computer Vision for Media Research (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -9656,6 +9997,7 @@
                 {
                   "id": "meta_2173207720084499",
                   "title": "Business Development Manager - AI Partnerships",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "business development - ai partnerships",
@@ -9680,6 +10022,7 @@
                 {
                   "id": "meta_880508634844716",
                   "title": "Business Development Manager, AI Partnerships",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "business development",
@@ -9728,6 +10071,7 @@
                 {
                   "id": "meta_1609268537039381",
                   "title": "Business Lead, Meta Superintelligence Lab (MSL)",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "business",
@@ -9750,6 +10094,7 @@
                 {
                   "id": "meta_1456476882836645",
                   "title": "MSL Operations Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "msl operations",
@@ -9796,6 +10141,7 @@
                 {
                   "id": "meta_4454202801475108",
                   "title": "Product Designer - RealTime AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer - realtime ai",
@@ -9818,6 +10164,7 @@
                 {
                   "id": "meta_873327785607518",
                   "title": "Product Designer, Meta Superintelligence Labs Media",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -9868,6 +10215,7 @@
                 {
                   "id": "meta_1536526051364673",
                   "title": "AI Governance & Automation Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "ai governance & automation",
@@ -9915,6 +10263,7 @@
                 {
                   "id": "meta_948181801033008",
                   "title": "Director, Data Science - AI for Work (AI4W) Ecosystem",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "",
@@ -9961,6 +10310,7 @@
                 {
                   "id": "meta_1777891520263428",
                   "title": "AI Research Scientist, Computer Vision",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research scientist",
@@ -10007,6 +10357,7 @@
                 {
                   "id": "meta_2727073531024425",
                   "title": "Product Manager (Leadership) - PAR",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product (leadership) - par",
@@ -10054,6 +10405,7 @@
                 {
                   "id": "meta_910946137964331",
                   "title": "Mechanical Engineer: Electronics Packaging and Sensor Integration",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "mechanical engineer: electronics packaging and sensor integration",
@@ -10118,6 +10470,7 @@
                 {
                   "id": "meta_1503382374558332",
                   "title": "Director, Marketing Data Science",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "",
@@ -10150,6 +10503,7 @@
                 {
                   "id": "meta_1506165597699141",
                   "title": "Data Scientist",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data scientist",
@@ -10172,6 +10526,7 @@
                 {
                   "id": "meta_876893028720640",
                   "title": "Data Scientist, Analytics",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data scientist",
@@ -10194,6 +10549,7 @@
                 {
                   "id": "meta_852803947781269",
                   "title": "Data Scientist, Evaluations - Meta Superintelligence Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data scientist",
@@ -10217,6 +10573,7 @@
                 {
                   "id": "meta_889433420567423",
                   "title": "Data Scientist, Product",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data scientist",
@@ -10239,6 +10596,7 @@
                 {
                   "id": "meta_435020605866341",
                   "title": "Data Scientist, Product Analytics",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data scientist",
@@ -10265,6 +10623,7 @@
                 {
                   "id": "meta_1070147800777577",
                   "title": "Data Scientist, Product Analytics",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data scientist",
@@ -10295,6 +10654,7 @@
                 {
                   "id": "meta_2278790245981983",
                   "title": "Data Scientist, Products & Applied Research",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data scientist",
@@ -10317,6 +10677,7 @@
                 {
                   "id": "meta_3296639157162089",
                   "title": "Data Scientist, Products & Applied Research",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data scientist",
@@ -10366,6 +10727,7 @@
                 {
                   "id": "meta_27000754626197623",
                   "title": "Data Engineering Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "data engineering",
@@ -10399,6 +10761,7 @@
                 {
                   "id": "meta_1476489063996610",
                   "title": "Data Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data engineer",
@@ -10421,6 +10784,7 @@
                 {
                   "id": "meta_1796635437962418",
                   "title": "Data Engineer, Analytics",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data engineer",
@@ -10443,6 +10807,7 @@
                 {
                   "id": "meta_1829942517671935",
                   "title": "Data Engineer, Analytics",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data engineer",
@@ -10465,6 +10830,7 @@
                 {
                   "id": "meta_875077395010020",
                   "title": "Data Engineer, Analytics (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data engineer",
@@ -10489,6 +10855,7 @@
                 {
                   "id": "meta_1283364266159062",
                   "title": "Data Engineer, Product Analytics",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data engineer",
@@ -10514,6 +10881,7 @@
                 {
                   "id": "meta_3713685685437806",
                   "title": "Data Engineer, Product Analytics",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data engineer",
@@ -10563,6 +10931,7 @@
                 {
                   "id": "meta_1727980214842395",
                   "title": "Manager, Marketing Audiences",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "",
@@ -10597,6 +10966,7 @@
                 {
                   "id": "meta_613354727793690",
                   "title": "Data Scientist, Analytics (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data scientist",
@@ -10624,6 +10994,7 @@
                 {
                   "id": "meta_2422368444865623",
                   "title": "Data Scientist, Products & Applied Research",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data scientist",
@@ -10646,6 +11017,7 @@
                 {
                   "id": "meta_1594361795310835",
                   "title": "Product Growth Analyst",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product growth analyst",
@@ -10695,6 +11067,7 @@
                 {
                   "id": "meta_1444468166826558",
                   "title": "Data Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data engineer",
@@ -10741,6 +11114,7 @@
                 {
                   "id": "meta_1679944389988939",
                   "title": "Data Analyst, Global Partnerships & Content ",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "data analyst",
@@ -10787,6 +11161,7 @@
                 {
                   "id": "meta_912183671524252",
                   "title": "Data Scientist, Technical Lead - Infrastructure Data Center (IDC)",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "data scientist",
@@ -10851,6 +11226,7 @@
                 {
                   "id": "meta_1901428130562220",
                   "title": "VP, Product Threads",
+                  "company": "Meta",
                   "level": "VP",
                   "level_rank": 9,
                   "stem": "",
@@ -10883,6 +11259,7 @@
                 {
                   "id": "meta_3964979667134736",
                   "title": "Product Strategy Director",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "product strategy",
@@ -10915,6 +11292,7 @@
                 {
                   "id": "meta_1238249364564427",
                   "title": "Product Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -10943,6 +11321,7 @@
                 {
                   "id": "meta_948612617855124",
                   "title": "Product Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -10966,6 +11345,7 @@
                 {
                   "id": "meta_961472602841468",
                   "title": "Product Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -10993,6 +11373,7 @@
                 {
                   "id": "meta_720234290553790",
                   "title": "Product Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -11022,6 +11403,7 @@
                 {
                   "id": "meta_890340477135929",
                   "title": "Product Manager - Growth & Monetization",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product - growth & monetization",
@@ -11044,6 +11426,7 @@
                 {
                   "id": "meta_903804022277159",
                   "title": "Product Manager, Central Product",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -11067,6 +11450,7 @@
                 {
                   "id": "meta_34138980215746375",
                   "title": "Product Manager, Central Products",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -11114,6 +11498,7 @@
                 {
                   "id": "meta_816501496761265",
                   "title": "Product Management, Director",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "product management",
@@ -11148,6 +11533,7 @@
                 {
                   "id": "meta_4261656707312766",
                   "title": "Application Manager, Salesforce",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "application",
@@ -11170,6 +11556,7 @@
                 {
                   "id": "meta_1310393294316730",
                   "title": "Product Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -11192,6 +11579,7 @@
                 {
                   "id": "meta_300760325782735",
                   "title": "Product Manager (Leadership)",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product (leadership)",
@@ -11242,6 +11630,7 @@
                 {
                   "id": "meta_691715269835265",
                   "title": "Product Manager, Machine Learning",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -11265,6 +11654,7 @@
                 {
                   "id": "meta_1436863750312686",
                   "title": "Product Manager, Machine Learning",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -11311,6 +11701,7 @@
                 {
                   "id": "meta_1303890458343560",
                   "title": "Product Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -11357,6 +11748,7 @@
                 {
                   "id": "meta_778079741366883",
                   "title": "Manager, Product Growth",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "",
@@ -11404,6 +11796,7 @@
                 {
                   "id": "meta_24894480136873895",
                   "title": "Product Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -11454,6 +11847,7 @@
                 {
                   "id": "meta_26564039679951207",
                   "title": "Product Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -11501,6 +11895,7 @@
                 {
                   "id": "meta_879753681726501",
                   "title": "Product Manager - Retail ",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product - retail",
@@ -11571,6 +11966,7 @@
                 {
                   "id": "meta_2360449907777439",
                   "title": "Global Supply Chain Manager Lead - Connectivity (Fiber, Non-Fiber)",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "global supply chain - connectivity (fiber",
@@ -11593,6 +11989,7 @@
                 {
                   "id": "meta_2475234796260816",
                   "title": "Sourcing Manager Lead, Semiconductor",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "sourcing",
@@ -11626,6 +12023,7 @@
                 {
                   "id": "meta_4243756242537821",
                   "title": "Business Engineer, Business AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "business engineer",
@@ -11648,6 +12046,7 @@
                 {
                   "id": "meta_1427741542177280",
                   "title": "Research Engineer, Systems ML - Compilers - Reality Labs Silicon AI Team",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer",
@@ -11671,6 +12070,7 @@
                 {
                   "id": "meta_704019139159184",
                   "title": "Software Engineer (Leadership) - Infrastructure",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer (leadership) - infrastructure",
@@ -11699,6 +12099,7 @@
                 {
                   "id": "meta_596583419835692",
                   "title": "Software Engineer - AI SysML (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer - ai sysml (technical leadership)",
@@ -11723,6 +12124,7 @@
                 {
                   "id": "meta_4043567932553615",
                   "title": "Software Engineer - Product (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer - product (technical leadership)",
@@ -11751,6 +12153,7 @@
                 {
                   "id": "meta_627190180131226",
                   "title": "Software Engineer, Systems ML - Compilers",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -11775,6 +12178,7 @@
                 {
                   "id": "meta_1456365319180681",
                   "title": "Software Engineer, Systems ML - Compilers / Backend",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -11797,6 +12201,7 @@
                 {
                   "id": "meta_1202694615347622",
                   "title": "Software Engineer, Systems ML - Compilers / Backend",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -11819,6 +12224,7 @@
                 {
                   "id": "meta_1108948753413269",
                   "title": "Software Engineer, Systems ML - SW/HW Co-design",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -11843,6 +12249,7 @@
                 {
                   "id": "meta_33112592781664891",
                   "title": "Software Specialist (TL) - AI/ML - Monetisation",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software specialist (tl) - ai/ml - monetisation",
@@ -11876,6 +12283,7 @@
                 {
                   "id": "meta_4342539279351100",
                   "title": "Research Scientist Intern, MSL Infra Kernels & Optimizations (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -11922,6 +12330,7 @@
                 {
                   "id": "meta_1512065736047495",
                   "title": "Production Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "production engineer",
@@ -11946,6 +12355,7 @@
                 {
                   "id": "meta_1187958502273564",
                   "title": "Software Engineer (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer (technical leadership)",
@@ -11975,6 +12385,7 @@
                 {
                   "id": "meta_1075389717795087",
                   "title": "Software Engineer (Technical Leadership) - Machine Learning",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer (technical leadership) - machine learning",
@@ -12030,6 +12441,7 @@
                 {
                   "id": "meta_1169928935215996",
                   "title": "Strategic Supply Chain Risk and Resilience Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "strategic supply chain risk and resilience",
@@ -12063,6 +12475,7 @@
                 {
                   "id": "meta_2226419828164096",
                   "title": "Capacity Planner",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "capacity planner",
@@ -12109,6 +12522,7 @@
                 {
                   "id": "meta_1420853345578936",
                   "title": "Product Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product",
@@ -12162,6 +12576,7 @@
                 {
                   "id": "meta_1253893466685626",
                   "title": "Director, Strategic Cloud Infrastructure Deals Finance",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "",
@@ -12234,6 +12649,7 @@
                 {
                   "id": "meta_1455906419254137",
                   "title": "DTC Operations Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "dtc operations",
@@ -12267,6 +12683,7 @@
                 {
                   "id": "meta_1981003662529014",
                   "title": "Hardware Operations Program Manager- Robotics",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "hardware operations program- robotics",
@@ -12299,6 +12716,7 @@
                 {
                   "id": "meta_878373488536895",
                   "title": "Component Sourcing Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "component sourcing engineer",
@@ -12321,6 +12739,7 @@
                 {
                   "id": "meta_1264309702567478",
                   "title": "Field Service Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "field service engineer",
@@ -12344,6 +12763,7 @@
                 {
                   "id": "meta_719424817218888",
                   "title": "Hardware Research Engineer: Meta Robotics Studio",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "hardware research engineer: meta robotics studio",
@@ -12366,6 +12786,7 @@
                 {
                   "id": "meta_1674048120400549",
                   "title": "Hardware Research Scientist, Meta Robotics Studio",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "hardware research scientist",
@@ -12388,6 +12809,7 @@
                 {
                   "id": "meta_3465100390297874",
                   "title": "Mechanical Engineer: Battery Design",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "mechanical engineer: battery design",
@@ -12410,6 +12832,7 @@
                 {
                   "id": "meta_1513976920287393",
                   "title": "Prototype Process Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "prototype process engineer",
@@ -12433,6 +12856,7 @@
                 {
                   "id": "meta_890207087376227",
                   "title": "Prototype Process Engineer- Robotics Studio",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "prototype process engineer- robotics studio",
@@ -12456,6 +12880,7 @@
                 {
                   "id": "meta_708800821869155",
                   "title": "Sensor Hardware Integration Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "sensor hardware integration engineer",
@@ -12478,6 +12903,7 @@
                 {
                   "id": "meta_3690283911277491",
                   "title": "Silicon Validation Engineer, Reality Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "silicon validation engineer",
@@ -12500,6 +12926,7 @@
                 {
                   "id": "meta_971213011896153",
                   "title": "Silicon Validation Firmware Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "silicon validation firmware engineer",
@@ -12547,6 +12974,7 @@
                 {
                   "id": "meta_660780803565125",
                   "title": "Manufacturing Design Engineer - Mechanical",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "manufacturing design engineer - mechanical",
@@ -12569,6 +12997,7 @@
                 {
                   "id": "meta_959413423617471",
                   "title": "Optical Architect - AI Accelerators",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "optical architect - ai accelerators",
@@ -12617,6 +13046,7 @@
                 {
                   "id": "meta_1519703305793037",
                   "title": "NPI Operations Program Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "npi operations program",
@@ -12649,6 +13079,7 @@
                 {
                   "id": "meta_1884502425631808",
                   "title": "Contact Center Efficiency Operations Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "contact center efficiency operations",
@@ -12697,6 +13128,7 @@
                 {
                   "id": "meta_1466736958204384",
                   "title": "Director, Business Operations, Meta Horizon ",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "",
@@ -12743,6 +13175,7 @@
                 {
                   "id": "meta_784802827422289",
                   "title": "Head of Retail Operations",
+                  "company": "Meta",
                   "level": "Head",
                   "level_rank": 7,
                   "stem": "retail operations",
@@ -12808,6 +13241,7 @@
                 {
                   "id": "meta_1542262643754949",
                   "title": "BMS Quality Manager (BQM) - Data Center Design, Engineering and Construction",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "bms quality (bqm) - data center design",
@@ -12831,6 +13265,7 @@
                 {
                   "id": "meta_958343799935258",
                   "title": "BMS Quality Manager (BQM) - Data Center Design, Engineering and Construction",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "bms quality (bqm) - data center design",
@@ -12853,6 +13288,7 @@
                 {
                   "id": "meta_1333130841991337",
                   "title": "Construction Manager - Data Center Design, Engineering and Construction",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "construction - data center design",
@@ -12875,6 +13311,7 @@
                 {
                   "id": "meta_1276926793901855",
                   "title": "Construction Manager - Data Center Design, Engineering, & Construction",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "construction - data center design",
@@ -12923,6 +13360,7 @@
                 {
                   "id": "meta_1277009131113341",
                   "title": "NPI Program Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "npi program",
@@ -12955,6 +13393,7 @@
                 {
                   "id": "meta_3126036754252113",
                   "title": "Site Logistics Operations Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "site logistics operations",
@@ -12987,6 +13426,7 @@
                 {
                   "id": "meta_744914351191839",
                   "title": "Critical Facility Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "critical facility engineer",
@@ -13035,6 +13475,7 @@
                 {
                   "id": "meta_1031032768371242",
                   "title": "Production Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "production engineer",
@@ -13058,6 +13499,7 @@
                 {
                   "id": "meta_2176819739360965",
                   "title": "Production Engineering",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "production engineering",
@@ -13083,6 +13525,7 @@
                 {
                   "id": "meta_7868993783158276",
                   "title": "Production Engineering",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "production engineering",
@@ -13135,6 +13578,7 @@
                 {
                   "id": "meta_958765530031380",
                   "title": "Commercial Sourcing Manager, Memory and Storage",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "commercial sourcing",
@@ -13167,6 +13611,7 @@
                 {
                   "id": "meta_3414246448833665",
                   "title": "Software Engineer, Systems ML",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -13214,6 +13659,7 @@
                 {
                   "id": "meta_1334394228535942",
                   "title": "Network Engineer, Deployment & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -13236,6 +13682,7 @@
                 {
                   "id": "meta_1068950782023865",
                   "title": "Network Engineer, Foundation & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -13282,6 +13729,7 @@
                 {
                   "id": "meta_2941744602680883",
                   "title": "Commercial Sourcing Manager, Silicon",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "commercial sourcing",
@@ -13314,6 +13762,7 @@
                 {
                   "id": "meta_922434207363047",
                   "title": "Software Engineer, Databases (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "software engineer",
@@ -13361,6 +13810,7 @@
                 {
                   "id": "meta_1346103053957748",
                   "title": "Commercial Sourcing Manager - Cloud",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "commercial sourcing - cloud",
@@ -13427,6 +13877,7 @@
                 {
                   "id": "meta_1700642344630356",
                   "title": "Design Program Manager, Creative Audio",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "design program",
@@ -13449,6 +13900,7 @@
                 {
                   "id": "meta_1448420956726526",
                   "title": "Manager, Content Engineering — AI Content Understanding",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "",
@@ -13483,6 +13935,7 @@
                 {
                   "id": "meta_1342699267708906",
                   "title": "AI Design Generalist",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai design generalist",
@@ -13506,6 +13959,7 @@
                 {
                   "id": "meta_3534414110041089",
                   "title": "Creative Coder",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "creative coder",
@@ -13531,6 +13985,7 @@
                 {
                   "id": "meta_1613776879769814",
                   "title": "Product Design Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product design engineer",
@@ -13553,6 +14008,7 @@
                 {
                   "id": "meta_1229945984832289",
                   "title": "Product Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -13577,6 +14033,7 @@
                 {
                   "id": "meta_4479130519401719",
                   "title": "Product Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -13599,6 +14056,7 @@
                 {
                   "id": "meta_930874322664098",
                   "title": "Product Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -13622,6 +14080,7 @@
                 {
                   "id": "meta_4221679158093418",
                   "title": "Product Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -13646,6 +14105,7 @@
                 {
                   "id": "meta_1191763712880441",
                   "title": "Product Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -13670,6 +14130,7 @@
                 {
                   "id": "meta_1397212694826926",
                   "title": "Product Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -13695,6 +14156,7 @@
                 {
                   "id": "meta_847362961218887",
                   "title": "Product Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -13721,6 +14183,7 @@
                 {
                   "id": "meta_1580048536407574",
                   "title": "Product Designer - Instagram Creators and Commerce",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer - instagram creators and commerce",
@@ -13745,6 +14208,7 @@
                 {
                   "id": "meta_1479762266903375",
                   "title": "Product Designer, Instagram Private Sharing",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -13769,6 +14233,7 @@
                 {
                   "id": "meta_9894073944045791",
                   "title": "Product Designer, Reality Labs",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -13797,6 +14262,7 @@
                 {
                   "id": "meta_1305413621435612",
                   "title": "Product Designer, Wearables",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -13820,6 +14286,7 @@
                 {
                   "id": "meta_980452898036048",
                   "title": "UI/UX Sound Designer - RL Design",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ui/ux sound designer - rl design",
@@ -13884,6 +14351,7 @@
                 {
                   "id": "meta_26501596112833041",
                   "title": "Business Development Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "business development",
@@ -13908,6 +14376,7 @@
                 {
                   "id": "meta_1465696414932575",
                   "title": "Business Development Manager, Connected TV | Responsable du développement commercial, télévision connectée",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "business development",
@@ -13930,6 +14399,7 @@
                 {
                   "id": "meta_1487341723193707",
                   "title": "Network Site Investments Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "network site investments",
@@ -13959,6 +14429,7 @@
                 {
                   "id": "meta_26773002748996990",
                   "title": "Partner Enablement Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "partner enablement",
@@ -13991,6 +14462,7 @@
                 {
                   "id": "meta_1463315158182091",
                   "title": "Corporate Development Deal Lead",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "corporate development deal",
@@ -14023,6 +14495,7 @@
                 {
                   "id": "meta_4353897074885903",
                   "title": "Enterprise Technical Sales Specialist",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -14045,6 +14518,7 @@
                 {
                   "id": "meta_1501113458299192",
                   "title": "Enterprise Technical Sales Specialist, Indonesia",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -14067,6 +14541,7 @@
                 {
                   "id": "meta_831134446679322",
                   "title": "Wearables Partnerships, New Business Development",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "wearables partnerships",
@@ -14116,6 +14591,7 @@
                 {
                   "id": "meta_1454740309523513",
                   "title": "Partner Engineer, Connected TV",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "partner engineer",
@@ -14139,6 +14615,7 @@
                 {
                   "id": "meta_1233209308873998",
                   "title": "Partner Engineer, Generative AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "partner engineer",
@@ -14161,6 +14638,7 @@
                 {
                   "id": "meta_893690770143024",
                   "title": "Solutions Architect, Business AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "solutions architect",
@@ -14210,6 +14688,7 @@
                 {
                   "id": "meta_859838453808997",
                   "title": "South-Korea Strategic Account Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "south-korea strategic account",
@@ -14242,6 +14721,7 @@
                 {
                   "id": "meta_1572243637211576",
                   "title": "Enterprise Technical Sales Specialist, EMEA",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "enterprise technical sales specialist",
@@ -14288,6 +14768,7 @@
                 {
                   "id": "meta_4172317453080933",
                   "title": "Developer Platform Investigator",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "developer platform investigator",
@@ -14334,6 +14815,7 @@
                 {
                   "id": "meta_811398475354683",
                   "title": "Director, Data Licensing Partnerships",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "",
@@ -14380,6 +14862,7 @@
                 {
                   "id": "meta_731925816170138",
                   "title": "Network Engineer, Optical Deployment",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -14442,6 +14925,7 @@
                 {
                   "id": "meta_1674034383851652",
                   "title": "Energy Policy, Director",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "energy policy",
@@ -14474,6 +14958,7 @@
                 {
                   "id": "meta_1219447743730506",
                   "title": "Head of Public Policy for Thailand",
+                  "company": "Meta",
                   "level": "Head",
                   "level_rank": 7,
                   "stem": "public policy for thailand",
@@ -14506,6 +14991,7 @@
                 {
                   "id": "meta_1458653882636382",
                   "title": "GenAI Product Policy Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "genai product policy",
@@ -14529,6 +15015,7 @@
                 {
                   "id": "meta_775589065144926",
                   "title": "Policy Programs Manager, India",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "policy programs",
@@ -14551,6 +15038,7 @@
                 {
                   "id": "meta_984084140522616",
                   "title": "Privacy and Data Policy Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "privacy and data policy",
@@ -14573,6 +15061,7 @@
                 {
                   "id": "meta_900416202772371",
                   "title": "Public Policy Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "public policy",
@@ -14597,6 +15086,7 @@
                 {
                   "id": "meta_26098279033141629",
                   "title": "Public Policy Manager, Connectivity and Infrastructure Policy, APAC",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "public policy",
@@ -14619,6 +15109,7 @@
                 {
                   "id": "meta_952335270839122",
                   "title": "Public Policy Manager, East",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "public policy",
@@ -14641,6 +15132,7 @@
                 {
                   "id": "meta_1264162605623558",
                   "title": "Public Policy Manager, Germany, Austria, Switzerland",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "public policy",
@@ -14663,6 +15155,7 @@
                 {
                   "id": "meta_1272740351581215",
                   "title": "Public Policy Manager, Germany, Austria, Switzerland (24 months contract)",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "public policy",
@@ -14685,6 +15178,7 @@
                 {
                   "id": "meta_775001329006824",
                   "title": "Public Policy Programs & Campaigns Manager, Brazil",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "public policy programs & campaigns",
@@ -14747,6 +15241,7 @@
                 {
                   "id": "meta_1335549648414435",
                   "title": "Electrical Engineer: Robotics Hardware Engineering",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "electrical engineer: robotics hardware engineering",
@@ -14769,6 +15264,7 @@
                 {
                   "id": "meta_3789700464659359",
                   "title": "Postdoctoral Research Scientist, Applied Vision Science (PhD)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "postdoctoral research scientist",
@@ -14791,6 +15287,7 @@
                 {
                   "id": "meta_1287364610007364",
                   "title": "Robotics Engineering: Mechanical Design Engineer - Test and Measurement",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "robotics engineering: mechanical design engineer - test and measurement",
@@ -14813,6 +15310,7 @@
                 {
                   "id": "meta_785443042902505",
                   "title": "UX Researcher, Quantitative",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ux researcher",
@@ -14837,6 +15335,7 @@
                 {
                   "id": "meta_992519569770619",
                   "title": "User Experience Researcher, Qualitative ",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "user experience researcher",
@@ -14883,6 +15382,7 @@
                 {
                   "id": "meta_1473670351025882",
                   "title": "AI Research Engineer - Social Products (Technical Leadership)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research engineer - social products (technical leadership)",
@@ -14908,6 +15408,7 @@
                 {
                   "id": "meta_2940269159502936",
                   "title": "Research Engineer, MRS AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer",
@@ -14956,6 +15457,7 @@
                 {
                   "id": "meta_1792812501450334",
                   "title": "Research Scientist, Central Applied Science (PhD)",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research scientist",
@@ -15003,6 +15505,7 @@
                 {
                   "id": "meta_1992891824629577",
                   "title": "Senior Analyst (Competitive Intelligence)",
+                  "company": "Meta",
                   "level": "Senior",
                   "level_rank": 3,
                   "stem": "analyst (competitive intelligence)",
@@ -15052,6 +15555,7 @@
                 {
                   "id": "meta_1884811572142821",
                   "title": "Research Scientist Intern, Applied Perception Science (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",
@@ -15114,6 +15618,7 @@
                 {
                   "id": "meta_1310020567974002",
                   "title": "Creative Director, Performance Marketing",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "creative",
@@ -15149,6 +15654,7 @@
                 {
                   "id": "meta_1983969512481492",
                   "title": "Retail Technology Program Manager, Interactive Technologies",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "retail technology program",
@@ -15181,6 +15687,7 @@
                 {
                   "id": "meta_1457312006182185",
                   "title": "Creative Coder",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "creative coder",
@@ -15206,6 +15713,7 @@
                 {
                   "id": "meta_897666313042706",
                   "title": "Music Operations",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "music operations",
@@ -15229,6 +15737,7 @@
                 {
                   "id": "meta_2471900343171573",
                   "title": "Product Designer, Meta",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "product designer",
@@ -15277,6 +15786,7 @@
                 {
                   "id": "meta_2677396062660357",
                   "title": "AI Voice Producer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai voice producer",
@@ -15326,6 +15836,7 @@
                 {
                   "id": "meta_1473054811020916",
                   "title": "Content Designer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "content designer",
@@ -15392,6 +15903,7 @@
                 {
                   "id": "meta_911058361722396",
                   "title": "QA Engineering Lead, AI Native",
+                  "company": "Meta",
                   "level": "Lead",
                   "level_rank": 5,
                   "stem": "qa engineering",
@@ -15424,6 +15936,7 @@
                 {
                   "id": "meta_882415754757202",
                   "title": "AI Research Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ai research engineer",
@@ -15449,6 +15962,7 @@
                 {
                   "id": "meta_1482104636877829",
                   "title": "Network Engineer, Foundation & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -15477,6 +15991,7 @@
                 {
                   "id": "meta_1295025362473535",
                   "title": "Robotics Control Engineer - Manipulation",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "robotics control engineer - manipulation",
@@ -15524,6 +16039,7 @@
                 {
                   "id": "meta_2057576848497688",
                   "title": "Director, Engineering",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "",
@@ -15570,6 +16086,7 @@
                 {
                   "id": "meta_868410305690417",
                   "title": "Network Engineer, Foundation & Support",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "network engineer",
@@ -15618,6 +16135,7 @@
                 {
                   "id": "meta_599243686293692",
                   "title": "UX Researcher, Qualitative",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "ux researcher",
@@ -15684,6 +16202,7 @@
                 {
                   "id": "meta_959716380103373",
                   "title": "TPM Director, Monetization Core Ads Growth",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "tpm",
@@ -15717,6 +16236,7 @@
                 {
                   "id": "meta_2166859170719900",
                   "title": "Technical Program Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "technical program",
@@ -15739,6 +16259,7 @@
                 {
                   "id": "meta_1414645047081821",
                   "title": "Technical Program Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "technical program",
@@ -15761,6 +16282,7 @@
                 {
                   "id": "meta_1213492757409350",
                   "title": "Technical Program Manager - MSL (Meta SuperIntelligence Labs)",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "technical program - msl (meta superintelligence labs)",
@@ -15812,6 +16334,7 @@
                 {
                   "id": "meta_1184014840399689",
                   "title": "Technical Program Manager - Business Engineering",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "technical program - business engineering",
@@ -15858,6 +16381,7 @@
                 {
                   "id": "meta_954459167081398",
                   "title": "Technical Principal",
+                  "company": "Meta",
                   "level": "Principal",
                   "level_rank": 6,
                   "stem": "technical",
@@ -15924,6 +16448,7 @@
                 {
                   "id": "meta_857382750648491",
                   "title": "Business Engineer, Business AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "business engineer",
@@ -15946,6 +16471,7 @@
                 {
                   "id": "meta_556388847084173",
                   "title": "Research Engineer, Monetization AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "research engineer",
@@ -15974,6 +16500,7 @@
                 {
                   "id": "meta_1835582317134298",
                   "title": "Solutions Architect, Business AI",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "solutions architect",
@@ -16021,6 +16548,7 @@
                 {
                   "id": "meta_1476206517500426",
                   "title": "Regional Sales Intelligence Manager - EMEA",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "regional sales intelligence - emea",
@@ -16053,6 +16581,7 @@
                 {
                   "id": "meta_1511721227182750",
                   "title": "Solutions Architect",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "solutions architect",
@@ -16117,6 +16646,7 @@
                 {
                   "id": "meta_1311440420431368",
                   "title": "Security Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "security engineer",
@@ -16166,6 +16696,7 @@
                 {
                   "id": "meta_1276458173871516",
                   "title": "Offensive Security Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "offensive security engineer",
@@ -16212,6 +16743,7 @@
                 {
                   "id": "meta_1500664371673787",
                   "title": "Privacy Program Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "privacy program",
@@ -16258,6 +16790,7 @@
                 {
                   "id": "meta_1957155225678203",
                   "title": "Regional Environmental Health and Safety Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "regional environmental health and safety",
@@ -16320,6 +16853,7 @@
                 {
                   "id": "meta_1634559064243323",
                   "title": "VP, Total Rewards",
+                  "company": "Meta",
                   "level": "VP",
                   "level_rank": 9,
                   "stem": "",
@@ -16352,6 +16886,7 @@
                 {
                   "id": "meta_2019039835674324",
                   "title": "HR Director, Agent Transformation Accelerator (AtA)",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "hr",
@@ -16384,6 +16919,7 @@
                 {
                   "id": "meta_2459800684438004",
                   "title": "Meta Superintelligence Labs HR Business Partner",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "meta superintelligence labs hr business partner",
@@ -16431,6 +16967,7 @@
                 {
                   "id": "meta_1989137095336503",
                   "title": "Global Security Area Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "global security area",
@@ -16493,6 +17030,7 @@
                 {
                   "id": "meta_1499885764831184",
                   "title": "Intelligence Manager, Global Response Operations",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "intelligence",
@@ -16515,6 +17053,7 @@
                 {
                   "id": "meta_1379656217515033",
                   "title": "Site Manager, Robotics Teleoperation",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "site",
@@ -16561,6 +17100,7 @@
                 {
                   "id": "meta_1576038181189709",
                   "title": "Director of Global Workplace Services - Technology Strategy",
+                  "company": "Meta",
                   "level": "Director",
                   "level_rank": 8,
                   "stem": "of global workplace services - technology strategy",
@@ -16627,6 +17167,7 @@
                 {
                   "id": "meta_1736158034450556",
                   "title": "Facility Project Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "facility project",
@@ -16659,6 +17200,7 @@
                 {
                   "id": "meta_1649638666069519",
                   "title": "Manufacturing Quality Engineer",
+                  "company": "Meta",
                   "level": "IC",
                   "level_rank": 2,
                   "stem": "manufacturing quality engineer",
@@ -16721,6 +17263,7 @@
                 {
                   "id": "meta_828663199660129",
                   "title": "Product Marketing Manager",
+                  "company": "Meta",
                   "level": "Manager",
                   "level_rank": 5,
                   "stem": "product marketing",
@@ -16785,6 +17328,7 @@
                 {
                   "id": "meta_1471311707754788",
                   "title": "Research Scientist Intern, Mathematics (PhD)",
+                  "company": "Meta",
                   "level": "Intern",
                   "level_rank": 0,
                   "stem": "research scientist",

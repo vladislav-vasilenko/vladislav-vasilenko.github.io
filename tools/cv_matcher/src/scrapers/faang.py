@@ -16,14 +16,16 @@ from ._stealth import STEALTH_INIT_JS
 
 
 class GoogleCareersScraper(BaseScraper):
-    """careers.google.com — authed profile gives richer listings.
+    """careers.google.com — intercepts internal API responses for speed.
 
-    Pass storage_state via env GOOGLE_STORAGE_STATE for authed browsing.
+    Strategy: navigate to the search page and capture the XHR/fetch responses
+    that carry job listings, similar to how MetaCareersScraper captures GraphQL.
+    Falls back to DOM scraping if interception yields nothing.
     """
 
     company_name = "Google"
     id_prefix = "goog"
-    stealth = True  # datacenter IPs + aggressive bot detection
+    stealth = True
 
     def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
         listing_url = (
@@ -66,26 +68,52 @@ class GoogleCareersScraper(BaseScraper):
                 continue
             try:
                 page.goto(job_url, wait_until="domcontentloaded", timeout=40000)
-                page.wait_for_timeout(3000 + int(random.random() * 3000))
-                title = _first_non_empty_text(page, [
+                page.wait_for_timeout(2500 + int(random.random() * 2000))
+
+                html = page.content()
+
+                # ── JSON-LD extraction (same as Meta) ──
+                detail = _meta_parse_detail(html)
+
+                title = detail.get("title") or _first_non_empty_text(page, [
                     "h2[jsname]", "h2", "h1",
                 ]) or "Google Vacancy"
-                body = _first_non_empty_text(page, [
-                    "[jsname='d6wfac']",
-                    "main",
-                    "article",
-                    "body",
-                ])
-                clean = " ".join(body.split())
-                if q_lower and q_lower not in clean.lower() and q_lower not in title.lower():
+
+                full_desc = _build_full_description(detail)
+
+                # If JSON-LD failed, fall back to raw DOM text
+                if not full_desc or len(full_desc) < 50:
+                    body = _first_non_empty_text(page, [
+                        "[jsname='d6wfac']",
+                        "main", "article", "body",
+                    ])
+                    full_desc = " ".join(body.split())
+
+                if q_lower and q_lower not in full_desc.lower() and q_lower not in title.lower():
                     continue
+
+                # ── Locations (from DOM chips or JSON-LD) ──
+                locations = []
+                try:
+                    loc_els = page.locator("[class*='location' i], [data-field='locations'] span").all()
+                    for el in loc_els[:10]:
+                        t = (el.inner_text() or "").strip()
+                        if t and len(t) < 80 and t not in locations:
+                            locations.append(t)
+                except Exception:
+                    pass
+
+                compensation = detail.get("compensation", "")
+
                 vacancies.append({
                     "id": jid,
                     "title": title,
                     "company": self.company_name,
-                    "pub_date": "Recently",
-                    "description": clean[:3500],
+                    "pub_date": detail.get("date_posted") or "Recently",
+                    "description": full_desc[:5000],
                     "link": job_url,
+                    "locations": locations,
+                    "compensation": compensation,
                     "origin_query": query,
                 })
                 self._emit("vacancy", id=jid, title=title, company=self.company_name, link=job_url)
@@ -93,6 +121,7 @@ class GoogleCareersScraper(BaseScraper):
             except Exception as e:
                 print(f"  ⚠️ {job_url}: {e}")
         return vacancies
+
 
 
 # Meta detail-page extraction patterns. The detail page is server-rendered and
