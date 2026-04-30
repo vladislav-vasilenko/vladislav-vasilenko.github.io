@@ -224,7 +224,10 @@ def main():
     source_plan = {
         # RU
         "yandex":      (lambda: scr.YandexScraper(limit=200), [yandex_listing_url]),
-        "hh":          (lambda: scr.HHScraper(limit=30), queries),
+        # HH temporarily disabled — too many transient timeouts under Actions network.
+        # Re-enable once the architecture stabilises (Yandex/Sber/Meta + cluster-map).
+        # Retry+jitter fix already applied in src/scrapers/ru.py::HHScraper.
+        # "hh":          (lambda: scr.HHScraper(limit=30), queries),
         "ozon":        (lambda: scr.OzonScraper(limit=20), ["ML", "Machine Learning", "Python"]),
         "avito":       (lambda: scr.AvitoScraper(limit=20), short_queries),
         "tinkoff":     (lambda: scr.TinkoffScraper(limit=20), short_queries),

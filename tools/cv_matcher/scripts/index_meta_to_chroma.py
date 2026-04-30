@@ -25,6 +25,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+# Load tools/cv_matcher/.env *before* the env-presence checks below.
+from dotenv import load_dotenv  # noqa: E402
+load_dotenv(ROOT / ".env")
+
 INPUT = ROOT.parent.parent / "public" / "online_scraped.json"
 DB_PATH = str(ROOT / "chroma_db")
 
@@ -66,11 +70,18 @@ def main() -> int:
     db = RAGDatabase(db_path=args.db)
 
     if args.reset:
-        existing = db.get_all_ids()
-        meta_ids = [vid for vid in existing if vid.startswith("meta_")]
-        if meta_ids:
-            print(f"🗑  Removing {len(meta_ids)} existing Meta entries from collection")
-            db.collection.delete(ids=meta_ids)
+        # Drop the whole collection. Mixed embedding-dimension spaces (e.g. old
+        # 768-dim Ollama vs new 1536-dim OpenAI) cannot coexist in one ChromaDB
+        # collection, so we recreate from scratch when --reset is passed.
+        try:
+            db.client.delete_collection(name=db.collection_name)
+            print(f"🗑  Dropped collection '{db.collection_name}'")
+        except Exception as e:
+            print(f"  (no existing collection to drop: {e})")
+        db.collection = db.client.get_or_create_collection(
+            name=db.collection_name,
+            metadata={"hnsw:space": "cosine"},
+        )
 
     db.add_vacancies(meta)
     print(f"📊 Collection size: {db.collection.count()} total documents")

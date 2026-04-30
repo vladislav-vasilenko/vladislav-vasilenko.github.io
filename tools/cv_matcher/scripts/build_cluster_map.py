@@ -42,6 +42,9 @@ ROOT = Path(__file__).resolve().parent.parent              # tools/cv_matcher
 REPO = ROOT.parent.parent                                  # repo root
 sys.path.insert(0, str(ROOT))
 
+from dotenv import load_dotenv  # noqa: E402
+load_dotenv(ROOT / ".env")
+
 DB_PATH = str(ROOT / "chroma_db")
 TREE_JSON = REPO / "public" / "vacancy_tree.json"
 OUT = REPO / "public" / "cluster_map.json"

@@ -1,11 +1,40 @@
 """Russian job site scrapers."""
 
+import random
 import re
+import time
 from typing import List, Dict, Any, Set
 from urllib.parse import quote, urlparse, parse_qs
 from playwright.sync_api import Page, TimeoutError as PWTimeout
 
 from ._base import BaseScraper, _scroll_until_stable, _safe_text, _first_non_empty_text, _extract_date
+
+
+def _goto_with_retry(page: Page, url: str, *, timeout: int = 60000,
+                     attempts: int = 3, base_delay: float = 1.2,
+                     wait_until: str = "domcontentloaded") -> bool:
+    """Navigate with exponential backoff on Playwright timeouts.
+
+    Returns True if any attempt succeeded. Used for sites whose detail pages
+    occasionally hang under sustained load (HH.ru is the canonical example).
+    """
+    last_err: Exception | None = None
+    for i in range(attempts):
+        try:
+            page.goto(url, wait_until=wait_until, timeout=timeout)
+            return True
+        except PWTimeout as e:
+            last_err = e
+            if i < attempts - 1:
+                wait = base_delay * (2 ** i) + random.random() * 0.4
+                print(f"    ⤳ retry {url} in {wait:.1f}s (timeout {timeout}ms)")
+                time.sleep(wait)
+        except Exception as e:
+            last_err = e
+            break  # non-timeout errors are not transient
+    if last_err:
+        print(f"    ⚠️ {url}: {last_err}")
+    return False
 
 
 # ---------------------------------------------------------------------------
@@ -765,8 +794,11 @@ class HHScraper(BaseScraper):
                 jid = f"{self.id_prefix}_{vid}"
                 if jid in existing_ids:
                     continue
+                # 60s timeout + 3 attempts with backoff. HH detail pages
+                # frequently hang on the first hit under Actions network load.
+                if not _goto_with_retry(page, job_url, timeout=60000, attempts=3):
+                    continue
                 try:
-                    page.goto(job_url, wait_until="domcontentloaded", timeout=40000)
                     title = _safe_text(page, 'h1[data-qa="vacancy-title"]')
                     company = _safe_text(page, 'a[data-qa="vacancy-company-name"]')
                     desc = _safe_text(page, 'div[data-qa="vacancy-description"]')
@@ -783,9 +815,10 @@ class HHScraper(BaseScraper):
                     })
                     self._emit("vacancy", id=jid, title=title, company=company or self.company_name, link=job_url)
                     print(f"    [HH] {title} ({company})")
-                    page.wait_for_timeout(800)
                 except Exception as e:
                     print(f"    ⚠️ {job_url}: {e}")
+                # Inter-request jitter (0.6-1.4s) — keeps HH's per-IP rate-limit happy.
+                page.wait_for_timeout(int(600 + random.random() * 800))
             page_num += 1
         return vacancies
 

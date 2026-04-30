@@ -24,3 +24,14 @@ dist-ssr
 *.sw?
 *.pyc
 __pycache__
+
+# cv_matcher local state — secrets, caches, regenerable artifacts
+tools/cv_matcher/.env
+tools/cv_matcher/.cache/
+tools/cv_matcher/.auth/
+tools/cv_matcher/chroma_db/
+tools/cv_matcher/ai_cache.json
+tools/cv_matcher/google_state.json
+tools/cv_matcher/sber_page.html
+tools/cv_matcher/next_data.json
+tools/cv_matcher/vacancy.txt
