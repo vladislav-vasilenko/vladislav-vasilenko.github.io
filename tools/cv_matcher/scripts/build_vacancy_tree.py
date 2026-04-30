@@ -286,6 +286,7 @@ def build_tree(vacancies: List[Dict[str, Any]]) -> Dict[str, Any]:
             "product_score": product_score,
             "marker": category_emoji,  # backwards compat
             "manager_id": None,
+            "description": v.get("description") or "",
         }
         by_team[team][sub].append(node)
         stem_index[stem].append(node["id"])

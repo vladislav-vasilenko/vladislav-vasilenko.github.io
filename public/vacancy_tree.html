@@ -97,6 +97,21 @@
   #panel .ladder .step { padding: 4px 8px; background: var(--node-bg); border: 1px solid var(--border); border-radius: 4px; margin: 4px 0; font-size: 12px; }
   #panel .ladder .step .lvl { color: var(--muted); font-size: 11px; }
 
+  /* Description & Tags */
+  #panel .desc-box {
+    margin-top: 15px; padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border); border-radius: 6px;
+    font-size: 13px; line-height: 1.5; color: var(--muted);
+    max-height: 350px; overflow-y: auto; white-space: pre-line;
+  }
+  #panel .desc-box b { color: var(--fg); }
+  #panel .req-tag {
+    background: rgba(46, 204, 113, 0.15);
+    border-color: rgba(46, 204, 113, 0.3);
+    color: #2ecc71; font-weight: 600;
+  }
+
   /* d3 elements */
   .link { fill: none; stroke: var(--border); stroke-width: 1.2; }
   .link.peer { stroke: var(--bridge); stroke-dasharray: 3 3; opacity: .35; }
@@ -413,6 +428,16 @@
 
   // ── Detail panel ──────────────────────────────────────────────────
   const panel = document.getElementById("panel");
+  const KNOWN_SKILLS = ["Python", "C++", "Java", "PyTorch", "TensorFlow", "SQL", "React", "Node.js", "TypeScript", "AWS", "GCP", "Azure", "Docker", "Kubernetes", "Machine Learning", "Deep Learning", "LLM", "NLP", "Computer Vision", "Generative AI", "Spark", "Hadoop", "Kafka", "Data Engineering", "Data Science", "Product Management", "A/B Testing", "Figma", "Distributed Systems", "Recommendation Systems"];
+
+  function extractSkills(text) {
+    if (!text) return [];
+    return KNOWN_SKILLS.filter(skill => {
+      const regex = new RegExp("\\b" + skill.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + "\\b", "i");
+      return regex.test(text);
+    });
+  }
+
   function showDetail(nd) {
     if (nd.kind === "role") {
       const r = nd._data;
@@ -429,6 +454,14 @@
         ${r.locations?.length ? `<div class="row"><b>Locations:</b><br>${r.locations.map(l => `<span class="pill">${escape(l)}</span>`).join("")}</div>` : ""}
         ${r.manager_id ? `<div class="row muted">Reports to: <code>${r.manager_id}</code></div>` : ""}
         <div class="row"><a href="${r.link}" target="_blank" rel="noopener">Open on metacareers.com →</a></div>
+        ${r.description ? `
+          <div class="row" style="margin-top: 12px;">
+            ${extractSkills(r.description).map(s => `<span class="pill req-tag">${s}</span>`).join("")}
+          </div>
+          <div class="desc-box">
+            ${escape(r.description).replace(/(Responsibilities:|Minimum Qualifications:|Preferred Qualifications:|Qualifications:)/gi, '\n<b>$1</b>\n')}
+          </div>
+        ` : ""}
       `;
       return;
     }
