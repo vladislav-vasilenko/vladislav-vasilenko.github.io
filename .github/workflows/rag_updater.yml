@@ -1,11 +1,12 @@
-name: RAG Vacancy Scraper (Cron)
+name: RAG Vacancy Scraper (manual only)
 
+# Cron disabled while we stabilise the scrape→tree→cluster-map pipeline in
+# daily-scrape.yml. This workflow now runs ONLY on manual trigger via the
+# Actions tab (workflow_dispatch). To re-enable the schedule, restore:
+#   schedule:
+#     - cron: '0 */4 * * *'
 on:
-  schedule:
-    # Запускать каждый день каждые 4 часа
-    - cron: '0 */4 * * *'
   workflow_dispatch:
-    # Позволяет запускать Action вручную из вкладки Actions
 
 jobs:
   run-rag-scraper:
