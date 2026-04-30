@@ -1,27 +1,117 @@
 import os
+import time
 import chromadb
+import requests
 from chromadb.config import Settings
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 from sklearn.decomposition import PCA
 
 load_dotenv()
 
 
+class CVApiEmbeddings:
+    """LangChain-compatible embeddings client for the cv-api Vercel proxy.
+
+    Calls POST {base}/embeddings with `{texts: [...], model: "..."}` and
+    Authorization: Bearer ${API_SECRET}. Keeps OPENAI_API_KEY server-side.
+    """
+
+    def __init__(
+        self,
+        base_url: str,
+        api_secret: str,
+        model: str = "text-embedding-3-small",
+        batch_size: int = 64,
+        timeout: int = 60,
+        max_retries: int = 3,
+    ):
+        # Normalise: callers pass either …/api/ats (existing CV_API_URL) or …/api
+        url = base_url.rstrip("/")
+        if url.endswith("/ats") or url.endswith("/analyze") or url.endswith("/coverletter"):
+            url = url.rsplit("/", 1)[0]
+        if not url.endswith("/embeddings"):
+            url = url.rstrip("/") + "/embeddings"
+        self.url = url
+        self.headers = {
+            "Authorization": f"Bearer {api_secret}",
+            "Content-Type": "application/json",
+        }
+        self.model = model
+        self.batch_size = batch_size
+        self.timeout = timeout
+        self.max_retries = max_retries
+
+    def _post(self, texts: List[str]) -> List[List[float]]:
+        last_err: Optional[Exception] = None
+        for attempt in range(self.max_retries):
+            try:
+                r = requests.post(
+                    self.url,
+                    json={"texts": texts, "model": self.model},
+                    headers=self.headers,
+                    timeout=self.timeout,
+                )
+                if r.status_code == 429 or r.status_code >= 500:
+                    raise RuntimeError(f"transient {r.status_code}: {r.text[:200]}")
+                r.raise_for_status()
+                data = r.json()
+                if "embeddings" not in data:
+                    raise RuntimeError(f"unexpected response shape: {data}")
+                return data["embeddings"]
+            except Exception as e:
+                last_err = e
+                if attempt < self.max_retries - 1:
+                    wait = 0.6 * (2 ** attempt)
+                    print(f"  ⤳ embeddings retry in {wait:.1f}s ({type(e).__name__}: {e})")
+                    time.sleep(wait)
+        assert last_err is not None
+        raise last_err
+
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        out: List[List[float]] = []
+        for i in range(0, len(texts), self.batch_size):
+            batch = texts[i: i + self.batch_size]
+            out.extend(self._post(batch))
+        return out
+
+    def embed_query(self, text: str) -> List[float]:
+        return self._post([text])[0]
+
+
 def _init_embeddings():
     """Pick embedding backend based on env.
 
-    EMBEDDINGS_PROVIDER=openai     → text-embedding-3-small/large via OpenAI API
+    EMBEDDINGS_PROVIDER=cv-api    → cv-api Vercel proxy (CV_API_URL + API_SECRET)
+                      =openai     → direct OpenAI API (needs OPENAI_API_KEY)
                       =ollama (default) → local Ollama embeddinggemma
 
     OPENAI_EMBEDDING_MODEL controls which OpenAI model (default: text-embedding-3-small).
+    Auto-pick: if EMBEDDINGS_PROVIDER is unset and CV_API_URL+API_SECRET are present,
+    use cv-api; else fall back to ollama.
     """
-    provider = (os.environ.get("EMBEDDINGS_PROVIDER") or "ollama").strip().lower()
+    provider = (os.environ.get("EMBEDDINGS_PROVIDER") or "").strip().lower()
+    if not provider:
+        if os.environ.get("CV_API_URL") and os.environ.get("API_SECRET"):
+            provider = "cv-api"
+        else:
+            provider = "ollama"
+
+    if provider == "cv-api":
+        url = os.environ.get("CV_API_URL", "").strip()
+        secret = os.environ.get("API_SECRET", "").strip()
+        if not url or not secret:
+            raise RuntimeError("EMBEDDINGS_PROVIDER=cv-api requires CV_API_URL + API_SECRET")
+        model = os.environ.get("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
+        print(f"🔌 Embeddings: cv-api proxy → {model}")
+        return CVApiEmbeddings(base_url=url, api_secret=secret, model=model)
+
     if provider == "openai":
         from langchain_openai import OpenAIEmbeddings
         model = os.environ.get("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
-        print(f"🔌 Embeddings: OpenAI ({model})")
+        print(f"🔌 Embeddings: OpenAI direct ({model})")
         return OpenAIEmbeddings(model=model)
+
     # default — local Ollama
     from langchain_ollama import OllamaEmbeddings
     model = os.environ.get("OLLAMA_EMBEDDING_MODEL", "embeddinggemma")
