@@ -27,6 +27,7 @@ if ROOT not in sys.path:
 from src.scraper import (  # noqa: E402
     YandexScraper, TinkoffScraper, AvitoScraper, VKScraper, X5RetailScraper,
 )
+from src.scrapers.faang import GoogleCareersScraper, MetaCareersScraper  # noqa: E402
 
 
 REQUIRED_FIELDS = ["id", "title", "company", "pub_date", "description", "link", "origin_query"]
@@ -127,12 +128,52 @@ def _report(site: str, jobs: List[Dict[str, Any]], errors: List[str]) -> bool:
     return True
 
 
+def test_google(limit: int = 2, headless: bool = True, query: str = "Machine Learning Engineer") -> bool:
+    print("\n============================================================")
+    print("TEST: Google Careers")
+    print("============================================================")
+    scraper = GoogleCareersScraper(limit=limit, headless=headless, stealth=True)
+    jobs = scraper.fetch_jobs(query)
+    errors = _validate(jobs, "goog", "google.com")
+    # Extra: check structured fields extraction
+    for i, j in enumerate(jobs):
+        if not j.get("description") or len(j["description"]) < 50:
+            errors.append(f"job[{i}] description too short ({len(j.get('description', ''))})")
+        if not j.get("locations"):
+            # Not a hard fail — some listings don't have locations
+            print(f"  ⚠️ job[{i}] '{j.get('title')}': no locations extracted")
+        if j.get("compensation"):
+            print(f"  💰 job[{i}] compensation: {j['compensation']}")
+        else:
+            print(f"  ⚠️ job[{i}] '{j.get('title')}': no compensation extracted")
+    return _report("google", jobs, errors)
+
+
+def test_meta(limit: int = 3, headless: bool = True, query: str = "") -> bool:
+    print("\n============================================================")
+    print("TEST: Meta Careers")
+    print("============================================================")
+    scraper = MetaCareersScraper(limit=limit, headless=headless, stealth=True)
+    jobs = scraper.fetch_jobs(query)
+    errors = _validate(jobs, "meta", "metacareers.com")
+    for i, j in enumerate(jobs):
+        if not j.get("description") or len(j["description"]) < 100:
+            errors.append(f"job[{i}] description too short ({len(j.get('description', ''))})")
+        if not j.get("teams"):
+            print(f"  ⚠️ job[{i}] '{j.get('title')}': no teams")
+        if j.get("compensation"):
+            print(f"  💰 job[{i}] compensation: {j['compensation']}")
+    return _report("meta", jobs, errors)
+
+
 TESTS = {
     "yandex": test_yandex,
     "tinkoff": test_tinkoff,
     "avito": test_avito,
     "vk": test_vk,
     "x5": test_x5,
+    "google": test_google,
+    "meta": test_meta,
 }
 
 

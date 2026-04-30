@@ -16,11 +16,12 @@ from ._stealth import STEALTH_INIT_JS
 
 
 class GoogleCareersScraper(BaseScraper):
-    """careers.google.com — intercepts internal API responses for speed.
+    """careers.google.com — DOM scraper with Angular hydration wait.
 
-    Strategy: navigate to the search page and capture the XHR/fetch responses
-    that carry job listings, similar to how MetaCareersScraper captures GraphQL.
-    Falls back to DOM scraping if interception yields nothing.
+    Google Careers is a Wiz/Angular SPA that renders job cards client-side.
+    We must wait for JS hydration before extracting links. Works best with
+    storage_state (GOOGLE_STORAGE_STATE env var) for authenticated access.
+    Detail pages embed JSON-LD JobPosting — we parse that for structured data.
     """
 
     company_name = "Google"
@@ -33,19 +34,43 @@ class GoogleCareersScraper(BaseScraper):
             f"?q={quote(query)}"
         )
         page.goto(listing_url, wait_until="domcontentloaded", timeout=60000)
-        page.wait_for_timeout(3500)
+        # Wait for Angular/Wiz hydration — job cards appear late
+        page.wait_for_timeout(5000)
 
-        link_selector = "a[href*='/jobs/results/']"
-        _scroll_until_stable(
-            page,
-            max_attempts=12,
-            delay_ms=2500,
-            link_selector=link_selector,
-            target_count=self.limit * 2,
-        )
+        # Google renders job cards as <a> elements with long numeric IDs in the href.
+        # We need to wait for these to appear after JS hydration.
+        # Try multiple selectors Google has used historically:
+        job_link_selectors = [
+            "a[href*='/jobs/results/'][href*='-']",     # /jobs/results/12345-slug
+            "li[data-id] a",                             # list items with data-id
+            "gc-card a[href*='/jobs/']",                  # gc-card components
+        ]
 
-        hrefs = page.eval_on_selector_all(link_selector, "els => els.map(e => e.href)")
-        id_re = re.compile(r"/jobs/results/(\d+)(?:-[a-z0-9\-]+)?", re.I)
+        hrefs = []
+        for sel in job_link_selectors:
+            try:
+                found = page.eval_on_selector_all(sel, "els => els.map(e => e.href)")
+                if found:
+                    hrefs = found
+                    print(f"  Google: found {len(found)} links via '{sel}'")
+                    break
+            except Exception:
+                continue
+
+        if not hrefs:
+            # Last resort: grab ALL links and filter
+            all_hrefs = page.eval_on_selector_all("a", "els => els.map(e => e.href)")
+            hrefs = [h for h in all_hrefs if re.search(r"/jobs/results/\d{10,}", h)]
+            if hrefs:
+                print(f"  Google: found {len(hrefs)} links via full-page scan")
+
+        if not hrefs:
+            print("  ⚠️ Google: no job links found — page may not have hydrated. "
+                  "Try providing GOOGLE_STORAGE_STATE or running --headed.")
+            return []
+
+        # Deduplicate by numeric ID
+        id_re = re.compile(r"/jobs/results/(\d{10,})", re.I)
         seen, links = set(), []
         for h in hrefs:
             m = id_re.search(h)
@@ -56,7 +81,7 @@ class GoogleCareersScraper(BaseScraper):
                 continue
             seen.add(vid)
             links.append((h.split("?")[0], vid))
-        print(f"  Google: {len(links)} ссылок")
+        print(f"  Google: {len(links)} unique job links")
 
         q_lower = query.lower()
         vacancies: List[Dict[str, Any]] = []
@@ -68,16 +93,35 @@ class GoogleCareersScraper(BaseScraper):
                 continue
             try:
                 page.goto(job_url, wait_until="domcontentloaded", timeout=40000)
-                page.wait_for_timeout(2500 + int(random.random() * 2000))
+
+                # Wait for Angular hydration — the real title and JSON-LD
+                # only appear after Wiz renders the detail view.
+                try:
+                    page.wait_for_selector(
+                        "h2[jsname], script[type='application/ld+json']",
+                        timeout=8000,
+                    )
+                except Exception:
+                    pass
+                page.wait_for_timeout(1500)
 
                 html = page.content()
 
-                # ── JSON-LD extraction (same as Meta) ──
+                # ── JSON-LD extraction (same parser as Meta) ──
                 detail = _meta_parse_detail(html)
 
                 title = detail.get("title") or _first_non_empty_text(page, [
                     "h2[jsname]", "h2", "h1",
                 ]) or "Google Vacancy"
+
+                # If title is the generic page title, extract from URL slug
+                if title in ("Jobs Search Results", "Google Vacancy", "Google Careers"):
+                    slug = job_url.rstrip("/").split("/")[-1]
+                    # Remove numeric prefix: "142249-machine-learning-engineer" → "machine-learning-engineer"
+                    slug_parts = slug.split("-")
+                    text_parts = [p for p in slug_parts if not p.isdigit()]
+                    if text_parts:
+                        title = " ".join(p.capitalize() for p in text_parts)
 
                 full_desc = _build_full_description(detail)
 
@@ -92,10 +136,13 @@ class GoogleCareersScraper(BaseScraper):
                 if q_lower and q_lower not in full_desc.lower() and q_lower not in title.lower():
                     continue
 
-                # ── Locations (from DOM chips or JSON-LD) ──
+                # ── Locations ──
                 locations = []
                 try:
-                    loc_els = page.locator("[class*='location' i], [data-field='locations'] span").all()
+                    loc_els = page.locator(
+                        "[class*='location' i], [data-field='locations'] span, "
+                        "[class*='workplaceType' i]"
+                    ).all()
                     for el in loc_els[:10]:
                         t = (el.inner_text() or "").strip()
                         if t and len(t) < 80 and t not in locations:
@@ -121,6 +168,7 @@ class GoogleCareersScraper(BaseScraper):
             except Exception as e:
                 print(f"  ⚠️ {job_url}: {e}")
         return vacancies
+
 
 
 
