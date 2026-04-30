@@ -328,7 +328,7 @@
   }
 
   function render() {
-    const t = svg.transition().duration(550).ease(d3.easeCubicOut);
+    const t = d3.transition().duration(750).ease(d3.easeCubicOut);
 
     // Tree edges
     linkLayer.selectAll("path.link")
@@ -512,13 +512,12 @@
       
       applyFilters(); // Rebuilds the tree with ONLY this team
 
-      // Pan/zoom toward its new layout coordinates
-      const c = hroot.children?.find(n => n.data.name === name) || hroot;
-      const [cx, cy] = pol(c.x, c.y);
-      const k = 1.6;
-      svg.transition().duration(600).call(
+      // Pan/zoom toward the center of the newly isolated subtree
+      // Since d3.cluster() spreads it 360 degrees, the center of mass is [0,0]
+      const k = 1.3;
+      svg.transition().duration(750).call(
         zoom.transform,
-        d3.zoomIdentity.scale(k).translate(-cx, -cy)
+        d3.zoomIdentity.scale(k).translate(0, 0)
       );
     }
   }
