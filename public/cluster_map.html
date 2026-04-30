@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Meta — Vacancy Cluster Map</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root {
+    --bg: #0e1116;
+    --bg-elev: #161b22;
+    --bg-elev2: #1c2128;
+    --fg: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --node-bg: #21262d;
+    --border: #30363d;
+    --cv: #ffd300;
+    --c-research: #f9a23c;
+    --c-design: #f778ba;
+    --c-data: #a5d6ff;
+    --c-product: #7ee787;
+    --c-legal: #a371f7;
+    --c-finance: #ffa657;
+    --c-people: #ff7b72;
+    --c-tpm: #79c0ff;
+    --c-gtm: #d29922;
+    --c-operations: #6e7681;
+    --c-security: #ff5b5b;
+    --c-engineering: #6cc6a3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  header {
+    position: sticky; top: 0; z-index: 10; background: var(--bg-elev);
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  }
+  header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+  header .nav a { color: var(--muted); text-decoration: none; font-size: 12px; padding: 3px 8px; border: 1px solid var(--border); border-radius: 4px; }
+  header .nav a.active { color: var(--fg); background: var(--node-bg); }
+  header .nav a:hover { color: var(--fg); }
+  header .stats { font-size: 12px; color: var(--muted); }
+  header .stats b { color: var(--fg); font-weight: 600; }
+  header label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); cursor: pointer; }
+  header input[type=checkbox] { accent-color: var(--accent); }
+  header input[type=search] {
+    background: var(--node-bg); color: var(--fg); border: 1px solid var(--border);
+    padding: 4px 8px; border-radius: 4px; font: inherit; min-width: 140px;
+  }
+  header .chip {
+    display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
+    border: 1px solid var(--border); border-radius: 999px; cursor: pointer;
+    background: var(--node-bg); user-select: none; font-size: 11px;
+  }
+  header .chip.off { opacity: 0.35; }
+  header .chip:hover { border-color: var(--fg); }
+
+  #wrap { display: grid; grid-template-columns: 1fr 320px; height: calc(100vh - 56px); }
+  #viz { position: relative; overflow: hidden; }
+  #viz svg { display: block; width: 100%; height: 100%; cursor: grab; background: radial-gradient(ellipse at center, #14181f 0%, var(--bg) 70%); }
+  #viz svg:active { cursor: grabbing; }
+
+  #panel { border-left: 1px solid var(--border); background: var(--bg-elev); padding: 14px 16px; overflow-y: auto; font-size: 13px; }
+  #panel h2 { font-size: 14px; margin: 0 0 6px 0; }
+  #panel h3 { font-size: 12px; margin: 14px 0 6px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  #panel .muted { color: var(--muted); }
+  #panel .row { margin: 5px 0; }
+  #panel .pill {
+    display: inline-block; padding: 1px 6px; margin: 2px 4px 2px 0;
+    background: var(--node-bg); border: 1px solid var(--border);
+    border-radius: 999px; font-size: 11px; color: var(--muted);
+  }
+  #panel .match {
+    padding: 8px 10px; margin: 4px 0; border: 1px solid var(--border);
+    border-radius: 6px; cursor: pointer; background: var(--node-bg);
+  }
+  #panel .match:hover { border-color: var(--accent); }
+  #panel .match .t { font-size: 12px; font-weight: 600; }
+  #panel .match .m { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  #panel .match .sim {
+    float: right; padding: 1px 5px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 4px; font-size: 10px;
+    color: var(--accent);
+  }
+  #panel a { color: var(--accent); text-decoration: none; }
+  #panel a:hover { text-decoration: underline; }
+
+  /* axis labels */
+  .axis-label {
+    position: absolute; font-size: 11px; color: var(--muted); pointer-events: none;
+    background: rgba(14,17,22,.75); padding: 4px 8px; border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .axis-label.l { left: 12px; top: 50%; transform: translateY(-50%); }
+  .axis-label.r { right: 12px; top: 50%; transform: translateY(-50%); text-align: right; }
+  .axis-label.t { top: 12px; left: 50%; transform: translateX(-50%); }
+  .axis-label.b { bottom: 12px; left: 50%; transform: translateX(-50%); }
+
+  .vac { stroke: rgba(255,255,255,.05); stroke-width: 0.5; cursor: pointer; }
+  .vac.dim { opacity: 0.08; }
+  .vac.hl { stroke: var(--fg); stroke-width: 1.6; }
+
+  .cv-mark { fill: var(--cv); stroke: #000; stroke-width: 1.5; }
+  .cv-pulse {
+    fill: none; stroke: var(--cv); stroke-width: 2;
+    animation: pulse 2.2s ease-out infinite;
+  }
+  @keyframes pulse { 0% { r: 8; opacity: 0.9; } 100% { r: 32; opacity: 0; } }
+
+  .cluster-label {
+    fill: var(--fg); font-size: 12px; font-weight: 600; pointer-events: none;
+    paint-order: stroke; stroke: var(--bg); stroke-width: 4; stroke-linejoin: round;
+    opacity: 0.9;
+  }
+  .cluster-hull { fill: var(--accent); fill-opacity: 0.05; stroke: var(--border); stroke-dasharray: 3 3; pointer-events: none; }
+
+  /* tooltip */
+  #tt {
+    position: absolute; pointer-events: none; background: var(--bg-elev);
+    border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px;
+    font-size: 12px; max-width: 260px; opacity: 0; transition: opacity .12s;
+    z-index: 50; box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  }
+  #tt b { color: var(--fg); }
+  #tt .m { color: var(--muted); font-size: 11px; margin-top: 3px; }
+  #empty { padding: 30px; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Meta · Cluster Map</h1>
+  <span class="nav">
+    <a href="vacancy_tree.html">🌲 Tree</a>
+    <a href="cluster_map.html" class="active">🗺 Cluster Map</a>
+  </span>
+  <span class="stats" id="stats">…</span>
+  <span id="catChips"></span>
+  <label><input type="checkbox" id="showLabels" checked /> Cluster labels</label>
+  <label><input type="checkbox" id="showHulls" checked /> Hulls</label>
+  <input type="search" id="search" placeholder="search title…" />
+</header>
+<div id="wrap">
+  <div id="viz"><div id="empty">Loading cluster_map.json…</div></div>
+  <aside id="panel">
+    <div id="panelBody"><div class="muted">Loading…</div></div>
+  </aside>
+</div>
+<div id="tt"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script>
+(async function () {
+  const data = await fetch("./cluster_map.json").then(r => r.ok ? r.json() : null);
+  const empty = document.getElementById("empty");
+  if (!data) { empty.textContent = "cluster_map.json not found — run scripts/build_cluster_map.py"; return; }
+  empty.remove();
+
+  const cats = data.categories || [];
+  const catColor = id => `var(--c-${id})`;
+  const catEmoji = id => (cats.find(c => c.id === id) || {}).emoji || "❓";
+  const catLabel = id => (cats.find(c => c.id === id) || {}).label || id;
+
+  // ── Stats line ────────────────────────────────────────────────────
+  const s = data.stats || {};
+  document.getElementById("stats").innerHTML =
+    `<b>${s.vacancies}</b> jobs · <b>${s.clusters}</b> clusters · `
+    + `noise: ${s.noise_points} · ${data.params.embedding_model}`;
+
+  // ── Category chips ────────────────────────────────────────────────
+  const enabledCats = new Set(cats.map(c => c.id));
+  const chipsEl = document.getElementById("catChips");
+  const counts = {};
+  data.vacancies.forEach(v => counts[v.category] = (counts[v.category] || 0) + 1);
+  cats.forEach(c => {
+    if (!counts[c.id]) return;
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.style.color = catColor(c.id);
+    chip.innerHTML = `${c.emoji} ${counts[c.id]}`;
+    chip.title = c.label;
+    chip.addEventListener("click", () => {
+      if (enabledCats.has(c.id)) { enabledCats.delete(c.id); chip.classList.add("off"); }
+      else { enabledCats.add(c.id); chip.classList.remove("off"); }
+      applyFilters();
+    });
+    chipsEl.appendChild(chip);
+  });
+
+  // ── Compute scale ─────────────────────────────────────────────────
+  const viz = document.getElementById("viz");
+  const W = viz.clientWidth, H = viz.clientHeight;
+  const M = 60;
+  const xs = data.vacancies.map(v => v.x).concat([data.cv.x]);
+  const ys = data.vacancies.map(v => v.y).concat([data.cv.y]);
+  const xMin = Math.min(...xs), xMax = Math.max(...xs);
+  const yMin = Math.min(...ys), yMax = Math.max(...ys);
+  const sx = d3.scaleLinear().domain([xMin, xMax]).range([M, W - M]);
+  const sy = d3.scaleLinear().domain([yMin, yMax]).range([H - M, M]);
+
+  // Compensation → size
+  const compToNum = c => {
+    if (!c) return null;
+    const m = c.match(/\$([\d,]+)/);
+    return m ? parseInt(m[1].replace(/,/g, ""), 10) : null;
+  };
+  const sizeScale = d3.scaleSqrt().domain([80000, 400000]).range([3, 11]).clamp(true);
+
+  const svg = d3.select("#viz").append("svg").attr("viewBox", [0, 0, W, H]);
+  const g = svg.append("g");
+  const zoom = d3.zoom().scaleExtent([0.5, 8]).on("zoom", e => g.attr("transform", e.transform));
+  svg.call(zoom);
+
+  // ── Cluster hulls + labels ────────────────────────────────────────
+  const hullLayer = g.append("g").attr("class", "hulls");
+  const labelLayer = g.append("g").attr("class", "labels");
+  const byCluster = d3.group(data.vacancies, v => v.cluster);
+  for (const [cid, members] of byCluster) {
+    if (cid === -1) continue;
+    const pts = members.map(v => [sx(v.x), sy(v.y)]);
+    if (pts.length < 3) continue;
+    const hull = d3.polygonHull(pts);
+    if (hull) {
+      hullLayer.append("path")
+        .attr("class", "cluster-hull")
+        .attr("d", "M" + hull.join("L") + "Z");
+    }
+  }
+  // labels at centroid
+  for (const c of (data.clusters || [])) {
+    labelLayer.append("text")
+      .attr("class", "cluster-label")
+      .attr("x", sx(c.centroid_x))
+      .attr("y", sy(c.centroid_y))
+      .attr("text-anchor", "middle")
+      .text(`${c.label} · ${c.size}`);
+  }
+
+  // ── Vacancy points ────────────────────────────────────────────────
+  const tt = document.getElementById("tt");
+  const vacSel = g.append("g").attr("class", "points")
+    .selectAll("circle.vac").data(data.vacancies)
+    .join("circle")
+    .attr("class", "vac")
+    .attr("cx", v => sx(v.x))
+    .attr("cy", v => sy(v.y))
+    .attr("r", v => {
+      const n = compToNum(v.compensation);
+      return n ? sizeScale(n) : 3.2;
+    })
+    .style("fill", v => catColor(v.category))
+    .on("mouseenter", (e, v) => {
+      tt.innerHTML = `<b>${escapeHtml(v.title)}</b><div class="m">${v.team || "?"} · ${v.level} · ${v.category_emoji} ${catLabel(v.category)}</div>${v.compensation ? `<div class="m">${escapeHtml(v.compensation)}</div>` : ""}<div class="m">cv-distance: ${v.distance_to_cv.toFixed(3)}</div>`;
+      tt.style.opacity = 1;
+    })
+    .on("mousemove", (e) => {
+      tt.style.left = (e.pageX + 14) + "px";
+      tt.style.top = (e.pageY + 14) + "px";
+    })
+    .on("mouseleave", () => { tt.style.opacity = 0; })
+    .on("click", (_, v) => showRole(v));
+
+  // ── CV (you) ──────────────────────────────────────────────────────
+  const cvLayer = g.append("g");
+  cvLayer.append("circle").attr("class", "cv-pulse")
+    .attr("cx", sx(data.cv.x)).attr("cy", sy(data.cv.y)).attr("r", 8);
+  cvLayer.append("polygon")
+    .attr("class", "cv-mark")
+    .attr("points", starPoints(sx(data.cv.x), sy(data.cv.y), 5, 11, 4.5));
+  cvLayer.append("text")
+    .attr("class", "cluster-label")
+    .style("fill", "var(--cv)")
+    .attr("x", sx(data.cv.x))
+    .attr("y", sy(data.cv.y) - 16)
+    .attr("text-anchor", "middle")
+    .text("You");
+
+  // ── Axis-pole captions ────────────────────────────────────────────
+  function captionFor(items) {
+    const cats = items.map(it => `${catEmoji(it.category)} ${(it.team || it.title || "").slice(0, 22)}`);
+    return [...new Set(cats)].slice(0, 3).join(" · ");
+  }
+  const ap = data.axis_poles || {};
+  const lblL = mkAxisLabel(`← ${captionFor(ap.x_left || [])}`,  "l");
+  const lblR = mkAxisLabel(`${captionFor(ap.x_right || [])} →`, "r");
+  const lblT = mkAxisLabel(`↑ ${captionFor(ap.y_top || [])}`,   "t");
+  const lblB = mkAxisLabel(`↓ ${captionFor(ap.y_bottom || [])}`,"b");
+
+  // ── Right panel: top matches ──────────────────────────────────────
+  showTopMatches();
+
+  function showTopMatches() {
+    const matches = data.top_matches || [];
+    const body = document.getElementById("panelBody");
+    body.innerHTML = `
+      <h2>🎯 Closest to your resume</h2>
+      <div class="muted">Cosine similarity vs ${data.params.embedding_model} embedding of <code>content/en/</code></div>
+      <h3>Top ${matches.length}</h3>
+      ${matches.map((m, i) => `
+        <div class="match" data-id="${m.id}">
+          <span class="sim">${(m.similarity * 100).toFixed(1)}%</span>
+          <div class="t">${i + 1}. ${m.category_emoji} ${escapeHtml(m.title)}</div>
+          <div class="m">${escapeHtml(m.team)} · ${m.level} ${m.compensation ? "· " + escapeHtml(m.compensation) : ""}</div>
+        </div>
+      `).join("")}
+    `;
+    body.querySelectorAll(".match").forEach(el => {
+      el.addEventListener("click", () => {
+        const v = data.vacancies.find(x => x.id === el.dataset.id);
+        if (v) {
+          showRole(v);
+          panTo(v.x, v.y);
+        }
+      });
+    });
+  }
+
+  function showRole(v) {
+    const body = document.getElementById("panelBody");
+    body.innerHTML = `
+      <h2>${v.category_emoji} ${escapeHtml(v.title)}</h2>
+      <div class="muted">${v.id}</div>
+      <div class="row">
+        <span class="pill" style="color:${catColor(v.category)};border-color:${catColor(v.category)}">${catLabel(v.category)}</span>
+        <span class="pill">${v.team}${v.sub_team ? " · " + v.sub_team : ""}</span>
+        <span class="pill">${v.level} (${v.level_rank})</span>
+        ${v.is_research ? '<span class="pill" style="color:var(--c-research);border-color:var(--c-research)">PhD/papers</span>' : ""}
+        ${v.is_product ? '<span class="pill" style="color:var(--c-product);border-color:var(--c-product)">PM-track</span>' : ""}
+      </div>
+      ${v.compensation ? `<div class="row"><b>Compensation:</b> ${escapeHtml(v.compensation)}</div>` : ""}
+      <div class="row"><b>Distance to your resume:</b> ${v.distance_to_cv.toFixed(3)} (cosine)</div>
+      <div class="row"><a href="${v.link}" target="_blank" rel="noopener">Open on metacareers.com →</a></div>
+      <h3>Back</h3>
+      <div class="row"><a href="#" id="back">← top matches</a></div>
+    `;
+    body.querySelector("#back").addEventListener("click", e => { e.preventDefault(); showTopMatches(); });
+    vacSel.classed("hl", x => x.id === v.id);
+  }
+
+  function panTo(wx, wy) {
+    const k = 2.4;
+    const tx = W / 2 - sx(wx) * k;
+    const ty = H / 2 - sy(wy) * k;
+    svg.transition().duration(550).call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
+  }
+
+  // ── Filters ──────────────────────────────────────────────────────
+  const search = document.getElementById("search");
+  const showLabels = document.getElementById("showLabels");
+  const showHulls = document.getElementById("showHulls");
+  function applyFilters() {
+    const q = search.value.trim().toLowerCase();
+    vacSel.classed("dim", v =>
+      !enabledCats.has(v.category) || (q && !v.title.toLowerCase().includes(q))
+    );
+    labelLayer.style("display", showLabels.checked ? null : "none");
+    hullLayer.style("display", showHulls.checked ? null : "none");
+  }
+  search.addEventListener("input", applyFilters);
+  showLabels.addEventListener("change", applyFilters);
+  showHulls.addEventListener("change", applyFilters);
+
+  // ── Helpers ──────────────────────────────────────────────────────
+  function starPoints(cx, cy, n, rOut, rIn) {
+    const pts = [];
+    for (let i = 0; i < 2 * n; i++) {
+      const r = i % 2 === 0 ? rOut : rIn;
+      const a = (Math.PI * 2 * i) / (2 * n) - Math.PI / 2;
+      pts.push((cx + r * Math.cos(a)).toFixed(2) + "," + (cy + r * Math.sin(a)).toFixed(2));
+    }
+    return pts.join(" ");
+  }
+  function mkAxisLabel(text, pos) {
+    const div = document.createElement("div");
+    div.className = "axis-label " + pos;
+    div.textContent = text;
+    viz.appendChild(div);
+    return div;
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+  }
+})();
+</script>
+</body>
+</html>
