@@ -139,6 +139,7 @@
   </span>
   <span class="stats" id="stats">…</span>
   <span id="catChips"></span>
+  <span id="companyChips" style="margin-left: 12px; border-left: 1px solid var(--border); padding-left: 12px;"></span>
   <label><input type="checkbox" id="showBridges" /> Cross-team bridges</label>
   <label><input type="checkbox" id="showMgr" /> Manager edges</label>
   <input type="search" id="search" placeholder="filter title…" />
@@ -186,9 +187,25 @@
     chip.addEventListener("click", () => {
       if (enabledCats.has(c.id)) { enabledCats.delete(c.id); chip.classList.add("off"); }
       else { enabledCats.add(c.id); chip.classList.remove("off"); }
-      applyFilters();
+      rebuild();
     });
     chipsEl.appendChild(chip);
+  });
+
+  // ── Company chips (multi-toggle filter) ──────────────────────────
+  const companies = data.companies || [];
+  const compChipsEl = document.getElementById("companyChips");
+  const enabledCompanies = new Set(companies);
+  companies.forEach(name => {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = name;
+    chip.addEventListener("click", () => {
+      if (enabledCompanies.has(name)) { enabledCompanies.delete(name); chip.classList.add("off"); }
+      else { enabledCompanies.add(name); chip.classList.remove("off"); }
+      rebuild();
+    });
+    compChipsEl.appendChild(chip);
   });
 
   // ── Team sidebar ──────────────────────────────────────────────────
@@ -309,6 +326,7 @@
     const q = (document.getElementById("search").value || "").trim().toLowerCase();
     const passesRole = r => {
       if (!enabledCats.has(r.category)) return false;
+      if (enabledCompanies && !enabledCompanies.has(r.company)) return false;
       if (q && !r.title.toLowerCase().includes(q)) return false;
       return true;
     };
