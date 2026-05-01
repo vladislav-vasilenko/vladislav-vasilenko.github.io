@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "LinkedIn Connections Scraper",
+  "version": "1.0",
+  "description": "Scrapes LinkedIn connections and exports to JSON",
+  "permissions": ["activeTab", "scripting", "downloads"],
+  "host_permissions": ["*://*.linkedin.com/*"],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

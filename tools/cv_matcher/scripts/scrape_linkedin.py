@@ -4,7 +4,10 @@ import os
 import time
 from pathlib import Path
 
+from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 def scrape_linkedin_connections(user_data_dir: str, output_file: str, max_scrolls: int = 50):
     with sync_playwright() as p:
@@ -16,18 +19,67 @@ def scrape_linkedin_connections(user_data_dir: str, output_file: str, max_scroll
             channel="chrome", # <--- Используем системный Chrome, чтобы избежать SIGBUS на Mac ARM64
             args=["--disable-blink-features=AutomationControlled"]
         )
+        
+        li_at = os.environ.get("LINKEDIN_LI_AT")
+        if li_at:
+            print("Found LINKEDIN_LI_AT in .env, injecting auth cookie...")
+            clean_cookie = li_at.strip().strip("'\"")
+            browser.add_cookies([{
+                "name": "li_at",
+                "value": clean_cookie,
+                "domain": ".www.linkedin.com",
+                "path": "/",
+                "secure": True,
+                "httpOnly": True
+            }])
+
         page = browser.new_page()
 
         print("Navigating to LinkedIn connections page...")
-        page.goto("https://www.linkedin.com/mynetwork/invite-connect/connections/")
+        for attempt in range(3):
+            try:
+                page.goto("https://www.linkedin.com/mynetwork/invite-connect/connections/", timeout=60000)
+                break
+            except Exception as e:
+                print(f"Navigation error (attempt {attempt+1}): {e}")
+                if attempt == 2:
+                    raise
+                time.sleep(2)
 
-        # Wait for user to log in if not already logged in
-        if "/login" in page.url or "checkpoint" in page.url:
-            print("Please log in manually in the opened browser window.")
-            page.wait_for_url("**/mynetwork/invite-connect/connections/**", timeout=300000) # 5 mins to login
-            print("Login successful, continuing...")
-            time.sleep(3)
+        # Handle login if redirected to a login or checkpoint page
+        if "/login" in page.url or "checkpoint" in page.url or "authwall" in page.url:
+            email = os.environ.get("LINKEDIN_EMAIL")
+            password = os.environ.get("LINKEDIN_PASSWORD")
+            
+            if email and password and ("login" in page.url or "authwall" in page.url):
+                print("Attempting auto-login using credentials from .env...")
+                try:
+                    page.fill("input[name='session_key'], input[id='username']", email)
+                    page.fill("input[name='session_password'], input[id='password']", password)
+                    page.click("button[type='submit']")
+                    time.sleep(3) # Wait for navigation to start
+                except Exception as e:
+                    print(f"Auto-login fill failed: {e}")
+            
+            # If still not on the right page (e.g., 2FA or Captcha required)
+            if "mynetwork/invite-connect/connections" not in page.url:
+                print("Please complete any remaining login steps (2FA/Captcha) manually in the opened browser window.")
+                page.wait_for_url("**/mynetwork/invite-connect/connections/**", timeout=300000) # 5 mins to login
+                print("Login completed, continuing...")
+                time.sleep(3)
 
+        print(f"Current URL: {page.url}")
+        print(f"Page Title: {page.title()}")
+        page.screenshot(path="debug_linkedin.png")
+        
+        print("Waiting 5 seconds for page to render...")
+        time.sleep(5)
+        
+        # Save HTML for debugging
+        with open("debug.html", "w", encoding="utf-8") as f:
+            f.write(page.content())
+        print("Saved raw HTML to debug.html")
+        
         print("Scrolling down to load all connections...")
         # Scroll to bottom repeatedly to load all connections
         prev_height = -1

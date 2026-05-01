@@ -43,10 +43,12 @@
   header .stats b { color: var(--fg); font-weight: 600; }
   header label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); cursor: pointer; }
   header input[type=checkbox] { accent-color: var(--accent); }
-  header input[type=search] {
+  header input[type=search],
+  header select {
     background: var(--node-bg); color: var(--fg); border: 1px solid var(--border);
     padding: 4px 8px; border-radius: 4px; font: inherit; min-width: 140px;
   }
+  header select { min-width: 110px; cursor: pointer; }
   header .chip {
     display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
     border: 1px solid var(--border); border-radius: 999px; cursor: pointer;
@@ -96,9 +98,19 @@
   .axis-label.t { top: 12px; left: 50%; transform: translateX(-50%); }
   .axis-label.b { bottom: 12px; left: 50%; transform: translateX(-50%); }
 
-  .vac { stroke: rgba(255,255,255,.05); stroke-width: 0.5; cursor: pointer; }
-  .vac.dim { opacity: 0.08; }
+  .vac { stroke: rgba(255,255,255,.05); stroke-width: 0.5; cursor: pointer; transition: opacity .25s, stroke-width .15s; }
+  .vac.dim { opacity: 0.12; }
+  .vac.sim-dim { opacity: 0.06; }   /* "selection mode" — non-similar fade out */
+  .vac.hidden { display: none; }
   .vac.hl { stroke: var(--fg); stroke-width: 1.6; }
+  .vac.same-co-hl { stroke: var(--c-product); stroke-width: 2; filter: drop-shadow(0 0 3px var(--c-product)); }
+  .vac.other-co-hl { stroke: #ff9500; stroke-width: 2.2; filter: drop-shadow(0 0 4px #ff9500); }
+  .vac.cross-hl { stroke: var(--cv); stroke-width: 2.2; filter: drop-shadow(0 0 4px var(--cv)); }
+  .vac.selected { stroke: var(--accent); stroke-width: 2.8; filter: drop-shadow(0 0 7px var(--accent)); }
+  .link-line { pointer-events: none; }
+  .link-line.same-co  { stroke: var(--c-product); stroke-opacity: 0.30; stroke-width: 1; }
+  .link-line.other-co { stroke: #ff9500;          stroke-opacity: 0.45; stroke-width: 1; }
+  .link-line.xlang    { stroke: var(--cv);        stroke-opacity: 0.40; stroke-width: 1; stroke-dasharray: 3 3; }
 
   .cv-mark { fill: var(--cv); stroke: #000; stroke-width: 1.5; }
   .cv-pulse {
@@ -136,6 +148,17 @@
   <span class="stats" id="stats">…</span>
   <span id="catChips"></span>
   <span id="companyChips" style="margin-left: 12px; border-left: 1px solid var(--border); padding-left: 12px;"></span>
+  <label style="margin-left: 12px; border-left: 1px solid var(--border); padding-left: 12px;">
+    🆕 <select id="ageFilter" title="Show only roles first seen within this window">
+      <option value="">All time</option>
+      <option value="1">last 24h</option>
+      <option value="3">last 3d</option>
+      <option value="5">last 5d</option>
+      <option value="7">last 1w</option>
+      <option value="10">last 10d</option>
+      <option value="14">last 2w</option>
+    </select>
+  </label>
   <label><input type="checkbox" id="showLabels" checked /> Cluster labels</label>
   <label><input type="checkbox" id="showHulls" checked /> Hulls</label>
   <input type="search" id="search" placeholder="search title…" />
@@ -221,12 +244,16 @@
   const viz = document.getElementById("viz");
   const W = viz.clientWidth, H = viz.clientHeight;
   const M = 60;
-  const xs = data.vacancies.map(v => v.x).concat([data.cv.x]);
-  const ys = data.vacancies.map(v => v.y).concat([data.cv.y]);
-  const xMin = Math.min(...xs), xMax = Math.max(...xs);
-  const yMin = Math.min(...ys), yMax = Math.max(...ys);
-  const sx = d3.scaleLinear().domain([xMin, xMax]).range([M, W - M]);
-  const sy = d3.scaleLinear().domain([yMin, yMax]).range([H - M, M]);
+  const sx = d3.scaleLinear().range([M, W - M]);
+  const sy = d3.scaleLinear().range([H - M, M]);
+
+  function recomputeDomain(visible) {
+    const src = visible.length ? visible : data.vacancies;
+    const xs = src.map(v => v.x).concat([data.cv.x]);
+    const ys = src.map(v => v.y).concat([data.cv.y]);
+    sx.domain([Math.min(...xs), Math.max(...xs)]);
+    sy.domain([Math.min(...ys), Math.max(...ys)]);
+  }
 
   // Compensation → size
   const compToNum = c => {
@@ -241,39 +268,19 @@
   const zoom = d3.zoom().scaleExtent([0.5, 8]).on("zoom", e => g.attr("transform", e.transform));
   svg.call(zoom);
 
-  // ── Cluster hulls + labels ────────────────────────────────────────
+  // Layer order: hulls → links (above hulls, below points) → points → labels → cv → tooltip
   const hullLayer = g.append("g").attr("class", "hulls");
+  const linkLayer = g.append("g").attr("class", "links");
+  const pointsLayer = g.append("g").attr("class", "points");
   const labelLayer = g.append("g").attr("class", "labels");
-  const byCluster = d3.group(data.vacancies, v => v.cluster);
-  for (const [cid, members] of byCluster) {
-    if (cid === -1) continue;
-    const pts = members.map(v => [sx(v.x), sy(v.y)]);
-    if (pts.length < 3) continue;
-    const hull = d3.polygonHull(pts);
-    if (hull) {
-      hullLayer.append("path")
-        .attr("class", "cluster-hull")
-        .attr("d", "M" + hull.join("L") + "Z");
-    }
-  }
-  // labels at centroid
-  for (const c of (data.clusters || [])) {
-    labelLayer.append("text")
-      .attr("class", "cluster-label")
-      .attr("x", sx(c.centroid_x))
-      .attr("y", sy(c.centroid_y))
-      .attr("text-anchor", "middle")
-      .text(`${c.label} · ${c.size}`);
-  }
+  const cvLayer = g.append("g").attr("class", "cv-layer");
 
-  // ── Vacancy points ────────────────────────────────────────────────
+  // ── Vacancy points (created once; positions updated by render()) ──
   const tt = document.getElementById("tt");
-  const vacSel = g.append("g").attr("class", "points")
+  const vacSel = pointsLayer
     .selectAll("circle.vac").data(data.vacancies)
     .join("circle")
     .attr("class", "vac")
-    .attr("cx", v => sx(v.x))
-    .attr("cy", v => sy(v.y))
     .attr("r", v => {
       const n = compToNum(v.compensation);
       return n ? sizeScale(n) : 3.2;
@@ -290,18 +297,12 @@
     .on("mouseleave", () => { tt.style.opacity = 0; })
     .on("click", (_, v) => showRole(v));
 
-  // ── CV (you) ──────────────────────────────────────────────────────
-  const cvLayer = g.append("g");
-  cvLayer.append("circle").attr("class", "cv-pulse")
-    .attr("cx", sx(data.cv.x)).attr("cy", sy(data.cv.y)).attr("r", 8);
-  cvLayer.append("polygon")
-    .attr("class", "cv-mark")
-    .attr("points", starPoints(sx(data.cv.x), sy(data.cv.y), 5, 11, 4.5));
-  cvLayer.append("text")
+  // ── CV (you) — created once, repositioned by render() ─────────────
+  const cvPulse = cvLayer.append("circle").attr("class", "cv-pulse").attr("r", 8);
+  const cvStar = cvLayer.append("polygon").attr("class", "cv-mark");
+  const cvText = cvLayer.append("text")
     .attr("class", "cluster-label")
     .style("fill", "var(--cv)")
-    .attr("x", sx(data.cv.x))
-    .attr("y", sy(data.cv.y) - 16)
     .attr("text-anchor", "middle")
     .text("You");
 
@@ -316,24 +317,60 @@
   const lblT = mkAxisLabel(`↑ ${captionFor(ap.y_top || [])}`,   "t");
   const lblB = mkAxisLabel(`↓ ${captionFor(ap.y_bottom || [])}`,"b");
 
-  // ── Right panel: top matches ──────────────────────────────────────
+  // ── Initial render + right-panel top matches ──────────────────────
+  render({ animate: false });
   showTopMatches();
 
+  // Compact "🆕 1d: 12 · 3d: 45 · 1w: 134 · 2w: 245" — always visible at top of panel
+  function ageSummaryHtml() {
+    const fmt = d => `${d}: <b>${ageCounts[d] || 0}</b>`;
+    return `<div class="muted" style="margin: 6px 0 12px 0; font-size: 11px;">
+      🆕 First-seen: ${[1,3,5,7,10,14].map(fmt).join(" · ")}
+      ${ageMissing ? ` · <span style="opacity:.6">(${ageMissing} undated)</span>` : ""}
+    </div>`;
+  }
+
   function showTopMatches() {
-    const matches = data.top_matches || [];
+    clearSelection();
     const body = document.getElementById("panelBody");
-    body.innerHTML = `
-      <h2>🎯 Closest to your resume</h2>
-      <div class="muted">Cosine similarity vs ${data.params.embedding_model} embedding of <code>content/en/</code></div>
-      <h3>Top ${matches.length}</h3>
-      ${matches.map((m, i) => `
-        <div class="match" data-id="${m.id}">
-          <span class="sim">${(m.similarity * 100).toFixed(1)}%</span>
-          <div class="t">${i + 1}. ${m.category_emoji} ${escapeHtml(m.title)}</div>
-          <div class="m">${escapeHtml(m.company || "?")} · ${escapeHtml(m.team)} · ${m.level} ${m.compensation ? "· " + escapeHtml(m.compensation) : ""}</div>
-        </div>
-      `).join("")}
-    `;
+
+    if (enabledMaxAgeDays !== null) {
+      // Age-filtered view: list all roles first-seen within window, sorted by recency
+      const recent = data.vacancies
+        .filter(passesCompanyAndCat)
+        .filter(v => v.first_seen)
+        .sort((a, b) => Date.parse(b.first_seen) - Date.parse(a.first_seen));
+      body.innerHTML = `
+        <h2>🆕 New in last ${enabledMaxAgeDays} day${enabledMaxAgeDays > 1 ? "s" : ""}</h2>
+        ${ageSummaryHtml()}
+        <div class="muted">${recent.length} role${recent.length === 1 ? "" : "s"} first-seen in window</div>
+        <h3>Recent</h3>
+        ${recent.slice(0, 100).map(v => `
+          <div class="match" data-id="${v.id}">
+            <span class="sim">${ageBadge(v.first_seen)}</span>
+            <div class="t">${v.category_emoji} ${escapeHtml(v.title)}</div>
+            <div class="m">${escapeHtml(v.company || "?")} · ${escapeHtml(v.team || "")}${v.level ? " · " + v.level : ""}</div>
+          </div>
+        `).join("")}
+        ${recent.length > 100 ? `<div class="muted" style="margin-top:8px;">… and ${recent.length - 100} more</div>` : ""}
+      `;
+    } else {
+      const matches = data.top_matches || [];
+      body.innerHTML = `
+        <h2>🎯 Closest to your resume</h2>
+        ${ageSummaryHtml()}
+        <div class="muted">Cosine similarity vs ${data.params.embedding_model} embedding of <code>content/en/</code></div>
+        <h3>Top ${matches.length}</h3>
+        ${matches.map((m, i) => `
+          <div class="match" data-id="${m.id}">
+            <span class="sim">${(m.similarity * 100).toFixed(1)}%</span>
+            <div class="t">${i + 1}. ${m.category_emoji} ${escapeHtml(m.title)}</div>
+            <div class="m">${escapeHtml(m.company || "?")} · ${escapeHtml(m.team)} · ${m.level} ${m.compensation ? "· " + escapeHtml(m.compensation) : ""}</div>
+          </div>
+        `).join("")}
+      `;
+    }
+
     body.querySelectorAll(".match").forEach(el => {
       el.addEventListener("click", () => {
         const v = data.vacancies.find(x => x.id === el.dataset.id);
@@ -345,8 +382,142 @@
     });
   }
 
+  function ageBadge(iso) {
+    const t = Date.parse(iso);
+    if (isNaN(t)) return "?";
+    const hours = (NOW_MS - t) / 3.6e6;
+    if (hours < 24) return `${Math.round(hours)}h`;
+    const days = Math.floor(hours / 24);
+    return `${days}d`;
+  }
+
+  // Map id → vacancy
+  const vacById = new Map(data.vacancies.map(v => [v.id, v]));
+
+  // Track current selected role so render() can re-position highlight lines after rescale
+  let currentSelection = null;
+
+  // ── render(): re-positions everything for the current visible set ──
+  // Called on filter changes (toggles, search). Rescales sx/sy to fit visible bbox,
+  // animates point positions, redraws hulls/labels for visible cluster members,
+  // and re-positions selection highlights.
+  function render({ animate = true } = {}) {
+    const visible = data.vacancies.filter(passesCompanyAndCat);
+    const visibleIds = new Set(visible.map(v => v.id));
+    recomputeDomain(visible);
+
+    const T = animate ? d3.transition().duration(650).ease(d3.easeCubicInOut) : null;
+
+    // Toggle hidden class for filtered-out points
+    vacSel.classed("hidden", v => !visibleIds.has(v.id));
+    // Search dims (but keeps in layout) — filter via .dim
+    const q = (document.getElementById("search").value || "").trim().toLowerCase();
+    vacSel.classed("dim", v =>
+      visibleIds.has(v.id) && q && !v.title.toLowerCase().includes(q)
+    );
+
+    // Animate point positions
+    (T ? vacSel.transition(T) : vacSel)
+      .attr("cx", v => sx(v.x))
+      .attr("cy", v => sy(v.y));
+
+    // CV mark
+    const cvX = sx(data.cv.x), cvY = sy(data.cv.y);
+    (T ? cvPulse.transition(T) : cvPulse).attr("cx", cvX).attr("cy", cvY);
+    (T ? cvStar.transition(T)  : cvStar).attr("points", starPoints(cvX, cvY, 5, 11, 4.5));
+    (T ? cvText.transition(T)  : cvText).attr("x", cvX).attr("y", cvY - 16);
+
+    // Re-render hulls + cluster labels from VISIBLE members only
+    hullLayer.selectAll("*").remove();
+    labelLayer.selectAll("*").remove();
+    const byCluster = d3.group(visible, v => v.cluster);
+    const clusterInfo = new Map((data.clusters || []).map(c => [c.id, c]));
+    for (const [cid, members] of byCluster) {
+      if (cid === -1 || members.length < 3) continue;
+      const pts = members.map(v => [sx(v.x), sy(v.y)]);
+      const hull = d3.polygonHull(pts);
+      if (hull) {
+        hullLayer.append("path").attr("class", "cluster-hull").attr("d", "M" + hull.join("L") + "Z");
+      }
+      // Centroid label from VISIBLE members (was: pre-computed by Python)
+      const cx = d3.mean(pts, p => p[0]);
+      const cy = d3.mean(pts, p => p[1]);
+      const info = clusterInfo.get(cid);
+      const label = info ? info.label : `Cluster ${cid}`;
+      labelLayer.append("text")
+        .attr("class", "cluster-label")
+        .attr("x", cx).attr("y", cy)
+        .attr("text-anchor", "middle")
+        .text(`${label} · ${members.length}`);
+    }
+    labelLayer.style("display", document.getElementById("showLabels").checked ? null : "none");
+    hullLayer.style("display", document.getElementById("showHulls").checked ? null : "none");
+
+    // Re-apply current selection's highlight lines at new positions
+    if (currentSelection) {
+      // Defer to AFTER transition, otherwise lines snap before points
+      setTimeout(() => paintLinks(currentSelection), animate ? 660 : 0);
+    } else {
+      linkLayer.selectAll("*").remove();
+    }
+
+    // Reset zoom to identity (so scaling animation is from canvas perspective)
+    if (animate) {
+      svg.transition(T).call(zoom.transform, d3.zoomIdentity);
+    }
+  }
+
+  // ── Age-window filter: hide roles older than N days (by first_seen) ──
+  const NOW_MS = Date.now();
+  let enabledMaxAgeDays = null;  // null = show all
+  const ageFilter = document.getElementById("ageFilter");
+  ageFilter.addEventListener("change", () => {
+    const v = ageFilter.value;
+    enabledMaxAgeDays = v ? parseInt(v, 10) : null;
+    applyFilters();
+  });
+  function withinAge(v) {
+    if (enabledMaxAgeDays === null) return true;
+    if (!v.first_seen) return false;
+    const t = Date.parse(v.first_seen);
+    if (isNaN(t)) return false;
+    return (NOW_MS - t) <= enabledMaxAgeDays * 86400000;
+  }
+  // Pre-compute counts per window once for the panel summary
+  const AGE_BUCKETS = [1, 3, 5, 7, 10, 14];
+  const ageCounts = Object.fromEntries(AGE_BUCKETS.map(d => [d, 0]));
+  let ageMissing = 0;
+  for (const v of data.vacancies) {
+    if (!v.first_seen) { ageMissing++; continue; }
+    const t = Date.parse(v.first_seen);
+    if (isNaN(t)) { ageMissing++; continue; }
+    const days = (NOW_MS - t) / 86400000;
+    for (const w of AGE_BUCKETS) if (days <= w) ageCounts[w]++;
+  }
+
+  function passesCompanyAndCat(v) {
+    if (!enabledCats.has(v.category)) return false;
+    if (companies.length && !enabledCompanies.has(v.company || "Unknown")) return false;
+    if (!withinAge(v)) return false;
+    return true;
+  }
+
+  // ── Right panel: role detail with 3 similar-roles sections ────────
   function showRole(v) {
+    currentSelection = v;
     const body = document.getElementById("panelBody");
+    const sameCo  = (v.similar_same_co  || []).map(m => ({ ...m, vac: vacById.get(m.id) })).filter(m => m.vac);
+    const otherCo = (v.similar_other_co || []).map(m => ({ ...m, vac: vacById.get(m.id) })).filter(m => m.vac);
+    const xLang   = (v.cross_lang_top10 || []).map(m => ({ ...m, vac: vacById.get(m.id) })).filter(m => m.vac);
+
+    const renderList = (items, klass) => items.map(m => `
+      <div class="match ${klass}" data-id="${m.id}">
+        <span class="sim">${(m.similarity * 100).toFixed(1)}%</span>
+        <div class="t">${m.vac.category_emoji} ${escapeHtml(m.vac.title)}</div>
+        <div class="m">${escapeHtml(m.vac.company || "?")} · ${escapeHtml(m.vac.team || "")}${m.vac.compensation ? " · " + escapeHtml(m.vac.compensation) : ""}</div>
+      </div>
+    `).join("");
+
     body.innerHTML = `
       <h2>${v.category_emoji} ${escapeHtml(v.title)}</h2>
       <div class="muted">${v.id}</div>
@@ -361,11 +532,114 @@
       ${v.compensation ? `<div class="row"><b>Compensation:</b> ${escapeHtml(v.compensation)}</div>` : ""}
       <div class="row"><b>Distance to your resume:</b> ${v.distance_to_cv.toFixed(3)} (cosine)</div>
       <div class="row"><a href="${v.link}" target="_blank" rel="noopener">${linkLabel(v.link)}</a></div>
+      ${otherCo.length ? `<h3>🌍 Похожие в других компаниях</h3>${renderList(otherCo, "other-co")}` : ""}
+      ${sameCo.length  ? `<h3>🏢 В той же компании (${escapeHtml(v.company || "?")})</h3>${renderList(sameCo, "same-co")}` : ""}
+      ${xLang.length   ? `<h3>🌐 На другом языке</h3>${renderList(xLang, "xlang")}` : ""}
       <h3>Back</h3>
       <div class="row"><a href="#" id="back">← top matches</a></div>
     `;
-    body.querySelector("#back").addEventListener("click", e => { e.preventDefault(); showTopMatches(); });
-    vacSel.classed("hl", x => x.id === v.id);
+    body.querySelector("#back").addEventListener("click", e => {
+      e.preventDefault(); clearSelection(); showTopMatches();
+    });
+    body.querySelectorAll(".match").forEach(el => {
+      el.addEventListener("click", () => {
+        const target = vacById.get(el.dataset.id);
+        if (target) { showRole(target); panTo(target.x, target.y); }
+      });
+    });
+    highlightSelection(v);
+  }
+
+  // ── Map highlights: selected + 3 similar-role groups + connector lines.
+  // In "selection mode" we dim non-similar points and modulate halo + line
+  // intensity by similarity score (top-1 bright, top-10 fades).
+  function clearSelection() {
+    currentSelection = null;
+    vacSel.classed("hl", false)
+          .classed("selected", false)
+          .classed("same-co-hl", false)
+          .classed("other-co-hl", false)
+          .classed("cross-hl", false)
+          .classed("sim-dim", false)
+          .style("opacity", null)
+          .style("stroke-width", null);
+    linkLayer.selectAll("*").remove();
+  }
+
+  // Build {id → {cls, sim}} from a selected role's three neighbour lists.
+  // Other-co takes priority over cross-lang when an id appears in both.
+  function buildSimMap(v) {
+    const m = new Map();
+    for (const x of (v.similar_other_co || [])) m.set(x.id, { cls: "other-co-hl", sim: x.similarity });
+    for (const x of (v.similar_same_co  || [])) m.set(x.id, { cls: "same-co-hl",  sim: x.similarity });
+    for (const x of (v.cross_lang_top10 || [])) {
+      if (!m.has(x.id)) m.set(x.id, { cls: "cross-hl", sim: x.similarity });
+    }
+    return m;
+  }
+
+  function highlightSelection(v) {
+    const simMap = buildSimMap(v);
+    const sims = [...simMap.values()].map(e => e.sim);
+    const minS = sims.length ? Math.min(...sims) : 0;
+    const maxS = sims.length ? Math.max(...sims) : 1;
+    const norm = s => (maxS === minS ? 1 : (s - minS) / (maxS - minS));
+
+    vacSel.each(function (x) {
+      const sel = d3.select(this);
+      const entry = simMap.get(x.id);
+      // Reset all classes/inline styles
+      sel.classed("selected", false)
+         .classed("same-co-hl", false)
+         .classed("other-co-hl", false)
+         .classed("cross-hl", false)
+         .classed("sim-dim", false)
+         .style("opacity", null)
+         .style("stroke-width", null);
+      if (x.id === v.id) {
+        sel.classed("selected", true);
+      } else if (entry) {
+        sel.classed(entry.cls, true);
+        const t = norm(entry.sim);
+        // top-sim → opacity 1, weakest → 0.55. Stroke width scales 1.4 → 3.0
+        sel.style("opacity", (0.55 + 0.45 * t).toFixed(3))
+           .style("stroke-width", (1.4 + 1.6 * t).toFixed(2));
+      } else {
+        sel.classed("sim-dim", true);
+      }
+    });
+    paintLinks(v, simMap, minS, maxS);
+  }
+
+  function paintLinks(v, simMap, minS, maxS) {
+    // simMap may not be passed during a deferred re-paint after rescale — rebuild.
+    if (!simMap) {
+      simMap = buildSimMap(v);
+      const sims = [...simMap.values()].map(e => e.sim);
+      minS = sims.length ? Math.min(...sims) : 0;
+      maxS = sims.length ? Math.max(...sims) : 1;
+    }
+    const norm = s => (maxS === minS ? 1 : (s - minS) / (maxS - minS));
+    linkLayer.selectAll("*").remove();
+    const sxv = sx(v.x), syv = sy(v.y);
+    const groups = [
+      { items: v.similar_other_co || [], cls: "other-co" },
+      { items: v.similar_same_co  || [], cls: "same-co"  },
+      { items: v.cross_lang_top10 || [], cls: "xlang"    },
+    ];
+    for (const { items, cls } of groups) {
+      const data = items
+        .map(m => ({ ...m, vac: vacById.get(m.id) }))
+        .filter(m => m.vac);
+      linkLayer.selectAll("line.link-line." + cls)
+        .data(data)
+        .join("line")
+        .attr("class", "link-line " + cls)
+        .attr("x1", sxv).attr("y1", syv)
+        .attr("x2", n => sx(n.vac.x)).attr("y2", n => sy(n.vac.y))
+        .attr("stroke-opacity", n => (0.18 + 0.62 * norm(n.similarity)).toFixed(3))
+        .attr("stroke-width",   n => (0.6 + 1.6 * norm(n.similarity)).toFixed(2));
+    }
   }
 
   function panTo(wx, wy) {
@@ -375,23 +649,55 @@
     svg.transition().duration(550).call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
   }
 
-  // ── Filters ──────────────────────────────────────────────────────
+  // ── Filters / search ─────────────────────────────────────────────
   const search = document.getElementById("search");
   const showLabels = document.getElementById("showLabels");
   const showHulls = document.getElementById("showHulls");
+
   function applyFilters() {
+    render({ animate: true });
     const q = search.value.trim().toLowerCase();
-    vacSel.classed("dim", v =>
-      !enabledCats.has(v.category)
-      || (companies.length && !enabledCompanies.has(v.company || "Unknown"))
-      || (q && !v.title.toLowerCase().includes(q))
-    );
-    labelLayer.style("display", showLabels.checked ? null : "none");
-    hullLayer.style("display", showHulls.checked ? null : "none");
+    if (q) showSearchResults(q);
+    else if (currentSelection) showRole(currentSelection);
+    else showTopMatches();
   }
-  search.addEventListener("input", applyFilters);
-  showLabels.addEventListener("change", applyFilters);
-  showHulls.addEventListener("change", applyFilters);
+  // Search input doesn't need rescale (visible set unchanged), only dim + panel
+  function applySearchOnly() {
+    const visible = data.vacancies.filter(passesCompanyAndCat);
+    const visibleIds = new Set(visible.map(v => v.id));
+    const q = search.value.trim().toLowerCase();
+    vacSel.classed("dim", v => visibleIds.has(v.id) && q && !v.title.toLowerCase().includes(q));
+    if (q) showSearchResults(q); else if (!currentSelection) showTopMatches();
+  }
+  search.addEventListener("input", applySearchOnly);
+  showLabels.addEventListener("change", () => labelLayer.style("display", showLabels.checked ? null : "none"));
+  showHulls.addEventListener("change", () => hullLayer.style("display", showHulls.checked ? null : "none"));
+
+  // Clickable search results panel
+  function showSearchResults(q) {
+    const visible = data.vacancies.filter(passesCompanyAndCat);
+    const matches = visible
+      .filter(v => v.title.toLowerCase().includes(q))
+      .slice(0, 50);
+    const body = document.getElementById("panelBody");
+    body.innerHTML = `
+      <h2>🔍 Search results</h2>
+      <div class="muted">${matches.length} matches for "${escapeHtml(q)}"</div>
+      ${matches.map(v => `
+        <div class="match" data-id="${v.id}">
+          <span class="sim" style="color:${catColor(v.category)}">${v.category_emoji}</span>
+          <div class="t">${escapeHtml(v.title)}</div>
+          <div class="m">${escapeHtml(v.company || "?")} · ${escapeHtml(v.team || "")} · ${v.level}</div>
+        </div>
+      `).join("")}
+    `;
+    body.querySelectorAll(".match").forEach(el => {
+      el.addEventListener("click", () => {
+        const target = vacById.get(el.dataset.id);
+        if (target) { showRole(target); panTo(target.x, target.y); }
+      });
+    });
+  }
 
   // ── Helpers ──────────────────────────────────────────────────────
   function starPoints(cx, cy, n, rOut, rIn) {

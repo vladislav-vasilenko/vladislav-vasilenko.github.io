@@ -28,6 +28,15 @@ def main():
          print("❌ No connections found in input file.")
          return 1
 
+    # Add the user's own profile to the dataset so they appear on the map
+    connections.append({
+        "id": "you",
+        "name": "Vladislav Vasilenko",
+        "headline": "AI/ML Engineer | Multi-Agent Systems, RAG, Post-Training SFT/LoRA/QLoRA/DPO, Realtime-LLM via WebRTC | ex-Lead iOS",
+        "url": "https://www.linkedin.com/in/vladislav-vasilenko/",
+        "is_user": True
+    })
+
     texts = []
     for c in connections:
         # We embed the name and headline to group similar roles/companies
@@ -36,17 +45,34 @@ def main():
 
     print(f"📦 Loaded {len(texts)} connections from {args.input}")
 
-    print("🧠 Loading BAAI/bge-m3 embedder...")
-    try:
-        from sentence_transformers import SentenceTransformer
-    except ImportError:
-        print("❌ Error: sentence-transformers is not installed. Run: pip install sentence-transformers")
-        return 1
-
-    model = SentenceTransformer("BAAI/bge-m3")
+    print("🧠 Requesting embeddings via local Ollama (bge-m3)...")
+    import requests
+    embeddings = []
     
-    print("⏳ Generating embeddings (this might take a moment)...")
-    embeddings = model.encode(texts, show_progress_bar=True)
+    print(f"⏳ Generating {len(texts)} embeddings...")
+    # Attempt to use the batch API /api/embed
+    try:
+        res = requests.post("http://localhost:11434/api/embed", json={"model": "bge-m3", "input": texts})
+        if res.status_code == 200 and "embeddings" in res.json():
+            embeddings = res.json()["embeddings"]
+            print("✅ Batch embedding successful!")
+        else:
+            raise ValueError(f"Batch API failed: {res.status_code} {res.text}")
+    except Exception as e:
+        print(f"Batch embedding failed, falling back to sequential... ({e})")
+        for i, text in enumerate(texts):
+            try:
+                res = requests.post("http://localhost:11434/api/embeddings", json={"model": "bge-m3", "prompt": text})
+                if res.status_code == 200:
+                    embeddings.append(res.json()["embedding"])
+                else:
+                    embeddings.append([0.0] * 1024) # fallback dummy
+            except Exception:
+                embeddings.append([0.0] * 1024)
+                
+            if (i+1) % 50 == 0:
+                print(f"Processed {i+1}/{len(texts)}...")
+                
     embeddings = np.array(embeddings, dtype=np.float32)
 
     print("🌀 Running UMAP projection to 2D...")

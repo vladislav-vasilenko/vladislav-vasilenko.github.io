@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>LinkedIn Network Map</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root {
+    --bg: #0e1116;
+    --bg-elev: #161b22;
+    --fg: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --border: #30363d;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  
+  header {
+    position: sticky; top: 0; z-index: 10; background: var(--bg-elev);
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
+    display: flex; gap: 20px; align-items: center;
+  }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; color: var(--accent); }
+  header .stats { font-size: 13px; color: var(--muted); }
+  header .stats b { color: var(--fg); font-weight: 600; }
+  header input {
+    background: var(--bg); color: var(--fg); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 6px; font: inherit; min-width: 200px;
+  }
+
+  #wrap { display: grid; grid-template-columns: 1fr 340px; height: calc(100vh - 53px); }
+  #viz { position: relative; overflow: hidden; }
+  #viz svg { display: block; width: 100%; height: 100%; cursor: grab; background: radial-gradient(ellipse at center, #14181f 0%, var(--bg) 80%); }
+  #viz svg:active { cursor: grabbing; }
+
+  #panel { border-left: 1px solid var(--border); background: var(--bg-elev); padding: 20px; overflow-y: auto; }
+  #panel h2 { font-size: 18px; margin: 0 0 8px 0; }
+  #panel h3 { font-size: 12px; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  #panel .headline { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.4; }
+  
+  .person {
+    padding: 10px; margin: 6px 0; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; background: var(--bg);
+    transition: border-color 0.15s;
+  }
+  .person:hover { border-color: var(--accent); }
+  .person .n { font-size: 13px; font-weight: 600; }
+  .person .h { font-size: 12px; color: var(--muted); margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  
+  .node { stroke: rgba(255,255,255,0.1); stroke-width: 0.5; cursor: pointer; transition: opacity 0.2s, stroke-width 0.1s; }
+  .node.dim { opacity: 0.1; }
+  .node.hl { stroke: var(--fg); stroke-width: 1.5; }
+  .node.selected { stroke: var(--accent); stroke-width: 3; filter: drop-shadow(0 0 6px var(--accent)); }
+  
+  .cluster-label {
+    fill: var(--fg); font-size: 13px; font-weight: 600; pointer-events: none;
+    paint-order: stroke; stroke: var(--bg); stroke-width: 4; stroke-linejoin: round;
+  }
+  .cluster-hull { fill-opacity: 0.08; stroke: var(--border); stroke-dasharray: 4 4; pointer-events: none; }
+
+  #tt {
+    position: absolute; pointer-events: none; background: var(--bg-elev);
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px;
+    font-size: 13px; max-width: 300px; opacity: 0; transition: opacity .1s;
+    z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  }
+  #tt b { color: var(--fg); font-size: 14px; display: block; margin-bottom: 4px; }
+  #tt .m { color: var(--muted); font-size: 12px; line-height: 1.4; }
+  #empty { padding: 40px; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>LinkedIn Network Map</h1>
+  <span class="stats" id="stats">…</span>
+  <input type="search" id="search" placeholder="Search by name or title…" />
+</header>
+<div id="wrap">
+  <div id="viz"><div id="empty">Loading linkedin_clusters.json…</div></div>
+  <aside id="panel">
+    <div id="panelBody"><div style="color:var(--muted)">Select a connection or cluster on the map...</div></div>
+  </aside>
+</div>
+<div id="tt"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script>
+(async function () {
+  const data = await fetch("./linkedin_clusters.json").then(r => r.ok ? r.json() : null);
+  const empty = document.getElementById("empty");
+  if (!data) { empty.textContent = "Data not found!"; return; }
+  empty.remove();
+
+  // Color generator for clusters
+  const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+  const clusterColor = cid => cid === -1 ? "#444c56" : colorScale(cid % 10);
+
+  const s = data.stats;
+  document.getElementById("stats").innerHTML =
+    `<b>${s.connections}</b> connections · <b>${s.clusters}</b> professional clusters · noise: ${s.noise_points}`;
+
+  const viz = document.getElementById("viz");
+  const W = viz.clientWidth, H = viz.clientHeight;
+  const M = 80;
+  
+  const xs = data.points.map(p => p.x);
+  const ys = data.points.map(p => p.y);
+  const sx = d3.scaleLinear().domain([Math.min(...xs), Math.max(...xs)]).range([M, W - M]);
+  const sy = d3.scaleLinear().domain([Math.min(...ys), Math.max(...ys)]).range([H - M, M]);
+
+  const svg = d3.select("#viz").append("svg").attr("viewBox", [0, 0, W, H]);
+  const g = svg.append("g");
+  const zoom = d3.zoom().scaleExtent([0.5, 10]).on("zoom", e => g.attr("transform", e.transform));
+  svg.call(zoom);
+
+  const hullLayer = g.append("g").attr("class", "hulls");
+  const pointsLayer = g.append("g").attr("class", "points");
+  const labelLayer = g.append("g").attr("class", "labels");
+
+  // Hulls & Labels
+  const byCluster = d3.group(data.points, p => p.cluster);
+  const clusterInfo = new Map((data.clusters || []).map(c => [c.id, c]));
+  
+  for (const [cid, members] of byCluster) {
+    if (cid === -1 || members.length < 3) continue;
+    const pts = members.map(p => [sx(p.x), sy(p.y)]);
+    const hull = d3.polygonHull(pts);
+    if (hull) {
+      hullLayer.append("path")
+        .attr("class", "cluster-hull")
+        .style("fill", clusterColor(cid))
+        .attr("d", "M" + hull.join("L") + "Z");
+    }
+    const info = clusterInfo.get(cid);
+    if (info) {
+      labelLayer.append("text")
+        .attr("class", "cluster-label")
+        .attr("x", sx(info.centroid_x)).attr("y", sy(info.centroid_y))
+        .attr("text-anchor", "middle")
+        .style("cursor", "pointer")
+        .text(info.label)
+        .on("click", () => showCluster(info, members));
+    }
+  }
+
+  const tt = document.getElementById("tt");
+  
+  // Highlight the user specially
+  const cvColor = "#ffd300"; 
+  
+  const nodeSel = pointsLayer.selectAll("circle").data(data.points)
+    .join("circle")
+    .attr("class", "node")
+    .attr("r", p => p.id === "you" ? 9 : (p.cluster === -1 ? 2 : 4))
+    .attr("cx", p => sx(p.x)).attr("cy", p => sy(p.y))
+    .style("fill", p => p.id === "you" ? cvColor : clusterColor(p.cluster))
+    .style("stroke", p => p.id === "you" ? "#000" : null)
+    .style("stroke-width", p => p.id === "you" ? 2 : null)
+    .style("filter", p => p.id === "you" ? "drop-shadow(0 0 8px #ffd300)" : null)
+    .on("mouseenter", (e, p) => {
+      tt.innerHTML = `<b>${escapeHtml(p.name)}</b><div class="m">${escapeHtml(p.headline)}</div>`;
+      tt.style.opacity = 1;
+    })
+    .on("mousemove", e => { tt.style.left = (e.pageX + 15) + "px"; tt.style.top = (e.pageY + 15) + "px"; })
+    .on("mouseleave", () => { tt.style.opacity = 0; })
+    .on("click", (e, p) => showPerson(p));
+
+  // Add "You" text label next to the user node
+  pointsLayer.selectAll("text.you-label").data(data.points.filter(p => p.id === "you"))
+    .join("text")
+    .attr("class", "you-label")
+    .attr("x", p => sx(p.x)).attr("y", p => sy(p.y) - 14)
+    .attr("text-anchor", "middle")
+    .style("fill", cvColor)
+    .style("font-size", "14px")
+    .style("font-weight", "700")
+    .style("pointer-events", "none")
+    .text("You");
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+  }
+
+  const panelBody = document.getElementById("panelBody");
+
+  function renderList(list) {
+    return list.map(p => `
+      <div class="person" data-id="${p.id}">
+        <div class="n">${escapeHtml(p.name)}</div>
+        <div class="h">${escapeHtml(p.headline)}</div>
+      </div>
+    `).join("");
+  }
+
+  function bindClicks() {
+    panelBody.querySelectorAll(".person").forEach(el => {
+      el.addEventListener("click", () => {
+        const p = data.points.find(x => x.id === el.dataset.id);
+        if (p) showPerson(p);
+      });
+    });
+  }
+
+  function panTo(x, y) {
+    const k = 3;
+    const tx = W / 2 - sx(x) * k;
+    const ty = H / 2 - sy(y) * k;
+    svg.transition().duration(600).call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(k));
+  }
+
+  function showPerson(p) {
+    nodeSel.classed("selected", n => n.id === p.id);
+    const clusterLabel = p.cluster === -1 ? "Outlier (Noise)" : (clusterInfo.get(p.cluster)?.label || `Cluster ${p.cluster}`);
+    
+    // Find neighbors in same cluster
+    const neighbors = p.cluster === -1 ? [] : data.points.filter(n => n.cluster === p.cluster && n.id !== p.id);
+    
+    panelBody.innerHTML = `
+      <h2>${escapeHtml(p.name)}</h2>
+      <div class="headline">${escapeHtml(p.headline)}</div>
+      <div style="margin-bottom:20px;">
+        <span style="display:inline-block;padding:3px 10px;border-radius:12px;background:${clusterColor(p.cluster)}44;border:1px solid ${clusterColor(p.cluster)};font-size:12px;">${clusterLabel}</span>
+      </div>
+      <a href="${p.url}" target="_blank" style="color:var(--accent);text-decoration:none;display:block;margin-bottom:20px;">Open on LinkedIn →</a>
+      
+      ${neighbors.length > 0 ? `
+        <h3>In the same cluster (${neighbors.length})</h3>
+        ${renderList(neighbors)}
+      ` : ""}
+    `;
+    bindClicks();
+    panTo(p.x, p.y);
+  }
+
+  function showCluster(info, members) {
+    nodeSel.classed("selected", false);
+    panelBody.innerHTML = `
+      <h2>${info.label}</h2>
+      <div class="headline">${members.length} people in this group</div>
+      <div style="margin-bottom:20px;">
+        <span style="display:inline-block;padding:3px 10px;border-radius:12px;background:${clusterColor(info.id)}44;border:1px solid ${clusterColor(info.id)};font-size:12px;">Cluster ${info.id}</span>
+      </div>
+      <h3>Members</h3>
+      ${renderList(members)}
+    `;
+    bindClicks();
+    panTo(info.centroid_x, info.centroid_y);
+  }
+
+  document.getElementById("search").addEventListener("input", e => {
+    const q = e.target.value.toLowerCase();
+    nodeSel.classed("dim", p => q && !p.name.toLowerCase().includes(q) && !p.headline.toLowerCase().includes(q));
+    
+    if (q) {
+      const matches = data.points.filter(p => p.name.toLowerCase().includes(q) || p.headline.toLowerCase().includes(q));
+      panelBody.innerHTML = `<h2>Search Results</h2><div class="headline">${matches.length} matches</div>${renderList(matches)}`;
+      bindClicks();
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
