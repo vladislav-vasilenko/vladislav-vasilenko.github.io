@@ -489,6 +489,8 @@ def main() -> int:
             "category_emoji": info.get("category_emoji", "⚙️"),
             "level": info.get("level", "IC"),
             "level_rank": info.get("level_rank", 2),
+            "track": info.get("track", "IC"),
+            "is_manager": info.get("track") == "Manager",
             "compensation": info.get("compensation", ""),
             "link": info.get("link", ""),
             "is_research": is_res,

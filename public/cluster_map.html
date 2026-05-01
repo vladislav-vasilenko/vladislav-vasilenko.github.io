@@ -102,6 +102,9 @@
   .vac.dim { opacity: 0.12; }
   .vac.sim-dim { opacity: 0.06; }   /* "selection mode" — non-similar fade out */
   .vac.hidden { display: none; }
+  .vac.manager { stroke: #ff5b5b; stroke-width: 1.5; }
+  .vac.tech-lead { stroke: #7ee787; stroke-width: 1.5; }
+  .vac.promising { filter: drop-shadow(0 0 5px var(--cv)); stroke: var(--cv); stroke-width: 1.5; }
   .vac.hl { stroke: var(--fg); stroke-width: 1.6; }
   .vac.same-co-hl { stroke: var(--c-product); stroke-width: 2; filter: drop-shadow(0 0 3px var(--c-product)); }
   .vac.other-co-hl { stroke: #ff9500; stroke-width: 2.2; filter: drop-shadow(0 0 4px #ff9500); }
@@ -161,6 +164,9 @@
   </label>
   <label><input type="checkbox" id="showLabels" checked /> Cluster labels</label>
   <label><input type="checkbox" id="showHulls" checked /> Hulls</label>
+  <label style="border-left: 1px solid var(--border); padding-left: 12px; color: var(--c-security);"><input type="checkbox" id="hideManagers" /> Hide Managers</label>
+  <label style="color: var(--c-product);"><input type="checkbox" id="onlyTechLeads" /> Only Tech Leads</label>
+  <label style="color: var(--cv);"><input type="checkbox" id="onlyPromising" /> Only Promising</label>
   <input type="search" id="search" placeholder="search title…" />
 </header>
 <div id="wrap">
@@ -280,7 +286,13 @@
   const vacSel = pointsLayer
     .selectAll("circle.vac").data(data.vacancies)
     .join("circle")
-    .attr("class", "vac")
+    .attr("class", v => {
+      let c = "vac";
+      if (v.is_manager) c += " manager";
+      else if (v.track === "IC (Tech Lead)") c += " tech-lead";
+      if (v.is_promising) c += " promising";
+      return c;
+    })
     .attr("r", v => {
       const n = compToNum(v.compensation);
       return n ? sizeScale(n) : 3.2;
@@ -342,10 +354,17 @@
     for (const w of AGE_BUCKETS) if (days <= w) ageCounts[w]++;
   }
 
+  const hideManagers = document.getElementById("hideManagers");
+  const onlyPromising = document.getElementById("onlyPromising");
+  const onlyTechLeads = document.getElementById("onlyTechLeads");
+
   function passesCompanyAndCat(v) {
     if (!enabledCats.has(v.category)) return false;
     if (companies.length && !enabledCompanies.has(v.company || "Unknown")) return false;
     if (!withinAge(v)) return false;
+    if (hideManagers.checked && v.is_manager) return false;
+    if (onlyTechLeads.checked && v.track !== "IC (Tech Lead)") return false;
+    if (onlyPromising.checked && !v.is_promising) return false;
     return true;
   }
 
@@ -675,6 +694,9 @@
   search.addEventListener("input", applySearchOnly);
   showLabels.addEventListener("change", () => labelLayer.style("display", showLabels.checked ? null : "none"));
   showHulls.addEventListener("change", () => hullLayer.style("display", showHulls.checked ? null : "none"));
+  hideManagers.addEventListener("change", applyFilters);
+  onlyPromising.addEventListener("change", applyFilters);
+  onlyTechLeads.addEventListener("change", applyFilters);
 
   // Clickable search results panel
   function showSearchResults(q) {

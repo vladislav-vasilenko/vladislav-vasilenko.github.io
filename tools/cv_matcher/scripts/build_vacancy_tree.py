@@ -59,6 +59,22 @@ def classify_seniority(title: str) -> Tuple[str, int]:
     return DEFAULT_LEVEL
 
 
+def classify_track(title: str, category: str) -> str:
+    """Classify into IC, IC (Tech Lead), or Manager."""
+    title_lower = title.lower()
+    
+    if re.search(r"\b(tech lead|technical lead)\b", title_lower):
+        return "IC (Tech Lead)"
+        
+    if re.search(r"\b(director|vp|vice president|head of|engineering manager|team lead|group manager)\b", title_lower):
+        return "Manager"
+        
+    if "manager" in title_lower and category == "engineering":
+        return "Manager"
+        
+    return "IC"
+
+
 def role_stem(title: str) -> str:
     """Stem before the comma — peers share this. 'Software Engineer, ML' → 'software engineer'."""
     base = title.split(",", 1)[0]
@@ -264,6 +280,7 @@ def build_tree(vacancies: List[Dict[str, Any]]) -> Dict[str, Any]:
         )
         is_product, product_score, _ = classify_product(title, team)
         category_id, category_emoji, category_label = classify_category(title, team)
+        track = classify_track(title, category_id)
         # Research is a stronger signal than the priority-ordered category if
         # it fires on PhD/papers; let it override (but keep both flags).
         if is_research and category_id != "research":
@@ -275,6 +292,7 @@ def build_tree(vacancies: List[Dict[str, Any]]) -> Dict[str, Any]:
             "level": level_name,
             "level_rank": level_rank,
             "stem": stem,
+            "track": track,
             "locations": v.get("locations") or [],
             "compensation": v.get("compensation") or "",
             "link": v.get("link") or "",
