@@ -132,17 +132,123 @@ def load_tree_index(tree_path: Path) -> Tuple[Dict[str, Dict[str, Any]], List[Di
 # Cluster labelling
 # ──────────────────────────────────────────────────────────────────────
 def _cluster_label(members: List[Dict[str, Any]]) -> str:
-    """Concise 2-4 word label from member roles (no LLM)."""
+    """Concise 2-4 word label from member roles (no LLM, used as fallback)."""
     cats = Counter(m["category"] for m in members)
     teams = Counter(m["team"] for m in members)
     stems = Counter(m["stem"] for m in members)
     top_team = teams.most_common(1)[0][0]
     top_stem = stems.most_common(1)[0][0]
     top_cat = cats.most_common(1)[0][0]
-    # Prefer team if it dominates (>40%); fall back to a stem-based label
-    if teams.most_common(1)[0][1] / len(members) >= 0.4:
+    # Prefer team if it dominates (>40%) AND is not the placeholder "Other"
+    if top_team not in ("Other", "", None) and teams.most_common(1)[0][1] / len(members) >= 0.4:
         return top_team
     return f"{top_cat.title()} · {top_stem.title()[:30]}"
+
+
+def _signature(titles: List[str]) -> str:
+    """Stable cache key for a cluster — sorted top-N titles."""
+    import hashlib
+    canon = "|".join(sorted(t.strip().lower() for t in titles[:10]))
+    return hashlib.sha1(canon.encode("utf-8")).hexdigest()[:16]
+
+
+def llm_label_clusters(
+    cluster_summary: List[Dict[str, Any]],
+    cluster_members: Dict[int, List[Dict[str, Any]]],
+    cv_api_url: str,
+    api_secret: str,
+    model: str = "gpt-5.4-nano",
+    cache_path: Path = None,
+) -> Dict[int, str]:
+    """Generate concise semantic labels via cv-api /translate (gpt-5.4-nano).
+    Returns {cluster_id: label}. Cached by cluster signature so repeat runs
+    only LLM-call clusters whose membership changed."""
+    import requests
+
+    cache: Dict[str, str] = {}
+    if cache_path and cache_path.exists():
+        try:
+            cache = json.loads(cache_path.read_text(encoding="utf-8"))
+        except Exception:
+            cache = {}
+
+    # Build prompt input — only for clusters not already cached
+    sigs: Dict[int, str] = {}
+    to_label: Dict[str, List[str]] = {}
+    for c in cluster_summary:
+        cid = c["id"]
+        members = cluster_members.get(cid, [])
+        # Pick the 8 most representative titles (closest to centroid would be ideal,
+        # but first 8 sorted by distance_to_cv works as a stable proxy)
+        sample_titles = [m["title"] for m in members[:10] if m.get("title")]
+        sig = _signature(sample_titles)
+        sigs[cid] = sig
+        if sig not in cache:
+            to_label[str(cid)] = sample_titles[:8]
+
+    if to_label:
+        print(f"🏷️  LLM-labelling {len(to_label)} clusters via {model}…")
+        system_msg = (
+            "You label clusters of similar job vacancies. For each cluster you receive "
+            "a sample of role titles. Return a CONCISE 2–5 word semantic label that "
+            "captures the dominant role-type, team, or technology. NEVER include company "
+            "names. Be specific (e.g. 'ML Infrastructure', 'Cloud DevOps', 'Search Ranking', "
+            "'Data Engineering', 'Computer Vision Research', 'Mobile iOS', 'Trust & Safety', "
+            "'TPM / Program Management'). Avoid generic 'Engineering' or 'Other'.\n\n"
+            "Output STRICTLY a JSON object {\"labels\": {\"<cluster_id>\": \"<label>\", ...}} "
+            "with one entry per input cluster."
+        )
+        user_msg = "Label these clusters:\n" + json.dumps(to_label, ensure_ascii=False)
+        try:
+            url = cv_api_url.rstrip("/")
+            if url.endswith("/ats") or url.endswith("/embeddings"):
+                url = url.rsplit("/", 1)[0]
+            url = url + "/translate"
+            r = requests.post(
+                url,
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system_msg},
+                        {"role": "user", "content": user_msg},
+                    ],
+                },
+                headers={"Authorization": f"Bearer {api_secret}", "Content-Type": "application/json"},
+                timeout=120,
+            )
+            r.raise_for_status()
+            resp = r.json()
+            # OpenAI /v1/responses shape: output[0].content[0].text → JSON string
+            text = ""
+            if "output" in resp and isinstance(resp["output"], list):
+                for item in resp["output"]:
+                    cont = item.get("content") or []
+                    for c in cont:
+                        if c.get("type") in ("output_text", "text"):
+                            text += c.get("text", "")
+            if not text:
+                raise RuntimeError(f"empty LLM response: {str(resp)[:200]}")
+            parsed = json.loads(text)
+            new_labels = parsed.get("labels", {})
+            # Map back: for each cluster_id we just labelled, store under signature
+            for cid_str, label in new_labels.items():
+                try:
+                    cid_int = int(cid_str)
+                except ValueError:
+                    continue
+                if cid_int in sigs:
+                    cache[sigs[cid_int]] = (label or "").strip()
+            print(f"   ✓ {len(new_labels)} new labels generated")
+        except Exception as e:
+            print(f"   ⚠️ LLM-label call failed ({type(e).__name__}: {e}); using heuristic fallback")
+    else:
+        print(f"🏷️  All {len(cluster_summary)} clusters served from cache")
+
+    if cache_path:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    return {cid: cache.get(sig, "") for cid, sig in sigs.items()}
 
 
 def axis_pole_labels(points: np.ndarray, ids: List[str], id_to_role: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
@@ -351,15 +457,31 @@ def main() -> int:
     print("🔗 HDBSCAN clustering on 2D coords…")
     cluster_labels = HDBSCAN(min_cluster_size=8, min_samples=3).fit_predict(vac_xy)
 
+    # ── Calculate promising threshold ──
+    # Top 50 closest vectors
+    promising_threshold = float(np.sort(cos_dist)[min(50, len(cos_dist)-1)]) if len(cos_dist) > 0 else 1.0
+
     points: List[Dict[str, Any]] = []
     cluster_members: Dict[int, List[Dict[str, Any]]] = {}
     for i, vid in enumerate(vacancy_ids):
         info = id_to_role.get(vid, {})
+        title_str = info.get("title", vid)
+        is_res = bool(info.get("is_research", False))
+        is_prod = bool(info.get("is_product", False))
+        is_lin = (
+            info.get("category", "engineering") == "engineering"
+            and not is_res
+            and not is_prod
+            and "Forward Deployed" not in title_str
+            and "Applied AI" not in title_str
+            and "GenAI" not in title_str
+        )
+        
         pt = {
             "id": vid,
             "x": float(vac_xy[i, 0]),
             "y": float(vac_xy[i, 1]),
-            "title": info.get("title", vid),
+            "title": title_str,
             "company": info.get("company") or vacancy_companies[i],
             "team": info.get("team", ""),
             "sub_team": info.get("sub_team", ""),
@@ -369,8 +491,10 @@ def main() -> int:
             "level_rank": info.get("level_rank", 2),
             "compensation": info.get("compensation", ""),
             "link": info.get("link", ""),
-            "is_research": bool(info.get("is_research", False)),
-            "is_product": bool(info.get("is_product", False)),
+            "is_research": is_res,
+            "is_product": is_prod,
+            "is_linear": is_lin,
+            "is_promising": float(cos_dist[i]) <= promising_threshold,
             "cluster": int(cluster_labels[i]),
             "distance_to_cv": float(cos_dist[i]),
             "first_seen": info.get("first_seen", ""),
@@ -396,6 +520,24 @@ def main() -> int:
             "category_counts": dict(Counter(m["category"] for m in members)),
             "team_counts": dict(Counter(m["team"] for m in members)),
         })
+
+    # ── LLM-based semantic labels via cv-api /translate (gpt-5.4-nano) ──
+    cv_api_url = os.environ.get("CV_API_URL")
+    api_secret = os.environ.get("API_SECRET")
+    if cv_api_url and api_secret:
+        cache_path = ROOT / ".cache" / "cluster_labels.json"
+        llm_labels = llm_label_clusters(
+            cluster_summary, cluster_members,
+            cv_api_url=cv_api_url, api_secret=api_secret,
+            model="gpt-5.4-nano", cache_path=cache_path,
+        )
+        # Override "Other" / generic labels with LLM versions when available
+        for c in cluster_summary:
+            new = (llm_labels.get(c["id"]) or "").strip()
+            if new and new.lower() not in ("other", ""):
+                c["label"] = new
+    else:
+        print("⚠️  CV_API_URL or API_SECRET not set — skipping LLM-labelling")
 
     # ── Top matches to resume ─────────────────────────────────────────
     order = np.argsort(cos_dist)[: args.top_matches]
