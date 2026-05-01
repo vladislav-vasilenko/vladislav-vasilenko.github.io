@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 # The user mentioned 'gpt-5-mini', we'll use 'gpt-4o-mini' as it's the current real equivalent
 # unless they have a specific custom model name.
 MODEL = "gpt-5.4-nano" 
-BATCH_SIZE = 25 
+BATCH_SIZE = 8 
 
 def main():
     root = Path(__file__).resolve().parent.parent.parent.parent
@@ -68,7 +68,7 @@ def main():
             items_to_translate.append({
                 "id": v["id"],
                 "title": v["title"],
-                "description": v["description"][:1200]
+                "description": v["description"][:10000]
             })
             
         system_prompt = (
@@ -101,13 +101,22 @@ def main():
                 continue
                 
             data_resp = response.json()
-            # GPT-5 v1/responses returns 'output' instead of 'choices'
-            if "output" in data_resp:
-                batch_result = json.loads(data_resp["output"])
+            # GPT-5 v1/responses structure: output[0].content[0].text
+            if "output" in data_resp and isinstance(data_resp["output"], list):
+                try:
+                    content = data_resp["output"][0].get("content", [])
+                    text_str = content[0].get("text", "{}")
+                    batch_result = json.loads(text_str)
+                except Exception as parse_err:
+                    print(f"❌ Parse error: {parse_err}")
+                    batch_result = {}
             else:
                 batch_result = json.loads(data_resp["choices"][0]["message"]["content"])
             
-            results = batch_result.get("results", [])
+            if isinstance(batch_result, list):
+                results = batch_result
+            else:
+                results = batch_result.get("results", [])
             
             id_to_translated = {r["id"]: r for r in results}
             
