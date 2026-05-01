@@ -139,6 +139,40 @@
   #tt b { color: var(--fg); }
   #tt .m { color: var(--muted); font-size: 11px; margin-top: 3px; }
   #empty { padding: 30px; color: var(--muted); text-align: center; }
+
+  /* Assistant Widget */
+  #assistant-widget {
+    position: fixed; bottom: 24px; right: 24px; z-index: 1000;
+    display: flex; flex-direction: column; align-items: flex-end;
+  }
+  #assistant-bot {
+    width: 60px; height: 60px; border-radius: 30px; background: var(--bg-elev);
+    border: 2px solid var(--accent); box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+    cursor: pointer; display: flex; justify-content: center; align-items: center;
+    font-size: 32px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  #assistant-bot:hover { transform: scale(1.08); background: var(--bg-elev2); }
+  #assistant-bot.thinking { animation: float 0.8s infinite alternate; }
+  @keyframes float { 0% { transform: translateY(0px) scale(1.05); } 100% { transform: translateY(-12px) scale(1.05); filter: drop-shadow(0 0 10px var(--accent)); } }
+  #assistant-chat {
+    width: 340px; height: 480px; max-height: 80vh; background: var(--bg-elev); border: 1px solid var(--border);
+    border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.8); margin-bottom: 16px;
+    display: none; flex-direction: column; overflow: hidden;
+  }
+  #assistant-chat.open { display: flex; animation: slideUp 0.3s ease-out; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  #assistant-header { background: var(--bg-elev2); padding: 14px 16px; border-bottom: 1px solid var(--border); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+  #assistant-header span.close { cursor: pointer; color: var(--muted); font-size: 16px; }
+  #assistant-header span.close:hover { color: var(--fg); }
+  #assistant-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; font-size: 13.5px; line-height: 1.4; }
+  .msg { padding: 10px 14px; border-radius: 10px; max-width: 85%; word-wrap: break-word; }
+  .msg.bot { background: var(--node-bg); align-self: flex-start; border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+  .msg.user { background: var(--accent); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
+  #assistant-input-area { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; background: var(--bg); }
+  #assistant-input { flex: 1; background: var(--node-bg); color: var(--fg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-family: inherit; font-size: 13px; outline: none; }
+  #assistant-input:focus { border-color: var(--accent); }
+  #assistant-send { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 0 16px; cursor: pointer; font-weight: 600; transition: opacity 0.2s; }
+  #assistant-send:hover { opacity: 0.85; }
 </style>
 </head>
 <body>
@@ -176,6 +210,23 @@
   </aside>
 </div>
 <div id="tt"></div>
+
+<div id="assistant-widget">
+  <div id="assistant-chat">
+    <div id="assistant-header">
+      <div><span style="font-size: 18px; margin-right: 6px;">🤖</span> Влад AI-Стратег</div>
+      <span class="close" id="assistant-close">✖</span>
+    </div>
+    <div id="assistant-messages">
+      <div class="msg bot">Привет! Я карьерный AI-советник. У меня есть доступ к резюме Влада и Топ-20 вакансиям из этой карты.<br><br>Хочешь узнать, какая роль ему подойдет лучше всего, или написать cover letter? Задавай вопросы, а я буду переводить карту на нужные точки! ✨</div>
+    </div>
+    <div id="assistant-input-area">
+      <input type="text" id="assistant-input" placeholder="Спроси что-нибудь..." autocomplete="off" />
+      <button id="assistant-send">▶</button>
+    </div>
+  </div>
+  <div id="assistant-bot" title="Спросить AI-стратега">🤖</div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
 <script>
@@ -744,6 +795,94 @@
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   }
+  // ── Assistant Widget Logic ────────────────────────────────────────
+  const botIcon = document.getElementById("assistant-bot");
+  const chatWindow = document.getElementById("assistant-chat");
+  const closeChat = document.getElementById("assistant-close");
+  const messagesBox = document.getElementById("assistant-messages");
+  const chatInput = document.getElementById("assistant-input");
+  const chatSend = document.getElementById("assistant-send");
+
+  let chatHistory = [];
+
+  botIcon.addEventListener("click", () => {
+    const isOpen = chatWindow.classList.contains("open");
+    if (isOpen) {
+      chatWindow.classList.remove("open");
+    } else {
+      chatWindow.classList.add("open");
+      chatInput.focus();
+    }
+  });
+  closeChat.addEventListener("click", () => chatWindow.classList.remove("open"));
+
+  function appendMsg(text, sender) {
+    const d = document.createElement("div");
+    d.className = "msg " + sender;
+    // Basic text to HTML for links/newlines
+    d.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
+    messagesBox.appendChild(d);
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+    chatInput.value = "";
+    appendMsg(text, "user");
+    botIcon.classList.add("thinking");
+    chatInput.disabled = true;
+
+    try {
+      const topMatches = data.top_matches || [];
+      const res = await fetch("https://vladislav-vasilenko-github-io.vercel.app/api/strategy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          history: chatHistory,
+          matches: topMatches
+        })
+      });
+      const resData = await res.json();
+      
+      if (resData.answer) {
+        let answerText = resData.answer;
+        // Parse ZOOM_TO[id] commands
+        const zoomMatch = answerText.match(/ZOOM_TO\[(.*?)\]/);
+        if (zoomMatch && zoomMatch[1]) {
+          const vid = zoomMatch[1];
+          answerText = answerText.replace(zoomMatch[0], "").trim();
+          const target = vacById.get(vid);
+          if (target) {
+            // Apply company/cat filters temporarily if it was hidden
+            if (!passesCompanyAndCat(target)) {
+               document.getElementById("hideManagers").checked = false;
+               document.getElementById("onlyTechLeads").checked = false;
+               document.getElementById("onlyPromising").checked = false;
+               applyFilters();
+            }
+            showRole(target);
+            panTo(target.x, target.y);
+          }
+        }
+        appendMsg(answerText, "bot");
+        chatHistory.push({ role: "user", content: text });
+        chatHistory.push({ role: "assistant", content: answerText });
+      } else {
+        appendMsg("Ой, ошибка API: " + JSON.stringify(resData), "bot");
+      }
+    } catch (e) {
+      appendMsg("Сетевая ошибка: " + e.message, "bot");
+    } finally {
+      botIcon.classList.remove("thinking");
+      chatInput.disabled = false;
+      chatInput.focus();
+    }
+  }
+
+  chatSend.addEventListener("click", sendMessage);
+  chatInput.addEventListener("keydown", e => { if (e.key === "Enter") sendMessage(); });
 })();
 </script>
 </body>
