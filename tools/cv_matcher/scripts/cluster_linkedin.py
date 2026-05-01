@@ -33,14 +33,17 @@ def main():
         "id": "you",
         "name": "Vladislav Vasilenko",
         "headline": "AI/ML Engineer | Multi-Agent Systems, RAG, Post-Training SFT/LoRA/QLoRA/DPO, Realtime-LLM via WebRTC | ex-Lead iOS",
+        "about": "As a Lead Software Development Expert at Severstal, I specialize in architecting multi-agent systems and developing innovative voice multi-agent solutions using cutting-edge technologies like OpenAI Agents SDK, GPT-Realtime, and advanced GPT models. My role involves engineering web interfaces with Next.js and WebRTC for low-latency voice transmission, building backend supervisors with hierarchical orchestration, and creating knowledge base search agents supported by automated embeddings pipelines. I also contribute to seamless multi-user integrations with Google Auth for Gmail and Google Calendar APIs. With over three years of expertise in large language models (LLMs) and Python, I excel in delivering advanced solutions for real-time AI systems. My focus lies in leveraging technologies such as WebRTC and Realtime-GPT to innovate voice and knowledge-based applications. I am committed to driving technological growth through robust systems engineering and collaboration.",
         "url": "https://www.linkedin.com/in/vladislav-vasilenko/",
         "is_user": True
     })
 
     texts = []
     for c in connections:
-        # We embed the name and headline to group similar roles/companies
+        # We embed the name, headline, and about (if present) to group similar roles/companies
         text = f"{c.get('name', '')} - {c.get('headline', '')}"
+        if c.get('about'):
+            text += f" - {c['about']}"
         texts.append(text)
 
     print(f"📦 Loaded {len(texts)} connections from {args.input}")
