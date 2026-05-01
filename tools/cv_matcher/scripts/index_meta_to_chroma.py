@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -29,8 +30,47 @@ sys.path.insert(0, str(ROOT))
 from dotenv import load_dotenv  # noqa: E402
 load_dotenv(ROOT / ".env")
 
-INPUT = ROOT.parent.parent / "public" / "online_scraped.json"
+REPO_PUBLIC = ROOT.parent.parent / "public"
+INPUT_RAW = REPO_PUBLIC / "online_scraped.json"
+INPUT_EN = REPO_PUBLIC / "online_scraped_en.json"
+# Prefer translated EN file when present — semantic clustering benefits from
+# a single-language corpus and brand-mask preprocessing below.
+INPUT = INPUT_EN if INPUT_EN.exists() else INPUT_RAW
 DB_PATH = str(ROOT / "chroma_db")
+
+# ── Brand-token masking ────────────────────────────────────────────────
+# Even after translation, brand/product names dominate the embedding signal
+# (e.g. "Google" appears in 100% of Google descriptions). Removing them lets
+# the embedder focus on role content (responsibilities, stack, seniority).
+BRAND_PATTERNS = [
+    # English brand names + sub-products
+    r"\bmeta\b", r"\bmetaverse\b", r"\bfacebook\b", r"\binstagram\b", r"\bwhatsapp\b",
+    r"\bgoogle\b", r"\bgmail\b", r"\bandroid\b", r"\bworkspace\b", r"\bdeepmind\b",
+    r"\bsber(?:bank)?\b", r"\bgigachat\b", r"\bkandinsky\b", r"\bsalute\w*\b", r"\bsbol\b",
+    r"\byandex\b", r"\balice\b",
+    # Russian variants (residual, in case any RU passed through)
+    r"\bсбер\w*\b", r"\bяндекс\w*\b", r"\bалиса\b", r"\bкандинский\b",
+]
+BRAND_RE = re.compile("|".join(BRAND_PATTERNS), re.IGNORECASE)
+BOILERPLATE_RE = re.compile(
+    r"(apply for the position[^.]*\.|"
+    r"vacancies career media[^.]*\.|"
+    r"last name first name email phone[^.]*\.|"
+    r"i consent to the processing of personal data[^.]*\.)",
+    re.IGNORECASE,
+)
+
+
+def clean_for_embedding(title: str, description: str) -> tuple[str, str]:
+    """Strip brand/product tokens + form boilerplate. Used only at index time;
+    source data in online_scraped*.json is left unchanged."""
+    t = BRAND_RE.sub(" ", title or "")
+    d = BRAND_RE.sub(" ", description or "")
+    d = BOILERPLATE_RE.sub(" ", d)
+    # Collapse whitespace
+    t = re.sub(r"\s+", " ", t).strip()
+    d = re.sub(r"\s+", " ", d).strip()
+    return t, d
 
 
 def main() -> int:
@@ -46,6 +86,8 @@ def main() -> int:
                         help="Drop the collection before indexing (rebuild from scratch)")
     parser.add_argument("--prefixes", default="meta_,yandex_,goog_,sber_",
                         help="Comma-separated id prefixes to include (default: all supported)")
+    parser.add_argument("--no-clean", action="store_true",
+                        help="Skip brand-token masking before embedding (keep raw text)")
     args = parser.parse_args()
 
     os.environ["EMBEDDINGS_PROVIDER"] = args.provider
@@ -81,7 +123,18 @@ def main() -> int:
     for v in selected:
         co = v.get("company") or "Unknown"
         by_company[co] = by_company.get(co, 0) + 1
-    print(f"📦 Loaded {len(selected)} vacancies: {by_company}")
+    src_label = "EN-translated" if str(in_path).endswith("_en.json") else "raw"
+    print(f"📦 Loaded {len(selected)} vacancies ({src_label}): {by_company}")
+
+    if not args.no_clean:
+        # Build cleaned text under _embed_* keys; preserve original title/desc
+        # for ChromaDB metadata (UI shows real names; embedding sees neutralised text).
+        for v in selected:
+            t, d = clean_for_embedding(v.get("title", ""), v.get("description", ""))
+            v["_embed_title"] = t
+            v["_embed_description"] = d
+        print(f"🧹 Brand-mask preprocessing applied "
+              f"(strip 'Meta/Google/Sber/Yandex/...' from embed text only)")
 
     db = RAGDatabase(db_path=args.db)
 

@@ -150,11 +150,17 @@ class RAGDatabase:
         print(f"📥 Добавление {len(vacancies)} вакансий в базу ChromaDB...")
         
         ids = [str(v["id"]) for v in vacancies]
-        texts = [f"Title: {v['title']}\n\nDescription:\n{v['description']}" for v in vacancies]
+        # Allow callers to pass cleaned text via _embed_title / _embed_description
+        # without polluting the metadata that gets stored in ChromaDB.
+        def _embed_text(v):
+            t = v.get("_embed_title", v["title"])
+            d = v.get("_embed_description", v["description"])
+            return f"Title: {t}\n\nDescription:\n{d}"
+        texts = [_embed_text(v) for v in vacancies]
         metadatas = [{
-            "title": v["title"], 
-            "company": v["company"], 
-            "link": v["link"], 
+            "title": v["title"],
+            "company": v["company"],
+            "link": v["link"],
             "pub_date": v.get("pub_date", "Неизвестно"),
             "sphere": v.get("sphere", "Unknown")
         } for v in vacancies]
