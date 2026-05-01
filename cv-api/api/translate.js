@@ -34,9 +34,11 @@ export default async function handler(req, res) {
             reasoning: {
                 effort: "low",
                 summary: "auto"
+            },
+            text: {
+                format: "json_object"
             }
         };
-        if (response_format) body.response_format = response_format;
 
         console.log('[Proxy] Calling OpenAI v1/responses...');
         const startTime = Date.now();
