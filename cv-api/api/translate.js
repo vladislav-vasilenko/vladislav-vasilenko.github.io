@@ -36,7 +36,7 @@ export default async function handler(req, res) {
                 summary: "auto"
             },
             text: {
-                format: "json_object"
+                format: { type: "json_object" }
             }
         };
 
