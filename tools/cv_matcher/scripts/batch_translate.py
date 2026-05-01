@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 # Configuration
 # The user mentioned 'gpt-5-mini', we'll use 'gpt-4o-mini' as it's the current real equivalent
 # unless they have a specific custom model name.
-MODEL = "gpt-5-mini" 
-BATCH_SIZE = 100 
+MODEL = "gpt-5.4-mini" 
+BATCH_SIZE = 25 
 
 def main():
     root = Path(__file__).resolve().parent.parent.parent.parent

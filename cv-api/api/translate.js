@@ -1,6 +1,6 @@
 export const maxDuration = 60;
 
-const OPENAI_DEFAULT_MODEL = 'gpt-5-mini';
+const OPENAI_DEFAULT_MODEL = 'gpt-5.4-mini';
 
 export default async function handler(req, res) {
     // CORS
@@ -16,8 +16,11 @@ export default async function handler(req, res) {
         const { messages, model = OPENAI_DEFAULT_MODEL, response_format } = req.body;
         const authHeader = req.headers.authorization;
 
+        console.log(`[Proxy] Incoming request for model: ${model}, messages: ${messages.length}`);
+
         // Security check
         if (process.env.API_SECRET && authHeader !== `Bearer ${process.env.API_SECRET}`) {
+            console.error('[Proxy] Invalid API_SECRET');
             return res.status(401).json({ error: 'Unauthorized: Invalid API_SECRET' });
         }
 
@@ -25,24 +28,33 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Missing or invalid messages array' });
         }
 
-        // Call OpenAI
+        const body = {
+            model,
+            messages,
+            temperature: 1,
+            reasoning: { effort: "none" }
+        };
+        if (response_format) body.response_format = response_format;
+
+        console.log('[Proxy] Calling OpenAI...');
+        const startTime = Date.now();
+
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
             },
-            body: JSON.stringify({
-                model,
-                messages,
-                response_format
-            })
+            body: JSON.stringify(body)
         });
 
+        const duration = Date.now() - startTime;
+        console.log(`[Proxy] OpenAI responded in ${duration}ms, status: ${response.status}`);
+
         const data = await response.json();
-        
+
         if (data.error) {
-            console.error('OpenAI Error:', data.error);
+            console.error('[Proxy] OpenAI Error:', data.error);
             return res.status(500).json({ error: data.error.message || 'OpenAI API Error' });
         }
 
