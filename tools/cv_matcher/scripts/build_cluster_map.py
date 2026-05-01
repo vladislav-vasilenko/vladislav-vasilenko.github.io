@@ -176,10 +176,13 @@ def main() -> int:
     parser.add_argument("--provider", choices=("cv-api", "openai", "ollama"), default="cv-api")
     parser.add_argument("--model", default=None,
                         help="Embedding model (default: text-embedding-3-small / embeddinggemma)")
-    parser.add_argument("--n-neighbors", type=int, default=15,
-                        help="UMAP n_neighbors (lower → more local clumps)")
-    parser.add_argument("--min-dist", type=float, default=0.10,
-                        help="UMAP min_dist (lower → tighter clusters)")
+    parser.add_argument("--n-neighbors", type=int, default=30,
+                        help="UMAP n_neighbors (higher → smoother global topology, "
+                             "less local company-clumping). Default tuned for cross-company "
+                             "semantic clusters.")
+    parser.add_argument("--min-dist", type=float, default=0.25,
+                        help="UMAP min_dist (higher → less tight clusters; helps semantic "
+                             "groups merge across employer boundaries)")
     parser.add_argument("--top-matches", type=int, default=30)
     parser.add_argument("--debias", action="store_true", default=True,
                         help="Subtract per-company mean from each embedding before "
@@ -230,40 +233,49 @@ def main() -> int:
     print(f"📄 Resume text: {len(resume_text):,} chars from {CONTENT_EN}")
     cv_vec = np.array(db.embeddings.embed_query(resume_text), dtype=np.float32)
 
-    # ── Company-residual debias (used only for clustering geometry) ──
-    # Subtract per-company mean vector from each vacancy embedding. Removes
-    # the linear "company-style" direction in embedding space so HDBSCAN
-    # clusters by role/team/stack rather than by employer. Preserves the
-    # original `vacancy_vecs` for cosine-distance-to-CV (we want CV→Sber
-    # similarity to remain truthful — debias would skew it).
+    # ── PCA-based company-debias (used only for clustering geometry) ──
+    # Per-company mean subtraction kills only ONE direction. Better: build
+    # the subspace spanned by all company-centroid differences (top-K via SVD)
+    # and project that subspace OUT of every embedding. Removes K dimensions
+    # of "company-style" variance instead of just K=1. Source vectors are
+    # preserved for honest cosine-distance-to-CV computation below.
     vac_for_clustering = vacancy_vecs
+    cv_for_clustering = cv_vec.copy()
     if args.debias:
         company_to_indices: Dict[str, List[int]] = {}
         for i, c in enumerate(vacancy_companies):
             company_to_indices.setdefault(c, []).append(i)
-        debiased = vacancy_vecs.copy()
-        for co, idxs in company_to_indices.items():
-            if len(idxs) < 2:
-                continue
-            mean_co = vacancy_vecs[idxs].mean(axis=0)
-            debiased[idxs] = vacancy_vecs[idxs] - mean_co
-        # Re-normalise so cosine geometry stays meaningful
-        norms = np.linalg.norm(debiased, axis=1, keepdims=True)
-        debiased = debiased / np.maximum(norms, 1e-9)
-        vac_for_clustering = debiased.astype(np.float32)
-        print(f"⚖️  Company-residual debias applied "
-              f"({len(company_to_indices)} companies, vectors re-normalised)")
+        # Stack per-company centroid vectors
+        centroids = np.array([
+            vacancy_vecs[idxs].mean(axis=0)
+            for co, idxs in company_to_indices.items() if len(idxs) >= 2
+        ])
+        if centroids.shape[0] >= 2:
+            # Centre, then SVD → orthonormal basis of company-variance subspace
+            centred = centroids - centroids.mean(axis=0)
+            n_comp = min(centroids.shape[0] - 1, 3)  # keep at most 3 directions
+            _U, _S, Vt = np.linalg.svd(centred, full_matrices=False)
+            basis = Vt[:n_comp]                                        # (k, dim)
+            # Project all vectors onto basis and SUBTRACT the projection
+            proj_coefs = vacancy_vecs @ basis.T                        # (n, k)
+            debiased = vacancy_vecs - proj_coefs @ basis               # (n, dim)
+            cv_proj_coefs = cv_vec @ basis.T                           # (k,)
+            cv_for_clustering = cv_vec - cv_proj_coefs @ basis
+            # Re-normalise so cosine geometry stays meaningful in UMAP
+            norms = np.linalg.norm(debiased, axis=1, keepdims=True)
+            debiased = debiased / np.maximum(norms, 1e-9)
+            cv_for_clustering = cv_for_clustering / max(
+                1e-9, np.linalg.norm(cv_for_clustering)
+            )
+            vac_for_clustering = debiased.astype(np.float32)
+            print(f"⚖️  PCA-debias: removed top-{n_comp} company-variance directions "
+                  f"({centroids.shape[0]} companies)")
+        else:
+            print("⚠️  Skipping debias (need ≥2 companies)")
 
     # ── UMAP joint projection ─────────────────────────────────────────
-    print("🌀 UMAP fit on resume + vacancies (cosine metric)…")
+    print(f"🌀 UMAP fit (n_neighbors={args.n_neighbors}, min_dist={args.min_dist}, cosine)…")
     import umap  # noqa: E402
-    # Use debiased vectors for clustering coords; resume keeps original space
-    # since the resume's "company" is undefined and debiasing it is meaningless.
-    cv_for_clustering = cv_vec.copy()
-    if args.debias:
-        # Project resume into the debiased space by subtracting global mean
-        cv_for_clustering = cv_vec - vacancy_vecs.mean(axis=0)
-        cv_for_clustering = cv_for_clustering / max(1e-9, np.linalg.norm(cv_for_clustering))
     joint = np.vstack([cv_for_clustering[None, :], vac_for_clustering])
     reducer = umap.UMAP(
         n_components=2,

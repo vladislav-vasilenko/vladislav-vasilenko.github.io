@@ -38,38 +38,103 @@ INPUT_EN = REPO_PUBLIC / "online_scraped_en.json"
 INPUT = INPUT_EN if INPUT_EN.exists() else INPUT_RAW
 DB_PATH = str(ROOT / "chroma_db")
 
-# ── Brand-token masking ────────────────────────────────────────────────
-# Even after translation, brand/product names dominate the embedding signal
-# (e.g. "Google" appears in 100% of Google descriptions). Removing them lets
-# the embedder focus on role content (responsibilities, stack, seniority).
+# ── Embedding-text preprocessing ───────────────────────────────────────
+# Pipeline (run at index time; source JSON is never mutated):
+#   1. Try to extract the role-specific section (Responsibilities/Qualifications/...)
+#      to skip the company-intro paragraph that starts most descriptions
+#   2. Strip brand & product tokens (Meta/Google/Sber/GigaChat/Workspace/...)
+#   3. Strip HR/form/legal boilerplate (form fields, equal-opportunity, etc.)
+#   4. Truncate to MAX_EMBED_CHARS so longer corp descriptions don't outweigh
+#      shorter ones in the embedding (= fairer cross-company comparison)
+
+MAX_EMBED_CHARS = 1600  # ≈ 400 tokens; balanced for text-embedding-3-small
+
 BRAND_PATTERNS = [
     # English brand names + sub-products
     r"\bmeta\b", r"\bmetaverse\b", r"\bfacebook\b", r"\binstagram\b", r"\bwhatsapp\b",
     r"\bgoogle\b", r"\bgmail\b", r"\bandroid\b", r"\bworkspace\b", r"\bdeepmind\b",
+    r"\bgemini\b", r"\bvertex\b", r"\bbigquery\b", r"\bgcp\b", r"\bpixel\b",
     r"\bsber(?:bank)?\b", r"\bgigachat\b", r"\bkandinsky\b", r"\bsalute\w*\b", r"\bsbol\b",
+    r"\bsmartway\b", r"\bkinopoisk\b",
     r"\byandex\b", r"\balice\b",
     # Russian variants (residual, in case any RU passed through)
     r"\bсбер\w*\b", r"\bяндекс\w*\b", r"\bалиса\b", r"\bкандинский\b",
+    r"\bпао\b", r"\bпjsc\b",
 ]
 BRAND_RE = re.compile("|".join(BRAND_PATTERNS), re.IGNORECASE)
-BOILERPLATE_RE = re.compile(
-    r"(apply for the position[^.]*\.|"
-    r"vacancies career media[^.]*\.|"
-    r"last name first name email phone[^.]*\.|"
-    r"i consent to the processing of personal data[^.]*\.)",
+
+# HR / form / legal boilerplate that's nearly identical across thousands of postings
+BOILERPLATE_PATTERNS = [
+    # Form-field stubs (Sber)
+    r"apply for the position[^.\n]*[.\n]?",
+    r"vacancies career media[^.\n]*[.\n]?",
+    r"last name first name email[^.\n]*[.\n]?",
+    r"attach resume[^.\n]*[.\n]?",
+    r"i consent to (?:the )?processing of personal data[^.\n]*[.\n]?",
+    # English HR/legal blocks (Meta/Google)
+    r"is (?:proud to be |an )?equal[\s\-]?opportunity employer[^.]*\.",
+    r"all qualified applicants will receive consideration[^.]*\.",
+    r"learn more about [a-z]+'s commitment to[^.]*\.",
+    r"competitive (?:salary|benefits|compensation|pay)[^.]*\.",
+    r"benefits include[^.]*\.",
+    r"join our team[^.\n]*[.\n]?",
+    r"why work at[^.\n]*[.\n]?",
+    r"about (?:us|the company|our team)[:\.]?",
+    # URLs + emails (often link to corporate pages)
+    r"https?://\S+",
+    r"\S+@[\w\-]+\.\w+",
+    # Geographic / time markers from Sber listings ("15 April 2026 • Moscow")
+    r"\b\d{1,2}\s+(?:january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{4}\b",
+]
+BOILERPLATE_RE = re.compile("|".join(BOILERPLATE_PATTERNS), re.IGNORECASE)
+
+# Section markers — when found, embed text starting at the EARLIEST marker.
+# Order matters only for tie-breaking; we use earliest position in the doc.
+SECTION_MARKERS = [
+    "responsibilities", "what you'll do", "what you will do",
+    "your role", "in this role", "the role",
+    "requirements", "qualifications", "skills required",
+    "what we're looking for", "what we are looking for",
+    "tech stack", "technical stack", "technology stack",
+    "duties", "responsibilities and duties",
+]
+MARKER_RE = re.compile(
+    r"\b(" + "|".join(re.escape(m) for m in SECTION_MARKERS) + r")\b[:\.\s]",
     re.IGNORECASE,
 )
 
 
+def extract_role_section(text: str) -> str:
+    """If the text contains a role-section marker reasonably early (before the
+    last 30%), drop everything before it. Otherwise return the text as-is —
+    fallback is to skip the first 25% via subsequent truncation."""
+    if not text or len(text) < 400:
+        return text
+    m = MARKER_RE.search(text)
+    if not m:
+        return text
+    # Use marker only if it appears in the first 70% (avoid clipping out core content)
+    if m.start() < len(text) * 0.7:
+        return text[m.start():]
+    return text
+
+
 def clean_for_embedding(title: str, description: str) -> tuple[str, str]:
-    """Strip brand/product tokens + form boilerplate. Used only at index time;
-    source data in online_scraped*.json is left unchanged."""
+    """Strip brand/product tokens + form boilerplate, extract role section,
+    truncate. Source data in online_scraped*.json is never mutated."""
     t = BRAND_RE.sub(" ", title or "")
-    d = BRAND_RE.sub(" ", description or "")
-    d = BOILERPLATE_RE.sub(" ", d)
-    # Collapse whitespace
     t = re.sub(r"\s+", " ", t).strip()
+
+    d = description or ""
+    # 1. Extract role-specific section
+    d = extract_role_section(d)
+    # 2. Strip brand tokens
+    d = BRAND_RE.sub(" ", d)
+    # 3. Strip boilerplate
+    d = BOILERPLATE_RE.sub(" ", d)
+    # 4. Collapse whitespace + truncate
     d = re.sub(r"\s+", " ", d).strip()
+    d = d[:MAX_EMBED_CHARS]
     return t, d
 
 
