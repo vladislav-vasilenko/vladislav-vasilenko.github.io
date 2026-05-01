@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 # Configuration
 # The user mentioned 'gpt-5-mini', we'll use 'gpt-4o-mini' as it's the current real equivalent
 # unless they have a specific custom model name.
-MODEL = "gpt-5.4-mini" 
+MODEL = "gpt-5.4-nano" 
 BATCH_SIZE = 25 
 
 def main():
@@ -101,7 +101,12 @@ def main():
                 continue
                 
             data_resp = response.json()
-            batch_result = json.loads(data_resp["choices"][0]["message"]["content"])
+            # GPT-5 v1/responses returns 'output' instead of 'choices'
+            if "output" in data_resp:
+                batch_result = json.loads(data_resp["output"])
+            else:
+                batch_result = json.loads(data_resp["choices"][0]["message"]["content"])
+            
             results = batch_result.get("results", [])
             
             id_to_translated = {r["id"]: r for r in results}

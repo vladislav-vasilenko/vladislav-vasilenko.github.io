@@ -1,6 +1,6 @@
 export const maxDuration = 60;
 
-const OPENAI_DEFAULT_MODEL = 'gpt-5.4-mini';
+const OPENAI_DEFAULT_MODEL = 'gpt-5.4-nano';
 
 export default async function handler(req, res) {
     // CORS
@@ -30,16 +30,18 @@ export default async function handler(req, res) {
 
         const body = {
             model,
-            messages,
-            temperature: 1,
-            reasoning: { effort: "none" }
+            input: messages,
+            reasoning: {
+                effort: "low",
+                summary: "auto"
+            }
         };
         if (response_format) body.response_format = response_format;
 
-        console.log('[Proxy] Calling OpenAI...');
+        console.log('[Proxy] Calling OpenAI v1/responses...');
         const startTime = Date.now();
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch('https://api.openai.com/v1/responses', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
