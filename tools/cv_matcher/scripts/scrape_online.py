@@ -58,21 +58,29 @@ YANDEX_URLS = [
     ),
 ]
 
+# Sber: only ML/AI-relevant roles — narrow keyword set instead of full catalog.
+SBER_QUERIES = [
+    "ML", "LLM", "VAE", "DPO", "RLHF", "Diffusion", "Audio",
+    "Speech", "ASR", "TTS",
+    "NLP", "RAG", "Search",
+    "Research",
+]
 
-def _source_plan():
+
+def _source_plan(headless: bool = True):
     """Build (key, factory, queries) list. Storage state is env-driven."""
     google_state = os.environ.get("GOOGLE_STORAGE_STATE")
     meta_state = os.environ.get("META_STORAGE_STATE")
 
     plan = [
         ("yandex",
-         lambda limit=0: YandexScraper(limit=limit or 500, stealth=True),
+         lambda limit=0: YandexScraper(limit=limit or 500, stealth=True, headless=headless),
          YANDEX_URLS),
         ("google",
-         lambda limit=0: GoogleCareersScraper(limit=limit or 200, stealth=True),
+         lambda limit=0: GoogleCareersScraper(limit=limit or 200, stealth=True, headless=headless),
          GOOGLE_QUERIES),
         ("meta",
-         lambda limit=0: MetaCareersScraper(limit=limit or 0, stealth=True, storage_state_path=meta_state),
+         lambda limit=0: MetaCareersScraper(limit=limit or 0, stealth=True, storage_state_path=meta_state, headless=headless),
          [""]),
     ]
 
@@ -80,8 +88,8 @@ def _source_plan():
     if not os.environ.get("GITHUB_ACTIONS"):
         plan.append((
             "sber",
-            lambda limit=0: SberScraper(limit=limit or 25, stealth=True),
-            QUERIES
+            lambda limit=0: SberScraper(limit=limit or 5000, stealth=True, headless=headless),
+            SBER_QUERIES,
         ))
 
     return plan
@@ -125,6 +133,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--scrapers", help="Comma-separated list of scrapers to run (e.g. yandex,google)")
     parser.add_argument("--limit", type=int, help="Override default vacancy limit per scraper")
+    parser.add_argument("--headed", action="store_true",
+                        help="Run browser with a visible window (helps bypass WAF/JS-challenge on Sber)")
     args = parser.parse_args()
 
     print(f"🚀 Online scrape @ {datetime.now(timezone.utc).isoformat()}")
@@ -134,7 +144,7 @@ def main() -> int:
 
     allowed = set(args.scrapers.split(",")) if args.scrapers else None
 
-    for key, factory, queries in _source_plan():
+    for key, factory, queries in _source_plan(headless=not args.headed):
         if allowed and key not in allowed:
             continue
             

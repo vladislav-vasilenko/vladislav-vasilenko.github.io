@@ -112,11 +112,17 @@ def _init_embeddings():
         print(f"🔌 Embeddings: OpenAI direct ({model})")
         return OpenAIEmbeddings(model=model)
 
-    # default — local Ollama
+    # default — local Ollama (longer timeout + keep_alive against batch drops)
     from langchain_ollama import OllamaEmbeddings
     model = os.environ.get("OLLAMA_EMBEDDING_MODEL", "embeddinggemma")
-    print(f"🔌 Embeddings: Ollama ({model})")
-    return OllamaEmbeddings(model=model)
+    base_url = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
+    print(f"🔌 Embeddings: Ollama ({model}) at {base_url}")
+    return OllamaEmbeddings(
+        model=model,
+        base_url=base_url,
+        client_kwargs={"timeout": 300},
+        keep_alive=1800,  # seconds — keep model loaded for the whole batch run
+    )
 
 
 class RAGDatabase:

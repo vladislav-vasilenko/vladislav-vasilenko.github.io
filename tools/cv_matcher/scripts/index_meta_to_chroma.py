@@ -37,24 +37,33 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default=str(INPUT))
     parser.add_argument("--db", default=DB_PATH)
-    parser.add_argument("--model", default="text-embedding-3-small")
+    parser.add_argument("--model", default=None,
+                        help="Embedding model. Defaults: text-embedding-3-small (cv-api/openai), "
+                             "embeddinggemma (ollama).")
     parser.add_argument("--provider", choices=("cv-api", "openai", "ollama"),
                         default="cv-api")
     parser.add_argument("--reset", action="store_true",
                         help="Drop the collection before indexing (rebuild from scratch)")
-    parser.add_argument("--prefixes", default="meta_,yandex_,goog_",
+    parser.add_argument("--prefixes", default="meta_,yandex_,goog_,sber_",
                         help="Comma-separated id prefixes to include (default: all supported)")
     args = parser.parse_args()
 
     os.environ["EMBEDDINGS_PROVIDER"] = args.provider
-    os.environ["OPENAI_EMBEDDING_MODEL"] = args.model
     if args.provider == "cv-api":
         if not os.environ.get("CV_API_URL") or not os.environ.get("API_SECRET"):
             print("❌ cv-api provider requires CV_API_URL + API_SECRET in tools/cv_matcher/.env")
             return 1
-    elif args.provider == "openai" and not os.environ.get("OPENAI_API_KEY"):
-        print("❌ openai provider requires OPENAI_API_KEY")
-        return 1
+        if args.model:
+            os.environ["OPENAI_EMBEDDING_MODEL"] = args.model
+    elif args.provider == "openai":
+        if not os.environ.get("OPENAI_API_KEY"):
+            print("❌ openai provider requires OPENAI_API_KEY")
+            return 1
+        if args.model:
+            os.environ["OPENAI_EMBEDDING_MODEL"] = args.model
+    else:  # ollama
+        if args.model:
+            os.environ["OLLAMA_EMBEDDING_MODEL"] = args.model
 
     from src.rag_db import RAGDatabase  # noqa: E402
 

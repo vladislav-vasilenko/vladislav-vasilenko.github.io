@@ -822,8 +822,19 @@ class SberScraper(BaseScraper):
 
     def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
         import random
-        listing_url = f"https://rabota.sber.ru/search/vacancy?text={quote(query)}"
-        page.goto(listing_url, wait_until="domcontentloaded", timeout=60000)
+        from collections import Counter
+        # Empty query → unfiltered full catalog. Sber rejects ?query= with no value
+        # (ERR_ABORTED), so we drop the param entirely in that case.
+        listing_url = (
+            "https://rabota.sber.ru/search/"
+            if not query.strip()
+            else f"https://rabota.sber.ru/search/?query={quote(query)}"
+        )
+        try:
+            page.goto(listing_url, wait_until="networkidle", timeout=60000)
+        except PWTimeout:
+            # networkidle can be flaky on long-polling SPAs; fall back to DOM load
+            page.goto(listing_url, wait_until="domcontentloaded", timeout=60000)
         # human-like settle time — anti-bot checks timing of first interaction
         page.wait_for_timeout(3500 + int(random.random() * 1500))
 
@@ -833,26 +844,46 @@ class SberScraper(BaseScraper):
             print("  ⚠️ Сбер: JS-challenge detected — requires storage_state or headed mode")
             return []
 
-        link_selector = "a[href*='/vacancy/'], a[href*='/search/vacancy/']"
+        # New layout (May 2026): vacancy URLs are /search/{slug}-{numeric-id}
+        # Match anchors under /search/ that end with a numeric id segment.
+        link_selector = "a[href*='/search/']"
+        # The id is the trailing run of digits in the path's last segment.
+        id_re = re.compile(r"/search/(?:[^/?#]+-)(\d{4,})(?:/|\?|#|$)")
         _scroll_until_stable(
             page,
-            max_attempts=10,
-            delay_ms=1800,
+            max_attempts=60,
+            delay_ms=1500,
             show_more_re=re.compile(r"Показать|Загрузить|Ещё|Еще", re.I),
             link_selector=link_selector,
-            target_count=self.limit * 2,
+            target_count=self.limit * 2 if self.limit else 10000,
         )
 
         hrefs = page.eval_on_selector_all(link_selector, "els => els.map(e => e.href)")
-        id_re = re.compile(r"/vacancy/([A-Za-z0-9\-_]+)(?:/|$|\?)")
         seen, links = set(), []
         for h in hrefs:
-            clean = h.split("?")[0].rstrip("/")
+            clean = h.split("?")[0].split("#")[0].rstrip("/")
             m = id_re.search(clean)
             if not m or clean in seen:
                 continue
             seen.add(clean)
             links.append((clean, m.group(1)))
+        if not links:
+            # Diagnostics — when 0 vacancy links, dump anchor patterns
+            all_hrefs = page.eval_on_selector_all("a[href]", "els => els.map(e => e.href)")
+            host = "rabota.sber.ru"
+            local = [h for h in all_hrefs if host in h]
+            paths = Counter()
+            for h in local:
+                try:
+                    p = h.split(host, 1)[1].split("?")[0].rstrip("/")
+                    seg = "/".join(p.split("/")[:3]) or "/"
+                    paths[seg] += 1
+                except Exception:
+                    pass
+            top = ", ".join(f"{k}({v})" for k, v in paths.most_common(8))
+            print(f"  ⚠️ Сбер: 0 vacancy links matched. Top URL paths: {top or '(none)'}")
+            print(f"     Final URL: {page.url}, body: {len(page.content() or '')} chars")
+            return []
         print(f"  Сбер: {len(links)} ссылок")
 
         q_lower = query.lower()

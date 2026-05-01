@@ -508,7 +508,7 @@ def main() -> int:
         return 1
     data = json.loads(in_path.read_text(encoding="utf-8"))
     # Accept Meta + Yandex (and any future sources)
-    SUPPORTED_PREFIXES = ("meta_", "yandex_", "goog_")
+    SUPPORTED_PREFIXES = ("meta_", "yandex_", "goog_", "sber_")
     selected = [v for v in data.get("vacancies", []) if any(v.get("id", "").startswith(p) for p in SUPPORTED_PREFIXES)]
     if not selected:
         print(f"❌ no vacancies with prefixes {SUPPORTED_PREFIXES} in input.")

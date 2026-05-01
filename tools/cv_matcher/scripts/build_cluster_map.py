@@ -202,7 +202,7 @@ def main() -> int:
 
     from src.rag_db import RAGDatabase  # noqa: E402
 
-    SUPPORTED_PREFIXES = ("meta_", "yandex_", "goog_")
+    SUPPORTED_PREFIXES = ("meta_", "yandex_", "goog_", "sber_")
     db = RAGDatabase(db_path=args.db)
     data = db.collection.get(include=["embeddings", "metadatas", "documents"])
     keep = [i for i, vid in enumerate(data["ids"]) if vid.startswith(SUPPORTED_PREFIXES)]
@@ -246,6 +246,53 @@ def main() -> int:
     cos_sim = vac_norm @ cv_norm
     cos_dist = 1 - cos_sim
 
+    # ── Per-vacancy nearest neighbours (3 lenses) ─────────────────────
+    # For each vacancy we compute three top-N lists:
+    #   • similar_same_co  — most similar within the SAME employer
+    #   • similar_other_co — most similar across all OTHER employers
+    #   • cross_lang_top10 — most similar in the OPPOSITE language family
+    # The UI uses these as separate panels: internal mobility vs external
+    # competition vs cross-language market scan.
+    LANG_BY_COMPANY = {
+        "Meta": "en",
+        "Google": "en",
+        "Яндекс": "ru",
+        "Сбер": "ru",
+        "Sber": "ru",
+    }
+    TOP_N = 10
+    company_arr = np.array(vacancy_companies)
+    lang_arr = np.array([LANG_BY_COMPANY.get(c, "en") for c in vacancy_companies])
+    full_sim = vac_norm @ vac_norm.T                       # (n, n) cosine sim
+    np.fill_diagonal(full_sim, -np.inf)                    # exclude self
+    similar_same: Dict[str, List[Dict[str, Any]]] = {}
+    similar_other: Dict[str, List[Dict[str, Any]]] = {}
+    cross_lang_top: Dict[str, List[Dict[str, Any]]] = {}
+    for i, vid in enumerate(vacancy_ids):
+        co = company_arr[i]
+        my_lang = lang_arr[i]
+        same_mask = (company_arr == co)
+        same_mask[i] = False
+        other_mask = ~(company_arr == co)                  # excludes self by company
+        other_mask[i] = False
+        cross_lang_mask = (lang_arr != my_lang)            # opposite language family
+        cross_lang_mask[i] = False
+        for label, mask, sink in (
+            ("same",  same_mask,       similar_same),
+            ("other", other_mask,      similar_other),
+            ("xlang", cross_lang_mask, cross_lang_top),
+        ):
+            if not mask.any():
+                sink[vid] = []
+                continue
+            sims = np.where(mask, full_sim[i], -np.inf)
+            order = np.argsort(-sims)[:TOP_N]
+            sink[vid] = [
+                {"id": vacancy_ids[int(j)], "similarity": float(full_sim[i, int(j)])}
+                for j in order if sims[j] != -np.inf
+            ]
+    print(f"🏢 Neighbours computed: same-co + other-co + cross-lang (top-{TOP_N} each)")
+
     # ── Tree enrichment ───────────────────────────────────────────────
     id_to_role, categories = load_tree_index(TREE_JSON)
     if not id_to_role:
@@ -279,6 +326,9 @@ def main() -> int:
             "cluster": int(cluster_labels[i]),
             "distance_to_cv": float(cos_dist[i]),
             "first_seen": info.get("first_seen", ""),
+            "similar_same_co": similar_same.get(vid, []),
+            "similar_other_co": similar_other.get(vid, []),
+            "cross_lang_top10": cross_lang_top.get(vid, []),
         }
         points.append(pt)
         cluster_members.setdefault(int(cluster_labels[i]), []).append(pt)
