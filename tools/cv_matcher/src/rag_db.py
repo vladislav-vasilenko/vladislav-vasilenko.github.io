@@ -150,7 +150,7 @@ class RAGDatabase:
         print(f"📥 Добавление {len(vacancies)} вакансий в базу ChromaDB...")
         
         ids = [str(v["id"]) for v in vacancies]
-        texts = [f"Title: {v['title']}\nCompany: {v['company']}\nDate: {v.get('pub_date', 'Неизвестно')}\n\nDescription:\n{v['description']}" for v in vacancies]
+        texts = [f"Title: {v['title']}\n\nDescription:\n{v['description']}" for v in vacancies]
         metadatas = [{
             "title": v["title"], 
             "company": v["company"], 

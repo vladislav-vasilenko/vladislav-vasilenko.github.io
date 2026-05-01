@@ -317,9 +317,37 @@
   const lblT = mkAxisLabel(`↑ ${captionFor(ap.y_top || [])}`,   "t");
   const lblB = mkAxisLabel(`↓ ${captionFor(ap.y_bottom || [])}`,"b");
 
-  // ── Initial render + right-panel top matches ──────────────────────
-  render({ animate: false });
-  showTopMatches();
+  // ── Age-window filter: hide roles older than N days (by first_seen) ──
+  const NOW_MS = Date.now();
+  let enabledMaxAgeDays = null;  // null = show all
+  const ageFilter = document.getElementById("ageFilter");
+  
+  function withinAge(v) {
+    if (enabledMaxAgeDays === null) return true;
+    if (!v.first_seen) return false;
+    const t = Date.parse(v.first_seen);
+    if (isNaN(t)) return false;
+    return (NOW_MS - t) <= enabledMaxAgeDays * 86400000;
+  }
+  
+  // Pre-compute counts per window once for the panel summary
+  const AGE_BUCKETS = [1, 3, 5, 7, 10, 14];
+  const ageCounts = Object.fromEntries(AGE_BUCKETS.map(d => [d, 0]));
+  let ageMissing = 0;
+  for (const v of data.vacancies) {
+    if (!v.first_seen) { ageMissing++; continue; }
+    const t = Date.parse(v.first_seen);
+    if (isNaN(t)) { ageMissing++; continue; }
+    const days = (NOW_MS - t) / 86400000;
+    for (const w of AGE_BUCKETS) if (days <= w) ageCounts[w]++;
+  }
+
+  function passesCompanyAndCat(v) {
+    if (!enabledCats.has(v.category)) return false;
+    if (companies.length && !enabledCompanies.has(v.company || "Unknown")) return false;
+    if (!withinAge(v)) return false;
+    return true;
+  }
 
   // Compact "🆕 1d: 12 · 3d: 45 · 1w: 134 · 2w: 245" — always visible at top of panel
   function ageSummaryHtml() {
@@ -329,6 +357,21 @@
       ${ageMissing ? ` · <span style="opacity:.6">(${ageMissing} undated)</span>` : ""}
     </div>`;
   }
+
+  function ageBadge(iso) {
+    const t = Date.parse(iso);
+    if (isNaN(t)) return "?";
+    const hours = (NOW_MS - t) / 3.6e6;
+    if (hours < 24) return `${Math.round(hours)}h`;
+    const days = Math.floor(hours / 24);
+    return `${days}d`;
+  }
+
+  // Map id → vacancy
+  const vacById = new Map(data.vacancies.map(v => [v.id, v]));
+
+  // Track current selected role so render() can re-position highlight lines after rescale
+  let currentSelection = null;
 
   function showTopMatches() {
     clearSelection();
@@ -381,21 +424,6 @@
       });
     });
   }
-
-  function ageBadge(iso) {
-    const t = Date.parse(iso);
-    if (isNaN(t)) return "?";
-    const hours = (NOW_MS - t) / 3.6e6;
-    if (hours < 24) return `${Math.round(hours)}h`;
-    const days = Math.floor(hours / 24);
-    return `${days}d`;
-  }
-
-  // Map id → vacancy
-  const vacById = new Map(data.vacancies.map(v => [v.id, v]));
-
-  // Track current selected role so render() can re-position highlight lines after rescale
-  let currentSelection = null;
 
   // ── render(): re-positions everything for the current visible set ──
   // Called on filter changes (toggles, search). Rescales sx/sy to fit visible bbox,
@@ -467,40 +495,15 @@
     }
   }
 
-  // ── Age-window filter: hide roles older than N days (by first_seen) ──
-  const NOW_MS = Date.now();
-  let enabledMaxAgeDays = null;  // null = show all
-  const ageFilter = document.getElementById("ageFilter");
+  // ── Initial render + right-panel top matches ──────────────────────
+  render({ animate: false });
+  showTopMatches();
+
   ageFilter.addEventListener("change", () => {
     const v = ageFilter.value;
     enabledMaxAgeDays = v ? parseInt(v, 10) : null;
     applyFilters();
   });
-  function withinAge(v) {
-    if (enabledMaxAgeDays === null) return true;
-    if (!v.first_seen) return false;
-    const t = Date.parse(v.first_seen);
-    if (isNaN(t)) return false;
-    return (NOW_MS - t) <= enabledMaxAgeDays * 86400000;
-  }
-  // Pre-compute counts per window once for the panel summary
-  const AGE_BUCKETS = [1, 3, 5, 7, 10, 14];
-  const ageCounts = Object.fromEntries(AGE_BUCKETS.map(d => [d, 0]));
-  let ageMissing = 0;
-  for (const v of data.vacancies) {
-    if (!v.first_seen) { ageMissing++; continue; }
-    const t = Date.parse(v.first_seen);
-    if (isNaN(t)) { ageMissing++; continue; }
-    const days = (NOW_MS - t) / 86400000;
-    for (const w of AGE_BUCKETS) if (days <= w) ageCounts[w]++;
-  }
-
-  function passesCompanyAndCat(v) {
-    if (!enabledCats.has(v.category)) return false;
-    if (companies.length && !enabledCompanies.has(v.company || "Unknown")) return false;
-    if (!withinAge(v)) return false;
-    return true;
-  }
 
   // ── Right panel: role detail with 3 similar-roles sections ────────
   function showRole(v) {
