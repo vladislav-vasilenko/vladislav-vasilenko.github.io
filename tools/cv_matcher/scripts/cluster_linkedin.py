@@ -40,10 +40,10 @@ def main():
 
     texts = []
     for c in connections:
-        # We embed the name, headline, and about (if present) to group similar roles/companies
+        # We embed ONLY the name and headline. 
+        # Adding a huge "about" text for just one person creates an extreme outlier 
+        # in the vector space, which causes UMAP to squash everyone else into 1-2 giant clusters!
         text = f"{c.get('name', '')} - {c.get('headline', '')}"
-        if c.get('about'):
-            text += f" - {c['about']}"
         texts.append(text)
 
     print(f"📦 Loaded {len(texts)} connections from {args.input}")
@@ -53,7 +53,6 @@ def main():
     embeddings = []
     
     print(f"⏳ Generating {len(texts)} embeddings...")
-    # Attempt to use the batch API /api/embed
     try:
         res = requests.post("http://localhost:11434/api/embed", json={"model": "bge-m3", "input": texts})
         if res.status_code == 200 and "embeddings" in res.json():
@@ -69,7 +68,7 @@ def main():
                 if res.status_code == 200:
                     embeddings.append(res.json()["embedding"])
                 else:
-                    embeddings.append([0.0] * 1024) # fallback dummy
+                    embeddings.append([0.0] * 1024)
             except Exception:
                 embeddings.append([0.0] * 1024)
                 
@@ -78,16 +77,24 @@ def main():
                 
     embeddings = np.array(embeddings, dtype=np.float32)
 
+    # ---------------------------------------------------------
+    # MANIFOLD PROJECTION AND CLUSTERING
+    # We must separate the 'user' from the 'network' so the user 
+    # doesn't distort the topology during UMAP fit.
+    # ---------------------------------------------------------
+    is_user_mask = np.array([c.get("is_user", False) for c in connections])
+    net_embeddings = embeddings[~is_user_mask]
+    user_embeddings = embeddings[is_user_mask]
+    
     print("🌀 Running UMAP projection to 2D...")
     try:
         import umap
     except ImportError:
-        print("❌ Error: umap-learn is not installed. Run: pip install umap-learn")
+        print("❌ Error: umap-learn is not installed.")
         return 1
         
-    n_neighbors = min(args.n_neighbors, len(texts) - 1)
-    if n_neighbors < 2:
-         n_neighbors = 2
+    n_neighbors = min(args.n_neighbors, len(net_embeddings) - 1)
+    if n_neighbors < 2: n_neighbors = 2
          
     reducer = umap.UMAP(
         n_components=2,
@@ -96,19 +103,35 @@ def main():
         metric="cosine",
         random_state=42
     )
-    coords2d = reducer.fit_transform(embeddings).astype(np.float32)
+    
+    # 1. Fit on the network only
+    net_coords2d = reducer.fit_transform(net_embeddings).astype(np.float32)
+    
+    # 2. Project the user onto the fitted manifold
+    if len(user_embeddings) > 0:
+        user_coords2d = reducer.transform(user_embeddings).astype(np.float32)
+    else:
+        user_coords2d = np.empty((0, 2), dtype=np.float32)
 
     print("🔗 Running HDBSCAN clustering...")
     try:
         from sklearn.cluster import HDBSCAN
     except ImportError:
-        print("❌ Error: scikit-learn (HDBSCAN) is not installed. Run: pip install scikit-learn")
+        print("❌ Error: scikit-learn is not installed.")
         return 1
         
-    # Adjust min_samples and min_cluster_size based on dataset size
-    min_cluster = max(3, min(10, len(texts) // 10))
-    cluster_labels = HDBSCAN(min_cluster_size=min_cluster, min_samples=2).fit_predict(coords2d)
-
+    min_cluster = max(3, min(10, len(net_embeddings) // 10))
+    net_labels = HDBSCAN(min_cluster_size=min_cluster, min_samples=2).fit_predict(net_coords2d)
+    
+    # Recombine coordinates and labels
+    coords2d = np.zeros((len(connections), 2), dtype=np.float32)
+    coords2d[~is_user_mask] = net_coords2d
+    coords2d[is_user_mask] = user_coords2d
+    
+    cluster_labels = np.zeros(len(connections), dtype=int)
+    cluster_labels[~is_user_mask] = net_labels
+    cluster_labels[is_user_mask] = -1 # User is an outlier/standalone point
+    
     points = []
     cluster_members = {}
     
