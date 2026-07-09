@@ -1,4 +1,4 @@
 - **Корпоративная голосовая мультиагентная система**:
-  - **Situation/Task**: Проектирование и разработка с нуля голосового ИИ-ассистента для автоматизации ежедневных операций сотрудников.
-  - **Action**: Разработал бэкенд supervisor с использованием паттернов Hierarchical Orchestration (Planning → Executor) на OpenAI Agents SDK/GPT-Realtime; внедрил Next.js + WebRTC фронтенд для передачи голоса.
-  - **Result**: Добился SSE-синхронизации в реальном времени, интегрировал агентов поиска Graph-RAG и кастомные MCP-серверы (Gmail, Google Calendar, Perplexity API).
+  - **Situation/Task**: Проектирование и разработка с нуля multi-agent LLM-системы для голосового ИИ-ассистента реального времени, автоматизирующего ежедневные операции сотрудников.
+  - **Action**: Разработал бэкенд supervisor с иерархической оркестрацией агентов (Planning → Executor) на OpenAI Agents SDK поверх GPT-5.2 и Claude 4.6 Opus; построил Graph-RAG pipeline (токенизация документов, embeddings, retrieval, reranker); внедрил Next.js + WebRTC фронтенд для голосового взаимодействия и SSE-синхронизацию состояния в реальном времени.
+  - **Result**: Связал в единую систему голос, агентов и инструменты: FastMCP-серверы на Python с multi-user Google Auth (Gmail, Google Calendar) и Perplexity Search / Deep Research через Sonar API — автоматизировав планирование и поиск информации голосовыми командами.

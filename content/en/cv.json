@@ -41,7 +41,7 @@
     {
       "id": "01-pet-projects",
       "period": "Dec 2025 — Present",
-      "duration": "3 months",
+      "duration": "8 months",
       "company": "PET (Passion-Driven) Projects",
       "location": "Moscow",
       "url": "https://banibot.ru/",
@@ -51,6 +51,19 @@
         "product"
       ],
       "logo": "/passion.png"
+    },
+    {
+      "id": "00-personal-rnd",
+      "period": "Jun 2025 — Present",
+      "duration": "1 year 2 months",
+      "company": "Personal R&D",
+      "location": "Moscow",
+      "url": "https://github.com/vladislav-vasilenko/modern_nlp_labs",
+      "role": "Research modern Architectures / Transformer Labs",
+      "profiles": [
+        "technical"
+      ],
+      "logo": "https://github.com/favicon.ico"
     },
     {
       "id": "02-severstal",
@@ -84,7 +97,7 @@
       "id": "04-genai",
       "period": "Jun 2023 — Sep 2024",
       "duration": "1 year 4 months",
-      "company": "recharge.city Startup",
+      "company": "recharge.city research startup side by side with Founder",
       "location": "",
       "role": "ML / Deep Learning Engineer / GenAI Researcher",
       "profiles": [
@@ -201,11 +214,6 @@
       "year": "2023",
       "institution": "Google",
       "program": "Machine Learning Crash Course"
-    },
-    {
-      "year": "2023",
-      "institution": "MIT",
-      "program": "Computational Thinking with Julia"
     },
     {
       "year": "2023",

@@ -1,0 +1,4 @@
+- **Корпоративная голосовая мультиагентная система**:
+  - **Situation/Task**: Спроектировать агентную систему, которая безопасно оркестрирует управление календарём, работу с почтой и RAG-поиск через голос.
+  - **Action**: Построил иерархическую оркестрацию (Planning → Executor) на OpenAI Agents SDK (GPT-5.2, Claude 4.6 Opus) с Next.js + WebRTC; интегрировал Graph-RAG (токенизация, embeddings, retrieval, reranker) и FastMCP-коннекторы (Gmail, Google Calendar, Perplexity Sonar API).
+  - **Result**: Обеспечил надёжные agent workflows: контролируемое выполнение tool calls, grounding ответов в базе знаний, structured actions и наблюдаемое состояние агентов через SSE.

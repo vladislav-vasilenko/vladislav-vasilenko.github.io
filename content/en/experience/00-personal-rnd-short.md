@@ -1,0 +1,1 @@
+- Research into modern LLM architectures: nanoGPT from scratch in PyTorch, attention mechanisms (MHA / GQA / MLA), RoPE, KV-cache, matrix quantization. Open labs: [modern_nlp_labs](https://github.com/vladislav-vasilenko/modern_nlp_labs), [Andrey-Karpathy-Lessons](https://github.com/vladislav-vasilenko/Andrey-Karpathy-Lessons).

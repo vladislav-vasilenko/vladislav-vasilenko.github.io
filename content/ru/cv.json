@@ -4,7 +4,7 @@
   "productTitle": "Senior Product Manager / AI Product Lead",
   "contact": {
     "phone": "+7 (996) 328-84-98",
-    "email": "mr.vasilenko.vlad@yandex.ru",
+    "email": "mr.vasilenko.vlad@ya.ru",
     "location": "",
     "citizenship": "",
     "relocation": "Готов к переезду и командировкам",
@@ -41,7 +41,7 @@
     {
       "id": "01-pet-projects",
       "period": "Декабрь 2025 — настоящее время",
-      "duration": "3 месяца",
+      "duration": "8 месяцев",
       "company": "PET (Passion-Driven) Projects",
       "location": "Москва",
       "url": "https://banibot.ru/",
@@ -51,6 +51,19 @@
         "product"
       ],
       "logo": "/passion.png"
+    },
+    {
+      "id": "00-personal-rnd",
+      "period": "Июнь 2025 — настоящее время",
+      "duration": "1 год 2 месяца",
+      "company": "Personal R&D",
+      "location": "Москва",
+      "url": "https://github.com/vladislav-vasilenko/modern_nlp_labs",
+      "role": "Research modern Architectures / Transformer Labs",
+      "profiles": [
+        "technical"
+      ],
+      "logo": "https://github.com/favicon.ico"
     },
     {
       "id": "02-severstal",
@@ -84,7 +97,7 @@
       "id": "04-genai",
       "period": "Июнь 2023 — Сентябрь 2024",
       "duration": "1 год 4 месяца",
-      "company": "recharge.city Startup",
+      "company": "recharge.city — research-стартап, работа бок о бок с фаундером",
       "location": "",
       "role": "ML / Deep Learning Инженер / GenAI Исследователь",
       "profiles": [
@@ -201,11 +214,6 @@
       "year": "2023",
       "institution": "Google",
       "program": "Machine Learning Crash Course"
-    },
-    {
-      "year": "2023",
-      "institution": "MIT",
-      "program": "Computational Thinking with Julia"
     },
     {
       "year": "2023",

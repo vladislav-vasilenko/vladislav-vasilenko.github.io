@@ -1,0 +1,8 @@
+- **Transformer Labs** ([modern_nlp_labs](https://github.com/vladislav-vasilenko/modern_nlp_labs/tree/main/transformer-lab)) — Реализация LLM-архитектуры с нуля:
+  - **Situation/Task**: Закрепить архитектуру Transformer на уровне кода и математики — от токенизатора до полного train loop.
+  - **Action**: Разработал и обучил с нуля nanoGPT / Transformer Decoder на PyTorch (посимвольный и BPE токенизаторы, сходимость loss на Tiny Shakespeare); реализовал Multi-Head Attention, Causal Self-Attention с маскированием, Grouped-Query Attention (GQA), провёл эксперименты с Multi-Head Latent Attention (MLA из DeepSeek-V3); подключил KV-cache с замерами скорости инференса токенов и потребления VRAM.
+  - **Result**: Собрал GPT-2-подобный блок Transformer с модификациями (нормализация, attention, FFN); опубликовал открытые Jupyter-лаборатории: [transformer-lab](https://github.com/vladislav-vasilenko/modern_nlp_labs/tree/main/transformer-lab), [gradients-lab](https://github.com/vladislav-vasilenko/modern_nlp_labs/tree/main/gradients-lab), [pytorch-lab](https://github.com/vladislav-vasilenko/modern_nlp_labs/tree/main/pytorch-lab).
+- **Позиционное кодирование и оптимизация LLM** ([Andrey-Karpathy-Lessons](https://github.com/vladislav-vasilenko/Andrey-Karpathy-Lessons)):
+  - **Situation/Task**: Исследовать влияние архитектурных решений на размер и вычислительную стоимость модели.
+  - **Action**: Реализовал и сравнил подходы позиционного кодирования (Sinusoidal, Absolute, Relative, RoPE); сравнил RMSNorm vs LayerNorm и варианты MLP/FFN; изучил сжатие и квантизацию матриц KQV на базе nanoGPT.
+  - **Result**: Оформил выводы в открытом research-репозитории с исследованием nanoGPT и train loop трансформера.

@@ -1,4 +1,4 @@
 - **Corporate Voice Multi-Agent System**:
-  - **Situation/Task**: Architect and build a secure, real-time voice-activated AI agent system to automate tasks for corporate users.
-  - **Action**: Developed a Hierarchical Orchestration supervisor (Planning → Executor) on OpenAI Agents SDK/GPT-Realtime with real-time SSE; built a Next.js + WebRTC front-end for voice transfer.
-  - **Result**: Implemented Graph-RAG search agents and FastMCP servers for Gmail, Google Calendar, and Perplexity Search, automating scheduling and research workflows.
+  - **Situation/Task**: Architect and build from scratch a real-time multi-agent LLM system powering a voice AI assistant that automates daily tasks for corporate users.
+  - **Action**: Developed a backend supervisor with hierarchical agent orchestration (Planning → Executor) on OpenAI Agents SDK on top of GPT-5.2 and Claude 4.6 Opus; built a Graph-RAG pipeline (document tokenization, embeddings, retrieval, reranker); shipped a Next.js + WebRTC front-end for voice interaction with real-time SSE state sync.
+  - **Result**: Wired voice, agents, and tools into one system: Python FastMCP servers with multi-user Google Auth (Gmail, Google Calendar) and Perplexity Search / Deep Research via Sonar API — automating scheduling and research workflows by voice.

@@ -1,0 +1,8 @@
+- **Transformer Labs** ([modern_nlp_labs](https://github.com/vladislav-vasilenko/modern_nlp_labs/tree/main/transformer-lab)) — LLM architecture implemented from scratch:
+  - **Situation/Task**: Master the Transformer architecture at the code and math level — from tokenizer to a full train loop.
+  - **Action**: Built and trained nanoGPT / Transformer Decoder from scratch in PyTorch (character-level and BPE tokenizers, loss convergence on Tiny Shakespeare); implemented Multi-Head Attention, Causal Self-Attention with masking, Grouped-Query Attention (GQA), and experimented with Multi-Head Latent Attention (MLA from DeepSeek-V3); wired up KV-cache with token inference speed and VRAM benchmarks.
+  - **Result**: Assembled a GPT-2-style Transformer block with modifications (normalization, attention, FFN); published open Jupyter labs: [transformer-lab](https://github.com/vladislav-vasilenko/modern_nlp_labs/tree/main/transformer-lab), [gradients-lab](https://github.com/vladislav-vasilenko/modern_nlp_labs/tree/main/gradients-lab), [pytorch-lab](https://github.com/vladislav-vasilenko/modern_nlp_labs/tree/main/pytorch-lab).
+- **Positional Encoding & LLM Optimization** ([Andrey-Karpathy-Lessons](https://github.com/vladislav-vasilenko/Andrey-Karpathy-Lessons)):
+  - **Situation/Task**: Study how architectural decisions affect model size and compute cost.
+  - **Action**: Implemented and compared positional encoding approaches (Sinusoidal, Absolute, Relative, RoPE); compared RMSNorm vs LayerNorm and MLP/FFN variants; explored KQV matrix compression and quantization on top of nanoGPT.
+  - **Result**: Documented the findings in an open research repository covering nanoGPT and the Transformer train loop.

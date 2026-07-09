@@ -147,7 +147,7 @@ function getSortedExperience(experience: any[], techProfile: string, currentView
   if (techProfile === 'audio') {
     relevantIds = ['05-bortnik', '04-genai', '03-glowbyte', '01-pet-projects'];
   } else if (techProfile === 'llm') {
-    relevantIds = ['04-genai', '03-glowbyte', '02-severstal', '01-pet-projects'];
+    relevantIds = ['04-genai', '03-glowbyte', '00-personal-rnd', '02-severstal', '01-pet-projects'];
   } else {
     return filtered;
   }
@@ -297,7 +297,7 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
         (exp) => {
           const isRelevant = currentViewMode === 'technical' && (
             (techProfile === 'audio' && ['05-bortnik', '04-genai', '03-glowbyte', '01-pet-projects'].includes(exp.id)) ||
-            (techProfile === 'llm' && ['04-genai', '03-glowbyte', '02-severstal', '01-pet-projects'].includes(exp.id))
+            (techProfile === 'llm' && ['04-genai', '03-glowbyte', '00-personal-rnd', '02-severstal', '01-pet-projects'].includes(exp.id))
           );
           const highlightClass = isRelevant ? 'timeline-item--relevant' : '';
           const focusLabel = techProfile === 'audio' ? (lang === 'ru' ? 'Фокус: Audio ML' : 'Focus: Audio ML') : (lang === 'ru' ? 'Фокус: NLP/LLM' : 'Focus: NLP/LLM');

@@ -1,4 +1,4 @@
 - **Синтез аудио и генеративные модели**:
   - **Situation/Task**: Исследование и разработка SOTA генеративных архитектур для звука и музыки с оптимизацией под инференс.
   - **Action**: Обучал AR-Transformers (Bark) и латентную диффузию (StableAudio-подобные DiT); применил LoRA/QLoRA для адаптации голоса; ускорил инференс через Flash-Attention, xFormers и KV-cache.
-  - **Result**: Построил надежные пайплайны с логированием в W&B и развертыванием в Docker/Triton; оценивал качество по метрикам FAD и CLAPScore.
+  - **Result**: Построил надежные пайплайны с логированием в W&B и развертыванием в Docker/Triton; оценивал качество по метрикам FAD и CLAPScore. Открытая часть исследования — [music-transformer-diffusion](https://github.com/applehawk/music-transformer-diffusion) (основной pipeline и LoRA-адаптеры под NDA у заказчика).

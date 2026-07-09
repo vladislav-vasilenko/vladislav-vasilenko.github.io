@@ -1,4 +1,4 @@
 - **Audio Synthesis & Generative Models**:
   - **Situation/Task**: Develop and scale SOTA generative audio models (text-to-audio/music) under strict execution constraints.
   - **Action**: Research and train AR-Transformers (Bark) and latent diffusion (StableAudio-like DiT on EnCodec); applied LoRA/QLoRA for voice adaptation; optimized via Flash-Attention and KV-cache.
-  - **Result**: Reduced inference latency, set up FAD/CLAPScore quality evaluation, and built reproducible MLOps pipelines using Docker/Triton.
+  - **Result**: Reduced inference latency, set up FAD/CLAPScore quality evaluation, and built reproducible MLOps pipelines using Docker/Triton. Public part of the research — [music-transformer-diffusion](https://github.com/applehawk/music-transformer-diffusion) (full pipeline and LoRA adapters under client NDA).

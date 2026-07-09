@@ -1,0 +1,1 @@
+- Исследование современных LLM-архитектур: nanoGPT с нуля на PyTorch, attention-механизмы (MHA / GQA / MLA), RoPE, KV-cache, квантизация матриц. Открытые лаборатории: [modern_nlp_labs](https://github.com/vladislav-vasilenko/modern_nlp_labs), [Andrey-Karpathy-Lessons](https://github.com/vladislav-vasilenko/Andrey-Karpathy-Lessons).
