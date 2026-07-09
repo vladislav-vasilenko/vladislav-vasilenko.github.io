@@ -1,11 +1,8 @@
-- **TalkyBuddy** ([banibot.ru/talkybuddy](https://banibot.ru/talkybuddy)) — Full-stack AI foreign language learning ecosystem with a focus on real-time voice interaction.
-    - Engineered a **cross-platform ecosystem** (Web, iOS/Android, Telegram Mini App).
-    - Architected a modular core using **Domain-Driven Design (DDD)** to decouple complex linguistic logic from infrastructure.
-    - Integrated **WebRTC & Omni-modal AI**: Designed a low-latency audio exchange system for real-time AI conversations, achieving sub-second response times (**TTFT**).
-    - **AI Agent Orchestration**: Developed an adaptive assembly system for AI tutors with self-correction loops, leveraging iterative experience to improve lesson flow.
-    - *Tech Stack*: React Native, Next.js, Node.js (NestJS), WebRTC, OpenAI/Gemini API.
-- **BaniBaniBot** ([banibanibot.t.me](https://banibanibot.t.me)) — Developed a multimodal image generation service in Telegram.
-    - Integrated **Gemini 3.1** with support for **Streaming**, **Reasoning**, and **Search Grounding** (Search Landing) for advanced prompt assistance.
-    - Applied **Domain-Driven Design (DDD)** for robust service architecture.
-    - Architected an **Event-Driven Architecture (EDA)** for the backend to ensure high scalability and support for complex Rules/Overlays/FSM.
-    - Engineered a high-precision **Credits Ledger** system for transaction management and usage tracking.
+- **TalkyBuddy** ([banibot.ru/talkybuddy](https://banibot.ru/talkybuddy)) — Conversational language learning platform:
+  - **Situation/Task**: Build a low-latency conversational AI agent capable of holding natural voice dialogues across web and mobile.
+  - **Action**: Architected a WebRTC low-latency audio pipeline integrating direct streaming connection to a Full-Duplex GPT-Realtime model; built a NestJS backend (DDD).
+  - **Result**: Reduced the time-to-first-token (TTFT) to < 1.0s, achieving natural voice chat on Web, iOS/Android, and Telegram.
+- **BaniBaniBot** ([banibanibot.t.me](https://banibanibot.t.me)) — Multimodal generation assistant:
+  - **Situation/Task**: Build a scalable backend for handling asynchronous heavy generative tasks and high-precision billing.
+  - **Action**: Designed an Event-Driven Architecture (EDA) with finite state machines (FSM) to manage Gemini/OpenAI API calls and Credits Ledger.
+  - **Result**: Handled parallel requests and accurately billed GPU compute hours under high user load.

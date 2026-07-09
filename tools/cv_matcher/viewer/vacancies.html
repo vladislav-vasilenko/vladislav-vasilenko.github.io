@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vacancy Review</title>
+  <link rel="stylesheet" href="./vacancies.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Vacancy Review</h1>
+      <p id="sourceLabel">No data loaded</p>
+    </div>
+    <div class="actions">
+      <button id="loadDefaultBtn" type="button">Load Sber cache</button>
+      <label class="fileButton">
+        Open JSON
+        <input id="fileInput" type="file" accept="application/json,.json">
+      </label>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <section class="filters" aria-label="Filters">
+        <input id="searchInput" type="search" placeholder="Search title, description, location">
+        <select id="companySelect" aria-label="Company"></select>
+        <select id="locationSelect" aria-label="Location"></select>
+        <select id="sortSelect" aria-label="Sort">
+          <option value="date_desc">Newest first</option>
+          <option value="title_asc">Title A-Z</option>
+          <option value="company_asc">Company A-Z</option>
+        </select>
+      </section>
+
+      <section class="stats" aria-label="Stats">
+        <div><span id="visibleCount">0</span><small>shown</small></div>
+        <div><span id="totalCount">0</span><small>total</small></div>
+      </section>
+
+      <ol id="vacancyList" class="vacancyList" aria-label="Vacancies"></ol>
+    </aside>
+
+    <section id="detail" class="detail" aria-live="polite">
+      <div class="emptyState">
+        <h2>Open a JSON file or load the Sber cache</h2>
+        <p>Use the list on the left to review collected vacancies.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="./vacancies.js"></script>
+</body>
+</html>

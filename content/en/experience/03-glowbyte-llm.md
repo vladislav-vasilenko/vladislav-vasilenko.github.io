@@ -1,0 +1,4 @@
+- **Multi-Agent LLM Systems & SFT Fine-Tuning**:
+  - **Situation/Task**: Automate complex moderation checks for AdTech campaigns and Telegram chat violations.
+  - **Action**: Developed LangChain/LangGraph agentic structures, fine-tuned LLaMA 3 via SFT, and set up prompt pipelines (CoT, Prompt Chaining) on FastAPI/Next.js.
+  - **Result**: Successfully deployed automated ad moderation workflows, reducing manual review latency and overhead.

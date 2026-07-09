@@ -1,0 +1,4 @@
+- **Transformer Tuning & Inference Optimization**:
+  - **Situation/Task**: Adapt massive transformer-based architectures and optimize memory overhead during high-concurrency training/inference.
+  - **Action**: Applied PEFT methods (LoRA/QLoRA) to fine-tune attention layers efficiently; benchmarked different model sizes; reduced memory footprint with Flash-Attention, xFormers, and KV-caching.
+  - **Result**: Reduced GPU footprint by 2.5x, maintaining model quality and establishing automated MLOps pipelines (Docker, Triton).

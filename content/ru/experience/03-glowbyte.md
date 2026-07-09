@@ -1,8 +1,4 @@
-- Мультиагентные **LLM-системы** для модерации, генерации рекламы и анализа рабочих чатов в Telegram (**LangChain/LangGraph**).
-- Развёрнут отдельный сервис для каждого проекта с API на **Python/FastAPI** + валидатор Pydantic; проекты с интеграцией на Python/Next.js.
-- Инференс моделей из облака Replicate (**LLaMA 3**) / Claude 3.5 Opus / HuggingFace.
-- Внедрение **RAG** для задач поиска правил модерации.
-- Промпт-инжиниринг (Prompt Chaining, Chain-of-Thought, fast-CoT).
-- Дообучение **LLaMA 3 с помощью SFT** для AdTech домена/автомодерации рекламы.
-- Реализация сервиса распознавания встреч на **Whisper Large + Speaker Diarization** (Pyannote) / интерфейс на Gradio.
-- Реализация бота анализа чатов в Telegram с поддержкой **Multi-User Authentication** и диалогом с Claude 3.5 Sonnet (LangChain Conversation Memory).
+- **Мультиагентные LLM-системы & распознавание речи**:
+  - **Situation/Task**: Создание инструментов автоматической модерации рекламы и аналитики встреч на базе ИИ.
+  - **Action**: Разработал LangChain/LangGraph агенты с RAG для поиска правил; выполнил SFT дообучение LLaMA 3; внедрил аудио-сервис расшифровки встреч на Whisper Large + Speaker Diarization (Pyannote).
+  - **Result**: Ускорил модерацию рекламы и автоматизировал транскрибацию звонков с разделением спикеров через FastAPI/Next.js прод-сервисы.

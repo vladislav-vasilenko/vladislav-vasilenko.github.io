@@ -1,5 +1,4 @@
-- Engineered two **PyTorch**-based concepts resulting in a voice cloning model patent application.
-- Developed and validated TTS & Voice Cloning models: **Tacotron 2**, WaveRNN, SpeakerVerification2TTS, and Transformer-based architectures.
-- Conducted **DeepFace/FaceNet** experiments for demographic recognition (gender, age, height, weight) from visual data.
-- Implemented high-performance data collection pipelines using **Asyncio** for high-volume image scraping.
-- Managed large-scale model training across **Google Colab** and **Paperspace** environments.
+- **Voice Cloning & Speech Synthesis (TTS)**:
+  - **Situation/Task**: Research and prototype voice cloning, text-to-speech (TTS), and demographic recognition systems.
+  - **Action**: Developed Tacotron 2, WaveRNN, SpeakerVerification2TTS, and FaceNet models using PyTorch; built async scraping pipelines in Asyncio.
+  - **Result**: Filed a patent application for the voice cloning model architecture and automated large-scale data collection.

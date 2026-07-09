@@ -9,6 +9,9 @@ from playwright.sync_api import sync_playwright
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
+ROOT = Path(__file__).resolve().parent.parent
+DEBUG_DIR = ROOT / ".cache" / "linkedin"
+
 def scrape_linkedin_connections(user_data_dir: str, output_file: str, max_scrolls: int = 50):
     with sync_playwright() as p:
         print(f"Launching browser with user data dir: {user_data_dir}")
@@ -70,15 +73,18 @@ def scrape_linkedin_connections(user_data_dir: str, output_file: str, max_scroll
 
         print(f"Current URL: {page.url}")
         print(f"Page Title: {page.title()}")
-        page.screenshot(path="debug_linkedin.png")
+        DEBUG_DIR.mkdir(parents=True, exist_ok=True)
+        screenshot_path = DEBUG_DIR / "debug_linkedin.png"
+        html_path = DEBUG_DIR / "debug.html"
+        page.screenshot(path=str(screenshot_path))
         
         print("Waiting 5 seconds for page to render...")
         time.sleep(5)
         
         # Save HTML for debugging
-        with open("debug.html", "w", encoding="utf-8") as f:
+        with html_path.open("w", encoding="utf-8") as f:
             f.write(page.content())
-        print("Saved raw HTML to debug.html")
+        print(f"Saved debug output to {DEBUG_DIR}")
         
         print("Scrolling down to load all connections...")
         # Scroll to bottom repeatedly to load all connections

@@ -1,0 +1,222 @@
+{
+  "categories": [
+    {
+      "id": "math",
+      "label": {
+        "en": "Applied Mathematics",
+        "ru": "Прикладная математика"
+      },
+      "ring": 1,
+      "items": [
+        {
+          "name": "Linear Algebra",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Linear_algebra",
+          "color": "#007ACC"
+        },
+        {
+          "name": "Probability & Stats",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Probability_theory",
+          "color": "#F57C00"
+        },
+        {
+          "name": "Numerical Optimization",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Mathematical_optimization",
+          "color": "#388E3C"
+        },
+        {
+          "name": "Information Theory",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Information_theory",
+          "color": "#D32F2F"
+        }
+      ]
+    },
+    {
+      "id": "core",
+      "label": {
+        "en": "NLP & Core ML",
+        "ru": "NLP и Core ML"
+      },
+      "ring": 2,
+      "items": [
+        {
+          "name": "Python",
+          "icon": "python",
+          "url": "https://python.org",
+          "color": "#3776AB"
+        },
+        {
+          "name": "PyTorch",
+          "icon": "pytorch",
+          "url": "https://pytorch.org",
+          "color": "#EE4C2C"
+        },
+        {
+          "name": "Hugging Face (Transformers)",
+          "icon": "huggingface",
+          "url": "https://huggingface.co",
+          "color": "#FFD21E"
+        },
+        {
+          "name": "Tokenizers",
+          "icon": "huggingface",
+          "url": "https://github.com/huggingface/tokenizers",
+          "color": "#FFD21E"
+        },
+        {
+          "name": "NumPy",
+          "icon": "numpy",
+          "url": "https://numpy.org",
+          "color": "#013243"
+        },
+        {
+          "name": "Pandas",
+          "icon": "pandas",
+          "url": "https://pandas.pydata.org",
+          "color": "#150458"
+        }
+      ]
+    },
+    {
+      "id": "ai-genai",
+      "label": {
+        "en": "NLP & LLM Engineering",
+        "ru": "NLP & LLM Инженерия"
+      },
+      "ring": 3,
+      "items": [
+        {
+          "name": "LLMs (Llama 3 / Claude)",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Large_language_model",
+          "color": "#8B5CF6"
+        },
+        {
+          "name": "LangChain & LangGraph",
+          "icon": "langchain",
+          "url": "https://langchain.com",
+          "color": "#1C3C3C"
+        },
+        {
+          "name": "RAG & Graph-RAG",
+          "icon": null,
+          "url": "https://microsoft.github.io/graphrag/",
+          "color": "#06B6D4"
+        },
+        {
+          "name": "SFT & PEFT (LoRA/QLoRA)",
+          "icon": null,
+          "url": "https://github.com/huggingface/peft",
+          "color": "#10B981"
+        },
+        {
+          "name": "Agentic Workflows / MCP",
+          "icon": null,
+          "url": "https://modelcontextprotocol.io",
+          "color": "#EC4899"
+        },
+        {
+          "name": "ChromaDB (Vector Search)",
+          "icon": null,
+          "url": "https://trychroma.com",
+          "color": "#6366F1"
+        },
+        {
+          "name": "Prompt Engineering",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Prompt_engineering",
+          "color": "#1877F2"
+        }
+      ]
+    },
+    {
+      "id": "mlops-infra",
+      "label": {
+        "en": "MLOps & Infrastructure",
+        "ru": "MLOps и инфраструктура"
+      },
+      "ring": 4,
+      "items": [
+        {
+          "name": "CUDA",
+          "icon": "nvidia",
+          "url": "https://developer.nvidia.com/cuda-zone",
+          "color": "#76B900"
+        },
+        {
+          "name": "Docker",
+          "icon": "docker",
+          "url": "https://docker.com",
+          "color": "#2496ED"
+        },
+        {
+          "name": "FastAPI",
+          "icon": "fastapi",
+          "url": "https://fastapi.tiangolo.com",
+          "color": "#009688"
+        },
+        {
+          "name": "Pydantic",
+          "icon": "pydantic",
+          "url": "https://docs.pydantic.dev",
+          "color": "#E92063"
+        },
+        {
+          "name": "TensorRT",
+          "icon": "nvidia",
+          "url": "https://developer.nvidia.com/tensorrt",
+          "color": "#76B900"
+        },
+        {
+          "name": "MLflow",
+          "icon": "mlflow",
+          "url": "https://mlflow.org",
+          "color": "#0194E2"
+        },
+        {
+          "name": "Gradio",
+          "icon": null,
+          "url": "https://gradio.app",
+          "color": "#F97316"
+        }
+      ]
+    },
+    {
+      "id": "foundational-eng",
+      "label": {
+        "en": "Foundational Engineering",
+        "ru": "Базовая инженерия"
+      },
+      "ring": 5,
+      "items": [
+        {
+          "name": "Next.js / TypeScript",
+          "icon": "nextdotjs",
+          "url": "https://nextjs.org",
+          "color": "#000000"
+        },
+        {
+          "name": "ReactFlow (Agent UI)",
+          "icon": null,
+          "url": "https://reactflow.dev",
+          "color": "#FF0072"
+        },
+        {
+          "name": "NestJS",
+          "icon": "nestjs",
+          "url": "https://nestjs.com",
+          "color": "#E0234E"
+        },
+        {
+          "name": "Swift",
+          "icon": "swift",
+          "url": "https://swift.org",
+          "color": "#F05138"
+        }
+      ]
+    }
+  ]
+}

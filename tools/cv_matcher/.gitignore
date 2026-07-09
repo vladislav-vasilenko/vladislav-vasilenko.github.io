@@ -1,0 +1,22 @@
+# Local secrets and browser state
+.env
+.auth/
+google_state.json
+linkedin_profile/
+
+# Generated caches and local databases
+.cache/
+ai_cache.json
+chroma_db/
+data/sber/
+
+# Debug/scratch dumps
+debug.html
+debug_linkedin.png
+next_data.json
+sber_page.html
+vacancy.txt
+
+# Python runtime byproducts
+__pycache__/
+*.pyc

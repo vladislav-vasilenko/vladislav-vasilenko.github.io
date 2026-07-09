@@ -30,14 +30,6 @@ from src.scrapers import (  # noqa: E402
 
 OUTPUT = ROOT.parent.parent / "public" / "online_scraped.json"
 
-# Default queries — short because each scraper has its own rate limits / captcha risk
-QUERIES = [
-    "Machine Learning Engineer",
-    "LLM Engineer",
-    "GenAI",
-    "Applied Scientist",
-]
-
 # Google gets server-side filtering so broader queries cover more relevant roles
 GOOGLE_QUERIES = [
     "Machine Learning",
@@ -67,7 +59,7 @@ SBER_QUERIES = [
 ]
 
 
-def _source_plan(headless: bool = True):
+def _source_plan(headless: bool = True, include_sber: bool = False):
     """Build (key, factory, queries) list. Storage state is env-driven."""
     google_state = os.environ.get("GOOGLE_STORAGE_STATE")
     meta_state = os.environ.get("META_STORAGE_STATE")
@@ -77,15 +69,21 @@ def _source_plan(headless: bool = True):
          lambda limit=0: YandexScraper(limit=limit or 500, stealth=True, headless=headless),
          YANDEX_URLS),
         ("google",
-         lambda limit=0: GoogleCareersScraper(limit=limit or 200, stealth=True, headless=headless),
+         lambda limit=0: GoogleCareersScraper(
+             limit=limit or 200,
+             stealth=True,
+             storage_state_path=google_state,
+             headless=headless,
+         ),
          GOOGLE_QUERIES),
         ("meta",
          lambda limit=0: MetaCareersScraper(limit=limit or 0, stealth=True, storage_state_path=meta_state, headless=headless),
          [""]),
     ]
 
-    # Add sensitive RU scrapers only when running locally (not in CI)
-    if not os.environ.get("GITHUB_ACTIONS"):
+    # Sber is WAF-sensitive. Run locally by default; in CI it must be
+    # explicitly enabled with --include-sber, --scrapers=sber, or env.
+    if include_sber or not os.environ.get("GITHUB_ACTIONS"):
         plan.append((
             "sber",
             lambda limit=0: SberScraper(limit=limit or 5000, stealth=True, headless=headless),
@@ -135,6 +133,8 @@ def main() -> int:
     parser.add_argument("--limit", type=int, help="Override default vacancy limit per scraper")
     parser.add_argument("--headed", action="store_true",
                         help="Run browser with a visible window (helps bypass WAF/JS-challenge on Sber)")
+    parser.add_argument("--include-sber", action="store_true",
+                        help="Opt into Sber scraping in CI; local runs include it by default")
     args = parser.parse_args()
 
     print(f"🚀 Online scrape @ {datetime.now(timezone.utc).isoformat()}")
@@ -142,9 +142,14 @@ def main() -> int:
     stats: dict[str, dict[str, int]] = {}
     now_iso = datetime.now(timezone.utc).isoformat()
 
-    allowed = set(args.scrapers.split(",")) if args.scrapers else None
+    allowed = {s.strip() for s in args.scrapers.split(",") if s.strip()} if args.scrapers else None
+    include_sber = (
+        args.include_sber
+        or bool(allowed and "sber" in allowed)
+        or os.environ.get("ENABLE_SBER_SCRAPER") == "1"
+    )
 
-    for key, factory, queries in _source_plan(headless=not args.headed):
+    for key, factory, queries in _source_plan(headless=not args.headed, include_sber=include_sber):
         if allowed and key not in allowed:
             continue
             

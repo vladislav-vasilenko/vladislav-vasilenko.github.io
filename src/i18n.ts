@@ -122,12 +122,15 @@ const jsonModules = import.meta.glob<CVJson>('/content/*/cv.json', { eager: true
 const aboutModules = import.meta.glob<string>('/content/*/about*.md', { eager: true, query: '?raw', import: 'default' });
 const productAboutModules = import.meta.glob<string>('/content/*/product-about.md', { eager: true, query: '?raw', import: 'default' });
 const expModules = import.meta.glob<string>('/content/*/experience/*.md', { eager: true, query: '?raw', import: 'default' });
-const techStackModules = import.meta.glob<TechStack>('/content/tech-stack.json', { eager: true, import: 'default' });
-const techStack = techStackModules['/content/tech-stack.json'];
+const techStackModules = import.meta.glob<TechStack>('/content/tech-stack*.json', { eager: true, import: 'default' });
 
 export function loadContent(lang: Lang, techProfile: string = 'vision'): CVContent {
   const cv = jsonModules[`/content/${lang}/cv.json`];
   
+  const techStackKeySpecific = `/content/tech-stack-${techProfile}.json`;
+  const techStackKeyFallback = `/content/tech-stack.json`;
+  const techStack = techStackModules[techStackKeySpecific] ?? techStackModules[techStackKeyFallback] ?? { categories: [] };
+
   const aboutMdKeySpecific = `/content/${lang}/about-${techProfile}.md`;
   const aboutMdKeyFallback = `/content/${lang}/about.md`;
   const aboutMd = aboutModules[aboutMdKeySpecific] ?? aboutModules[aboutMdKeyFallback] ?? '';

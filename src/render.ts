@@ -137,6 +137,31 @@ export function renderSocialBar(lang: Lang, cv: CVContent): string {
   `;
 }
 
+function getSortedExperience(experience: any[], techProfile: string, currentViewMode: ViewMode): any[] {
+  const filtered = experience.filter(exp => exp.profiles.includes(currentViewMode));
+  if (currentViewMode !== 'technical') {
+    return filtered;
+  }
+  
+  let relevantIds: string[] = [];
+  if (techProfile === 'audio') {
+    relevantIds = ['05-bortnik', '04-genai', '03-glowbyte', '01-pet-projects'];
+  } else if (techProfile === 'llm') {
+    relevantIds = ['04-genai', '03-glowbyte', '02-severstal', '01-pet-projects'];
+  } else {
+    return filtered;
+  }
+
+  // Split into relevant and other
+  const relevant = filtered.filter(exp => relevantIds.includes(exp.id));
+  const other = filtered.filter(exp => !relevantIds.includes(exp.id));
+
+  // Sort relevant chronologically (oldest to newest: based on indices in relevantIds)
+  relevant.sort((a, b) => relevantIds.indexOf(a.id) - relevantIds.indexOf(b.id));
+
+  return [...relevant, ...other];
+}
+
 export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewMode, skillsView: string, isShortView: boolean, isCollapsed: boolean, techProfile: string = 'vision'): string {
   const techOptions: Array<[string, string]> = [
     ['vision', 'Vision & GenAI'],
@@ -267,11 +292,19 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
             </div>
         </div>
         <div id="history" class="history">
-          ${cv.experience
-      .filter(exp => exp.profiles.includes(currentViewMode))
+          ${getSortedExperience(cv.experience, techProfile, currentViewMode)
       .map(
-        (exp) => `
-            <div class="entry row timeline-item">
+        (exp) => {
+          const isRelevant = currentViewMode === 'technical' && (
+            (techProfile === 'audio' && ['05-bortnik', '04-genai', '03-glowbyte', '01-pet-projects'].includes(exp.id)) ||
+            (techProfile === 'llm' && ['04-genai', '03-glowbyte', '02-severstal', '01-pet-projects'].includes(exp.id))
+          );
+          const highlightClass = isRelevant ? 'timeline-item--relevant' : '';
+          const focusLabel = techProfile === 'audio' ? (lang === 'ru' ? 'Фокус: Audio ML' : 'Focus: Audio ML') : (lang === 'ru' ? 'Фокус: NLP/LLM' : 'Focus: NLP/LLM');
+          const focusBadge = isRelevant ? `<span class="badge-focus">${focusLabel}</span>` : '';
+
+          return `
+            <div class="entry row timeline-item ${highlightClass}">
               <div class="timespan">
                 ${exp.period}
               </div>
@@ -281,7 +314,7 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
               </div>
               <div class="desc">
                 <div class="timeline-header-karpathy">
-                    <h3>${exp.role}</h3>
+                    <h3>${exp.role} ${focusBadge}</h3>
                     <p class="company">${exp.url
             ? `<a href="${exp.url}" target="_blank" rel="noopener">${exp.company}</a>`
             : exp.company
@@ -291,7 +324,8 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
                 <div class="exp-description ${isCollapsed ? 'collapsed' : ''}">${isShortView ? exp.shortDescriptionHtml : exp.descriptionHtml}</div>
               </div>
             </div>
-          `
+          `;
+        }
       )
       .join('')}
         </div>

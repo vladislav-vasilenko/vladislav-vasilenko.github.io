@@ -1,9 +1,4 @@
-- Researched and implemented Bark-like **AR-Transformers** (EnCodec) and StableAudio-like latent diffusion (**DiT** on EnCodec); explored VAE + RVQ/VQ quantizers for audio latent representations.
-- Analyzed and adapted building blocks from `stable-audio-tools`: dit.py / encodec.py / conditioners.py. Compared DiT architectures with **SDXL** (UNet) and **Flux** (DiT) backbones.
-- Optimized model adaptation by identifying ideal layers for **LoRA** and tuning rank/regularization parameters for quality/resource efficiency.
-- Applied **PEFT (LoRA/QLoRA)** for rapid domain, voice, and genre adaptation; conducted extensive ablations on rank and data selection.
-- Established rigorous quality evaluation using **FAD**, **CLAPScore**, FID, CLIPScore, and FVD.
-- Engineered reproducible ML pipelines from data preparation to batch inference, logging performance in **W&B**.
-- Optimized inference using **xFormers/Flash-Attention** and specialized diffusion schedulers; developed Gradio demos.
-- Practical experience with **GAN architectures** for data augmentation and synthesis.
-- Spearheaded MLOps initiatives: **Docker + CI/CD**, monitoring, and experimental exports to ONNX/Triton for production.
+- **Audio Synthesis & Generative Models**:
+  - **Situation/Task**: Develop and scale SOTA generative audio models (text-to-audio/music) under strict execution constraints.
+  - **Action**: Research and train AR-Transformers (Bark) and latent diffusion (StableAudio-like DiT on EnCodec); applied LoRA/QLoRA for voice adaptation; optimized via Flash-Attention and KV-cache.
+  - **Result**: Reduced inference latency, set up FAD/CLAPScore quality evaluation, and built reproducible MLOps pipelines using Docker/Triton.

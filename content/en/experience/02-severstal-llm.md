@@ -1,0 +1,4 @@
+- **Corporate Voice Multi-Agent System**:
+  - **Situation/Task**: Design and build an agentic system that safely orchestrates calendar management, email retrieval, and RAG search through speech.
+  - **Action**: Architected a Hierarchical Orchestration model (Planning → Executor) with OpenAI Agents SDK and Next.js + WebRTC; integrated Graph-RAG tokenization and FastMCP connectors.
+  - **Result**: Delivered real-time voice task processing, decreasing administrative time for users via voice commands.

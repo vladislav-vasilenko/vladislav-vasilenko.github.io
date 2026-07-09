@@ -1,6 +1,4 @@
-- Architected a multi-agent system and engineered a voice multi-agent solution based on **OpenAI Agents SDK** / GPT-Realtime / GPT-4o / GPT-5.2 / Claude 4.6 Opus.
-- Engineered a web interface using **Next.js + WebRTC** for low-latency voice transmission.
-- Developed **Graph-RAG** knowledge base search agents, including document tokenization and an automated embeddings generation pipeline.
-- Built from scratch a backend supervisor for the multi-agent system using **Hierarchical Orchestration** and **Planning → Executor** patterns with real-time SSE synchronization.
-- Engineered an **MCP server** (Python, FastMCP) with multi-user Google Auth for Gmail and Google Calendar API integration.
-- Integrated agent tools with **Perplexity Search** / Perplexity Deep Research (Sonar API).
+- **Corporate Voice Multi-Agent System**:
+  - **Situation/Task**: Architect and build a secure, real-time voice-activated AI agent system to automate tasks for corporate users.
+  - **Action**: Developed a Hierarchical Orchestration supervisor (Planning → Executor) on OpenAI Agents SDK/GPT-Realtime with real-time SSE; built a Next.js + WebRTC front-end for voice transfer.
+  - **Result**: Implemented Graph-RAG search agents and FastMCP servers for Gmail, Google Calendar, and Perplexity Search, automating scheduling and research workflows.

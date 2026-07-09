@@ -1,0 +1,234 @@
+{
+  "categories": [
+    {
+      "id": "math",
+      "label": {
+        "en": "Applied Mathematics",
+        "ru": "Прикладная математика"
+      },
+      "ring": 1,
+      "items": [
+        {
+          "name": "DSP / Signal Processing",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Digital_signal_processing",
+          "color": "#007ACC"
+        },
+        {
+          "name": "Fourier Transform (FFT)",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Fast_Fourier_transform",
+          "color": "#D32F2F"
+        },
+        {
+          "name": "Linear Algebra",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Linear_algebra",
+          "color": "#388E3C"
+        },
+        {
+          "name": "Probability & Stats",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Probability_theory",
+          "color": "#F57C00"
+        }
+      ]
+    },
+    {
+      "id": "core",
+      "label": {
+        "en": "Audio ML Core Frameworks",
+        "ru": "Audio ML Core / Ядро"
+      },
+      "ring": 2,
+      "items": [
+        {
+          "name": "Python",
+          "icon": "python",
+          "url": "https://python.org",
+          "color": "#3776AB"
+        },
+        {
+          "name": "PyTorch",
+          "icon": "pytorch",
+          "url": "https://pytorch.org",
+          "color": "#EE4C2C"
+        },
+        {
+          "name": "Librosa",
+          "icon": null,
+          "url": "https://librosa.org",
+          "color": "#6B4E90"
+        },
+        {
+          "name": "torchaudio",
+          "icon": "pytorch",
+          "url": "https://pytorch.org/audio",
+          "color": "#EE4C2C"
+        },
+        {
+          "name": "Hugging Face",
+          "icon": "huggingface",
+          "url": "https://huggingface.co",
+          "color": "#FFD21E"
+        },
+        {
+          "name": "NumPy",
+          "icon": "numpy",
+          "url": "https://numpy.org",
+          "color": "#013243"
+        },
+        {
+          "name": "SoundFile",
+          "icon": null,
+          "url": "https://github.com/bastibe/python-soundfile",
+          "color": "#150458"
+        }
+      ]
+    },
+    {
+      "id": "ai-genai",
+      "label": {
+        "en": "Speech & Audio GenAI",
+        "ru": "Синтез речи и звука (GenAI)"
+      },
+      "ring": 3,
+      "items": [
+        {
+          "name": "TTS & Voice Cloning",
+          "icon": null,
+          "url": "https://en.wikipedia.org/wiki/Speech_synthesis",
+          "color": "#8B5CF6"
+        },
+        {
+          "name": "ASR (Whisper / Pyannote)",
+          "icon": null,
+          "url": "https://github.com/openai/whisper",
+          "color": "#06B6D4"
+        },
+        {
+          "name": "Audio-LM (Bark)",
+          "icon": null,
+          "url": "https://github.com/suno-ai/bark",
+          "color": "#F97316"
+        },
+        {
+          "name": "Diffusion (DiT / StableAudio)",
+          "icon": null,
+          "url": "https://github.com/huggingface/diffusers",
+          "color": "#EC4899"
+        },
+        {
+          "name": "VAE / RVQ / EnCodec",
+          "icon": null,
+          "url": "https://github.com/facebookresearch/encodec",
+          "color": "#10B981"
+        },
+        {
+          "name": "FAD & CLAPScore",
+          "icon": null,
+          "url": "https://github.com/google-research/google-research/tree/master/frechet_audio_distance",
+          "color": "#6366F1"
+        },
+        {
+          "name": "LoRA / PEFT",
+          "icon": null,
+          "url": "https://github.com/huggingface/peft",
+          "color": "#1877F2"
+        }
+      ]
+    },
+    {
+      "id": "mlops-infra",
+      "label": {
+        "en": "MLOps & Infrastructure",
+        "ru": "MLOps и инфраструктура"
+      },
+      "ring": 4,
+      "items": [
+        {
+          "name": "CUDA",
+          "icon": "nvidia",
+          "url": "https://developer.nvidia.com/cuda-zone",
+          "color": "#76B900"
+        },
+        {
+          "name": "Docker",
+          "icon": "docker",
+          "url": "https://docker.com",
+          "color": "#2496ED"
+        },
+        {
+          "name": "FastAPI",
+          "icon": "fastapi",
+          "url": "https://fastapi.tiangolo.com",
+          "color": "#009688"
+        },
+        {
+          "name": "Triton Inference Server",
+          "icon": "nvidia",
+          "url": "https://github.com/triton-inference-server/server",
+          "color": "#76B900"
+        },
+        {
+          "name": "ONNX",
+          "icon": "onnx",
+          "url": "https://onnx.ai",
+          "color": "#005CED"
+        },
+        {
+          "name": "Weights & Biases",
+          "icon": "weightsandbiases",
+          "url": "https://wandb.ai",
+          "color": "#FFBE00"
+        },
+        {
+          "name": "Gradio",
+          "icon": null,
+          "url": "https://gradio.app",
+          "color": "#F97316"
+        }
+      ]
+    },
+    {
+      "id": "foundational-eng",
+      "label": {
+        "en": "Foundational Engineering",
+        "ru": "Базовая инженерия"
+      },
+      "ring": 5,
+      "items": [
+        {
+          "name": "WebRTC (Real-time Audio)",
+          "icon": "webrtc",
+          "url": "https://webrtc.org",
+          "color": "#333333"
+        },
+        {
+          "name": "Swift / iOS Audio APIs",
+          "icon": "swift",
+          "url": "https://developer.apple.com/documentation/avfaudio",
+          "color": "#F05138"
+        },
+        {
+          "name": "C/C++",
+          "icon": "cplusplus",
+          "url": "https://isocpp.org",
+          "color": "#00599C"
+        },
+        {
+          "name": "Next.js",
+          "icon": "nextdotjs",
+          "url": "https://nextjs.org",
+          "color": "#000000"
+        },
+        {
+          "name": "NestJS",
+          "icon": "nestjs",
+          "url": "https://nestjs.com",
+          "color": "#E0234E"
+        }
+      ]
+    }
+  ]
+}

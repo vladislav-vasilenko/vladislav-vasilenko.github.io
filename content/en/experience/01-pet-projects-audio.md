@@ -1,0 +1,8 @@
+- **TalkyBuddy** ([banibot.ru/talkybuddy](https://banibot.ru/talkybuddy)) — Conversational language learning platform:
+  - **Situation/Task**: Deliver a low-latency real-time voice experience for language practice, bypassing browser and server network audio delays.
+  - **Action**: Engineered a WebRTC-based audio pipeline connecting directly to a streaming Full-Duplex GPT-Realtime model, avoiding traditional separate ASR/TTS steps.
+  - **Result**: Brought the conversation round-trip delay (TTFT) down to < 1.0s, creating an organic Speech-to-Speech user dialogue.
+- **BaniBaniBot** ([banibanibot.t.me](https://banibanibot.t.me)) — Multimodal generation assistant:
+  - **Situation/Task**: Coordinate asynchronous processing of heavy voice and media inference tasks while tracking GPU billing.
+  - **Action**: Built an Event-Driven backend utilizing FSM pattern for complex asynchronous task queues and Credits Ledger ledger billing.
+  - **Result**: Handled media streaming tasks and credit deductions reliably under peak concurrent user loads.

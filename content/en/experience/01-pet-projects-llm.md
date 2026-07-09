@@ -1,0 +1,8 @@
+- **TalkyBuddy** ([banibot.ru/talkybuddy](https://banibot.ru/talkybuddy)) — Conversational language learning platform:
+  - **Situation/Task**: Implement an agentic tutor structure that self-corrects based on user level and conversational history.
+  - **Action**: Designed a NestJS core under DDD principles, deploying LLM agents connecting to a streaming Full-Duplex GPT-Realtime model via WebRTC with long-term memory.
+  - **Result**: Boosted lesson completion rates and user retention through highly adaptive, contextualized tutoring scenarios.
+- **BaniBaniBot** ([banibanibot.t.me](https://banibanibot.t.me)) — Multimodal generation assistant:
+  - **Situation/Task**: Enhance text prompts automatically to improve the visual quality of Gemini/OpenAI image generations.
+  - **Action**: Implemented an LLM-driven prompt enrichment pipeline utilizing Gemini with reasoning models and web search grounding.
+  - **Result**: Reduced prompt errors and significantly increased generation quality and relevance.

@@ -312,8 +312,9 @@ def main():
         print("\n--- ЭТАП 1 & 2 ПРОПУЩЕНЫ: Используем существующие вакансии из ChromaDB ---")
     
     # 3. ПОДГОТОВКА ДАННЫХ РЕЗЮМЕ ДЛЯ ПОИСКА И ОТОБРАЖЕНИЯ
-    cv_dir = "../../content/ru/experience"
-    cv_json_path = "../../content/ru/cv.json"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    cv_dir = os.path.join(script_dir, "../../content/ru/experience")
+    cv_json_path = os.path.join(script_dir, "../../content/ru/cv.json")
     
     if not os.path.exists(cv_json_path):
         print(f"❌ CV JSON не найден: {cv_json_path}")
@@ -329,7 +330,7 @@ def main():
     cv_chunks: List[str] = []
     structured_experience = [] # Для красивого рендеринга в HTML
 
-    about_path = "../../content/ru/about.md"
+    about_path = os.path.join(script_dir, "../../content/ru/about.md")
     about_text = ""
     if os.path.exists(about_path):
         with open(about_path, "r", encoding="utf-8") as f:
@@ -390,7 +391,7 @@ def main():
     print("\n--- ЭТАП 4: AI-ATS ПРОВЕРКА (РАНЖИРОВАНИЕ) ---")
     
     # Загружаем кэш
-    cache_path = "./ai_cache.json"
+    cache_path = os.path.join(script_dir, "ai_cache.json")
     
     if args.clear_cache and os.path.exists(cache_path):
         print("🗑️ Очистка локального кэша по запросу (--clear-cache)...")
@@ -483,7 +484,7 @@ Output adapted_bullets in Russian.
 
     ranked_results = []
     
-    cv_exports_dir = "../../public/adapted_cvs"
+    cv_exports_dir = os.path.join(script_dir, "../../public/adapted_cvs")
     os.makedirs(cv_exports_dir, exist_ok=True)
     
     for job in top_jobs:
@@ -731,7 +732,7 @@ Output adapted_bullets in Russian.
     
     # 5. ГЕНЕРАЦИЯ СОПРОВОДИТЕЛЬНЫХ ПИСЕМ (ТОП-3)
     print("\n--- ЭТАП 5: ГЕНЕРАЦИЯ COVER LETTERS (TOP-3) ---")
-    output_dir = "../../public"
+    output_dir = os.path.join(script_dir, "../../public")
     cl_dir = os.path.join(output_dir, "cover_letters")
     os.makedirs(cl_dir, exist_ok=True)
     

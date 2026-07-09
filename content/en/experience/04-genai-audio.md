@@ -1,0 +1,4 @@
+- **Audio Synthesis & Generative Models**:
+  - **Situation/Task**: Conduct research on text-to-music and voice cloning generative architectures on large audio corpora.
+  - **Action**: Developed Bark-like AR-Transformers and StableAudio-like DiT on EnCodec; optimized voice & style transfer using LoRA/QLoRA; implemented Flash-Attention & KV-cache.
+  - **Result**: Enhanced voice similarity metrics; established FAD and CLAPScore evaluation protocols; automated inference deployment (Docker, Triton).

@@ -170,3 +170,30 @@
         display: none;
     }
 }
+
+.timeline-item--relevant {
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.04) 0%, rgba(255, 255, 255, 0) 100%);
+    border-left: 3px solid var(--color-accent);
+    padding-left: 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.timeline-item--relevant:hover {
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.08) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.badge-focus {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    margin-left: 8px;
+    display: inline-block;
+    vertical-align: middle;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
