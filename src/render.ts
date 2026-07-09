@@ -137,20 +137,40 @@ export function renderSocialBar(lang: Lang, cv: CVContent): string {
   `;
 }
 
+// Per-profile focus entries: insertion order defines the display order
+// (oldest to newest), the label describes what THIS position contributes to
+// the selected focus — so the badge always matches the card's content.
+const FOCUS_ENTRIES: Record<string, Record<string, { ru: string; en: string }>> = {
+  audio: {
+    '05-bortnik': { ru: 'Фокус: TTS / клонирование голоса', en: 'Focus: TTS / Voice Cloning' },
+    '04-genai': { ru: 'Фокус: генерация аудио', en: 'Focus: Audio Generation' },
+    '03-glowbyte': { ru: 'Фокус: ASR — Whisper + диаризация', en: 'Focus: ASR — Whisper + Diarization' },
+    '01-pet-projects': { ru: 'Фокус: голосовой real-time AI', en: 'Focus: Real-time Voice AI' },
+  },
+  llm: {
+    '04-genai': { ru: 'Фокус: трансформеры / LoRA', en: 'Focus: Transformers / LoRA' },
+    '03-glowbyte': { ru: 'Фокус: LLM-приложения / RAG', en: 'Focus: LLM Apps / RAG' },
+    '00-personal-rnd': { ru: 'Фокус: Transformer с нуля', en: 'Focus: Transformer from Scratch' },
+    '02-severstal': { ru: 'Фокус: LLM-агенты / Graph-RAG', en: 'Focus: LLM Agents / Graph-RAG' },
+    '01-pet-projects': { ru: 'Фокус: LLM-продукты / voice AI', en: 'Focus: LLM Products / Voice AI' },
+  },
+};
+
+export function getFocusLabel(techProfile: string, expId: string, lang: Lang): string | null {
+  return FOCUS_ENTRIES[techProfile]?.[expId]?.[lang] ?? null;
+}
+
 function getSortedExperience(experience: any[], techProfile: string, currentViewMode: ViewMode): any[] {
   const filtered = experience.filter(exp => exp.profiles.includes(currentViewMode));
   if (currentViewMode !== 'technical') {
     return filtered;
   }
-  
-  let relevantIds: string[] = [];
-  if (techProfile === 'audio') {
-    relevantIds = ['05-bortnik', '04-genai', '03-glowbyte', '01-pet-projects'];
-  } else if (techProfile === 'llm') {
-    relevantIds = ['04-genai', '03-glowbyte', '00-personal-rnd', '02-severstal', '01-pet-projects'];
-  } else {
+
+  const focusMap = FOCUS_ENTRIES[techProfile];
+  if (!focusMap) {
     return filtered;
   }
+  const relevantIds = Object.keys(focusMap);
 
   // Split into relevant and other
   const relevant = filtered.filter(exp => relevantIds.includes(exp.id));
@@ -295,13 +315,9 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
           ${getSortedExperience(cv.experience, techProfile, currentViewMode)
       .map(
         (exp) => {
-          const isRelevant = currentViewMode === 'technical' && (
-            (techProfile === 'audio' && ['05-bortnik', '04-genai', '03-glowbyte', '01-pet-projects'].includes(exp.id)) ||
-            (techProfile === 'llm' && ['04-genai', '03-glowbyte', '00-personal-rnd', '02-severstal', '01-pet-projects'].includes(exp.id))
-          );
-          const highlightClass = isRelevant ? 'timeline-item--relevant' : '';
-          const focusLabel = techProfile === 'audio' ? (lang === 'ru' ? 'Фокус: Audio ML' : 'Focus: Audio ML') : (lang === 'ru' ? 'Фокус: NLP/LLM' : 'Focus: NLP/LLM');
-          const focusBadge = isRelevant ? `<span class="badge-focus">${focusLabel}</span>` : '';
+          const focusLabel = currentViewMode === 'technical' ? getFocusLabel(techProfile, exp.id, lang) : null;
+          const highlightClass = focusLabel ? 'timeline-item--relevant' : '';
+          const focusBadge = focusLabel ? `<span class="badge-focus">${focusLabel}</span>` : '';
 
           return `
             <div class="entry row timeline-item ${highlightClass}">
