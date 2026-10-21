@@ -49,6 +49,7 @@ const ResumePortfolio=(()=>{
   const timelineHost=details('Сверка хронологии · '+result.timeline.length);for(const r of result.timeline){const card=make('article','resumeDimension');card.append(make('h4','',r.employer+' · '+r.role),make('p','meta',r.start+' — '+r.end+' · '+labels[r.status]),make('p','',r.comment));evidence(card,r.evidence);timelineHost.append(card);}
   const prioritiesHost=details('Приоритеты под трек · '+result.findings.length);for(const r of result.findings){const card=make('article','resumeDimension');card.append(make('strong','',labels[r.priority]+' приоритет · '+labels[r.action]),make('p','',r.comment));evidence(card,r.evidence);prioritiesHost.append(card);}
   host.append(make('h3','','С чего начать · важные правки'));const more=result.edits.length>5?details('Остальные правки · '+(result.edits.length-5)):null;for(const [index,r] of result.edits.entries()){const card=make('article','resumeDimension');card.append(make('h4','',names.get(r.snapshot_key)),make('p','meta',r.requires_confirmation?'Требует подтверждения фактов':'Редакторское предложение'),make('blockquote','',r.original),make('p','',r.replacement),make('p','meta',r.reason));evidence(card,r.evidence);(index<5?host:more).append(card);}
+  if(more)host.append(more);
   for(const [title,values] of [['Уточняющие вопросы',result.questions],['Ограничения',result.limitations]]){const list=make('ul');for(const value of values)list.append(make('li','',value));host.append(make('h4','',title),list);}
  }
  return {mount};

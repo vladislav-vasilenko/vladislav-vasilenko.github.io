@@ -7,7 +7,7 @@ const ResumeProfile=(()=>{
  }
  function render(panel,data,options){
   const cv=data.payload,document=make('article','resumeDocument'),header=make('section','resumeHeader');
-  header.append(make('p','eyebrow','ПРОФЕССИОНАЛЬНЫЙ ПРОФИЛЬ'),make('h2','',cv.title),make('p','meta','Снимок #'+data.version_id+' · сохранён '+date(data.source_at||cv.captured_at)));
+  header.append(make('p','eyebrow','ПРОФЕССИОНАЛЬНЫЙ ПРОФИЛЬ'),make('h2','',cv.title),make('p','meta','Снимок #'+data.version_id+' · сохранён '+date(data.versions?.find(v=>v.id===data.version_id)?.source_at||data.source_at||cv.captured_at)));
   const nav=make('div','resumeHeaderActions'),toggle=make('button','secondary','Режим чтения');toggle.setAttribute('aria-pressed','false');toggle.onclick=()=>{panel.classList.toggle('resumeExpanded');const expanded=panel.classList.contains('resumeExpanded');panel.closest('.workspace').classList.toggle('resumeReading',expanded);toggle.textContent=expanded?'Вернуть список резюме':'Режим чтения';toggle.setAttribute('aria-pressed',String(expanded));};nav.append(toggle);
   const exports=make('details','resumeExportMenu');exports.append(make('summary','','Экспорт ▾'));
   const print=make('button','secondary','Печать / сохранить PDF');print.onclick=()=>{exports.open=false;window.print();};exports.append(print);
