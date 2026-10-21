@@ -1,0 +1,231 @@
+{
+  "description": "Small manually labeled development set; 3 supplied vacancy excerpts and synthetic boundaries. Not representative held-out market validation.",
+  "items": [
+    {
+      "id": "ru_required",
+      "source": "synthetic",
+      "text": "Требования:\nУверенный Python и PyTorch.",
+      "expected": {
+        "python": "required",
+        "pytorch": "required"
+      }
+    },
+    {
+      "id": "en_preferred",
+      "source": "synthetic",
+      "text": "Requirements:\nPython\nPreferred:\nCUDA",
+      "expected": {
+        "python": "required",
+        "cuda": "preferred"
+      }
+    },
+    {
+      "id": "no_heading",
+      "source": "synthetic",
+      "text": "Мы используем Flow Matching в экспериментальной платформе.",
+      "expected": {
+        "flow_matching": "mentioned"
+      }
+    },
+    {
+      "id": "tasks_mention",
+      "source": "synthetic",
+      "text": "Задачи:\nРазрабатывать Diffusion модели.",
+      "expected": {
+        "diffusion": "mentioned"
+      }
+    },
+    {
+      "id": "inline_must",
+      "source": "synthetic",
+      "text": "Необходим опыт Transformers.",
+      "expected": {
+        "transformers": "required"
+      }
+    },
+    {
+      "id": "inline_preferred",
+      "source": "synthetic",
+      "text": "Опыт ROS будет плюсом.",
+      "expected": {
+        "ros": "preferred"
+      }
+    },
+    {
+      "id": "negation",
+      "source": "synthetic",
+      "text": "Опыт CUDA не требуется.",
+      "expected": {
+        "cuda": "mentioned"
+      }
+    },
+    {
+      "id": "bare_metal",
+      "source": "user_excerpt_hh_138296710",
+      "text": "Требования:\nОпыт проектирования горизонтально масштабируемых, отказоустойчивых data-intensive систем на bare-metal/VM-инфраструктуре и/или в Kubernetes;",
+      "expected": {}
+    },
+    {
+      "id": "qa_metal",
+      "source": "user_excerpt_arenadata",
+      "text": "Что нужно делать:\nТестировать развёртывание и эксплуатацию платформы на bare metal, VM и в Kubernetes;",
+      "expected": {}
+    },
+    {
+      "id": "platform_python",
+      "source": "user_excerpt_hh_138296710",
+      "text": "Требования:\nУверенное владение Python;\nОпыт разработки бэкенд-сервисов и API с использованием FastAPI;",
+      "expected": {
+        "python": "required"
+      }
+    },
+    {
+      "id": "apple_mps",
+      "source": "synthetic",
+      "text": "Requirements:\nPyTorch MPS backend on Apple Silicon.",
+      "expected": {
+        "pytorch": "required",
+        "metal": "required"
+      }
+    },
+    {
+      "id": "apple_mlx",
+      "source": "synthetic",
+      "text": "Будет плюсом:\nОпыт Apple MLX.",
+      "expected": {
+        "mlx": "preferred"
+      }
+    },
+    {
+      "id": "nvidia_mps",
+      "source": "synthetic",
+      "text": "Requirements:\nNVIDIA MPS Multi-Process Service.",
+      "expected": {}
+    },
+    {
+      "id": "triton_server",
+      "source": "synthetic",
+      "text": "Требования:\nTriton Inference Server.",
+      "expected": {
+        "inference": "required"
+      }
+    },
+    {
+      "id": "triton_kernel",
+      "source": "synthetic",
+      "text": "Требования:\nРазработка Triton GPU kernels.",
+      "expected": {
+        "triton": "required",
+        "cuda": "required"
+      }
+    },
+    {
+      "id": "no_colon",
+      "source": "synthetic",
+      "text": "Требования\nPython\nБудет плюсом\nFSDP",
+      "expected": {
+        "python": "required",
+        "fsdp": "preferred"
+      }
+    },
+    {
+      "id": "benefit",
+      "source": "synthetic",
+      "text": "Условия:\nБесплатные курсы Python, CUDA и PyTorch.",
+      "expected": {}
+    },
+    {
+      "id": "unknown_skill",
+      "source": "synthetic",
+      "text": "Требования:\nЗнание Apache Spark и Airflow.",
+      "expected": {}
+    },
+    {
+      "id": "posttrain",
+      "source": "synthetic",
+      "text": "Requirements:\nRLHF and DPO.",
+      "expected": {
+        "rl": "required",
+        "alignment": "required"
+      }
+    },
+    {
+      "id": "diffusion",
+      "source": "synthetic",
+      "text": "Preferred:\nFlow Matching and Diffusion.",
+      "expected": {
+        "flow_matching": "preferred",
+        "diffusion": "preferred"
+      }
+    },
+    {
+      "id": "ros",
+      "source": "synthetic",
+      "text": "Требования:\nROS2 и SLAM.",
+      "expected": {
+        "ros": "required",
+        "slam": "required"
+      }
+    },
+    {
+      "id": "cpp",
+      "source": "synthetic",
+      "text": "Requirements:\nC++17 and CUDA.",
+      "expected": {
+        "cpp": "required",
+        "cuda": "required"
+      }
+    },
+    {
+      "id": "unknown_required",
+      "source": "synthetic",
+      "text": "Задачи:\nВ Python реализуем прототипы.\nБудет плюсом:\nPyTorch.",
+      "expected": {
+        "python": "mentioned",
+        "pytorch": "preferred"
+      }
+    },
+    {
+      "id": "dedupe",
+      "source": "synthetic",
+      "text": "Требования:\nPyTorch.\nPyTorch.\nPyTorch.",
+      "expected": {
+        "pytorch": "required"
+      }
+    },
+    {
+      "id": "no_required_english",
+      "source": "synthetic",
+      "text": "No CUDA experience required.",
+      "expected": {
+        "cuda": "mentioned"
+      }
+    },
+    {
+      "id": "negated_after_must",
+      "source": "synthetic",
+      "text": "Requirements:\nNo experience with ROS required.",
+      "expected": {
+        "ros": "mentioned"
+      }
+    },
+    {
+      "id": "math",
+      "source": "synthetic",
+      "text": "Требования:\nLinear algebra, probability, calculus.",
+      "expected": {
+        "linear_algebra": "required",
+        "probability": "required",
+        "calculus": "required"
+      }
+    },
+    {
+      "id": "ode",
+      "source": "synthetic",
+      "text": "Preferred:\nODE and SDE solvers.",
+      "expected": {
+        "ode_sde": "preferred"
+      }
+    }
+  ]
+}

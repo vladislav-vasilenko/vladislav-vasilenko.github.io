@@ -15,7 +15,7 @@ class AvitoScraper(BaseScraper):
     id_prefix = "avito"
 
     def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
-        listing_url = f"https://career.avito.com/vacancies/?q={quote(query)}&action=filter"
+        listing_url = query if query.startswith("https://career.avito.com/vacancies/") else f"https://career.avito.com/vacancies/?q={quote(query)}&action=filter"
         page.goto(listing_url, wait_until="networkidle", timeout=60000)
         page.wait_for_timeout(2500)
 
@@ -54,20 +54,18 @@ class AvitoScraper(BaseScraper):
                 page.goto(job_url, wait_until="domcontentloaded", timeout=40000)
                 page.wait_for_timeout(1500)
                 title = _first_non_empty_text(page, ["h1"]) or "Avito Vacancy"
-                body = _first_non_empty_text(page, [
-                    "[class*='Vacancy_description']",
-                    "[class*='vacancy-description']",
-                    "article",
-                    "main",
-                    "body",
-                ])
-                clean = " ".join(body.split())
+                blocks = page.eval_on_selector_all(".vacancies-detail__description", "els => els.map(e => e.innerText)")
+                clean = "\n\n".join(" ".join(s.split()) for s in blocks if s.strip())
+                if not clean:
+                    raise ValueError("Full vacancy description not found; no body fallback")
                 vacancies.append({
                     "id": jid,
                     "title": title,
                     "company": self.company_name,
                     "pub_date": _extract_date(clean),
-                    "description": clean[:3500],
+                    "description": clean,
+                    "description_quality": "full",
+                    "source": "avito_browser",
                     "link": job_url,
                     "origin_query": query,
                 })

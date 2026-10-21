@@ -1,0 +1,24 @@
+{
+  "id": "ozon",
+  "label": "Ozon.Tech",
+  "hosts": [
+    "ozon.tech",
+    "career.ozon.ru"
+  ],
+  "url": "https://ozon.tech/vacancies/",
+  "pages": "/vacanc(?:y|ies)(?:/|$)",
+  "layouts": {
+    "ozon.tech": {
+      "board_id": "ozon-tech",
+      "description": "[class*=\"descriptionHtml\"]",
+      "card": "a[class*=\"_itemBlock_\"]",
+      "listingTitle": "[class*=\"vacancyTitle\"]"
+    },
+    "career.ozon.ru": {
+      "board_id": "ozon-career",
+      "description": "[class*=\"_description_\"]",
+      "card": "[class*=\"vacancy-card\"],[class*=\"VacancyCard\"]",
+      "listingTitle": "h2,h3,[class*=\"title\"]"
+    }
+  }
+}

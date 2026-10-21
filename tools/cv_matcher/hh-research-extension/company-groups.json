@@ -1,0 +1,9 @@
+[
+ {"id":"sber","label":"Сбер","aliases":["Сбер","Sber"]},
+ {"id":"yandex","label":"Яндекс","aliases":["Яндекс","Yandex"]},
+ {"id":"avito","label":"Avito","aliases":["Авито","Avito"]},
+ {"id":"ozon","label":"Ozon","aliases":["Ozon","Озон"]},
+ {"id":"tbank","label":"Т-Банк","aliases":["Т-Банк","T-Bank","Тинькофф","Tinkoff","Т-Технологии"]},
+ {"id":"huawei","label":"Huawei","aliases":["Huawei","Хуавей","Хуавэй"]},
+ {"id":"samsung","label":"Samsung","aliases":["Samsung","Самсунг"]}
+]

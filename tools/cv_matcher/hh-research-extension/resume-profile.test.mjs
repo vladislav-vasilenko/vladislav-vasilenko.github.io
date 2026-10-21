@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import '../archive-web/resume-profile-core.js';
+test('resume document preserves dated roles, repeated employer, bullets and periods',()=>{
+ const text='Independent R&D\n1\nгод\nи\n5\nмесяцев\nResearch Engineer\nФевраль\n2026\n—\nсейчас\n(\n9\nмесяцев\n)\n- Изучаю Flow Matching\nLLM Research Engineer\nИюнь\n2025\n—\nсейчас\n(\n1\nгод\n)\n- Реализовал Transformer\nРамблер ДС\n6\nмесяцев\niOS Engineer\nАпрель\n2016\n—\nСентябрь\n2016\n(\n6\nмесяцев\n)\n- Раздел новостей на VIPER';
+ const result=ResumeProfileCore.experience(text);assert.equal(result.items.length,3);assert.equal(result.items[0].company,'Independent R&D');assert.equal(result.items[1].company,'Independent R&D');assert.equal(result.items[2].company,'Рамблер ДС');assert.equal(result.items[0].dates,'Февраль 2026 — сейчас');assert.equal(result.items[0].description,'- Изучаю Flow Matching');assert.equal(result.items[1].description,'- Реализовал Transformer');
+});
+test('unstructured file imports remain readable and are not given invented employment dates',()=>{const result=ResumeProfileCore.experience('Some unstructured professional experience');assert.equal(result.items.length,0);assert.equal(result.unparsed,'Some unstructured professional experience');});

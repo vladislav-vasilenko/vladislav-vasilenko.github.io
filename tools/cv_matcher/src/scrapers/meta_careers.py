@@ -296,7 +296,7 @@ class MetaCareersScraper(BaseScraper):
 
             lo, hi = self.inter_request_pause_ms
             await asyncio.sleep(random.uniform(lo, hi) / 1000.0)
-            return vac.model_dump()
+            return {**vac.model_dump(),"description_quality":"full" if len(full_desc)>150 else "snippet","source_page":job_url}
 
     # ---- Helpers ----
 

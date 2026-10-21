@@ -1,0 +1,12 @@
+{
+  "id": "tbank",
+  "label": "T-Bank",
+  "hosts": [
+    "www.tbank.ru",
+    "tbank.ru"
+  ],
+  "url": "https://www.tbank.ru/career/vacancies/it/",
+  "pages": "^/career(?:/|$)",
+  "card": "[role=\"button\"]",
+  "listingTitle": "h1,h2,h3"
+}

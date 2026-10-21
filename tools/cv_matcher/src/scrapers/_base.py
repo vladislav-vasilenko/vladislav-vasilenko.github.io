@@ -118,8 +118,9 @@ class BaseScraper:
     def __init__(self, limit: int = 20, headless: bool = True,
                  storage_state_path: Optional[str] = None,
                  event_sink: Optional[Callable[[Dict[str, Any]], None]] = None,
-                 stealth: Optional[bool] = None):
+                 stealth: Optional[bool] = None, archive_path=None):
         self.limit = limit
+        self.archive_path = archive_path
         self.headless = headless
         if storage_state_path:
             self.storage_state_path = storage_state_path
@@ -165,6 +166,14 @@ class BaseScraper:
                 page = context.new_page()
                 try:
                     result = self._scrape(page, query, existing_ids)
+                    from ..collection_contract import normalize_browser_rows,archive_browser_rows
+                    from pathlib import Path
+                    result=normalize_browser_rows(result)
+                    try:
+                        if self.archive_path is not False:archive_browser_rows(result,self.archive_path or Path(__file__).resolve().parents[2]/'.cache/applications/state.sqlite3')
+                    except Exception as error:
+                        print(f'  Архив не обновлён: {type(error).__name__}. Собранные записи остаются в результате запуска.')
+                        self._emit('error',company=self.company_name,message='Сбор выполнен, но локальный архив не обновлён.')
                     self._emit("source_done", company=self.company_name, query=query, count=len(result))
                     return result
                 finally:

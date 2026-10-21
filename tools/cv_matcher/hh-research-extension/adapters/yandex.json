@@ -1,0 +1,13 @@
+{
+  "id": "yandex",
+  "label": "Yandex",
+  "hosts": [
+    "yandex.ru",
+    "yandex.com"
+  ],
+  "url": "https://yandex.ru/jobs/professions/ml-developer",
+  "description": "[class*=\"Vacancy_vacancyBody__\"]",
+  "pages": "^/jobs(?:/|$)",
+  "card": "[class*=\"VacancySnippet_body__\"]",
+  "listingTitle": "h2"
+}

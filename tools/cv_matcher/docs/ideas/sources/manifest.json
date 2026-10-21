@@ -1,0 +1,23 @@
+[
+  {
+    "file": "ai-native-extraction.md",
+    "attachment_id": "d4c9aaee-639a-4271-a25e-3d3eddcc0c65",
+    "source_bytes": 21721,
+    "source_sha256": "dfa7326accf6686a9fdcc4dded7ccdaecb528eb3263ad9d54e8c748363ee7d18",
+    "prefix_bytes": 931
+  },
+  {
+    "file": "supervised-application-agent.md",
+    "attachment_id": "6eedd2d0-a72f-4929-bb41-b07c5bc989dd",
+    "source_bytes": 18384,
+    "source_sha256": "7c80d56dd5a4eca5d7ff58ee09aa7a384e3bcaddee18fb3a27d7e2d5689ce282",
+    "prefix_bytes": 917
+  },
+  {
+    "file": "evolutionary-career-platform.md",
+    "attachment_id": "24b28e91-74e6-4046-93a1-02c37a5a72ae",
+    "source_bytes": 58930,
+    "source_sha256": "664a4cb3326b1ab429b1064873166d5e371fbb777e2bc408a1a168cab861dd59",
+    "prefix_bytes": 919
+  }
+]

@@ -33,6 +33,8 @@ class YandexScraper(BaseScraper):
         if query.startswith("http"):
             parsed = urlparse(query)
             params = parse_qs(parsed.query)
+            if parsed.path.startswith("/jobs/professions/"):
+                params.setdefault("professions", [parsed.path.rstrip("/").rsplit("/", 1)[-1]])
             params.pop("page", None)
             params.pop("cursor", None)
             api_params = {k: v for k, v in params.items()}
@@ -120,7 +122,8 @@ class YandexScraper(BaseScraper):
                     "title": title,
                     "company": self.company_name,
                     "pub_date": item.get("modified") or item.get("published_at") or "Recently",
-                    "description": full_description[:5000],
+                    "description": full_description,
+                    "description_quality": "full" if any(detail.values()) and len(full_description)>150 else "snippet",
                     "link": link,
                     "teams": [team_name] if team_name else [],
                     "sub_teams": [sub_team_name] if sub_team_name else [],

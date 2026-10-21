@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "primary_id": "REPLACE_WITH_YOUR_RESUME_ID",
+  "resumes": [
+    {"id": "REPLACE_WITH_YOUR_RESUME_ID", "role": "primary", "label": "Основное", "url": "https://hh.ru/resume/REPLACE_WITH_YOUR_RESUME_ID"}
+  ],
+  "max_age_hours": 24,
+  "secondary_policy": "local_only",
+  "secondary_min_advantage": 0.05
+}

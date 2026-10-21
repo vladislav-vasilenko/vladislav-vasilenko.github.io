@@ -65,21 +65,19 @@ class TinkoffScraper(BaseScraper):
             if len(vacancies) >= self.limit:
                 break
             uid = uuid_re.search(job_url).group(1)
-            jid = f"{self.id_prefix}_{uid}"
-            if jid in existing_ids:
+            jid = f"tbank_{uid.lower()}"
+            if jid in existing_ids or f"tinkoff_{uid}" in existing_ids:
                 print(f"  ⚡ Пропуск: {jid}")
                 continue
             try:
                 page.goto(job_url, wait_until="domcontentloaded", timeout=40000)
                 page.wait_for_timeout(1500)
                 title = _first_non_empty_text(page, ["h1", "[data-test*='title']"]) or "T-Bank Vacancy"
-                body = _first_non_empty_text(page, [
-                    "[data-test*='vacancy']",
-                    "main",
-                    "article",
-                    "body",
-                ])
-                clean = " ".join(body.split())
+                from ..collection_contract import read_browser_board
+                parsed=read_browser_board(page)
+                record=next((r for r in parsed.get('vacancies',[]) if r['id']==jid and r.get('description_quality') in ('full','needs_review')),None)
+                if not record:raise ValueError(parsed.get('warning') or 'Full vacancy description not found')
+                clean=record['description'];title=record['title']
                 if query and q_lower not in clean.lower() and q_lower not in title.lower():
                     continue
                 vacancies.append({
@@ -87,7 +85,9 @@ class TinkoffScraper(BaseScraper):
                     "title": title,
                     "company": self.company_name,
                     "pub_date": _extract_date(clean),
-                    "description": clean[:3500],
+                    "description": clean,
+                    "description_quality": record["description_quality"],
+                    "adapter_version": record.get("adapter_version","boards-v1"),
                     "link": job_url,
                     "origin_query": query,
                 })

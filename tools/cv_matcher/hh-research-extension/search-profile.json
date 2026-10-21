@@ -1,0 +1,456 @@
+{
+  "schema_version": 1,
+  "label": "Research Engineer — Generative Modelling / DiT / Transformer training",
+  "locations": [
+    {
+      "id": "moscow",
+      "label": "Москва — любой формат",
+      "params": {
+        "area": "1"
+      }
+    },
+    {
+      "id": "remote",
+      "label": "Удалённо по России",
+      "params": {
+        "area": "113",
+        "work_format": "REMOTE"
+      }
+    }
+  ],
+  "salary_filter": null,
+  "experience_filter": null,
+  "daily_target": 10,
+  "tier_labels": {
+    "top": "Top-Tier",
+    "second": "2nd Tier",
+    "others": "Others"
+  },
+  "priority_order": [
+    "yandex",
+    "sber"
+  ],
+  "ranking_policy": "Сначала соответствие исследовательской роли и резюме, затем tier; при равном соответствии предпочитать Яндекс и Сбер. Не дополнять подборку неподходящими вакансиями ради числа 10.",
+  "companies": [
+    {
+      "id": "yandex",
+      "label": "Яндекс",
+      "tier": "top",
+      "aliases": [
+        "Яндекс",
+        "Yandex"
+      ],
+      "scope": "Research, фундаментальные модели, генерация",
+      "career_url": "https://yandex.ru/jobs/professions/ml-developer"
+    },
+    {
+      "id": "sber",
+      "label": "Сбер",
+      "tier": "top",
+      "aliases": [
+        "Сбер",
+        "Сбербанк",
+        "Sber",
+        "СалютДевайсы",
+        "SberDevices"
+      ],
+      "scope": "GigaChat, Kandinsky, Sber AI; проверять команду",
+      "career_url": "https://rabota.sber.ru/search/"
+    },
+    {
+      "id": "airi",
+      "label": "AIRI / FusionBrain",
+      "tier": "top",
+      "aliases": [
+        "AIRI",
+        "Институт искусственного интеллекта"
+      ],
+      "scope": "Профильные исследовательские группы"
+    },
+    {
+      "id": "huawei",
+      "label": "Huawei R&D Russia",
+      "tier": "top",
+      "aliases": [
+        "Huawei",
+        "Хуавей",
+        "Хуавэй",
+        "Техкомпания Хуавэй"
+      ],
+      "scope": "Только российские исследовательские центры",
+      "career_url": "https://career.huawei.ru/rri/",
+      "career_note": "Описания R&D-направлений; актуальность конкретного набора и формат работы проверять отдельно"
+    },
+    {
+      "id": "samsung",
+      "label": "Samsung R&D Москва",
+      "tier": "top",
+      "aliases": [
+        "Samsung",
+        "Самсунг"
+      ],
+      "scope": "Только исследовательский центр и московские/удалённые позиции"
+    },
+    {
+      "id": "tbank",
+      "label": "Т-Банк — фундаментальные модели",
+      "tier": "top",
+      "aliases": [
+        "Т-Банк",
+        "Тинькофф",
+        "T-Bank",
+        "Tinkoff",
+        "Т-Технологии"
+      ],
+      "scope": "Top-Tier только для команды фундаментальных моделей; остальные ML-команды — 2nd Tier",
+      "career_url": "https://www.tbank.ru/career/vacancies/it/"
+    },
+    {
+      "id": "mws",
+      "label": "MWS AI / MTS AI — Cotype",
+      "tier": "top",
+      "aliases": [
+        "MWS AI",
+        "MTS AI",
+        "МТС ИИ",
+        "МВС ИИ",
+        "Интеллектуальная Аналитика"
+      ],
+      "scope": "Top-Tier только разработчики моделей Cotype; интеграционные роли ниже"
+    },
+    {
+      "id": "skoltech",
+      "label": "Сколтех — Центр ИИ",
+      "tier": "top",
+      "aliases": [
+        "Сколтех",
+        "Сколковский институт науки и технологий",
+        "Skoltech"
+      ],
+      "scope": "Профильные лаборатории генеративного моделирования"
+    },
+    {
+      "id": "hse",
+      "label": "ВШЭ — профильные лаборатории",
+      "tier": "top",
+      "aliases": [
+        "Высшая школа экономики",
+        "ВШЭ",
+        "HSE"
+      ],
+      "scope": "Глубинное обучение, байесовские методы, генеративные модели"
+    },
+    {
+      "id": "mipt",
+      "label": "МФТИ / DeepPavlov",
+      "tier": "top",
+      "aliases": [
+        "МФТИ",
+        "Московский физико-технический институт",
+        "DeepPavlov"
+      ],
+      "scope": "Профильные лаборатории Института ИИ"
+    },
+    {
+      "id": "msu",
+      "label": "МГУ — профильные исследовательские группы",
+      "tier": "top",
+      "aliases": [
+        "МГУ",
+        "Московский государственный университет"
+      ],
+      "scope": "Конкретные группы и оплачиваемые research-проекты"
+    },
+    {
+      "id": "itmo",
+      "label": "ИТМО — профильные исследовательские группы",
+      "tier": "top",
+      "aliases": [
+        "ИТМО",
+        "ITMO"
+      ],
+      "scope": "Только профильные генеративные/Transformer проекты"
+    },
+    {
+      "id": "ispras",
+      "label": "ИСП РАН — профильные исследовательские группы",
+      "tier": "top",
+      "aliases": [
+        "ИСП РАН",
+        "Институт системного программирования"
+      ],
+      "scope": "Только профильные генеративные/Transformer проекты"
+    },
+    {
+      "id": "avito",
+      "label": "Avito",
+      "tier": "second",
+      "aliases": [
+        "Авито",
+        "Avito"
+      ],
+      "scope": "Профильные исследовательские ML-команды",
+      "career_url": "https://career.avito.com/vacancies/?direction=data-science"
+    },
+    {
+      "id": "ozon",
+      "label": "Ozon",
+      "tier": "second",
+      "aliases": [
+        "Ozon",
+        "Озон"
+      ],
+      "scope": "Профильные исследовательские ML-команды",
+      "career_url": "https://ozon.tech/vacancies/"
+    },
+    {
+      "id": "wb",
+      "label": "Wildberries / RWB",
+      "tier": "second",
+      "aliases": [
+        "Wildberries",
+        "Вайлдберриз",
+        "РВБ",
+        "RWB"
+      ],
+      "scope": "Профильные исследовательские ML-команды"
+    },
+    {
+      "id": "vk",
+      "label": "VK",
+      "tier": "second",
+      "aliases": [
+        "VK",
+        "ВК",
+        "ВКонтакте",
+        "ВКОНТАКТЕ"
+      ],
+      "scope": "NLP, speech, multimodal, generative research"
+    },
+    {
+      "id": "alfa",
+      "label": "Альфа-Банк",
+      "tier": "second",
+      "aliases": [
+        "Альфа-Банк",
+        "Альфа Банк"
+      ],
+      "scope": "LLM research и обучение моделей"
+    },
+    {
+      "id": "mts",
+      "label": "МТС / МТС Digital",
+      "tier": "second",
+      "aliases": [
+        "МТС",
+        "MTS",
+        "МТС Диджитал"
+      ],
+      "scope": "Команды Cotype учитываются отдельно в Top-Tier"
+    },
+    {
+      "id": "x5",
+      "label": "X5 Tech / X5 Group",
+      "tier": "second",
+      "aliases": [
+        "X5",
+        "Икс 5",
+        "Х5"
+      ],
+      "scope": "Исследовательские роли по моделям"
+    },
+    {
+      "id": "samokat",
+      "label": "Самокат",
+      "tier": "second",
+      "aliases": [
+        "Самокат",
+        "Samokat"
+      ],
+      "scope": "Проверять фактическую команду и работодателя"
+    },
+    {
+      "id": "megamarket",
+      "label": "Мегамаркет",
+      "tier": "second",
+      "aliases": [
+        "Мегамаркет",
+        "МегаМаркет",
+        "СберМегаМаркет"
+      ],
+      "scope": "Профильные исследовательские ML-команды"
+    },
+    {
+      "id": "headhunter",
+      "label": "HeadHunter — работодатель",
+      "tier": "second",
+      "aliases": [
+        "HeadHunter",
+        "Хэдхантер",
+        "Хедхантер"
+      ],
+      "scope": "Компания-работодатель, не платформа публикации"
+    },
+    {
+      "id": "cian",
+      "label": "Циан",
+      "tier": "others",
+      "aliases": [
+        "Циан",
+        "Cian"
+      ],
+      "scope": "Поднимать при прямом совпадении исследовательских задач"
+    },
+    {
+      "id": "skyeng",
+      "label": "Skyeng",
+      "tier": "others",
+      "aliases": [
+        "Skyeng",
+        "Скайэнг"
+      ],
+      "scope": "Поднимать при прямом совпадении исследовательских задач"
+    },
+    {
+      "id": "lamoda",
+      "label": "Lamoda",
+      "tier": "others",
+      "aliases": [
+        "Lamoda",
+        "Ламода"
+      ],
+      "scope": "Поднимать при прямом совпадении исследовательских задач"
+    },
+    {
+      "id": "2gis",
+      "label": "2ГИС",
+      "tier": "others",
+      "aliases": [
+        "2ГИС",
+        "2GIS"
+      ],
+      "scope": "Поднимать при прямом совпадении исследовательских задач"
+    },
+    {
+      "id": "kaspersky",
+      "label": "Kaspersky",
+      "tier": "others",
+      "aliases": [
+        "Касперского",
+        "Kaspersky"
+      ],
+      "scope": "Поднимать при прямом совпадении исследовательских задач"
+    },
+    {
+      "id": "positive",
+      "label": "Positive Technologies",
+      "tier": "others",
+      "aliases": [
+        "Positive Technologies",
+        "Позитив Текнолоджиз"
+      ],
+      "scope": "Поднимать при прямом совпадении исследовательских задач"
+    },
+    {
+      "id": "yadro",
+      "label": "Yadro",
+      "tier": "others",
+      "aliases": [
+        "YADRO",
+        "Ядро"
+      ],
+      "scope": "Поднимать при прямом совпадении исследовательских задач"
+    },
+    {
+      "id": "selectel",
+      "label": "Selectel",
+      "tier": "others",
+      "aliases": [
+        "Selectel",
+        "Селектел"
+      ],
+      "scope": "Отбирать model/training research, отдельно от общей инфраструктуры"
+    },
+    {
+      "id": "cloud",
+      "label": "Cloud.ru",
+      "tier": "others",
+      "aliases": [
+        "Cloud.ru",
+        "Клауд",
+        "Облачные технологии"
+      ],
+      "scope": "Отбирать model/training research, отдельно от общей инфраструктуры"
+    },
+    {
+      "id": "innopraktika",
+      "label": "Иннопрактика — конкретные проекты",
+      "tier": "others",
+      "aliases": [
+        "Иннопрактика"
+      ],
+      "scope": "Через фактическую лабораторию и работодателя"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "diffusion",
+      "label": "Diffusion / DiT / image & video generation",
+      "query": "(diffusion OR \"diffusion transformer\" OR DiT OR \"flow matching\" OR \"text-to-image\" OR \"text-to-video\" OR \"image generation\" OR \"video generation\" OR Kandinsky OR диффузионные OR \"генеративное моделирование\")",
+      "priority": 1
+    },
+    {
+      "id": "llm",
+      "label": "Transformer / LLM pre-train и post-train",
+      "query": "(LLM OR Transformer OR \"языковые модели\" OR \"фундаментальные модели\") AND (pretrain OR \"pre-training\" OR \"pre-train\" OR предобучение OR \"continual pretraining\" OR \"post-training\" OR \"post-train\" OR SFT OR DPO OR RLHF OR GRPO OR alignment OR дообучение)",
+      "priority": 1
+    },
+    {
+      "id": "multimodal",
+      "label": "Мультимодальные модели / VLM / audio generation",
+      "query": "(multimodal OR мультимодальные OR VLM OR VLLM OR \"vision language\" OR \"audio generation\" OR \"генерация речи\") AND (обучение OR training OR исследование OR research OR Transformer OR diffusion)",
+      "priority": 1
+    },
+    {
+      "id": "training",
+      "label": "Distributed training / model efficiency research",
+      "query": "(LLM OR Transformer OR diffusion OR DiT) AND (FSDP OR DeepSpeed OR Megatron OR \"distributed training\" OR \"распределенное обучение\" OR distillation OR дистилляция OR \"scaling laws\")",
+      "priority": 2
+    },
+    {
+      "id": "broad",
+      "label": "Широкий Research Engineer / ML Engineer поиск",
+      "query": "NAME:(\"Research Engineer\" OR \"Research Scientist\" OR \"ML Researcher\" OR \"ML Engineer\" OR \"Machine Learning Engineer\" OR \"Data Scientist\" OR исследователь OR \"инженер машинного обучения\") AND (PyTorch OR Transformer OR LLM OR diffusion OR генеративные)",
+      "priority": 2
+    }
+  ],
+  "sources": {
+    "preferred": [
+      "company_careers",
+      "research_lab_pages"
+    ],
+    "supplemental": [
+      "hh_browser"
+    ],
+    "hh_public_api": false,
+    "headhunter_mcp_server": false
+  },
+  "source_keywords": [
+    "diffusion",
+    "Transformer",
+    "LLM",
+    "генератив",
+    "Research",
+    "Kandinsky"
+  ],
+  "warnings": [
+    "Алиасы работодателей используются для первичного поиска; проверять работодателя и конкретную команду по карточке.",
+    "Страница выдачи содержит сокращённые описания. Для оценки по резюме требуется открыть полную вакансию.",
+    "ШАД — канал контактов и проектов; работодателя определять по конкретной вакансии.",
+    "Ежедневный период 3 дня дополнять периодическим поиском без ограничения даты и обновлением известных карточек."
+  ],
+  "sources_reference": [
+    "https://hh.ru/article/1175",
+    "https://api.hh.ru/openapi/redoc"
+  ]
+}

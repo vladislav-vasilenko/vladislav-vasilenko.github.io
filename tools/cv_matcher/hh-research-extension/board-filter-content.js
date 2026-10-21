@@ -1,0 +1,1 @@
+(async()=>{const values=globalThis.__boardFilterValues;delete globalThis.__boardFilterValues;try{return await BoardFilters.apply(document,location.href,values);}catch(e){return {ok:false,error:e.message};}})();

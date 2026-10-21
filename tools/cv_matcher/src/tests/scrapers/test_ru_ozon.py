@@ -20,7 +20,7 @@ def main() -> int:
         OzonScraper,
         site="Ozon",
         expected_prefix="ozon",
-        expected_hosts=("career.ozon.ru",),
+        expected_hosts=("career.ozon.ru", "ozon.tech"),
         args=args,
     )
 

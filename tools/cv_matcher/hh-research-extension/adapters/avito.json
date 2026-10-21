@@ -1,0 +1,12 @@
+{
+  "id": "avito",
+  "label": "Avito",
+  "hosts": [
+    "career.avito.com"
+  ],
+  "url": "https://career.avito.com/vacancies/?direction=data-science",
+  "description": ".vacancies-detail__description",
+  "card": ".vacancies-section__item",
+  "listingTitle": ".vacancies-section__item-name",
+  "pages": "^/vacancies(?:/|$)"
+}

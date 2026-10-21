@@ -1,0 +1,16 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Отклик на вакансию</title><link rel="stylesheet" href="popup.css"><style>body{width:min(100%,900px);margin:auto}textarea,input{box-sizing:border-box;width:100%;padding:10px}#status{white-space:pre-wrap}article{padding:16px;border:1px solid #ccd6e6;margin:12px 0;background:white}</style></head><body>
+<h1>Откликнуться</h1><p id="context"></p><p id="goal"></p>
+<label>Канал отклика<select id="channel"><option value="hh">HH.ru</option><option value="telegram">Telegram · @giga_recruiter_bot</option></select></label>
+<button id="create">Создать отклик с выбранным CV</button>
+<p id="status" role="status"></p>
+<section id="actions" hidden><p id="applicationId"></p>
+<button id="openHH" class="secondary">Открыть вакансию на HH и продолжить отклик</button>
+<p id="telegramInstructions" hidden>Откройте управляющего Telegram-бота и отправьте /applications. Выберите этот отклик. Вопросы @giga_recruiter_bot появятся там с кнопками Luna / Terra / Sol, «Отправить», «Редактировать», «Свой ответ». До нажатия отправки текст остаётся черновиком. Локально должен работать telegram_recruiter.py.</p>
+<label>Вопрос рекрутера<textarea id="question" rows="3" maxlength="8000"></textarea></label>
+<label>Модель<select id="qaModel"><option value="luna">Luna · gpt-6-luna</option><option value="terra">Terra · gpt-5.6-terra</option><option value="sol">Sol · gpt-6.1-sol</option></select></label>
+<label>Пожелания к ответу<textarea id="qaComments" rows="2" maxlength="4000"></textarea></label><button id="draft" class="secondary">Предложить ответ · API</button><button id="draftOffline" class="secondary">Ответ без API · скопировать промпт</button><textarea id="qaPrompt" aria-label="Промпт без API" rows="10" readonly hidden></textarea><textarea id="answer" aria-label="Редактируемый ответ" rows="5" maxlength="6000"></textarea>
+<button id="copy" class="secondary">Скопировать мой ответ</button><details><summary>Подтверждающие фрагменты CV</summary><div id="evidence"></div></details>
+<section id="hhForm" hidden><h2>Форма HH</h2><p>Проверьте ответы. Кнопка заполнения переносит их в HH с выбранным резюме. Отправка выполняется отдельно; вопросы следующего шага можно прочитать заново.</p><div id="hhFields"></div>
+<button id="fillHH">Заполнить форму этим CV и ответами</button><button id="refreshHH" class="secondary">Прочитать текущий шаг HH</button><button id="submitHH" class="secondary">Отправить / продолжить в HH</button></section>
+</section>
+<script src="local-service.js"></script><script src="chatgpt-export.js"></script><script src="application.js"></script></body></html>

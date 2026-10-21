@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "ML Research Vacancy Search",
+  "version": "0.11.22",
+  "description": "Поиск по CV, сбор вакансий, оценки и помощник отклика на HH, Яндексе, Avito, Ozon и T-Bank. История и кэш — в локальной SQLite.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "alarms"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "optional_host_permissions": [
+    "http://127.0.0.1/*",
+    "https://docs.google.com/*",
+    "https://*.googleusercontent.com/*",
+    "https://hh.ru/*",
+    "https://career.avito.com/*",
+    "https://ozon.tech/*",
+    "https://career.ozon.ru/*",
+    "https://yandex.ru/*",
+    "https://yandex.com/*",
+    "https://rabota.sber.ru/*",
+    "https://tbank.ru/*",
+    "https://www.tbank.ru/*"
+  ],
+  "options_ui": {
+    "page": "setup.html",
+    "open_in_tab": true
+  }
+}

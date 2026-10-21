@@ -90,7 +90,7 @@ class GoogleCareersScraper(BaseScraper):
                         detail_url_tpl=self._DETAIL_URL_TPL,
                     )
                     if parsed:
-                        vacancies.append(parsed)
+                        vacancies.append({**parsed,"source_page":url})
                         self._emit(
                             "vacancy", id=parsed["id"], title=parsed["title"],
                             company=self.company_name, link=parsed["link"],

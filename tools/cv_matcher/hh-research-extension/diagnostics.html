@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Диагностика · Рабочий поиск</title><link rel="stylesheet" href="setup.css"></head>
+<body><main>
+<a href="setup.html">← Подключение</a>
+<h1>Диагностика расширения</h1>
+<p class="lead">Соединения, разрешения сайтов и состояние задач. Проверка не запускает сбор, генерацию или отклик.</p>
+<div class="actions"><button id="refresh">Проверить</button><button id="copy" class="secondary" disabled>Скопировать отчёт</button></div>
+<p id="status" role="status" aria-live="polite">Загружаю состояние…</p>
+<section><h2>Связь</h2><div id="connections"></div></section>
+<section><h2>Адаптеры компаний</h2><p class="hint">Разрешение на чтение сайта и успешный сбор — разные проверки. Состояние входа на сайты компаний здесь не проверяется.</p><div id="adapters"></div></section>
+<section><h2>Технический отчёт</h2><p class="hint">В отчёт не включаются тексты CV, контакты, токены, адреса вакансий и сообщения. Для ошибок JavaScript: chrome://extensions → расширение → service worker → Console. Не публикуйте содержимое Storage или Network без проверки.</p><pre id="report" tabindex="0"></pre></section>
+</main><script src="diagnostics.js"></script></body></html>

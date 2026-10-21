@@ -1,0 +1,9 @@
+{
+  "id": "sber",
+  "label": "Sber",
+  "hosts": [
+    "rabota.sber.ru"
+  ],
+  "url": "https://rabota.sber.ru/search/",
+  "pages": "^/search(?:/|$)"
+}

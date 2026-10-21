@@ -155,7 +155,9 @@ class RAGDatabase:
         def _embed_text(v):
             t = v.get("_embed_title", v["title"])
             d = v.get("_embed_description", v["description"])
-            return f"Title: {t}\n\nDescription:\n{d}"
+            locations = v.get("locations", [])
+            location_text = "; ".join(locations) if isinstance(locations, list) else str(locations)
+            return f"Title: {t}\n\nDescription:\n{d}" + (f"\n\nLocation/format evidence: {location_text}" if location_text else "")
         texts = [_embed_text(v) for v in vacancies]
         metadatas = [{
             "title": v["title"],

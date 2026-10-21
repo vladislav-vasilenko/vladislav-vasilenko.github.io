@@ -1,0 +1,15 @@
+:root { font-family: system-ui, sans-serif; color: #17243a; background: #f6f8fc; }
+body { width: 360px; margin: 0; padding: 20px; box-sizing: border-box; }
+h1 { margin: 0 0 4px; font-size: 24px; }
+.intro { color: #56657b; font-size: 12px; margin: 0 0 18px; }
+label { display: block; margin: 12px 0; font-size: 13px; font-weight: 600; }
+select { display: block; width: 100%; margin-top: 6px; padding: 9px; background: white; color: inherit; border: 1px solid #cbd4e2; border-radius: 7px; }
+.checkbox { display: flex; gap: 7px; align-items: center; font-weight: 400; }
+button { display: block; width: 100%; padding: 11px; background: #224fe3; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+button.secondary { background: white; color: #224fe3; border: 1px solid #cbd4e2; }
+button:disabled { opacity: .5; cursor: default; }
+button + button { margin-top: 8px; }
+.hint, #count { font-size: 12px; line-height: 1.5; color: #56657b; }
+hr { margin: 20px 0; border: 0; border-top: 1px solid #dce3ef; }
+#status { font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+#searchGoal { display: block; box-sizing: border-box; width: 100%; margin-top: 6px; padding: 9px; border: 1px solid #cbd4e2; border-radius: 7px; font: inherit; font-weight: 400; resize: vertical; }
