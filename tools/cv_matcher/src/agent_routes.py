@@ -19,6 +19,19 @@ def install_agent(app):
             if op=='search':return await s.search(data['request_id'],data.get('scope'))
             if op=='converse':return await s.converse(data['text'],data['request_id'],'local_owner')
             def action():
+                if op.startswith('trajectory_'):
+                    from . import career_trajectory as trajectory
+                    if op=='trajectory_get':return trajectory.overview(s.store,s.archive,data.get('path_id'))
+                    if op=='trajectory_activate':
+                        result=trajectory.overview(s.store,s.archive,data['path_id'])
+                        from .career_skills_store import put
+                        with s.store.connect() as db:put(db,'trajectory-active',data['path_id'])
+                        return result
+                    if op=='trajectory_from_vacancy':return trajectory.vacancy_draft(s.store,s.archive,data['vacancy_id'],data.get('track_id'))
+                    if op=='trajectory_defaults':return trajectory.defaults(s.store,data['track_id'])
+                    if op=='trajectory_save':return trajectory.save(s.store,s.archive,data['path'])
+                    if op=='trajectory_evidence':return trajectory.save_evidence(s.store,data['evidence'])
+                    if op=='trajectory_stage':return trajectory.stage_detail(s.store,s.archive,data['path_id'],data['stage_id'])
                 if op=='skills_catalog':return s.skills_catalog()
                 if op=='skills_vacancy':return s.skills_vacancy(data)
                 if op=='skills_plan':return s.skills_plan({k:v for k,v in data.items() if k!='op'})

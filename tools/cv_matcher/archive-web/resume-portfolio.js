@@ -1,13 +1,13 @@
 'use strict';
 const ResumePortfolio=(()=>{
- async function mount(host,chosen){
+ async function mount(host,chosen,options={}){
   const token={};host.portfolioToken=token;const current=()=>host.portfolioToken===token;
   host.replaceChildren();const box=make('section','resumeReview portfolioReview');host.append(box);
   box.append(make('h3','','Разбор выбранных резюме под карьерный трек'),make('p','muted','Сопоставление опыта и дат в 2–7 снимках, дополнениях Candidate Facts и выписке из трудовой книжки. Отчёт рекомендует основу CV и правки; исходники не изменяются.'));
   const status=make('p','muted','Читаю выбранные снимки и карьерные треки…');status.setAttribute('role','status');box.append(status);
   const [catalog,documents]=await Promise.all([api('agent',{op:'skills_catalog'}),Promise.all(chosen.map(s=>api('entity/resume/'+encodeURIComponent(s.id)+'?version_id='+s.version)))]);if(!current())return;
   const fields=make('div','portfolioFields'),track=make('select'),model=make('select');
-  for(const t of catalog.tracks){const o=make('option','',t.label+' · v'+t.revision);o.value=t.id;track.append(o);}track.value=catalog.tracks.some(t=>t.id==='generative')?'generative':catalog.tracks[0]?.id;
+  for(const t of catalog.tracks){const o=make('option','',t.label+' · v'+t.revision);o.value=t.id;track.append(o);}track.value=catalog.tracks.some(t=>t.id===options.track_id)?options.track_id:catalog.tracks.some(t=>t.id==='generative')?'generative':catalog.tracks[0]?.id;
   for(const value of ['luna','terra']){const o=make('option','',value==='luna'?'Luna':'Terra');o.value=value;model.append(o);}
   function field(title,input,parent=fields){const label=make('label','flowLabel',title);label.append(input);parent.append(label);return input;}
   field('Целевой карьерный трек',track);field('Модель API',model);box.append(fields);
@@ -17,7 +17,7 @@ const ResumePortfolio=(()=>{
   const file=make('input');file.type='file';file.multiple=true;file.accept='.txt,.md,.doc,.docx,.pdf,.pages,.xls,.xlsx';field('Добавить файлы · до 10 источников, до 12 МБ каждый',file,evidenceBox);
   evidenceBox.append(make('p','meta','Форматы: TXT, MD, PDF, DOC, DOCX, Pages, XLS, XLSX. Для PDF нужен текстовый слой. Проверьте извлечённый текст; удалите СНИЛС, паспорт, адрес и другие личные реквизиты. Выписка не доказывает технические навыки.'));
   const checked=make('input');checked.type='checkbox';const consent=make('label','resumeConfirm');consent.append(checked,document.createTextNode('Проверил выписку: оставил только профессиональные события и даты'));evidenceBox.append(consent,extraList);
-  const question=make('textarea');question.rows=3;question.maxLength=4000;question.placeholder='Например: какую версию взять за основу для Generative Models Research и какие даты уточнить?';field('Вопрос для обсуждения · необязательно',question,box);
+  const question=make('textarea');question.value=options.question||'';question.rows=3;question.maxLength=4000;question.placeholder='Например: какую версию взять за основу для Generative Models Research и какие даты уточнить?';field('Вопрос для обсуждения · необязательно',question,box);
   let context=null,epoch=0,preparedEpoch=-1,working=false;
   const actions=make('div','resumeActions'),output=make('div'),preview=make('details'),prompt=make('textarea');prompt.rows=12;prompt.readOnly=true;prompt.setAttribute('aria-label','Подробный промпт сравнения резюме');preview.append(make('summary','','Подробный промпт · просмотр и ручное копирование'),prompt);
   const paid=make('input');paid.type='checkbox';const paidLabel=make('label','resumeConfirm');paidLabel.append(paid,document.createTextNode('Разрешаю один платный запрос: передать показанные профессиональные тексты выбранных CV, дополнения и выписку в выбранную модель OpenAI. Стоимость зависит от объёма и модели.'));box.append(actions,preview,paidLabel,output);

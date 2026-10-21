@@ -24,3 +24,5 @@
 - [Идея: восстановление DOM-адаптеров через Luna](ideas/llm-adapter-repair.md)
 
 - [Разбор нескольких резюме под трек: API и без API](architecture/resume-portfolio-review.md)
+
+- [Карьерная траектория: редактируемые этапы, подтверждения и черновик под вакансию](architecture/career-trajectory.md)

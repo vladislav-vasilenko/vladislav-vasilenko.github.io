@@ -90,7 +90,8 @@ const ResumeCompare=(()=>{
  function wrap(text,length,lines){const words=String(text).split(/\s+/),out=[];let line='';for(const word of words){if((line+' '+word).length>length&&line){out.push(line);line=word;}else line+=(line?' ':'')+word;}if(line)out.push(line);if(out.length>lines){out.length=lines;out[lines-1]=out[lines-1].slice(0,length-1)+'…';}return out;}
  function invalidate(){loaded=false;}
  async function openRequested(){if(openedRequested||new URL(location.href).searchParams.get('compare')!=='chunks')return;openedRequested=true;loaded=true;root.open=true;try{await load();await Promise.all(rows.map(r=>r.ready));await build('chunks');chart.scrollIntoView({block:'start'});}catch(e){status.textContent=e.message;}}
- return {install,invalidate,openRequested};
+ async function reviewAll(trackId,options={}){loaded=true;root.open=true;await load(true);rows=[];selectors.replaceChildren();for(const cv of catalog.slice(0,7))addRow(cv.id);await Promise.all(rows.map(r=>r.ready));if(rows.length<2)throw Error('Добавьте хотя бы два резюме для сравнения.');await ResumePortfolio.mount(reviewPanel,rows.map(r=>({id:r.id,version:r.version})),{...options,track_id:trackId});reviewPanel.scrollIntoView({block:'start'});}
+ return {install,invalidate,openRequested,reviewAll};
 })();
 globalThis.ResumeCompare=ResumeCompare;
 ResumeCompare.install();

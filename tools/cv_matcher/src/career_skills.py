@@ -8,7 +8,7 @@ from .archive_store import digest
 from .career_analytics import snapshot,TAXONOMY
 from .luna_batch import selected
 
-ENGINE='skills-priority-2'
+ENGINE='skills-priority-3'
 METHOD='Спрос: один навык на вакансию; required=1, preferred=0,45, mentioned=0. Вес позиции = 1/log2(rank+2). Приоритет = 100 × доля взвешенного спроса × важность трека/3 × потребность действия / sqrt(max(1, часы/4)). Часы — оценка одного упражнения, не освоения профессии. Это эвристика, не вероятность найма.'
 STATES={'confirmed':'Подтверждение есть','unknown':'Данных недостаточно','explicit_gap':'Пробел указан явно','studying':'В процессе обучения','partial':'Частичное подтверждение','conflict':'Противоречивые данные'}
 
@@ -46,6 +46,14 @@ def plan(store,archive,data=None,*,remember=True,vacancy_id=None):
  data=data or {};summary=archive.summary();rid=data.get('resume_id') or summary.get('primary_id')
  if not rid:raise ValueError('Сначала выберите основное резюме.')
  prior=(storage.selection(store,rid) or {}) if remember else {};scope={**prior,**data};limit=scope.get('limit',50)
+ trajectory_revision=None;trajectory_stage=None
+ if scope.get('trajectory_id'):
+  from .career_trajectory import overview
+  trajectory=overview(store,archive,scope['trajectory_id'])['path'];trajectory_revision=trajectory['revision']
+  if scope.get('stage_id') not in {s['id'] for s in trajectory['stages']}:raise ValueError('Этап траектории не найден.')
+  if scope.get('trajectory_revision') is not None and scope['trajectory_revision']!=trajectory_revision:raise ValueError('Траектория изменена. Обновите этап перед расчётом.')
+  trajectory_stage=next(s for s in trajectory['stages'] if s['id']==scope['stage_id'])
+  scope['goal']=trajectory['goal'];scope['track_id']=trajectory['track_id']
  if type(limit) is not int or not 1<=limit<=50:raise ValueError('Топ-K — от 1 до 50.')
  mode=scope.get('mode','track')
  if mode not in ('vacancies','directions','track'):raise ValueError('Выберите вакансии, направления или карьерный трек.')
@@ -62,7 +70,9 @@ def plan(store,archive,data=None,*,remember=True,vacancy_id=None):
  if mode=='vacancies' and (not ids or len(ids)>50):raise ValueError('Выберите от 1 до 50 вакансий.')
  if mode=='directions':eligible.intersection_update(r['id'] for r in snap['rows'] if set(r['tags']).intersection(directions))
  if ids is not None:eligible.intersection_update(ids)
- ranked=archive.entities('vacancy',status='full',resume_id=rid,goal=goal,model=model,ranked_only=vacancy_id is None,exclude_closed=True,all_items=True,include_payload=True)['items']
+ ranked=archive.entities('vacancy',status='full',resume_id=rid,goal=goal,model=model,ranked_only=vacancy_id is None and trajectory_revision is None,exclude_closed=True,all_items=True,include_payload=True)['items']
+ if trajectory_revision is not None and ids:
+  order={key:i for i,key in enumerate(ids)};ranked.sort(key=lambda r:order.get(r['id'],len(order)))
  jobs=[r for r in ranked if (r['id']==vacancy_id if vacancy_id else r['id'] in eligible) and not r['payload'].get('archived')][:limit]
  if not jobs and vacancy_id:raise ValueError('Нужно полное сохранённое описание незакрытой вакансии.')
  if not jobs:raise ValueError('В выборке нет полных открытых вакансий с актуальным персональным рейтингом. Обновите рейтинг или измените фильтры карты.')
@@ -88,6 +98,9 @@ def plan(store,archive,data=None,*,remember=True,vacancy_id=None):
   if identity not in demand or w>demand[identity][0]:demand[identity]=(w,req)
  if mode!='track':
   demanded={k for k,_ in demand}
+  if trajectory_stage:
+   stage_keys={k for c in trajectory_stage['criteria'] for k in c['skill_ids']} or set(storage.track(store,trajectory['track_id'])['skills'])
+   demanded.intersection_update(stage_keys)
   track={'id':'derived_'+mode,'label':'Выбранные вакансии' if mode=='vacancies' else 'Выбранные направления: '+', '.join(label for k,label,_ in TAXONOMY if k in directions),'revision':1,'source':'vacancy_requirements','skills':{k:{'importance':3,'effort_hours':SKILLS[k]['effort_hours']} for k in sorted(demanded)}}
  priorities=[]
  for key,config in track['skills'].items():
@@ -98,7 +111,7 @@ def plan(store,archive,data=None,*,remember=True,vacancy_id=None):
   score=100*sum(v[0] for v in entries)/weight_total*config['importance']/3*need/math.sqrt(max(1,effort/4))
   priorities.append({'skill_id':key,'label':SKILLS[key]['label'],'state':e['state'],'state_label':STATES[e['state']],'action':a,'action_label':ACTION_LABELS.get(a,'Поддерживать подтверждения'),'priority':round(score,3),'importance':config['importance'],'effort_hours':hours,'action_effort_hours':effort,'vacancy_count':len(entries),'vacancy_ids':[v[1]['vacancy_id'] for v in entries],'requirements':[v[1] for v in entries],'evidence':e,**learning(key,grouped)})
  priorities.sort(key=lambda p:(-p['priority'],-p['vacancy_count'],p['skill_id']))
- fingerprint=digest([ENGINE,VERSION,mode,directions,track,evidence['versions'],evidence['github'],vacancies,goal,model,filters,ids,limit])
+ fingerprint=digest([ENGINE,VERSION,mode,directions,track,evidence['versions'],evidence['github'],vacancies,goal,model,filters,ids,limit,scope.get('trajectory_id'),trajectory_revision,scope.get('stage_id')])
  coverage=[]
  for job in vacancies:
   job_reqs=[r for r in requirements if r['vacancy_id']==job['id'] and r['type']!='mentioned' and not r['negated']]
@@ -107,9 +120,9 @@ def plan(store,archive,data=None,*,remember=True,vacancy_id=None):
   has_hard_gap=any(grouped[k]['state'] in ('explicit_gap','unknown') for k in hard_keys)
   job['has_hard_gap']=has_hard_gap
   coverage.append({'vacancy_id':job['id'],'requirements':len(keys),'hard_requirements':len(hard_keys),'has_hard_gap':has_hard_gap,'states':{s:sum(grouped[k]['state']==s for k in keys) for s in STATES},'skills':{k:grouped[k]['state'] for k in sorted(keys)}})
- value={'mode':mode,'direction_ids':directions,'career_path':career_path(track,grouped,priorities) if mode=='track' else None,'vacancy_evidence':coverage,'id':fingerprint,'fingerprint':fingerprint,'created':time.time(),'engine':ENGINE,'catalog_version':VERSION,'resume':{'id':rid,'title':snap['resume']['title'],'version_id':evidence['resume']['version_id']},'goal':goal,'model':model,'track':track,'vacancies':vacancies,'requirements':requirements,'unmapped_requirements':unmapped[:100],'skills':grouped,'priorities':priorities,'github':evidence['github'],'summary':{s:sum(e['state']==s for e in grouped.values()) for s in STATES},'methodology':METHOD,'api_requests':0,'limitations':['Локальный словарь ограничен. Нераспознанные требования показаны отдельно.','Уточнения опыта пересчитывают этот план и доказательства по вакансиям. Исходный embedding-рейтинг и Luna-оценки не переписываются.','GitHub-ссылки не означают проверку кода или качества исследований.'],'filters':filters,'limit':limit,'evidence_versions':evidence['versions']}
+ value={'mode':mode,'direction_ids':directions,'career_path':career_path(track,grouped,priorities) if mode=='track' else None,'vacancy_evidence':coverage,'id':fingerprint,'fingerprint':fingerprint,'created':time.time(),'engine':ENGINE,'catalog_version':VERSION,'resume':{'id':rid,'title':snap['resume']['title'],'version_id':evidence['resume']['version_id']},'goal':goal,'model':model,'track':track,'vacancies':vacancies,'requirements':requirements,'unmapped_requirements':unmapped[:100],'skills':grouped,'priorities':priorities,'github':evidence['github'],'summary':{s:sum(e['state']==s for e in grouped.values()) for s in STATES},'methodology':METHOD,'api_requests':0,'limitations':['Локальный словарь ограничен. Нераспознанные требования показаны отдельно.','Уточнения опыта пересчитывают этот план и доказательства по вакансиям. Исходный embedding-рейтинг и Luna-оценки не переписываются.','GitHub-ссылки не означают проверку кода или качества исследований.'],'filters':filters,'limit':limit,'evidence_versions':evidence['versions'],'trajectory_id':scope.get('trajectory_id'),'trajectory_revision':trajectory_revision,'stage_id':scope.get('stage_id')}
  value=storage.save_plan(store,fingerprint,value)
- if remember:storage.save_selection(store,rid,{'resume_id':rid,'mode':mode,'direction_ids':directions,'track_id':scope.get('track_id','generative'),'filters':filters,'vacancy_ids':ids,'goal':goal,'model':model,'limit':limit})
+ if remember and trajectory_revision is None:storage.save_selection(store,rid,{'resume_id':rid,'mode':mode,'direction_ids':directions,'track_id':scope.get('track_id','generative'),'filters':filters,'vacancy_ids':ids,'goal':goal,'model':model,'limit':limit})
  return value
 
 def save_evidence(store,archive,data):
@@ -119,7 +132,8 @@ def save_evidence(store,archive,data):
  try:
   if source:
    scope={k:source[k] for k in ('mode','direction_ids','filters','goal','model','limit')};scope.update({'resume_id':data['resume_id'],'track_id':source['track']['id'],'vacancy_ids':[v['id'] for v in source['vacancies']]})
-   updated=vacancy_plan(store,archive,{**scope,'vacancy_id':scope['vacancy_ids'][0]}) if source['mode']=='vacancies' and len(scope['vacancy_ids'])==1 else plan(store,archive,scope,remember=False)
+   scope.update({k:source[k] for k in ('trajectory_id','trajectory_revision','stage_id') if source.get(k) is not None})
+   updated=vacancy_plan(store,archive,{**scope,'vacancy_id':scope['vacancy_ids'][0]}) if not source.get('trajectory_id') and source['mode']=='vacancies' and len(scope['vacancy_ids'])==1 else plan(store,archive,scope,remember=False)
   else:updated=plan(store,archive,{'resume_id':data['resume_id']})
  except ValueError as error:return {'evidence':saved,'plan':None,'note':str(error)}
  return {'evidence':saved,'plan':updated}

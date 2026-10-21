@@ -5,8 +5,11 @@ from .career_analytics import apple_match
 from .resume_source import normalize
 from .archive_store import digest
 
-EXTRACTOR=VERSION+'-requirements-1'
+EXTRACTOR=VERSION+'-requirements-2'
 HEADINGS=re.compile(r'(?:(?:Обязательные|Ключевые|Hard)\s+(?:требования|requirements)|Требования|Мы жд[её]м(?:,? что вы)?|Мы ожидаем|Что мы жд[её]м|What we expect|Requirements|Qualifications|Must have|Будет плюсом|Будет преимуществом|Желательно|Nice to have|Preferred(?: qualifications)?|Основные задачи|Что нужно делать|Чем предстоит заниматься|Обязанности|Твои задачи|Задачи|Responsibilities|What you.ll do|Условия|Мы предлагаем|Что предлагаем|Benefits)(?:[ \t]*[:：]|[ \t]*(?=\n|$))',re.I)
+# DOM archives may flatten heading breaks. Match narrow, case-sensitive heading
+# forms in the original text so quotes/offsets still point to the saved source.
+INLINE_HEADINGS=re.compile(r'(?<!\w)(?:Требования(?=[ \t]+(?:Опыт|Знани|Умени|Хорош|Высш|Уверенн|Необходим|Практич))|Обязанности(?=[ \t]+[А-ЯЁ])|Условия(?=[ \t]+)|Технологический стек(?=[ \t]+)|Основной стек(?=[:：])|Модели и методы(?=[:：])|Requirements(?=[ \t]+[A-Z])|Responsibilities(?=[ \t]+[A-Z])|Benefits(?=[ \t]+[A-Z]))')
 PREFERRED=re.compile(r'плюсом|преимуществ|желател|nice to have|preferred|было бы здорово',re.I)
 REQUIRED=re.compile(r'требован|мы жд|мы ожида|requirements|qualifications|must have|необходим|требуется|обязател|уверенн|опыт|знани|понимани|владени|умеете|должны|must|required|proficien|experience|familiarity',re.I)
 NEGATED=re.compile(r'(?:не\s+(?:нужен|нужно|требуется|требуем|обязател\w*)|(?:опыт|знание)\s+[^.;\n]{0,50}не\s+(?:нужен|требуется|обязател\w*)|no\s+[^.;\n]{0,40}(?:required|necessary))',re.I)
@@ -22,7 +25,9 @@ def hits(text):
 
 def passages(text):
  """Retain original spans; headings apply only until the next heading."""
- headings=list(HEADINGS.finditer(text));regions=[]
+ candidates=sorted([*HEADINGS.finditer(text),*INLINE_HEADINGS.finditer(text)],key=lambda h:(h.start(),-h.end()));headings=[];regions=[]
+ for h in candidates:
+  if not headings or h.start()>=headings[-1].end():headings.append(h)
  start=0;mode='mentioned';section=''
  for h in headings:
   if h.start()>start:regions.append((start,h.start(),mode,section))

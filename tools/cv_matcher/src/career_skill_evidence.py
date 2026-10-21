@@ -52,6 +52,10 @@ def collect(store,archive,resume_id,analyses):
      records.append({'skill_id':key,'kind':kind,'state':row['status'],'quote':quote,'source':'luna_cached','source_version':analysis.get('key'),'confidence':.85,'artifact_verified':False})
  for row in owner:
   if row['state']!='retracted':records.append({**row,'source_version':row['revision'],'confidence':1.})
+ from .career_trajectory import owned_evidence
+ for row in owned_evidence(store):
+  if row['state']=='retracted' or row['kind'] not in ('professional','project','research','learning'):continue
+  for key in row['skill_ids']:records.append({'skill_id':key,'kind':row['kind'],'state':row['state'],'quote':row['note'],'url':row['url'],'source':'trajectory_owner_statement','source_version':row['revision'],'artifact_verified':False,'confidence':1.})
  grouped={}
  for key in SKILLS:
   rows=[r for r in records if r['skill_id']==key];confirmed=lambda k:any(r['kind']==k and r['state']=='confirmed' for r in rows)
@@ -66,4 +70,4 @@ def collect(store,archive,resume_id,analyses):
  for row in records:
   url=row.get('url','')
   if GITHUB.fullmatch(url):links.add(url)
- return {'skills':grouped,'github':[{'url':url.rstrip('.,)/'),'verified':False,'note':'Ссылка из CV/профиля/уточнения. Содержимое и качество репозитория автоматически не проверены.'} for url in sorted(links)],'versions':{'cv':detail['version_id'],'facts':[r['id'] for r in fact_rows],'supplements':[r['version_id'] for r in supp],'owner':[(r['skill_id'],r['kind'],r['revision']) for r in owner]},'resume':detail}
+ return {'skills':grouped,'github':[{'url':url.rstrip('.,)/'),'verified':False,'note':'Ссылка из CV/профиля/уточнения. Содержимое и качество репозитория автоматически не проверены.'} for url in sorted(links)],'versions':{'cv':detail['version_id'],'facts':[r['id'] for r in fact_rows],'supplements':[r['version_id'] for r in supp],'owner':[(r['skill_id'],r['kind'],r['revision']) for r in owner],'trajectory':[(r['id'],r['revision']) for r in owned_evidence(store)]},'resume':detail}
