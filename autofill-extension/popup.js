@@ -34,6 +34,19 @@ async function loadCV() {
     statusEl.style.color = 'var(--accent)';
 
     try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const host = tab?.url ? new URL(tab.url).hostname : '';
+        if (!/(^|\.)(myworkdayjobs\.com|myworkdaysite\.com|workday\.com)$/.test(host)) {
+            statusEl.textContent = 'Это расширение только для Workday. Для Yandex, Sber, Ozon и Avito используйте ML Research Vacancy Search → локальный сервис → Отклики.';
+            for (const button of document.querySelectorAll('button')) button.disabled = true;
+            const workspace = document.createElement('a');
+            workspace.href = 'http://127.0.0.1:8788/?view=applications';
+            workspace.target = '_blank';
+            workspace.rel = 'noopener';
+            workspace.textContent = 'Открыть локальные отклики →';
+            statusEl.append(document.createElement('br'), workspace);
+            return;
+        }
         const res = await fetch(CV_API_URL);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         cvData = await res.json();

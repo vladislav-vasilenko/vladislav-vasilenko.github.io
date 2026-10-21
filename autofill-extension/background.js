@@ -2,7 +2,8 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "smart-fill-ai",
         title: "✨ Smart Fill with AI",
-        contexts: ["editable"]
+        contexts: ["editable"],
+        documentUrlPatterns: ["https://*.myworkdayjobs.com/*", "https://*.myworkdaysite.com/*", "https://*.workday.com/*"]
     });
 });
 
