@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && node tools/portfolio-static.mjs",
     "preview": "vite preview",
     "workspace:list": "node tools/workspace.mjs list",
     "workspace:check": "node tools/workspace.mjs check",

@@ -54,6 +54,7 @@ if (project === 'portfolio') {
   if (command === 'build') {
     run(process.execPath, [tsc], cwd);
     run(process.execPath, [vite, 'build'], cwd);
+    run(process.execPath, [path.join(root,'tools/portfolio-static.mjs')], cwd);
   } else if (command === 'dev') {
     const url = new URL(entry.local_url);
     run(process.execPath, [vite, '--host', url.hostname, '--port', url.port, '--strictPort'], cwd);

@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "Владислав Василенко · Исследования и инженерия",
+  "short_name": "Vasilenko",
+  "description": "Исследовательское и инженерное портфолио.",
+  "start_url": "/ru/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1d382d",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

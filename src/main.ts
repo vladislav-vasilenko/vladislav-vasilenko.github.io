@@ -1,15 +1,17 @@
+import {initializePWA} from './features/pwa';
 import './style.css';
-import {getLang,setLang,loadContent,type Lang} from './i18n';
-import {loadHHSnapshot,applyHHSnapshot,type HHSnapshot} from './features/hhExperience';
+import {setLang,loadContent,type Lang} from './i18n';
+import {loadHHSnapshot,applyHHSnapshot,validateSnapshot,type HHSnapshot} from './features/hhExperience';
 import {renderMinimal} from './features/minimalPortfolio';
 import {presentationStyle} from './features/presentationStyle';
 import {exportMarkdown} from './export';
 
 const query=new URLSearchParams(location.search);
-let language:Lang=query.get('lang')==='ru'?'ru':query.get('lang')==='en'?'en':getLang();
+let language:Lang=query.get('lang')==='ru'?'ru':query.get('lang')==='en'?'en':location.pathname.startsWith('/ru')?'ru':'en';
 let focus=query.get('tech')||'all';
 let style=presentationStyle(query.get('style'));
 let snapshot:HHSnapshot|null=null;
+try{snapshot=validateSnapshot(JSON.parse(document.getElementById('portfolio-snapshot')?.textContent||'null'));}catch{/* Fetch remains the fallback. */}
 const detailed=query.get('layout')==='full';
 
 function renderPage():void{
@@ -18,9 +20,6 @@ function renderPage():void{
  const cv=applyHHSnapshot(loadContent(language,'vision'),snapshot,language);
  const root=document.querySelector<HTMLDivElement>('#app')!;
  root.innerHTML=renderMinimal(cv,language,snapshot,focus,style,detailed);
- root.querySelectorAll<HTMLButtonElement>('.minimal-lang').forEach(button=>button.onclick=()=>{
-  language=button.dataset.lang as Lang;const url=new URL(location.href);url.searchParams.set('lang',language);window.history.replaceState(null,'',url);renderPage();
- });
  root.querySelectorAll<HTMLButtonElement>('button[data-presentation]').forEach(button=>button.onclick=()=>{
   style=presentationStyle(button.dataset.presentation||null);const url=new URL(location.href);
   if(style==='minimal')url.searchParams.delete('style');else url.searchParams.set('style',style);
@@ -34,6 +33,7 @@ function renderPage():void{
  selector.onchange=()=>{focus=selector.value;const url=new URL(location.href);if(focus==='all')url.searchParams.delete('tech');else url.searchParams.set('tech',focus);window.history.replaceState(null,'',url);renderPage();};
  root.querySelector<HTMLButtonElement>('[data-export="print"]')?.addEventListener('click',()=>window.print());
  root.querySelector<HTMLButtonElement>('[data-export="markdown"]')?.addEventListener('click',()=>exportMarkdown(cv));
+ initializePWA();
 }
 renderPage();
 void loadHHSnapshot().then(value=>{if(value){snapshot=value;renderPage();}});

@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /matcher.html
+Disallow: /scrape.html
+Disallow: /adapted_cvs/
+Disallow: /vacancy_tree.html
 
 Sitemap: https://vladislav-vasilenko.github.io/sitemap.xml
