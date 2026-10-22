@@ -8,6 +8,7 @@ function buildShareUrl(viewMode: ViewMode): string {
     const url = new URL(window.location.origin + window.location.pathname);
     url.searchParams.set('lang', getLang());
     url.searchParams.set('view', viewMode);
+    url.searchParams.set('layout', 'full');
     if (viewMode === 'technical') {
         url.searchParams.set('tech', getTechProfile());
     }

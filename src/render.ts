@@ -1,3 +1,5 @@
+import {experienceFocus} from './features/experienceFocus';
+import {escapeText} from './features/hhExperience';
 import workspace from '../workspace.projects.json';
 import { type Lang, type CVContent } from './i18n';
 import { type ViewMode } from './state';
@@ -195,7 +197,7 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
   const getTechToggleHtml = (displayClass: string) => currentViewMode === 'technical' ? `
     <div class="tech-profile-toggle ${displayClass} no-print">
       <label class="tech-select-label">
-        <span>${lang === 'ru' ? 'Профиль:' : 'Profile:'}</span>
+        <span>${lang === 'ru' ? 'Фокус:' : 'Focus:'}</span>
         <select class="tech-select">
           ${techOptions.map(([val, label]) =>
             `<option value="${val}" ${techProfile === val ? 'selected' : ''}>${label}</option>`
@@ -253,7 +255,7 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
             <button class="lang-btn ${lang === 'ru' ? 'active' : ''}" data-lang="ru">RU</button>
           </div>
         </div>
-        <div class="cv-header-main">
+        <a class="full-back no-print" href="/?lang=${lang}">← ${lang==='ru'?'Краткая страница':'Overview'}</a><div class="cv-header-main">
           <img src="/profile.jpg" alt="${cv.name}" class="cv-profile-image" />
           <div class="cv-header-content">
             <h1>${cv.name}</h1>
@@ -316,14 +318,14 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
           ${getSortedExperience(cv.experience, techProfile, currentViewMode)
       .map(
         (exp) => {
-          const focusLabel = currentViewMode === 'technical' ? getFocusLabel(techProfile, exp.id, lang) : null;
+          const focusLabel = currentViewMode === 'technical' ? (getFocusLabel(techProfile, exp.id, lang)||experienceFocus(exp,techProfile,lang)) : null;
           const highlightClass = focusLabel ? 'timeline-item--relevant' : '';
           const focusBadge = focusLabel ? `<span class="badge-focus">${focusLabel}</span>` : '';
 
           return `
             <div class="entry row timeline-item ${highlightClass}">
               <div class="timespan">
-                ${exp.period}
+                ${escapeText(exp.period)}
               </div>
               <div class="ico">
                 <div class="entry-dot"></div>
@@ -331,10 +333,10 @@ export function renderFullPage(cv: CVContent, lang: Lang, currentViewMode: ViewM
               </div>
               <div class="desc">
                 <div class="timeline-header-karpathy">
-                    <h3>${exp.role} ${focusBadge}</h3>
+                    <h3>${escapeText(exp.role)} ${focusBadge}</h3>
                     <p class="company">${exp.url
-            ? `<a href="${exp.url}" target="_blank" rel="noopener">${exp.company}</a>`
-            : exp.company
+            ? `<a href="${exp.url}" target="_blank" rel="noopener">${escapeText(exp.company)}</a>`
+            : escapeText(exp.company)
           }${exp.location ? ` — ${exp.location}` : ''}${exp.industry ? ` <span class="industry">(${exp.industry})</span>` : ''
           }</p>
                 </div>
