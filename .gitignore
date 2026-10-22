@@ -36,3 +36,12 @@ tools/cv_matcher/sber_page.html
 tools/cv_matcher/next_data.json
 tools/cv_matcher/vacancy.txt
 tools/cv_matcher/hh-research-extension/resume-profile.local.json
+
+# Local databases must never enter Pages or Actions
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+*.db

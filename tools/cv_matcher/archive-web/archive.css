@@ -37,3 +37,4 @@
 .portfolioAboutEditor{margin:24px 0;padding:20px;border:1px solid var(--line,#dce5da);border-radius:12px}.portfolioAboutEditor textarea{min-height:180px;width:100%;resize:vertical;line-height:1.6}.portfolioAboutEditor>label{display:block;margin:16px 0}.portfolioAboutEditor select{width:auto}.portfolioAboutEditor details{margin-top:20px}
 
 [data-github-control]{margin-top:24px}[data-github-control] details{margin:12px 0}[data-github-control] label{display:block;margin:10px 0}[data-github-control] input[type=number]{max-width:140px;display:block}[data-github-control] summary{cursor:pointer;font-weight:600}
+.portfolioAboutEditor~details label{display:block;margin:12px 0}.portfolioAboutEditor~details input[type=checkbox]{width:auto}.portfolioAboutEditor~details pre{max-height:360px;overflow:auto}

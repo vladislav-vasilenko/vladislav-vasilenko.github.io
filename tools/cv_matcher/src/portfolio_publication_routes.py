@@ -18,6 +18,15 @@ def install(app):
             if not isinstance(data, dict): raise ValueError('Нужна операция публикации.')
             archive = app.state.archive_store()
             if data.get('op') == 'preview': return await asyncio.to_thread(publication.preview, archive)
+            if data.get('op') in ('visual_preview','visual_settings'):
+                from .portfolio_visuals import options, project
+                settings=options(data.get('settings'),preview=data['op']=='visual_preview')
+                if data['op']=='visual_preview':return {'settings':settings,'payload':await asyncio.to_thread(project,archive,settings)}
+                return await asyncio.to_thread(publication.write,archive,visual_settings=settings)
+            if data.get('op') == 'visual_choices':
+                from .career_trajectory import overview
+                value=await asyncio.to_thread(overview,archive,archive)
+                return {'paths':value['paths'],'active':value['path']['id'] if value['path'] else None,'settings':publication.read(archive).get('visual_settings',{})}
             if data.get('op') == 'save_about': return await asyncio.to_thread(publication.save_about, archive, data)
             if data.get('op') == 'context': return await asyncio.to_thread(publication.discussion_context, archive)
             if data.get('op') == 'github_activity': return await asyncio.to_thread(publication.refresh_github_activity, archive)

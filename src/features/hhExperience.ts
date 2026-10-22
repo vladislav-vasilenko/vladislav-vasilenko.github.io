@@ -1,8 +1,11 @@
+import {validateVisuals,type PublicVisuals} from './publicVisuals';
 import type {CVContent, Experience, Lang} from '../i18n';
 
 export interface HHSnapshot {
   schema_version: 1;
+  visuals?: PublicVisuals|null;
   enabled: boolean;
+  title?:string;
   source: {label: string; language: Lang; captured_at: string; url?: string};
   about?: {text:string; language:Lang; origin:'hh'|'reviewed'; translations?:Partial<Record<Lang,string>>};
   experience: {id: string; company: string; role: string; period: string; duration: string; description: string}[];
@@ -13,9 +16,11 @@ export const escapeText = (value: string): string => value.replace(/[&<>"']/g, c
 export function validateSnapshot(value: unknown): HHSnapshot | null {
   const s=value as HHSnapshot;
   if(!s||s.schema_version!==1||!s.enabled||!s.source||!['ru','en'].includes(s.source.language)||!Array.isArray(s.experience)||!s.experience.length||s.experience.length>80)return null;
+  if(s.title!==undefined&&(typeof s.title!=='string'||!s.title.trim()||s.title.length>1000))return null;
   if(s.source.url && !/^https:\/\/hh\.ru\/resume\/[a-fA-F0-9]{30,64}$/.test(s.source.url))return null;
   if(s.about && (typeof s.about.text!=='string'||s.about.text.length>10000||!['ru','en'].includes(s.about.language)||!['hh','reviewed'].includes(s.about.origin)))return null;
   if(s.about?.translations && Object.entries(s.about.translations).some(([k,v])=>!['ru','en'].includes(k)||typeof v!=='string'||v.length>6000))return null;
+  if(s.visuals && !validateVisuals(s.visuals))return null;
   for(const row of s.experience){
     if(!row||!['id','company','role','period','duration','description'].every(k=>typeof row[k as keyof typeof row]==='string'))return null;
     if(row.description.length>100000||[row.id,row.company,row.role,row.period,row.duration].some(v=>v.length>2000))return null;
@@ -48,7 +53,7 @@ export function applyHHSnapshot(cv: CVContent, snapshot: HHSnapshot|null, lang?:
     shortDescriptionHtml:'<p>'+escapeText(row.description.split('\n\n')[0]||row.description).replace(/\n/g,'<br>')+'</p>',
   }));
   const intro=(lang&&snapshot.about?.translations?.[lang])||snapshot.about?.text;
-  return {...cv,experience,...(intro?{aboutMd:intro,aboutHtml:'<p>'+escapeText(intro).replace(/\n/g,'<br>')+'</p>'}:{})};
+  return {...cv,experience,...(snapshot.title?{title:snapshot.title}:{}),...(intro?{aboutMd:intro,aboutHtml:'<p>'+escapeText(intro).replace(/\n/g,'<br>')+'</p>'}:{})};
 }
 
 export function renderHHSource(snapshot:HHSnapshot|null, lang:Lang):string {

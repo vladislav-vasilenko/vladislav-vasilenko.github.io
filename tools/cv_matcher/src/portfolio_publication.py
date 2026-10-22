@@ -96,7 +96,7 @@ def preview(archive):
     source_language = 'ru' if len(re.findall('[А-Яа-яЁё]', text)) > len(re.findall('[A-Za-z]', text)) / 3 else 'en'
     translations = dict(draft.get('translations', {})) if reviewed else {}
     if reviewed: translations[draft['language']] = draft['text']
-    payload = {'schema_version': 1, 'enabled': True,
+    payload = {'schema_version': 1, 'enabled': True, 'title': cv['title'],
                'source': {'label': 'HH', 'captured_at': cv.get('checked_at') or cv.get('captured_at') or detail['source_at'],
                           'language': source_language,
                           'url': 'https://hh.ru/resume/' + primary if re.fullmatch('[a-fA-F0-9]{30,64}', primary) else ''},
@@ -104,9 +104,11 @@ def preview(archive):
                          'language': source_language, 'translations': translations,
                          'origin': 'reviewed' if reviewed else 'hh'},
                'experience': items, 'confirmed_skills': skills}
+    from .portfolio_visuals import project
+    payload['visuals'] = project(archive, state.get('visual_settings', {}))
     return {'resume_title': cv['title'], 'resume_id': primary, 'version_id': detail['version_id'],
             'about_basis': about_key, 'about_source': about, 'about_needs_review': bool(draft) and not reviewed,
-            'fingerprint': digest({'experience': items, 'skills': skills, 'language': payload['source']['language'], 'about': payload['about'], 'url': payload['source']['url']}), 'payload': payload,
+            'fingerprint': digest({'title': payload['title'], 'experience': items, 'skills': skills, 'language': payload['source']['language'], 'about': payload['about'], 'url': payload['source']['url'], 'visuals': payload['visuals']}), 'payload': payload,
             'skills_text': 'Подтверждённые навыки · проекты и лабораторные\n' + '\n'.join(
                 s['label'] + ': ' + ', '.join(link['url'] for link in s['links']) for s in skills)}
 

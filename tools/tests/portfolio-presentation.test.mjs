@@ -41,3 +41,18 @@ test('presentation styles preserve work facts and keep minimal as the default',(
  const cv=hh.applyHHSnapshot({name:'Candidate',title:'Engineer',contact:{email:'public@example.org'},aboutMd:'STALE TEMPLATE',experience:[],education:[]},data);
  const html=minimal.renderMinimal(cv,'ru',data,'all');assert.doesNotMatch(html,/STALE TEMPLATE/);assert.match(html,/Текущее исследование/);assert.match(html,/https:\/\/hh.ru\/resume\/aaaa/);assert.match(minimal.renderMinimal(cv,'en',data,'all'),/Introduction: EN translation pending/);data.source.url='https://evil.org/resume/a';assert.equal(hh.validateSnapshot(data),null);
  });
+
+test('public visuals validate totals and expose neither CRM nor raw review fields',()=>{
+ const renderer=load('publicVisuals');
+ const data={schema_version:1,trajectory:{label:'Generative research',labs:[{url:'https://github.com/example/lab',label:'lab'}],stages:[{label:'Build a project'}],focus_skills:['Diffusion'],studying:[]},market:{sample:'research',observed:3,mapped:2,points:[{x:.6,y:.4,category:'diffusion',count:2}],categories:[{id:'diffusion',label:'Diffusion',total:3,full:2,partial:1}],method:'saved'}};
+ assert.ok(renderer.validateVisuals(data));const html=renderer.renderPublicVisuals(data,'en');assert.match(html,/viewBox/);assert.match(html,/Similarity to CV/);assert.doesNotMatch(html,/NaN|Infinity|PRIVATE/);
+ assert.equal(renderer.validateVisuals({...data,crm:{rejected:1}}),null);
+ assert.equal(renderer.validateVisuals({...data,market:{...data.market,observed:4}}),null);
+ assert.equal(renderer.validateVisuals({...data,market:{...data.market,points:[{x:NaN,y:.4,category:'diffusion',count:2}]}}),null);
+ assert.equal(renderer.validateVisuals({...data,trajectory:{...data.trajectory,labs:[{url:'https://github.com@evil.org/a/b',label:'bad'}]}}),null);
+});
+
+ test('primary HH title replaces legacy template title consistently',()=>{
+ const data=snapshot();data.title='Research Engineer / ML Engineer – Generative Models, PyTorch';const cv=hh.applyHHSnapshot({title:'Senior Applied AI & Systems Engineer',experience:[]},data);assert.equal(cv.title,data.title);
+ assert.equal(hh.validateSnapshot({...data,title:'x'.repeat(1001)}),null);
+ });

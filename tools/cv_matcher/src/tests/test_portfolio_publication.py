@@ -46,6 +46,7 @@ class PublicationTests(unittest.TestCase):
     def test_reuses_hh_parser_and_exports_only_work_history(self):
         result = publication.preview(self.archive)
         self.assertEqual(len(result['payload']['experience']), 1)
+        self.assertEqual(result['payload']['title'], self.resume['title'])
         self.assertEqual(result['payload']['experience'][0]['company'], 'Example Company')
         self.assertNotIn('person@example.org', json.dumps(result['payload']))
         self.assertNotIn('SECRET', json.dumps(result['payload']))
