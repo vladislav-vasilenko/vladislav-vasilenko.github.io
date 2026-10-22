@@ -6,7 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "workspace:list": "node tools/workspace.mjs list",
+    "workspace:check": "node tools/workspace.mjs check",
+    "portfolio:dev": "node tools/workspace.mjs portfolio dev",
+    "portfolio:build": "node tools/workspace.mjs portfolio build",
+    "portfolio:preview": "node tools/workspace.mjs portfolio preview",
+    "career:dev": "node tools/workspace.mjs career dev",
+    "career:test": "node tools/workspace.mjs career test",
+    "career:check": "node tools/workspace.mjs career check",
+    "portfolio:test": "node --test tools/tests/*.test.mjs"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
@@ -14,5 +23,6 @@
   },
   "dependencies": {
     "marked": "^17.0.3"
-  }
+  },
+  "description": "Workspace: public personal portfolio and local Career Intelligence service"
 }

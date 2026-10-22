@@ -1,5 +1,7 @@
 # Карта репозитория
 
+Основная точка входа: [README](README.md). [Как связаны два проекта](docs/workspace.md) · [Сущности системы](docs/career-domain-model.md). Машиночитаемые пути: [workspace.projects.json](workspace.projects.json).
+
 В репозитории несколько связанных продуктов, а не один общий frontend:
 
 - `src/` + `content/` + `public/` — публичное CV/портфолио на TypeScript/Vite; `dist/` — производная сборка.

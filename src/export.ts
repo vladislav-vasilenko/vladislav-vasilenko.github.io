@@ -74,7 +74,7 @@ export function exportDOC(cv: CVContent): void {
   downloadBlob(blob, `${cv.name.replace(/\s+/g, '_')}_CV.doc`);
 }
 
-export function exportMarkdown(cv: CVContent): void {
+export function buildMarkdown(cv: CVContent): string {
   const lines: string[] = [];
 
   lines.push(`# ${cv.name}`);
@@ -116,8 +116,11 @@ export function exportMarkdown(cv: CVContent): void {
     lines.push(`- ${l}`);
   }
 
-  const md = lines.join('\n');
-  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  return lines.join('\n');
+}
+
+export function exportMarkdown(cv: CVContent): void {
+  const blob = new Blob([buildMarkdown(cv)], { type: 'text/markdown;charset=utf-8' });
   downloadBlob(blob, `${cv.name.replace(/\s+/g, '_')}_CV.md`);
 }
 

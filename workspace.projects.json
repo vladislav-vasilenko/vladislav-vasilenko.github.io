@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "projects": {
+    "portfolio": {
+      "label": "Личное портфолио",
+      "root": ".",
+      "entry": "index.html",
+      "source": "src",
+      "content": "content",
+      "local_url": "http://127.0.0.1:5173/",
+      "public_url": "https://vladislav-vasilenko.github.io/",
+      "docs": "docs/workspace.md"
+    },
+    "career": {
+      "label": "Подготовка откликов · Career Workspace",
+      "root": "tools/cv_matcher",
+      "entry": "resume_import_server.py",
+      "source": "src",
+      "web": "archive-web",
+      "extension": "hh-research-extension",
+      "local_url": "http://127.0.0.1:8788/",
+      "docs": "tools/cv_matcher/docs/README.md",
+      "source_url": "https://github.com/vladislav-vasilenko/vladislav-vasilenko.github.io/tree/main/tools/cv_matcher"
+    }
+  },
+  "contracts": {
+    "resume_exchange": "Markdown file exported from the selected portfolio view and imported as a versioned CV in Career Workspace",
+    "public_content_owner": "portfolio",
+    "candidate_evidence_owner": "career",
+    "automatic_publication": false
+  }
+}
