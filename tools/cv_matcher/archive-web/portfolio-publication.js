@@ -9,14 +9,15 @@ const PortfolioPublication=(()=>{
   root.append(label);
   if(state.published_at)root.append(make('p','muted','Опубликовано: '+date(state.published_at)+' · блоков опыта '+state.experience_count+' · навыков '+state.skill_count));
   if(state.error)root.append(make('p','githubImportWarning',state.error));
-  const actions=make('div','githubImportActions'),preview=make('button','secondary','Предпросмотр и подтверждённые навыки'),publish=make('button','secondary','Обновить сайт сейчас'),body=make('div');
+  const actions=make('div','githubImportActions'),preview=make('button','secondary','Предпросмотр и редактирование'),publish=make('button','secondary','Обновить сайт сейчас'),body=make('div');
   preview.type=publish.type='button';
   preview.onclick=async()=>{preview.disabled=true;try{const data=await api('portfolio-publication',{op:'preview'});body.replaceChildren();body.append(make('h3','',data.resume_title),make('p','muted','Из основного HH: '+data.payload.experience.length+' блоков. Язык источника: '+data.payload.source.language.toUpperCase()+'. Для другого языка — «Ожидается перевод», оригинал доступен отдельно.'));
+   await aboutEditor(body,data);
+   const experienceTitle=make('h3','','Опыт из основного HH-резюме');body.append(experienceTitle);
    for(const item of data.payload.experience){const card=make('details');card.append(make('summary','',item.company+' · '+item.role+' · '+item.period),make('pre','flowText',item.description));body.append(card);}
    const title=make('h3','','Подтверждённые навыки · для HH и портфолио');body.append(title);
    if(!data.payload.confirmed_skills.length)body.append(make('p','muted','Пока нет подтверждённых практических навыков со ссылками на GitHub. Добавьте проект/лабораторную и отметьте подтверждение в карьерной траектории. Само упоминание в CV не засчитывается.'));
    else for(const skill of data.payload.confirmed_skills){const line=make('p');line.append(make('strong','',skill.label+' '));for(const link of skill.links)line.append(external(link.url,link.label+' ↗'),' ');body.append(line);}
-   await aboutEditor(body,data);
    const copy=make('button','secondary','Скопировать блок навыков для HH');copy.onclick=()=>navigator.clipboard.writeText(data.skills_text).then(()=>notice('Блок навыков скопирован.'));copy.disabled=!data.payload.confirmed_skills.length;body.append(copy);
   }catch(e){notice(e.message);}finally{preview.disabled=false;}};
   publish.onclick=async()=>{publish.disabled=true;publish.textContent='Публикую…';try{const result=await api('portfolio-publication',{op:'publish'},180000);if(result.phase==='error')throw Error(result.error);notice(result.phase==='publishing'?'Публикация уже выполняется.':result.phase==='up_to_date'?'Публичный опыт уже актуален.':'JSON опубликован. GitHub Actions собирает обновление сайта.');await mount(root);}catch(e){notice(e.message);}finally{publish.disabled=false;publish.textContent='Обновить сайт сейчас';}};
