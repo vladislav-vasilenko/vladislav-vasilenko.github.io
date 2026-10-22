@@ -29,3 +29,5 @@
 
 - [Два проекта: портфолио и подготовка откликов](../../../docs/workspace.md)
 - [Сущности и связи карьерной системы](../../../docs/career-domain-model.md)
+
+- [Импорт GitHub Actions, синхронизация HH → сайт и публичные представления](integration/github-import-and-portfolio.md)

@@ -17,10 +17,10 @@ class ArchiveAccess:
         now=time.time();self.codes={k:v for k,v in self.codes.items() if v>now};self.sessions={k:v for k,v in self.sessions.items() if v>now}
     def cookie_allowed(self,request):
         self.prune()
-        read_paths=('/archive/analytics-batch/','/archive/analytics','/archive/agent','/archive/summary','/archive/entities','/archive/entity/','/archive/diff','/archive/events','/archive/scans','/archive/restore','/archive/export','/archive/rankings','/archive/skill-analysis','/archive/skill-history','/archive/skill-history/','/archive/workflow','/archive/journey','/archive/companies','/archive/company-settings','/archive/calendar/status','/archive/calendar/ics')
+        read_paths=('/archive/portfolio-publication','/archive/github-import','/archive/analytics-batch/','/archive/analytics','/archive/agent','/archive/summary','/archive/entities','/archive/entity/','/archive/diff','/archive/events','/archive/scans','/archive/restore','/archive/export','/archive/rankings','/archive/skill-analysis','/archive/skill-history','/archive/skill-history/','/archive/workflow','/archive/journey','/archive/companies','/archive/company-settings','/archive/calendar/status','/archive/calendar/ics')
         readonly=request.method=='GET' and any(request.url.path==p or (p.endswith('/') and request.url.path.startswith(p)) for p in read_paths)
         readonly=readonly or (request.method=='POST' and request.url.path=='/archive/compare' and request.headers.get('origin') in (None,ORIGIN))
-        readonly=readonly or (request.method=='POST' and request.url.path in ('/archive/resume-source','/archive/analytics-batch','/archive/agent','/archive/resume-review','/archive/skill-analysis','/archive/skill-external','/archive/confirm-description','/archive/workflow','/archive/rank','/archive/company-settings','/archive/calendar') and request.headers.get('origin')==ORIGIN)
+        readonly=readonly or (request.method=='POST' and request.url.path in ('/archive/portfolio-publication','/archive/github-import','/archive/resume-source','/archive/analytics-batch','/archive/agent','/archive/resume-review','/archive/skill-analysis','/archive/skill-external','/archive/confirm-description','/archive/workflow','/archive/rank','/archive/company-settings','/archive/calendar') and request.headers.get('origin')==ORIGIN)
         return readonly and self.sessions.get(request.cookies.get('archive_session',''),0)>time.time()
 
 def install_archive(app,token,root,path=None):
@@ -33,6 +33,10 @@ def install_archive(app,token,root,path=None):
         ApplicationStore(target)
         return ArchiveStore(target)
     app.state.archive_store=store
+    from .github_collection_routes import install as install_github_import
+    install_github_import(app)
+    from .portfolio_publication_routes import install as install_portfolio_publication
+    install_portfolio_publication(app)
     from .workflow_routes import install_workflow
     install_workflow(app,token,root)
     skill_lock=asyncio.Lock()
@@ -56,7 +60,7 @@ def install_archive(app,token,root,path=None):
     @app.get('/assets/{name}')
     async def asset(name:str):
         if name in ('resume-portfolio.js','workflow-core.js','workflow-letter.js','workflow-career.js','vacancy-map.js','resume-sources.js','resume-compare.js','resume-compare-core.js','vacancy-selection.js','vacancy-document.js'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
-        if name in ('trajectory-badges.js','career-trajectory.js','learning-impact.js','career-analytics.js','career-charts.js','career-skills.js','career-analytics.css'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
+        if name in ('github-runs.js','portfolio-publication.js','github-import.js','trajectory-badges.js','career-trajectory.js','learning-impact.js','career-analytics.js','career-charts.js','career-skills.js','career-analytics.css'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
         allowed={'intake.js':root/'archive-web/intake.js','resume-profile.js':root/'archive-web/resume-profile.js','resume-profile-core.js':root/'archive-web/resume-profile-core.js','resume-profile.css':root/'archive-web/resume-profile.css','company-settings.js':root/'archive-web/company-settings.js','company-picker.js':root/'archive-web/company-picker.js','crm-planning.js':root/'archive-web/crm-planning.js','workflow.js':root/'archive-web/workflow.js','workflow.css':root/'archive-web/workflow.css','journey.js':root/'archive-web/journey.js','skill-analysis-ui.js':root/'archive-web/skill-analysis-ui.js','archive.js':root/'archive-web/archive.js','archive.css':root/'archive-web/archive.css','chatgpt-export.js':root/'hh-research-extension/chatgpt-export.js'}
         if name not in allowed:raise HTTPException(404)
         return FileResponse(allowed[name],headers={'Cache-Control':'no-cache'})

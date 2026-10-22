@@ -67,6 +67,8 @@ async function reload(){
  if(tab==='learning'){await CareerSkills.enterPage();return;}if(tab==='analytics'){await CareerAnalytics.enter();return;}if(tab==='about')return;else if(tab==='settings')await CompanySettings.enter();else if(tab==='today')await Journey.enter();else if(tab==='applications')await Flow.enter(chosenApplication());else if(tab==='reviews')await loadReviews(true);else if(tab==='changes')await loadChanges(true);else{await loadList(true);if(selection){const [kind,...id]=selection.split(':');await openDetail(kind,id.join(':'));}if(tab==='resume')await ResumeCompare.openRequested();}
 }
 async function loadList(reset=false){
+ if(typeof GitHubImport!=='undefined')GitHubImport.enter();
+ if(typeof PortfolioPublication!=='undefined')PortfolioPublication.enter();
  const request=++listRequest;if(reset){offset=0;$('list').replaceChildren();}
  const params=new URLSearchParams({...Object.fromEntries(analysisParams()),kind:tab==='ranking'?'vacancy':tab,...(companyPicker.value===null?{}:{companies:JSON.stringify(companyPicker.value)}),ranked_only:String(tab==='ranking'),exclude_closed:String(tab==='ranking'),q:$('search').value,trajectory:['vacancy','ranking'].includes(tab)?($('trajectoryFilter').value||initialTrajectory):'',status:tab==='resume'&&$('filter').value!=='missing'?'':$('filter').value,offset:String(offset),limit:'50'});
  const data=await api('entities?'+params);if(request!==listRequest)return;

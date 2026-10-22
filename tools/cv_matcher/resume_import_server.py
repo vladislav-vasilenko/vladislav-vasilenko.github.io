@@ -26,8 +26,18 @@ def create_app(token, *, ranker=None, cover_writer=None, archive_path=None):
         scheduler=asyncio.create_task(run(lambda:ApplicationStore(app.state.archive_store().path)))
         from src.career_runtime import run as run_career
         career=asyncio.create_task(run_career(lambda:ApplicationStore(app.state.archive_store().path)))
+        from src.github_collection_import import scheduler as run_github_import
+        github_import=asyncio.create_task(run_github_import(app.state.archive_store))
+        from src.portfolio_publication import scheduler as run_portfolio_publication
+        publication=asyncio.create_task(run_portfolio_publication(app.state.archive_store))
         try:yield
         finally:
+            publication.cancel()
+            with suppress(asyncio.CancelledError):await publication
+            github_import.cancel()
+            with suppress(asyncio.CancelledError):await github_import
+            for task in list(getattr(app.state,'github_import_tasks',set())):
+                with suppress(asyncio.CancelledError):await task
             career.cancel()
             with suppress(asyncio.CancelledError):await career
             scheduler.cancel()

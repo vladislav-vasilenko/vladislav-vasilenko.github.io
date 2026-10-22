@@ -6,8 +6,8 @@ Scope (iter 1): Yandex, Google, Meta — with stealth + optional storage_state.
 
 Design:
   - Outputs: public/online_scraped.json — append-only over runs, deduped by id.
-  - Embd/Clusters: GitHub Actions now runs index_meta_to_chroma.py + build_cluster_map.py 
-    after this script, utilizing the cv-api proxy.
+  - The workflow exports vacancies before optional legacy indexing/clustering.
+    Paid legacy indexing requires ENABLE_LEGACY_PAID_INDEX=true.
   - Each scraper runs with stealth=True and respects STORAGE_STATE env vars.
 
 Behaviour on error: individual scraper failures are logged but don't fail the job.
@@ -119,12 +119,16 @@ def _load_existing() -> dict:
 def _save(by_id: dict, stats: dict, now_iso: str):
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     payload = {
+        "schema_version": 1,
+        "collection_run": {"id": os.environ.get("GITHUB_RUN_ID"), "attempt": os.environ.get("GITHUB_RUN_ATTEMPT"), "sha": os.environ.get("GITHUB_SHA")},
         "last_updated": now_iso,
         "total": len(by_id),
         "stats_last_run": stats,
         "vacancies": sorted(by_id.values(), key=lambda v: v.get("first_seen", ""), reverse=True),
     }
-    OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    temporary = OUTPUT.with_suffix('.json.tmp')
+    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    temporary.replace(OUTPUT)
 
 
 def main() -> int:
@@ -136,6 +140,10 @@ def main() -> int:
     parser.add_argument("--include-sber", action="store_true",
                         help="Opt into Sber scraping in CI; local runs include it by default")
     args = parser.parse_args()
+    if args.limit is not None and not 1 <= args.limit <= 500:
+        parser.error('--limit must be between 1 and 500')
+    if args.scrapers and (not args.scrapers.strip() or any(s.strip() not in {'yandex','google','meta','sber'} for s in args.scrapers.split(','))):
+        parser.error('Unknown scraper; choose yandex,google,meta,sber')
 
     print(f"🚀 Online scrape @ {datetime.now(timezone.utc).isoformat()}")
     by_id = _load_existing()
@@ -181,6 +189,7 @@ def main() -> int:
                 traceback.print_exc(limit=2, file=sys.stderr)
                 stats[key]["errors"] += 1
 
+    _save(by_id, stats, now_iso)  # Includes the final source failures and empty results.
     total_new = sum(s["new"] for s in stats.values())
     print(f"\n✅ Done. {total_new} new, {len(by_id)} total → {OUTPUT}")
     for k, s in stats.items():
