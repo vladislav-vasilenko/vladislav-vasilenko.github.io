@@ -1,5 +1,5 @@
 {
-  "description": "Small manually labeled development set; 3 supplied vacancy excerpts and synthetic boundaries. Not representative held-out market validation.",
+  "description": "Small manually labeled development set; 3 supplied vacancy excerpts and synthetic boundaries. Not representative held-out market validation. Ontology v2 adds manually checked container/backend labels to existing excerpts; MPS backend remains unrelated to backend engineering.",
   "items": [
     {
       "id": "ru_required",
@@ -63,20 +63,25 @@
       "id": "bare_metal",
       "source": "user_excerpt_hh_138296710",
       "text": "Требования:\nОпыт проектирования горизонтально масштабируемых, отказоустойчивых data-intensive систем на bare-metal/VM-инфраструктуре и/или в Kubernetes;",
-      "expected": {}
+      "expected": {
+        "containers": "required"
+      }
     },
     {
       "id": "qa_metal",
       "source": "user_excerpt_arenadata",
       "text": "Что нужно делать:\nТестировать развёртывание и эксплуатацию платформы на bare metal, VM и в Kubernetes;",
-      "expected": {}
+      "expected": {
+        "containers": "mentioned"
+      }
     },
     {
       "id": "platform_python",
       "source": "user_excerpt_hh_138296710",
       "text": "Требования:\nУверенное владение Python;\nОпыт разработки бэкенд-сервисов и API с использованием FastAPI;",
       "expected": {
-        "python": "required"
+        "python": "required",
+        "backend": "required"
       }
     },
     {

@@ -11,16 +11,23 @@ def install_agent(app):
     @app.post('/archive/agent')
     async def agent_action(request:Request):
         raw=await request.body()
-        if len(raw)>32000:raise HTTPException(413,'Слишком большой запрос агента.')
+        if len(raw)>128000:raise HTTPException(413,'Слишком большой запрос агента.')
         try:
             data=json.loads(raw)
             if not isinstance(data,dict):raise ValueError('Нужен объект запроса.')
-            op=data['op'];s=service()
+            op=data['op']
+            if len(raw)>32000 and not op.startswith('trajectory_'):raise HTTPException(413,'Слишком большой запрос агента.')
+            s=service()
             if op=='search':return await s.search(data['request_id'],data.get('scope'))
             if op=='converse':return await s.converse(data['text'],data['request_id'],'local_owner')
             def action():
+                if op=='workspace_projects':
+                    from .workspace_projects import read
+                    return read()
                 if op.startswith('trajectory_'):
                     from . import career_trajectory as trajectory
+                    if op=='trajectory_candidates':return trajectory.candidates(s.archive,data.get('q',''))
+                    if op=='trajectory_adapt':return trajectory.adapt(s.store,s.archive,data['path_id'],data['vacancy_id'],data['revision'])
                     if op=='trajectory_get':return trajectory.overview(s.store,s.archive,data.get('path_id'))
                     if op=='trajectory_activate':
                         result=trajectory.overview(s.store,s.archive,data['path_id'])

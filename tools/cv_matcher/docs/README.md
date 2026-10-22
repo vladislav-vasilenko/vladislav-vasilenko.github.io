@@ -26,3 +26,6 @@
 - [Разбор нескольких резюме под трек: API и без API](architecture/resume-portfolio-review.md)
 
 - [Карьерная траектория: редактируемые этапы, подтверждения и черновик под вакансию](architecture/career-trajectory.md)
+
+- [Два проекта: портфолио и подготовка откликов](../../../docs/workspace.md)
+- [Сущности и связи карьерной системы](../../../docs/career-domain-model.md)

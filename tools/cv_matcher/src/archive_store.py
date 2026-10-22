@@ -190,7 +190,7 @@ class ArchiveStore(AnalysisStore):
             profile=db.execute('SELECT payload FROM profiles ORDER BY received_at DESC LIMIT 1').fetchone()
         profile=json.loads(profile[0]) if profile else {}
         return {'resumes':counts.get('resume',0),'vacancies':counts.get('vacancy',0),'full_descriptions':full,'closed':closed,'missing_in_search':missing,'versions':versions,'scans':scans,'last_sync':last,'primary_id':profile.get('primary_id'),'goal':profile.get('goal','')}
-    def entities(self,kind,*,q='',status='',offset=0,limit=50,resume_id='',goal=None,model='text-embedding-3-small',company='',companies=None,ranked_only=False,exclude_closed=False,all_items=False,include_payload=False):
+    def entities(self,kind,*,q='',status='',offset=0,limit=50,resume_id='',goal=None,model='text-embedding-3-small',company='',companies=None,ranked_only=False,exclude_closed=False,all_items=False,include_payload=False,trajectory=''):
         if kind not in ('resume','vacancy'):raise ValueError('Неизвестный раздел.')
         where=['e.kind=?'];args=[kind]
         if q:
@@ -215,10 +215,19 @@ class ArchiveStore(AnalysisStore):
             if ranked_only:items=[r for r in items if r['ranking']]
             if status.startswith('embedding_'):items=[r for r in items if r['embedding']['status']==status.removeprefix('embedding_')]
             if kind=='vacancy' and resume_id:items.sort(key=lambda r:-(r['ranking']['score'] if r['ranking'] else -2))
+            route_rows=[]
+            if kind=='vacancy':
+                from .career_trajectory_matching import paths,relations,accepts
+                route_rows=paths(self)
+                if trajectory and trajectory not in ('unassigned','intersection','needs_description') and trajectory not in {r['id'] for r in route_rows}:raise ValueError('Траектория не найдена.')
+                if trajectory:
+                    for item in items:item['trajectory']=relations(self,json.loads(item['payload']),route_rows)
+                    items=[item for item in items if accepts(trajectory,item['trajectory'])]
             total=len(items)
             if not all_items:items=items[max(offset,0):max(offset,0)+min(max(limit,1),200)]
             for item in items:
                 payload=item.pop('payload',None)
+                if kind=='vacancy' and 'trajectory' not in item:item['trajectory']=relations(self,json.loads(payload),route_rows)
                 if include_payload:item['payload']=json.loads(payload)
             if kind=='vacancy' and db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='applications'").fetchone():
                 queued={}
@@ -226,7 +235,7 @@ class ArchiveStore(AnalysisStore):
                     context=json.loads(application['context']);job_id=context.get('vacancy',{}).get('id')
                     if job_id not in queued:queued[job_id]={'id':application['id'],'status':application['status'],'channel':context.get('channel')}
                 for item in items:item['application']=queued.get(item['id'])
-        return {'total':total,'items':items}
+        return {'total':total,'items':items,'trajectory_options':[{'id':r['id'],'label':r['label']} for r in route_rows]}
     def detail(self,kind,identifier,resume_id='',goal=None,model='text-embedding-3-small'):
         with self.connect() as db:
             row=db.execute('SELECT * FROM entities WHERE kind=? AND id=?',(kind,identifier)).fetchone()
@@ -234,7 +243,11 @@ class ArchiveStore(AnalysisStore):
             versions=db.execute('SELECT id,content_hash,received_at,source_at FROM versions WHERE kind=? AND entity_id=? ORDER BY source_at DESC,id DESC',(kind,identifier)).fetchall()
             membership=db.execute('SELECT * FROM membership WHERE kind=? AND entity_id=? ORDER BY checked_at DESC',(kind,identifier)).fetchall()
             state=self.analysis_states(db,[dict(row)],resume_id,goal,model)[0]
-        return {**state,'payload':json.loads(row['payload']),'text':text_of(kind,json.loads(row['payload'])),'versions':[dict(r) for r in versions],'membership':[dict(r) for r in membership]}
+        result={**state,'payload':json.loads(row['payload']),'text':text_of(kind,json.loads(row['payload'])),'versions':[dict(r) for r in versions],'membership':[dict(r) for r in membership]}
+        if kind=='vacancy':
+            from .career_trajectory_matching import relations
+            result['trajectory']=relations(self,result['payload'])
+        return result
     def resume_snapshot(self,identifier,version_id):
         with self.connect() as db:
             row=db.execute("SELECT * FROM versions WHERE kind='resume' AND entity_id=? AND id=?",(identifier,version_id)).fetchone()

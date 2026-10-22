@@ -1,5 +1,5 @@
 """Versioned local skill ontology and curated primary learning sources. No network."""
-VERSION='career-skills-1'
+VERSION='career-skills-2'
 CHECKED='2026-10-20'
 
 # Effort is a planning range for one focused exercise, never time to mastery.
@@ -13,12 +13,12 @@ SKILLS={s['id']:s for s in [
  skill('python','Python',r'\bpython\b|питон',hours=(3,6),resources=('python_tutorial',)),
  skill('pytorch','PyTorch / autograd',r'\bpytorch\b|\btorch\b|autograd',('python',),resources=('pytorch_basics',)),
  skill('deep_learning','Основы Deep Learning',r'deep learning|глубок\w*.{0,12}обуч|нейросет',('linear_algebra','calculus','probability','pytorch'),(8,16),('dl_book',)),
- skill('optimization','Оптимизация обучения',r'gradient descent|\badamw?\b|\bsgd\b|градиентн\w*.{0,15}(?:спуск|оптимизац)',('calculus','deep_learning'),resources=('cs336',)),
+ skill('optimization','Оптимизация обучения',r'метод\w* оптимизац|gradient descent|\badamw?\b|\bsgd\b|градиентн\w*.{0,15}(?:спуск|оптимизац)',('calculus','deep_learning'),resources=('cs336',)),
  skill('transformers','Transformers / Attention',r'transformer|трансформер|attention|внимани\w* в модел',('deep_learning',),resources=('cs336',)),
  skill('tokenization','Токенизация и BPE',r'tokeniz|токенизац|\bbpe\b',('python',),resources=('cs336',)),
  skill('pretraining','LLM Pretraining',r'pre[\s-]?train|предобуч|претрен',('transformers','optimization','tokenization'),(8,16),('cs336',)),
- skill('data_curation','Подготовка обучающих данных',r'data curation|data dedup|дедупликац|очистк\w*.{0,20}данных|качеств\w*.{0,20}датасет|training data',('python',),resources=('cs336',)),
- skill('evaluation','Оценка моделей / Абляции',r'evaluat|ablation|абляци|бенчмарк|benchmark|оценк\w*.{0,20}(?:модел|качеств)',('deep_learning',),resources=('cs336',)),
+ skill('data_curation','Подготовка обучающих данных',r'больш\w*.{0,15}датасет|работ\w*.{0,20}данн\w*|data curation|data dedup|дедупликац|очистк\w*.{0,20}данных|качеств\w*.{0,20}датасет|training data',('python',),resources=('cs336',)),
+ skill('evaluation','Оценка моделей / Абляции',r'оцен\w*.{0,20}результат\w*.{0,20}эксперимент|evaluat|ablation|абляци|бенчмарк|benchmark|оценк\w*.{0,20}(?:модел|качеств)',('deep_learning',),resources=('cs336',)),
  skill('sft','SFT / Fine-tuning / LoRA',r'\bsft\b|fine[\s-]?tun|finetun|дообуч|\blora\b|\bpeft\b',('transformers','pytorch'),resources=('cs336',)),
  skill('rl','Reinforcement Learning',r'reinforcement learning|обучени\w* с подкреплен|\b(?:ppo|grpo|rlhf|rlvr)\b|\bRL\b',('probability','deep_learning'),(8,16),('cs336',)),
  skill('alignment','Post-training / Preference Optimization',r'post[\s-]?train|пост.?обуч|\b(?:dpo|rlhf|rlvr|grpo)\b|preference optim|alignment',('sft','rl'),(6,12),('cs336',)),
@@ -39,6 +39,12 @@ SKILLS={s['id']:s for s in [
  skill('robotics','Робототехника',r'robotics|робототех|робот[\s-]?манипулятор',('linear_algebra','python'),(8,16),('robotics_book',)),
  skill('control','Управление / MPC',r'control theory|теори\w* управлен|\bmpc\b|model predictive control|управлени\w*.{0,15}робот',('robotics','calculus'),resources=('robotics_book',)),
  skill('slam','SLAM / Sensor Fusion',r'\b(?:v?slam|vio|lidar)\b|sensor fusion|state estimation|лидар|слияни\w*.{0,15}сенсор',('robotics','probability'),(8,16),('robotics_book',)),
+ skill('model_training','Обучение генеративных / CV-моделей',r'обуч\w*.{0,22}(?:генеративн|cv[- ]?модел)|model training|training (?:generative|vision) models',('python','pytorch','data_curation'),(8,16),('pytorch_basics',)),
+ skill('research_methods','Воспроизведение исследований / Эксперименты',r'воспроизвод\w*.{0,30}(?:исследоват|стат|подход)|провер\w*.{0,20}гипотез|reproduc\w*.{0,20}(?:paper|research)|research methodology',('evaluation',),resources=('cs336',)),
+ skill('torch_compile','torch.compile',r'torch\.compile',('pytorch',),resources=('pytorch_basics',)),
+ skill('backend','Backend / API',r'fastapi|(?:backend|б[эе]кенд)[- ]?(?:сервис|service|разработ|develop|инженер)|архитектур\w*.{0,12}api',('python',)),
+ skill('containers','Docker / Kubernetes',r'\bdocker\b|kubernetes|\bk8s\b|контейнеризац',('python',)),
+ skill('agents','AI-агенты и проверка результатов',r'ai[- ]агент|ии[- ]агент|ai agents|agentic|агентн\w*.{0,15}(?:систем|сценар)',('python',)),
  skill('ros','ROS / ROS2',r'\bros2?\b',('robotics',)),
  ]}
 

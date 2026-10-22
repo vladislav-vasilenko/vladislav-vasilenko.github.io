@@ -42,3 +42,4 @@
 .csSection svg.liChart{max-height:none}.csSection svg.liChart text.liTick{font-size:11px;fill:#718171}.csSection svg.liChart text.liAxis{font-size:12px;fill:#49624e}.csSection svg.liChart text.liLabel{font-size:12px;fill:inherit}
 
 .ctDraftNotice{background:#f7f4e8;border-left:3px solid #bda774;padding:12px 16px;font-size:12px;line-height:1.7;border-radius:6px;margin-top:18px}
+.ctPriority{font-size:11px!important;font-weight:600;margin:12px 0 6px}.ctPriority.required{color:#345c43}.ctPriority.preferred,.ctPriority.specialization{color:#766598}.ctPriority.review{color:#8d7134}.ctAdapt{margin-top:20px;border-top:1px solid #e0e7dc;padding-top:20px}.ctAdapt h3{font-size:16px}.ctAdapt>.ctField{margin-bottom:16px}.ctAdapt>button{margin-right:10px}.ctBrowse{font-size:12px;align-self:center}.ctEditCriterion>.ctField:first-child,.ctEditCriterion>.ctField:has(textarea){grid-column:1/-1}

@@ -1,4 +1,8 @@
-## CV Matcher
+## Career Workspace (CV Matcher)
+
+Это локальный проект подготовки откликов внутри [общего workspace](../../docs/workspace.md). Публичное портфолио находится в корневых `src/` и `content/`. Главная точка входа персонального сервиса: `resume_import_server.py`, порт `8788`; запуск из корня — `npm run career:dev`. `server.py:8787` — прежний отдельный путь.
+
+[Предметная модель и связи сущностей](../../docs/career-domain-model.md) · [Карьерная траектория](docs/architecture/career-trajectory.md)
 
 Career Skills Intelligence: [треки, рекомендации обучения и подтверждения опыта](docs/architecture/skills-intelligence.md). Веб → Карта возможностей → Career Tracks; Telegram → Навыки и обучение.
 

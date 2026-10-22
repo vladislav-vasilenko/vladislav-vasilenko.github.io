@@ -56,7 +56,7 @@ def install_archive(app,token,root,path=None):
     @app.get('/assets/{name}')
     async def asset(name:str):
         if name in ('resume-portfolio.js','workflow-core.js','workflow-letter.js','workflow-career.js','vacancy-map.js','resume-sources.js','resume-compare.js','resume-compare-core.js','vacancy-selection.js','vacancy-document.js'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
-        if name in ('career-trajectory.js','learning-impact.js','career-analytics.js','career-charts.js','career-skills.js','career-analytics.css'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
+        if name in ('trajectory-badges.js','career-trajectory.js','learning-impact.js','career-analytics.js','career-charts.js','career-skills.js','career-analytics.css'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
         allowed={'intake.js':root/'archive-web/intake.js','resume-profile.js':root/'archive-web/resume-profile.js','resume-profile-core.js':root/'archive-web/resume-profile-core.js','resume-profile.css':root/'archive-web/resume-profile.css','company-settings.js':root/'archive-web/company-settings.js','company-picker.js':root/'archive-web/company-picker.js','crm-planning.js':root/'archive-web/crm-planning.js','workflow.js':root/'archive-web/workflow.js','workflow.css':root/'archive-web/workflow.css','journey.js':root/'archive-web/journey.js','skill-analysis-ui.js':root/'archive-web/skill-analysis-ui.js','archive.js':root/'archive-web/archive.js','archive.css':root/'archive-web/archive.css','chatgpt-export.js':root/'hh-research-extension/chatgpt-export.js'}
         if name not in allowed:raise HTTPException(404)
         return FileResponse(allowed[name],headers={'Cache-Control':'no-cache'})
@@ -166,10 +166,10 @@ def install_archive(app,token,root,path=None):
             raise ValueError('Неизвестное действие импорта резюме.')
         except (ValueError,KeyError,TypeError) as error:raise HTTPException(422,str(error)) from None
     @app.get('/archive/entities')
-    async def entities(kind:str='vacancy',q:str='',status:str='',offset:int=0,limit:int=50,resume_id:str='',goal:str|None=None,model:str='text-embedding-3-small',company:str='',companies:str|None=None,ranked_only:bool=False,exclude_closed:bool=False):
+    async def entities(kind:str='vacancy',q:str='',status:str='',offset:int=0,limit:int=50,resume_id:str='',goal:str|None=None,model:str='text-embedding-3-small',company:str='',companies:str|None=None,ranked_only:bool=False,exclude_closed:bool=False,trajectory:str=''):
         try:selected=json.loads(companies) if companies is not None else None
         except ValueError:raise HTTPException(422,'Некорректный список компаний.')
-        return await call('entities',kind,q=q,status=status,offset=offset,limit=limit,resume_id=resume_id,goal=goal,model=model,company=company,companies=selected,ranked_only=ranked_only,exclude_closed=exclude_closed)
+        return await call('entities',kind,q=q,status=status,offset=offset,limit=limit,resume_id=resume_id,goal=goal,model=model,company=company,companies=selected,ranked_only=ranked_only,exclude_closed=exclude_closed,trajectory=trajectory)
     @app.get('/archive/entity/{kind}/{identifier}')
     async def entity(kind:str,identifier:str,resume_id:str='',goal:str|None=None,model:str='text-embedding-3-small',version_id:int|None=None):
         if version_id is not None:
