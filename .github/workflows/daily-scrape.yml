@@ -37,6 +37,10 @@ jobs:
   scrape:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    defaults:
+      run:
+        # Explicit bash enables pipefail: tee must not hide scraper failures.
+        shell: bash
 
     steps:
       - name: Checkout
