@@ -21,7 +21,7 @@ class Controls(unittest.TestCase):
             with self.assertRaises(ValueError): control.configure(self.archive,data)
         control.configure(self.archive,{'sources':['yandex'],'limit':5})
         result=control.dispatch(self.archive,self.fake);self.assertEqual(result['dispatch_status'],'accepted')
-        suffix,body=self.fake.commands[0];self.assertEqual(suffix,'workflows/daily-scrape.yml/dispatches');self.assertEqual(body,{'ref':'main','inputs':{'sources':'yandex','limit':'5'}})
+        suffix,body=self.fake.commands[0];self.assertEqual(suffix,'workflows/daily-scrape.yml/dispatches');self.assertEqual(body,{'ref':'main','inputs':{'sources':'yandex','limit':'5','meta_unlimited':'true'}})
         with self.assertRaises(ValueError):control.dispatch(self.archive,self.fake)
         self.assertEqual(len(self.fake.commands),1)
     def test_running_blocks_duplicate_and_cancel_is_bound_to_workflow(self):
@@ -37,3 +37,23 @@ class Controls(unittest.TestCase):
         self.assertTrue(next(a for a in result['adapters'] if a['id']=='google')['github_actions'])
         self.assertFalse(next(a for a in result['adapters'] if a['id']=='hh')['github_actions'])
         self.assertEqual(control.run_detail(123,self.fake)['jobs'][0]['steps'][0]['conclusion'],'failure')
+
+    def test_meta_unlimited_is_default_and_explicit_flag_survives_dispatch(self):
+        self.assertTrue(control.state(self.archive)['meta_unlimited'])
+        control.configure(self.archive,{'sources':['meta'],'limit':500,'meta_unlimited':True})
+        control.dispatch(self.archive,self.fake)
+        self.assertEqual(self.fake.commands[0][1]['inputs']['meta_unlimited'],'true')
+        control.configure(self.archive,{'sources':['meta'],'limit':5,'meta_unlimited':False})
+        self.assertFalse(control.state(self.archive)['meta_unlimited'])
+        with self.assertRaises(ValueError):control.configure(self.archive,{'sources':['meta'],'limit':5,'meta_unlimited':'true'})
+
+    def test_cli_unlimited_meta_overrides_numeric_limit_before_factory(self):
+        import importlib.util
+        from unittest.mock import patch, Mock
+        path=Path(__file__).resolve().parents[2]/'scripts/scrape_online.py'
+        spec=importlib.util.spec_from_file_location('scrape_online_unlimited_test',path)
+        script=importlib.util.module_from_spec(spec);spec.loader.exec_module(script)
+        scraper=Mock();scraper.fetch_jobs.return_value=[];factory=Mock(return_value=scraper)
+        with patch('sys.argv',[str(path),'--scrapers','meta','--limit','500','--meta-unlimited']),patch.object(script,'_source_plan',return_value=[('meta',factory,[''])]),patch.object(script,'_load_existing',return_value={}),patch.object(script,'_save'),patch('builtins.print'):
+            self.assertEqual(script.main(),0)
+        factory.assert_called_once_with(limit=0)

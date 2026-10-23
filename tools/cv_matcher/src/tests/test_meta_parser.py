@@ -179,6 +179,18 @@ class CurrentMetaContracts(unittest.TestCase):
             self.assertTrue(result[0]['locations_complete'])
         self.assertEqual(parse_meta_graphql('{"data":{"unrelated_query":[]}}'), [])
 
+    def test_unlimited_detail_collection_has_no_500_cap_and_skips_existing(self):
+        import asyncio
+        from unittest.mock import AsyncMock, patch
+        from src.scrapers.meta_careers import MetaCareersScraper
+        scraper=MetaCareersScraper(limit=0)
+        raw=[{'id':str(i)} for i in range(1,1103)]
+        async def detail(context,row,*args):return {'id':'meta_'+row['id'],'title':'Engineer','link':'https://www.metacareers.com/profile/job_details/'+row['id']+'/','locations':['London'],'teams':[],'compensation':''}
+        with patch.object(scraper,'_fetch_one_async',side_effect=detail),patch('builtins.print'):
+            result=asyncio.run(scraper._fetch_details_async(None,raw,'',{'meta_1'}))
+        self.assertEqual(len(result),1101)
+        self.assertNotIn('meta_1',{r['id'] for r in result})
+
     def test_rendered_detail_requires_job_sections_and_excludes_footer(self):
         html = '<h1>Research Engineer</h1><div><div>Train generative models and evaluate reproducible scientific experiments.</div><div><h2>Research Engineer Responsibilities</h2><ul><li>Build experiments and reusable code.</li></ul></div><div><h2>Minimum Qualifications</h2><ul><li>Experience with PyTorch and research.</li></ul></div><div><h2>About Meta</h2>Company boilerplate</div></div><footer>Footer not JD</footer>'
         result = parse_meta_rendered_detail(html)

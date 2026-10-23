@@ -138,6 +138,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--scrapers", help="Comma-separated list of scrapers to run (e.g. yandex,google)")
     parser.add_argument("--limit", type=int, help="Override default vacancy limit per scraper")
+    parser.add_argument("--meta-unlimited", action="store_true", help="Read all available Meta detail pages, ignoring --limit for Meta")
     parser.add_argument("--headed", action="store_true",
                         help="Run browser with a visible window (helps bypass WAF/JS-challenge on Sber)")
     parser.add_argument("--include-sber", action="store_true",
@@ -167,7 +168,7 @@ def main() -> int:
         stats[key] = {"new": 0, "errors": 0}
         print(f"\n── {key} ──")
         try:
-            scraper = factory(limit=args.limit or 0)
+            scraper = factory(limit=0 if key == "meta" and args.meta_unlimited else args.limit or 0)
         except Exception as e:
             print(f"  ✗ {key}: init failed — {e}")
             stats[key]["errors"] += 1

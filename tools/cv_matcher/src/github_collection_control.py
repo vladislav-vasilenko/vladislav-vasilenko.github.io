@@ -14,7 +14,8 @@ SETTINGS_KEY = 'github-collection-controls'
 def state(archive):
     with archive.connect() as db:
         row = db.execute('SELECT value FROM archive_meta WHERE key=?', (SETTINGS_KEY,)).fetchone()
-    return json.loads(row[0]) if row else {'sources': ['yandex', 'google', 'meta'], 'limit': 100}
+    value=json.loads(row[0]) if row else {'sources': ['yandex', 'google', 'meta'], 'limit': 100}
+    return {'meta_unlimited':True,**value}
 
 
 def save(archive, **changes):
@@ -32,7 +33,9 @@ def configure(archive, data):
     if not isinstance(sources, list) or not sources or len(sources) > 4 or any(s not in CI_SOURCES for s in sources) or len(set(sources)) != len(sources):
         raise ValueError('Выберите источники Yandex, Google, Meta или Sber.')
     if type(limit) is not int or not 1 <= limit <= 500: raise ValueError('Лимит должен быть от 1 до 500 на запрос источника.')
-    return save(archive, sources=sources, limit=limit)
+    unlimited=data.get('meta_unlimited',state(archive).get('meta_unlimited',True))
+    if type(unlimited) is not bool:raise ValueError('Нужно включить или выключить сбор Meta без лимита.')
+    return save(archive, sources=sources, limit=limit, meta_unlimited=unlimited)
 
 
 def clean_run(r):
@@ -87,7 +90,7 @@ def dispatch(archive, client=None):
         latest.update(dispatched_epoch=time.time(), dispatch_status='sending')
         db.execute('INSERT OR REPLACE INTO archive_meta VALUES(?,?)', (SETTINGS_KEY, json.dumps(latest)))
     try:
-        client.mutate(f'workflows/{WORKFLOW}/dispatches', {'ref': 'main', 'inputs': {'sources': ','.join(settings['sources']), 'limit': str(settings['limit'])}})
+        client.mutate(f'workflows/{WORKFLOW}/dispatches', {'ref': 'main', 'inputs': {'sources': ','.join(settings['sources']), 'limit': str(settings['limit']), 'meta_unlimited':str(settings.get('meta_unlimited',True)).lower()}})
     except Exception:
         save(archive, dispatch_status='error'); raise
     return save(archive, dispatch_status='accepted', dispatched_at=datetime.now(timezone.utc).isoformat())

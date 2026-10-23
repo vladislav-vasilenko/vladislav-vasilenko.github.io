@@ -22,9 +22,13 @@ on:
         type: string
         default: 'yandex,google,meta'
       limit:
-        description: 'Maximum vacancies per adapter query, 1–500'
+        description: 'Limit per query for other adapters (and Meta when unlimited is off), 1–500'
         type: number
         default: 100
+      meta_unlimited:
+        description: 'Meta: collect all available vacancies without a count limit'
+        type: boolean
+        default: true
 
 concurrency:
   group: daily-scrape
@@ -95,7 +99,13 @@ jobs:
         env:
           COLLECTION_SOURCES: ${{ inputs.sources || 'yandex,google,meta' }}
           COLLECTION_LIMIT: ${{ inputs.limit || '100' }}
-        run: uv run python -u scripts/scrape_online.py --scrapers "$COLLECTION_SOURCES" --limit "$COLLECTION_LIMIT" 2>&1 | tee "$RUNNER_TEMP/vacancy-scrape.log"
+          COLLECTION_META_UNLIMITED: ${{ github.event_name == 'schedule' && 'true' || inputs.meta_unlimited && 'true' || 'false' }}
+        run: |
+          EXTRA_ARGS=()
+          if [ "$COLLECTION_META_UNLIMITED" = 'true' ]; then
+            EXTRA_ARGS+=(--meta-unlimited)
+          fi
+          uv run python -u scripts/scrape_online.py --scrapers "$COLLECTION_SOURCES" --limit "$COLLECTION_LIMIT" "${EXTRA_ARGS[@]}" 2>&1 | tee "$RUNNER_TEMP/vacancy-scrape.log"
         # don't fail the workflow on per-source errors; script returns 0
         continue-on-error: false
 
