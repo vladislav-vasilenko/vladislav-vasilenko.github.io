@@ -17,6 +17,8 @@ with tempfile.TemporaryDirectory(prefix='career-isolated-tests-') as tmp:
     for name in ('src','archive-web','hh-research-extension','docs'):
         shutil.copytree(source/name,target/name,ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
     for path in source.glob('*.py'):shutil.copy2(path,target/path.name)
+    (target/'scripts').mkdir()
+    for path in (source/'scripts').glob('*.py'):shutil.copy2(path,target/'scripts'/path.name)
     shutil.copy2(source/'pyproject.toml',target/'pyproject.toml')
     env={k:v for k,v in os.environ.items() if not any(s in k.upper() for s in ('OPENAI','TELEGRAM','API_KEY','TOKEN','SESSION','GOOGLE','PYTHONPATH'))}
     result=subprocess.run([sys.executable,'-m','unittest','discover','-s','src/tests','-t','.'],cwd=target,env=env)

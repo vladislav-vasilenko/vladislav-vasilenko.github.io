@@ -121,7 +121,10 @@ def _save(by_id: dict, stats: dict, now_iso: str):
     payload = {
         "schema_version": 1,
         "collection_run": {"id": os.environ.get("GITHUB_RUN_ID"), "attempt": os.environ.get("GITHUB_RUN_ATTEMPT"), "sha": os.environ.get("GITHUB_SHA")},
-        "last_updated": now_iso,
+        # The export is produced after descriptions are fetched. Using run
+        # start here made every new description look newer than its export.
+        "last_updated": datetime.now(timezone.utc).isoformat(),
+        "collection_started_at": now_iso,
         "total": len(by_id),
         "stats_last_run": stats,
         "vacancies": sorted(by_id.values(), key=lambda v: v.get("first_seen", ""), reverse=True),
