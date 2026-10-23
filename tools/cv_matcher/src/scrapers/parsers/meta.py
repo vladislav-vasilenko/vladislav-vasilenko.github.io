@@ -105,7 +105,75 @@ class MetaVacancy(BaseModel):
     sub_teams: List[str] = Field(default_factory=list)
     compensation: str = ""
     description: str = Field(min_length=50)
-    link: str = Field(pattern=r"^https://www\.metacareers\.com/jobs/\d+/?$")
+    link: str = Field(pattern=r"^https://www\.metacareers\.com/(?:jobs|profile/job_details)/\d+/?$")
     pub_date: str = "Recently"
     origin_query: str = ""
 
+
+
+def parse_meta_listing(html: str) -> List[Dict[str, Any]]:
+    """Read public rendered cards across old /jobs and current /profile routes."""
+    from bs4 import BeautifulSoup
+    from urllib.parse import urlsplit
+    soup=BeautifulSoup(html,'html.parser');found={}
+    for a in soup.select('a[href]'):
+        u=urlsplit(a.get('href',''))
+        if u.netloc and u.netloc!='www.metacareers.com':continue
+        m=re.fullmatch(r'/(?:jobs|profile/job_details)/(\d+)/?',u.path)
+        if not m:continue
+        heading=a.select_one('h2,h3,h4');title=(heading or a).get_text(' ',strip=True)
+        if not title or title.lower() in ('apply','apply now','view job'):continue
+        found[m[1]]={'id':m[1],'title':title[:500],'locations':[],'teams':[],'sub_teams':[],'url':'https://www.metacareers.com'+u.path}
+    return list(found.values())
+
+
+def parse_meta_rendered_detail(html: str) -> Dict[str, Any]:
+    """Fallback for the current public React detail page; excludes site footer."""
+    from bs4 import BeautifulSoup
+    soup=BeautifulSoup(html,'html.parser');out={'title':'','description':'','responsibilities':'','qualifications':'','compensation':'','date_posted':''}
+    h=soup.find('h1')
+    if h:out['title']=h.get_text(' ',strip=True)
+    for heading in soup.find_all(['h2','h3']):
+        label=heading.get_text(' ',strip=True)
+        if not re.search(r'Responsibilities$|^(Minimum|Preferred) Qualifications$',label,re.I):continue
+        block=heading.parent
+        for _ in range(3):
+            if block is None:break
+            if len(block.get_text(' ',strip=True))>len(label)+30:break
+            block=block.parent
+        if block is None:continue
+        body=block.get_text('\n',strip=True)
+        if re.search('Responsibilities$',label,re.I):
+            out['responsibilities']=body
+            intro=[]
+            for sibling in block.previous_siblings:
+                if getattr(sibling,'name',None) and sibling.find(['h1','h2','h3']):break
+                if getattr(sibling,'get_text',None):
+                    value=sibling.get_text('\n',strip=True)
+                    if len(value)>50:intro.append(value)
+            out['description']='\n\n'.join(reversed(intro))
+        else:out['qualifications']+='\n\n'+body
+    out['qualifications']=out['qualifications'].strip()
+    if not out['description'] and out['responsibilities']:out['description']=out['responsibilities'];out['responsibilities']=''
+    # A general page with a title is never accepted as a complete job.
+    if not out['title'] or not out['qualifications']:out['description']=''
+    return out
+
+
+def parse_meta_graphql(body: str) -> List[Dict[str, Any]]:
+    """Both observed public listing contracts, including October 2026 v2."""
+    found={}
+    for line in body.splitlines():
+        line=line.strip().removeprefix('for (;;);').strip()
+        try:obj=json.loads(line)
+        except ValueError:continue
+        if not isinstance(obj,dict):continue
+        data=obj.get('data') or {}
+        for name in ('job_search_with_featured_jobs_v2','job_search_with_featured_jobs'):
+            container=data.get(name) or {}
+            for item in container.get('all_jobs') or []:
+                if not isinstance(item,dict) or not re.fullmatch(r'\d{1,25}',str(item.get('id',''))) or not isinstance(item.get('title'),str):continue
+                locations=item.get('locations') or []
+                if not isinstance(locations,list) or any(not isinstance(x,str) for x in locations):continue
+                found[str(item['id'])]={**item,'id':str(item['id']),'locations':locations,'locations_complete':True}
+    return list(found.values())

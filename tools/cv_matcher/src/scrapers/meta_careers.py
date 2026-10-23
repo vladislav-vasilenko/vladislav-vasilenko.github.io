@@ -14,6 +14,7 @@ from ._base import BaseScraper
 from ._stealth import STEALTH_INIT_JS
 from .parsers.meta import (
     MetaVacancy,
+    parse_meta_listing, parse_meta_rendered_detail, parse_meta_graphql,
     build_full_description as _build_full_description,
     meta_html_to_text as _meta_html_to_text,
     parse_meta_detail as _meta_parse_detail,
@@ -50,13 +51,13 @@ class MetaCareersScraper(BaseScraper):
     """metacareers.com — full-board scraper with concurrent detail fetching.
 
     Approach (works around Meta's anti-bot + Relay/SSR quirks):
-      1. Navigate to https://www.metacareers.com/jobs and intercept the
-         GraphQL response carrying ``job_search_with_featured_jobs.all_jobs`` —
-         a single payload covers all ~552 active vacancies (the UI's
-         ``?page=N`` is a client-side slice of the same data).
+      1. Navigate to https://www.metacareers.com/jobsearch/ and intercept the
+         GraphQL response carrying ``job_search_with_featured_jobs_v2.all_jobs`` (or the legacy contract) —
+         the public payload contains the board; the UI's
+         ``?page=N`` is a client-side slice of the same data.
       2. Concurrently fetch each detail page (``detail_concurrency`` parallel
          pages on one ``BrowserContext``); parse the JSON-LD ``JobPosting``
-         block embedded in the SSR markup. Avoids waiting for React hydration.
+         block or the rendered responsibilities and qualification sections.
       3. Each detail fetch retries with exponential backoff on transient
          failures; result is validated via :class:`MetaVacancy` before return.
 
@@ -68,9 +69,9 @@ class MetaCareersScraper(BaseScraper):
     id_prefix = "meta"
     stealth = True
 
-    listing_url = "https://www.metacareers.com/jobs"
+    listing_url = "https://www.metacareers.com/jobsearch/"
     paginated_url_tpl = "https://www.metacareers.com/jobsearch?source=cp_chatbot&page={page}"
-    detail_url_tpl = "https://www.metacareers.com/jobs/{job_id}/"
+    detail_url_tpl = "https://www.metacareers.com/profile/job_details/{job_id}/"
 
     detail_timeout_ms = 30000
     inter_request_pause_ms = (200, 600)
@@ -97,7 +98,7 @@ class MetaCareersScraper(BaseScraper):
         except Exception as e:
             print(f"❌ {self.company_name}: ошибка — {e}")
             self._emit("error", company=self.company_name, query=query, message=str(e))
-            return []
+            raise RuntimeError("Meta Careers: " + str(e)) from e
 
     # ---- Async core ----
 
@@ -133,8 +134,10 @@ class MetaCareersScraper(BaseScraper):
                 print(f"  Meta: {len(raw_jobs)} вакансий получено из GraphQL")
                 self._emit("listing_captured", company=self.company_name, count=len(raw_jobs))
                 if not raw_jobs:
-                    return []
+                    raise RuntimeError("Выдача Meta не распознана.")
                 results = await self._fetch_details_async(context, raw_jobs, query, existing_ids)
+                if not results and any(f"meta_{r.get('id')}" not in existing_ids for r in raw_jobs) and not query:
+                    raise RuntimeError("Карточки Meta получены, но полные описания не распознаны.")
                 print(f"  Meta: ✓ {len(results)} вакансий собрано")
                 return results
             finally:
@@ -144,7 +147,7 @@ class MetaCareersScraper(BaseScraper):
                     await browser.close()
 
     async def _capture_listing_async(self, context) -> List[Dict[str, Any]]:
-        """Open /jobs, capture the GraphQL listing payload (with pagination fallback)."""
+        """Capture the public GraphQL listing payload, with a bounded DOM fallback."""
         captured: List[Dict[str, Any]] = []
         page = await context.new_page()
 
@@ -157,22 +160,7 @@ class MetaCareersScraper(BaseScraper):
                 return
             if "job_search_with_featured_jobs" not in body:
                 return
-            for line in body.splitlines() or [body]:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    obj = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                jobs = (
-                    obj.get("data", {})
-                    .get("job_search_with_featured_jobs", {})
-                    .get("all_jobs")
-                )
-                if jobs:
-                    captured.extend(jobs)
-                    return
+            captured.extend(parse_meta_graphql(body))
 
         page.on("response", lambda r: asyncio.create_task(handle_response(r)))
         try:
@@ -183,6 +171,7 @@ class MetaCareersScraper(BaseScraper):
                     break
                 await page.wait_for_timeout(500)
 
+            captured.extend(parse_meta_listing(await page.content()))
             by_id = self._dedup_by_id(captured)
             expected = await self._read_total_from_pagination_async(page)
             if expected and len(by_id) < int(expected * 0.9):
@@ -196,6 +185,8 @@ class MetaCareersScraper(BaseScraper):
                 print(
                     f"  Meta: pagination indicator ~{expected}, GraphQL captured {len(by_id)} unique — within tolerance."
                 )
+            if not by_id:
+                raise RuntimeError("Не распознаны карточки Meta: проверьте доступ и актуальную разметку. Пустая выдача не подтверждена.")
             return list(by_id.values())
         finally:
             await page.close()
@@ -252,10 +243,13 @@ class MetaCareersScraper(BaseScraper):
                 page = await context.new_page()
                 try:
                     await page.goto(job_url, wait_until="domcontentloaded", timeout=self.detail_timeout_ms)
-                    detail = _meta_parse_detail(await page.content())
+                    html=await page.content()
+                    detail = _meta_parse_detail(html)
+                    if not detail.get("description"):detail=parse_meta_rendered_detail(html)
                     if not detail.get("description"):
                         await page.wait_for_timeout(800)
-                        detail = _meta_parse_detail(await page.content())
+                        html=await page.content();detail = _meta_parse_detail(html)
+                        if not detail.get("description"):detail=parse_meta_rendered_detail(html)
                     if not detail.get("description"):
                         # Treat as transient — let the retry layer re-attempt.
                         raise RuntimeError("empty description on this attempt")
@@ -296,7 +290,7 @@ class MetaCareersScraper(BaseScraper):
 
             lo, hi = self.inter_request_pause_ms
             await asyncio.sleep(random.uniform(lo, hi) / 1000.0)
-            return {**vac.model_dump(),"description_quality":"full" if len(full_desc)>150 else "snippet","source_page":job_url}
+            return {**vac.model_dump(),"locations_complete":raw.get("locations_complete",False),"description_quality":"full" if len(full_desc)>150 else "snippet","source_page":job_url}
 
     # ---- Helpers ----
 
@@ -340,6 +334,7 @@ class MetaCareersScraper(BaseScraper):
             except Exception as e:
                 print(f"  ⚠️ Meta page {n}: {e}")
                 continue
+            sink.extend(parse_meta_listing(await page.content()))
             unique = len(self._dedup_by_id(sink))
             print(f"    walk page={n}: cumulative unique jobs={unique}")
             if unique >= expected:

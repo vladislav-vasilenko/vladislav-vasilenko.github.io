@@ -167,6 +167,27 @@ def test_listing_sample_shape() -> None:
     print(f"  ✓ listing_sample: {len(jobs)} entries, all fields present")
 
 
+import unittest
+from src.scrapers.parsers.meta import parse_meta_graphql, parse_meta_rendered_detail
+
+class CurrentMetaContracts(unittest.TestCase):
+    def test_current_and_legacy_listing_keep_all_locations(self):
+        for name in ('job_search_with_featured_jobs_v2', 'job_search_with_featured_jobs'):
+            body = json.dumps({'data': {name: {'all_jobs': [{'id': '123', 'title': 'Research Engineer', 'locations': ['Paris, France', 'London, UK'], 'teams': ['AI']}]}}})
+            result = parse_meta_graphql(body)
+            self.assertEqual(result[0]['locations'], ['Paris, France', 'London, UK'])
+            self.assertTrue(result[0]['locations_complete'])
+        self.assertEqual(parse_meta_graphql('{"data":{"unrelated_query":[]}}'), [])
+
+    def test_rendered_detail_requires_job_sections_and_excludes_footer(self):
+        html = '<h1>Research Engineer</h1><div><div>Train generative models and evaluate reproducible scientific experiments.</div><div><h2>Research Engineer Responsibilities</h2><ul><li>Build experiments and reusable code.</li></ul></div><div><h2>Minimum Qualifications</h2><ul><li>Experience with PyTorch and research.</li></ul></div><div><h2>About Meta</h2>Company boilerplate</div></div><footer>Footer not JD</footer>'
+        result = parse_meta_rendered_detail(html)
+        self.assertIn('generative', result['description'])
+        self.assertIn('PyTorch', result['qualifications'])
+        self.assertNotIn('boilerplate', result['description'])
+        self.assertFalse(parse_meta_rendered_detail('<h1>Careers at Meta</h1><p>Company introduction only.</p>')['description'])
+
+
 TESTS = [
     test_parse_detail_with_comp,
     test_parse_detail_no_comp_synthetic,
