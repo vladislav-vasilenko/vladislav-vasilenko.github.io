@@ -1,5 +1,7 @@
 # Гибридное извлечение и ограниченное восстановление
 
+> Сверка 22.10.2026. Python/Chrome fallback и очередь дозагрузки реализованы. [LLM repair](llm-adapter-repair.md) остаётся планом, не рабочим генератором исполняемого кода.
+
 Статус: предложение эксперимента, не готовый универсальный browser agent. Источники: [AI-native](sources/ai-native-extraction.md), [ТЗ](sources/evolutionary-career-platform.md).
 
 ## Основа

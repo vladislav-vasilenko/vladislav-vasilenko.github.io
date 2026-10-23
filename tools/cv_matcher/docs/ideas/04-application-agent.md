@@ -1,5 +1,7 @@
 # Агент качественного отклика и анкет
 
+> Сверка 22.10.2026. Общий application layer, draft/approval и supported fill уже есть. LinkedIn Apply metadata/переход в [следующем этапе](../integration/linkedin-adapters.md) не означает готовый автоматический отклик.
+
 Статус: улучшение уже существующего supervised workflow. Источники: [идеи агента](sources/supervised-application-agent.md), [ТЗ](sources/evolutionary-career-platform.md).
 
 ## Что уже есть и где продолжать

@@ -1,5 +1,7 @@
 # Поиск Research Engineer ML
 
+> Сверка 22.10.2026. Расписание backend, GitHub cron и импорт результатов — отдельные процессы. [Application scheduler](architecture/application-layer.md), [GitHub control/import](integration/github-import-and-portfolio.md). Выбранная траектория пока не перенастраивает общий поиск автоматически.
+
 Профиль: Generative Modelling / DiT / Transformer pre-train и post-train.
 
 Условия: Москва — любой формат; либо удалённая работа по России. Зарплата и стаж без ограничения. Это два отдельных поиска, результаты которых нужно объединять по ID вакансии.

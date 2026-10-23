@@ -1,6 +1,8 @@
 # Resume document comparison and workspace reading
 
-Updated: 2026-10-20. These views use saved local data. They do not invoke paid models or send applications.
+> Сверка 22.10.2026. Local document comparison and LLM portfolio review are distinct modes. Current [architecture](../architecture/current-state.md); dated test counts below describe the original release, not a new live verification.
+
+Updated: 2026-10-22. These views use saved local data. They do not invoke paid models or send applications.
 
 ## Resume comparison
 
@@ -27,11 +29,11 @@ Document mode supports up to 1,000 chunks per snapshot; compact mode initially s
 
 The description includes **Навыки для этой вакансии**. It calls `skills_vacancy` through [`agent_routes.py`](../../src/agent_routes.py) → `CareerApplication.skills_vacancy` → [`career_skills.vacancy_plan`](../../src/career_skills.py). The shared priority engine reuses local requirement extraction, cached Luna and candidate evidence. It works without an embedding ranking for an explicitly selected complete vacancy, returns API count zero, and does not overwrite the saved multi-vacancy map selection. Unsupported requirements remain visible for manual checking. Actions distinguish validation, learning, practice, CV documentation and publication. Resource prerequisites remain explicit.
 
-The link to **Навыки и обучение** carries `skills_vacancy` and `resume_id` into the analytics adapter, where that explicit vacancy can be analyzed with the same engine.
+The link to **Карьерная траектория** carries `skills_vacancy` and `resume_id` into the analytics adapter, where that explicit vacancy can be analyzed with the same engine.
 
 ## Document sources and application preparation
 
-[`resume_documents.py`](../../src/resume_documents.py) and [`resume-sources.js`](../../archive-web/resume-sources.js) support reviewed import from Google Docs or TXT/MD/DOC/DOCX/PDF. Extraction produces an expiring preview; an explicit review saves a snapshot. The primary CV is not switched automatically. Google Docs uses the existing extension permission and command queue, requires an accessible export and extension version 0.11.19 or later. Scanned PDFs may require OCR; legacy DOC conversion depends on the platform converter. Private Google Docs import was not exercised in the live QA session.
+[`resume_documents.py`](../../src/resume_documents.py) and [`resume-sources.js`](../../archive-web/resume-sources.js) support reviewed import from Google Docs or TXT/MD/DOC/DOCX/PDF/Pages. Additional XLS/XLSX evidence is supported by the separate [portfolio review](../architecture/resume-portfolio-review.md) path. Extraction produces an expiring preview; an explicit review saves a snapshot. The primary CV is not switched automatically. Google Docs uses the existing extension permission and command queue, requires an accessible export and extension version 0.11.19 or later. Scanned PDFs may require OCR; legacy DOC conversion depends on the platform converter. Private Google Docs import was not exercised in the live QA session.
 
 [`application_readiness.py`](../../src/application_readiness.py) reports stale context/activity without weakening final transfer checks. [`workflow.js`](../../archive-web/workflow.js) exposes source → fit → letter → form → approval steps. Read-only `career_open` opens/inspects a company form; it is separate from one-use approved filling. An installed extension must be reloaded to consume new commands. Real personal-data filling and submission were not exercised during this QA session.
 
@@ -49,6 +51,6 @@ The diagram toolbar has **Скопировать связи для LLM · без
 
 ## Dedicated learning workspace
 
-`?view=learning` / **Навыки и обучение** in the main navigation provides a separate workspace using the existing `CareerSkills` renderer and shared backend engine. It supports a CV selector, current map cohort or whole saved market, selected vacancies/directions/target profile, priority actions, prerequisites/resources and evidence feedback. Analytics retains its inline view and a link carrying current scope; vacancy cards link directly to the single-vacancy plan. This is an evidence-based plan with milestones, not a validated prediction of career transitions or learning outcomes.
+`?view=learning` / **Карьерная траектория** starts with an editable goal, stages and completion criteria. A CV is not required to define a path. The existing `CareerSkills` renderer is an instrument inside a selected stage, with separate map/whole-market/single-vacancy scopes. See [the trajectory contract](../architecture/career-trajectory.md). Analytics retains its inline view and a link carrying current scope; vacancy cards link directly to the single-vacancy plan. This is an evidence-based plan with milestones, not a validated prediction of career transitions or learning outcomes.
 
 Evidence updates can carry an immutable `plan_id`; the backend verifies its CV, persists the evidence and recomputes that originating cohort without overwriting the map selection. The single-vacancy path continues to work without embedding rankings.

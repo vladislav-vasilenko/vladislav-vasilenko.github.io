@@ -1,5 +1,7 @@
 # Панели на сайтах работодателей · 0.10.5
 
+> Сверка 22.10.2026. Панели используют существующие adapters; актуальные исходники расширения 0.11.22. [Матрица источников](architecture/hybrid-collection.md), [следующий LinkedIn adapter](integration/linkedin-adapters.md). Номер релиза ниже исторический.
+
 Поддерживаются список и страница вакансии на Яндексе (`yandex.ru/jobs`, `yandex.com/jobs`), Avito (`career.avito.com/vacancies`), Ozon.Tech (`ozon.tech/vacancies`), карьерном портале Ozon (`career.ozon.ru/.../vacancy`) и T-Bank (`tbank.ru/career`).
 
 ## Как включить

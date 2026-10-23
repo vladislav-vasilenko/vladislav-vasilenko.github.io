@@ -1,5 +1,7 @@
 # Разрывы между реализацией и целевым конвейером
 
+> Сверка 22.10.2026. Ниже сохранён реестр исторических findings. Актуальные ограничения: [current-state](current-state.md), [roadmap](../roadmap.md). G22/G24/G25 не означают отсутствие уже реализованных application layer/router/MCP. Связь Actions JSON → SQLite теперь есть; public projection тоже реализована. Полнота live E2E, качество ранжирования и LinkedIn session adapter остаются открытыми.
+
 > **Обновление Skills Intelligence, 20.10.2026:** [реализованный модуль, контракт, использование и ограничения качества](skills-intelligence.md). 33 навыка / 6 версионируемых треков, общие Web/Telegram рекомендации по top-K, evidence feedback и история; 369 Python / 320 JS. Live Web: 50 вакансий, API 0. Независимая массовая разметка и аудит GitHub остаются дальнейшей работой. Эта фаза реализована по отдельному явному запросу пользователя; исторический baseline ниже сохранён.
 
 > **Уточнение 20.10.2026:** [Отчёт для следующего планирования — 20.10.2026](../handoff/2026-10-20-agent-planning-brief.md) содержит актуальную таблицу Pending и Verification. G04 в части скрытого 30-minute отсечения shortlist исправлен; проверка активности перед действием сохраняется. G22/G24/G25 нельзя планировать как отсутствующие application layer/router/MCP. G09 (качество), G08 (related postings), company submit/verify, Web cap 200, единый paid-attempt guard и полный live E2E остаются открыты. Новые deterministic tags, batch Luna и ручной mark не закрывают эти пункты.

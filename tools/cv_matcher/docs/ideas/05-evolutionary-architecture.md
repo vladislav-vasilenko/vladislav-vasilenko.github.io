@@ -1,5 +1,7 @@
 # Эволюционная AI-native архитектура и стоимость
 
+> Сверка 22.10.2026. Application layer/MCP, GitHub import и публичная проекция уже реализованы. [Актуальная архитектура](../architecture/current-state.md) заменяет предположения исходного ТЗ об их отсутствии.
+
 Статус: принципы будущих итераций. Источники: [большое ТЗ](sources/evolutionary-career-platform.md), [AI-native](sources/ai-native-extraction.md).
 
 ## Переиспользовать существующее

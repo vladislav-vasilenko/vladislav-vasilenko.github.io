@@ -2,7 +2,7 @@
 
 > Реализация 19.10.2026: [application layer и MCP](../application-layer.md). Документ ниже сохраняет исходное решение; ограничения/фактические tools уточнены в описании реализации.
 
-Дата: 19.10.2026. Статус: целевое требование пользователя принято в архитектурный план; описанные расширения ещё не внедрены.
+Дата: 19.10.2026. Статус на 22.10.2026: общий application layer, bounded router, scheduler и task controls реализованы. Полный свободный LLM planner и live E2E всех действий не подтверждены. Текущий контракт — [application-layer](../application-layer.md); таблица исходного контекста ниже историческая.
 
 ## Контекст: что уже реализовано
 
@@ -36,7 +36,7 @@ Telegram отвечает за проверку update/actor/chat, отобра�
 5. Telegram показывает краткий результат и одно следующее действие; неизвестные обязательные поля запрашиваются с привязкой к operation/application/form version.
 6. Владелец проверяет точный состав и разрешает конкретное действие. Без API предлагается snapshot/prompt/import с теми же context IDs.
 
-Название будущего Orchestrator/intent API — проектное понятие, не существующий endpoint. Реальные переиспользуемые функции перечислены в [current-state](../current-state.md) и [ADR 0003](0003-thin-mcp-and-human-approval.md).
+Первоначально Orchestrator/intent API был проектным понятием; теперь доступны `career_orchestrator.py` и `/archive/agent` в описанном в application-layer объёме. Реальные переиспользуемые функции перечислены в [current-state](../current-state.md) и [ADR 0003](0003-thin-mcp-and-human-approval.md).
 
 ## Долгие операции и управление
 

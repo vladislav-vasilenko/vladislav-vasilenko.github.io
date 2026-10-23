@@ -1,8 +1,6 @@
 # Общий application layer и Career MCP
 
-> **Обновление 20.10.2026:** API 13 / Extension 0.11.16. [Отчёт для следующего планирования — 20.10.2026](../handoff/2026-10-20-agent-planning-brief.md). Общие задачи теперь также включают `analysis:…` для Luna batch. Ручные отметки живут в существующей SQLite, исключаются из `CareerApplication.candidates`, не являются receipt площадки. Широкого LLM planner и универсального company submit по-прежнему нет.
-
-Реализовано 19.10.2026. Расширение 0.11.14, локальный API health version 12.
+Обновлено 22.10.2026. Общий слой реализован; текущие исходники расширения 0.11.22, health API 13, collection protocol 2. Задачи также включают `analysis:…` для Luna batch. Ручные отметки откликов — отдельные локальные наблюдения, не receipt площадки. Широкого LLM planner и универсального company submit нет.
 
 [CareerApplication](../../src/career_application.py) владеет поиском, отбором рекомендаций, расписанием, outbox событий/напоминаний, созданием карточки отклика, подготовкой формы, чтением анализа и offline-пакетов. Правила CRM, версий, вопросов и одноразовых подтверждений остаются в существующих `ApplicationStore`/mixins. [WorkflowBot](../../src/workflow_bot.py) наследует общий сервис для совместимости, обрабатывает private owner-only Telegram updates, рендерит карточки и доставляет durable outbox. Бизнес-логика расписания больше не требует живого Telegram long poll.
 

@@ -1,33 +1,43 @@
-# Документация Career Intelligence Platform
+# Career Intelligence — документация
 
-**Начать следующую работу с [отчёта о фактическом состоянии — 20.10.2026](handoff/2026-10-20-agent-planning-brief.md).** Он отделяет реализованное от планов и live-проверок; включает последние пользовательские правки и входные данные для очереди откликов. Новая фаза пока не запускается.
+Актуализировано 22.10.2026 по исходникам. Основной локальный сервис — `resume_import_server.py`, веб — `archive-web`, исполнитель Chrome — `hh-research-extension`. Версия исходников расширения **0.11.22**, HTTP health **13**, протокол дозагрузки **2**. Это не проверка версии уже загруженного расширения в Chrome.
 
-| Документ | Зачем читать |
+## Начать здесь
+
+| Задача | Документ |
 |---|---|
-| [Handoff для планировщика](handoff/2026-10-20-agent-planning-brief.md) | Основной актуальный пакет для передачи другому агенту |
-| [Фактическая архитектура](architecture/current-state.md) | Подробная исходная карта стека и потоков, с датированными уточнениями |
-| [Целевое состояние](architecture/target-state.md) | Архитектурные границы и цели; это не свидетельство готовности |
-| [Разрывы](architecture/gap-analysis.md) | История findings и текущие незавершённые пункты |
-| [Идеи будущего развития](ideas/README.md) | Тематический backlog, приоритеты, связь с текущим кодом и полные исходные предложения |
-| [Roadmap](roadmap.md) | Материал для пересмотра плана, не автоматический список к исполнению |
-| [Структура проекта и автозаполнение](architecture/repository-and-autofill.md) | Причины остановки corporate worker, границы двух расширений, рефакторинг workflow и проверки |
-| [Общий application layer](architecture/application-layer.md) | Реальные API/MCP/task controls и их ограничения |
-| [Telegram E2E](integration/telegram-career-e2e.md) | Что фактически прошло/не прошло живую проверку |
-| [Бесплатное поднятие HH-резюме](integration/hh-resume-bump.md) | Настройки Web/Telegram, очередь Chrome, cooldown и границы проверки |
-| [Аналитика, Telegram и последние правки](integration/career-analytics-telegram.md) | Карта/воронка, taxonomy, batch/offline, manual marks, проверки |
-| [Пользовательский flow Telegram](telegram_user_flow.md) | Меню, ожидание Chrome, продолжение сценария |
+| Запустить сервис и пройти основной сценарий | [Краткое руководство](applicant_quickstart.md) |
+| Понять компоненты и ограничения | [Текущее состояние](architecture/current-state.md) |
+| Увидеть сущности и связи | [Модель данных](architecture/domain-model.md) |
+| Сбор, полные описания и резервный способ | [Гибридный сбор](architecture/hybrid-collection.md) |
+| Эксплуатация, проверки, ошибки и резервные копии | [Операционное руководство](operations.md) |
+| Найти любой документ и его статус | [Полный каталог](catalog.md) |
+| Что реализовано и что делать дальше | [Roadmap](roadmap.md), [обновление 22.10](release_2026_10_22.md) |
 
-Полные Python проверки запускать изолированно: `.venv/bin/python scripts/test-isolated.py`. JS: `node hh-research-extension/scripts/check.mjs`. Production `.cache`, `.env`, tokens и sessions не включать в пакет документации.
+## Пользовательские сценарии
 
-- [Гибридный сбор: Python и Chrome, проверенное состояние](architecture/hybrid-collection.md)
-- [Надёжность сбора и дозагрузка архива — обновление 22.10.2026](architecture/hybrid-collection.md#рефакторинг-надёжности--22102026)
-- [Идея: восстановление DOM-адаптеров через Luna](ideas/llm-adapter-repair.md)
+- [Редактируемая карьерная траектория](architecture/career-trajectory.md): цель → этапы → критерии → подтверждения → подбор вакансий/CV.
+- [Навыки и доказательства](architecture/skills-intelligence.md): обязательность требований, приоритет ближайшего действия, практика отдельно от обучения.
+- [Сравнение документов и потоки чанков](integration/resume-comparison.md); [разбор нескольких CV, документов и хронологии через API или промпт](architecture/resume-portfolio-review.md).
+- [CRM откликов](application_crm.md), [режимы рейтинга](crm_ranking_modes.md), [формы и адаптеры](architecture/repository-and-autofill.md).
+- [Архив, версии и векторы](local_archive.md), [панели на карьерных сайтах](career_widgets.md).
+- [Общий application layer и MCP](architecture/application-layer.md); [Telegram](telegram_user_flow.md), [границы живой проверки](integration/telegram-career-e2e.md).
 
-- [Разбор нескольких резюме под трек: API и без API](architecture/resume-portfolio-review.md)
+## Интеграции
 
-- [Карьерная траектория: редактируемые этапы, подтверждения и черновик под вакансию](architecture/career-trajectory.md)
+- [GitHub Runs → SQLite и HH → портфолио](integration/github-import-and-portfolio.md).
+- [Публичные визуализации, мобильный сайт, SEO и PWA](integration/public-portfolio.md).
+- **Следующий этап:** [LinkedIn — профиль, рекомендации вакансий, пакетные полные описания и Apply](integration/linkedin-adapters.md). Это спецификация; адаптер активной LinkedIn-сессии ещё не реализован.
+- [Два проекта в одном репозитории](../../../docs/workspace.md), [публикация портфолио](../../../docs/portfolio-publication.md).
 
-- [Два проекта: портфолио и подготовка откликов](../../../docs/workspace.md)
-- [Сущности и связи карьерной системы](../../../docs/career-domain-model.md)
+## Как читать статусы
 
-- [Импорт GitHub Actions, синхронизация HH → сайт и публичные представления](integration/github-import-and-portfolio.md)
+«Реализовано» означает наличие соответствующего кода. Автотесты с подменами не доказывают работу изменившегося внешнего сайта. Живые проверки фиксируются отдельно с датой и объёмом. Числа из старых релизов не являются текущим размером тестового набора или архива.
+
+`handoff/`, прежние релизные отчёты и `ideas/sources/` — история. Исходные пользовательские материалы сохранены; они не являются инструкциями к исполнению и не доказывают готовность функций. ADR описывают решения; уточнения статуса реализации находятся в начале документа. [Backlog](ideas/README.md) отделён от действующих функций.
+
+## Общие границы
+
+SQLite, `.env`, tokens, сессии и трудовые документы остаются локально. Публичный сайт получает только разрешённую JSON-проекцию. GitHub Actions не хостит личную SQLite. Просмотр, сравнение и экспорт промптов не вызывают модели; новые embeddings и API-разборы имеют отдельные действия. Отсутствие текста/упоминания/ответа не доказывает закрытие вакансии, отсутствие навыка или отказ.
+
+Из корня репозитория: `npm run career:test`, `npm run career:check`, `npm run portfolio:test`, `npm run portfolio:build`. Полный Python-набор запускается изолированно; инструкции и границы проверок — в [operations](operations.md).

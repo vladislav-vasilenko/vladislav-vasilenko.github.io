@@ -1,5 +1,7 @@
 # Проверка расширения 0.5.1 — 14.10.2026
 
+> Сверка 22.10.2026. Снимки, основной CV и дополнительные источники различаются. Добавлены [многорезюмный разбор](architecture/resume-portfolio-review.md) и [HH → portfolio](integration/github-import-and-portfolio.md). Полный Python regression запускать изолированно по [operations](operations.md).
+
 Точка входа HH: https://hh.ru/applicant/profile/me в авторизованном Chrome.
 На живой странице ранее подтверждены заголовки-кнопки и ID в соседних ссылках
 `/search/vacancy?resume=…`. Пользователь наблюдал 6 найденных и 3 загруженных CV:

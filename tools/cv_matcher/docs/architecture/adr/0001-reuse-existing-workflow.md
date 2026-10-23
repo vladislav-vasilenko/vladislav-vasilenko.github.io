@@ -1,6 +1,6 @@
 # ADR 0001 — Career Agent поверх существующего domain workflow
 
-Дата: 19.10.2026. Статус: рекомендовано по результатам аудита; новый agent runtime не внедрён.
+Дата: 19.10.2026. Статус на 22.10.2026: принято и реализовано в объёме общего application layer, scheduler и bounded router; [контракт](../application-layer.md).
 
 ## Контекст
 
@@ -24,4 +24,4 @@
 
 [test_architecture_flow.py](../../../src/tests/test_architecture_flow.py) проверяет существующие backend seams на временной SQLite: discovery command/result → реальный ranker с fake embedding backend → настоящий analysis validator с fake Luna → routes make/draft/prepare → browser prepared/result → needs_approval → fake owner notification. Настоящие Chrome/MCP/Telegram/OpenAI в тесте не участвуют. До разрешения отсутствует `execute`; cookie UI не может забрать browser command.
 
-Это подтверждает переиспользуемость backend. Тест не доказывает наличие MCP сервера, универсального company submit или единого сохранённого trace ID. Эти границы остаются задачами [roadmap](../../roadmap.md).
+Это подтверждает переиспользуемость backend. Этот отдельный тест не проверяет MCP транспорт. MCP сервер реализован и имеет собственные проверки; универсальный company submit и единая обязательная provenance-цепочка остаются ограничениями. Эти границы остаются задачами [roadmap](../../roadmap.md).

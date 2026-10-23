@@ -1,5 +1,7 @@
 # Радар рынка, компаний и команд
 
+> Сверка 22.10.2026. GitHub Runs/import и hybrid/backfill уже существуют. Следующее расширение источников — [LinkedIn recommendations](../integration/linkedin-adapters.md); оценка полноты рынка остаётся исследовательской задачей.
+
 Статус: идея развития; сбор и локальная аналитика уже существуют. Источники: [обсуждение](sources/market-intelligence-chat.md), [большое ТЗ](sources/evolutionary-career-platform.md).
 
 ## Польза
