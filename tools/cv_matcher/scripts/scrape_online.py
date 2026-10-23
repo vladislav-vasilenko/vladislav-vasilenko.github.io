@@ -6,8 +6,8 @@ Scope (iter 1): Yandex, Google, Meta — with stealth + optional storage_state.
 
 Design:
   - Outputs: public/online_scraped.json — append-only over runs, deduped by id.
-  - The workflow exports vacancies before optional legacy indexing/clustering.
-    Paid legacy indexing requires ENABLE_LEGACY_PAID_INDEX=true.
+  - The workflow exports vacancies before building/publishing derived files.
+    Embeddings and personal SQLite data stay in the local service.
   - Each scraper runs with stealth=True and respects STORAGE_STATE env vars.
 
 Behaviour on error: individual scraper failures are logged but don't fail the job.

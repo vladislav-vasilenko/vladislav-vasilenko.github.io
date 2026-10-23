@@ -35,22 +35,22 @@ permissions:
 
 jobs:
   scrape:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
           cache-dependency-glob: tools/cv_matcher/uv.lock
@@ -91,16 +91,22 @@ jobs:
         env:
           COLLECTION_SOURCES: ${{ inputs.sources || 'yandex,google,meta' }}
           COLLECTION_LIMIT: ${{ inputs.limit || '100' }}
-        run: uv run python scripts/scrape_online.py --scrapers "$COLLECTION_SOURCES" --limit "$COLLECTION_LIMIT"
+        run: uv run python -u scripts/scrape_online.py --scrapers "$COLLECTION_SOURCES" --limit "$COLLECTION_LIMIT" 2>&1 | tee "$RUNNER_TEMP/vacancy-scrape.log"
         # don't fail the workflow on per-source errors; script returns 0
         continue-on-error: false
 
+      - name: Prepare this run's vacancy export
+        id: export
+        if: ${{ !cancelled() && (steps.scrape.outcome == 'success' || steps.scrape.outcome == 'failure') }}
+        working-directory: tools/cv_matcher
+        run: python -m src.github_collection_export --target "$RUNNER_TEMP/vacancies-export"
+
       - name: Export vacancies for the local SQLite archive
-        if: ${{ !cancelled() && steps.scrape.outcome == 'success' }}
-        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && steps.export.outputs.ready == 'true' }}
+        uses: actions/upload-artifact@v6
         with:
           name: vacancies-export-${{ github.run_attempt }}
-          path: public/online_scraped.json
+          path: ${{ runner.temp }}/vacancies-export/online_scraped.json
           if-no-files-found: error
           retention-days: 14
 
@@ -108,43 +114,40 @@ jobs:
         working-directory: tools/cv_matcher
         run: uv run python scripts/build_vacancy_tree.py
 
-      - name: Index Meta vacancies to ChromaDB
-        if: ${{ github.event_name != 'workflow_dispatch' && vars.ENABLE_LEGACY_PAID_INDEX == 'true' }}
-        working-directory: tools/cv_matcher
-        env:
-          CV_API_URL: ${{ secrets.CV_API_URL }}
-          API_SECRET: ${{ secrets.API_SECRET }}
-        # We use --reset because it's cheap (~$0.007/day) and prevents stale/deleted 
-        # vacancies from piling up in the local DB.
-        run: uv run python scripts/index_meta_to_chroma.py --reset
-
-      - name: Build Cluster Map
-        if: ${{ github.event_name != 'workflow_dispatch' && vars.ENABLE_LEGACY_PAID_INDEX == 'true' }}
-        working-directory: tools/cv_matcher
-        env:
-          CV_API_URL: ${{ secrets.CV_API_URL }}
-          API_SECRET: ${{ secrets.API_SECRET }}
-        run: uv run python scripts/build_cluster_map.py
-
       - name: Commit results
         run: |
           set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/online_scraped.json public/vacancy_tree.json public/cluster_map.json
+          git add -- public/online_scraped.json public/vacancy_tree.json
           if git diff --staged --quiet; then
             echo "No changes to commit."
             exit 0
           fi
           TOTAL=$(python3 -c "import json; d=json.load(open('public/online_scraped.json')); print(d.get('total',0))")
           git commit -m "chore(scrape): daily run — ${TOTAL} vacancies [skip ci]"
-          git push
+          # The portfolio publisher may advance main while scraping. Rebase
+          # without forcing or overwriting concurrent edits to the same data.
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort
+              echo "::error::Concurrent edits conflict with this export. Download vacancies-export from this run."
+              exit 1
+            fi
+            if git push origin HEAD:refs/heads/main; then
+              exit 0
+            fi
+            sleep "$((attempt * 2))"
+          done
+          echo "::error::Could not publish after 3 attempts. The vacancy artifact remains available for local import."
+          exit 1
 
       - name: Upload log on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
-          name: scrape-logs
-          path: tools/cv_matcher/*.log
+          name: scrape-logs-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vacancy-scrape.log
           if-no-files-found: ignore
           retention-days: 7
