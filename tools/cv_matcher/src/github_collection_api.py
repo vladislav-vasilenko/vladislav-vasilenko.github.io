@@ -5,6 +5,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import time
 import zipfile
 
 REPOSITORY = 'vladislav-vasilenko/vladislav-vasilenko.github.io'
@@ -25,6 +26,11 @@ class GitHubAPI:
             raise GitHubError('Нужен GitHub CLI (gh) с выполненным входом в ваш GitHub-аккаунт.')
         if not endpoint.startswith('repos/' + REPOSITORY + '/'):
             raise GitHubError('Разрешён только источник вакансий этого репозитория.')
+        # Actions metadata changes during a run. An intermediary may retain
+        # queued/running responses even after completion; immutable downloads
+        # and commit-pinned Contents requests keep their normal cache behavior.
+        if not raw and '/actions/' in endpoint:
+            endpoint += ('&' if '?' in endpoint else '?') + '_fresh=' + str(time.time_ns())
         args = [self.executable, 'api', '--method', 'GET', endpoint, '-H',
                 'Accept: ' + ('application/vnd.github.raw+json' if raw else 'application/vnd.github+json')]
         with tempfile.TemporaryFile() as output, tempfile.TemporaryFile() as errors:

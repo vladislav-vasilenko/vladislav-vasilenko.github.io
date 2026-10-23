@@ -120,6 +120,23 @@ class ImportTests(unittest.TestCase):
 
 
 class TransportTests(unittest.TestCase):
+    def test_mutable_actions_metadata_bypasses_stale_cache(self):
+        requests = []
+        class Process:
+            returncode = 0
+            def __init__(self, args, **kwargs):
+                requests.append(args[4])
+                kwargs['stdout'].write(b'{}')
+            def __enter__(self): return self
+            def __exit__(self, *args): pass
+            def wait(self, **kwargs): return 0
+        api = GitHubAPI('fixture')
+        endpoint = f'repos/{REPOSITORY}/actions/workflows/daily-scrape.yml/runs?per_page=20'
+        immutable = f'repos/{REPOSITORY}/contents/public/online_scraped.json?ref=' + 'a' * 40
+        with patch('src.github_collection_api.subprocess.Popen', Process), patch('src.github_collection_api.time.time_ns', side_effect=[100, 101]):
+            api.request(endpoint); api.request(endpoint); api.request(immutable, raw=True)
+        self.assertEqual(requests, [endpoint + '&_fresh=100', endpoint + '&_fresh=101', immutable])
+
     def test_artifact_run_binding_and_pinned_legacy_fallback(self):
         api = GitHubAPI('unused'); run = API.run
         value = {**packet([row()]), 'collection_run': {'id': run['id'], 'attempt': 1}}
