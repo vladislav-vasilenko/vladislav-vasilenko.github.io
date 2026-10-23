@@ -126,6 +126,8 @@ def normalize(row, exported_at):
             'description_quality': quality, 'locations': locations, 'collected_at': stamp,
             'source': 'github_actions', 'source_page': valid['link'], 'collector': 'github_actions',
             'adapter_id': 'github-json', 'adapter_version': '1', 'extraction_method': 'imported_export'}
+    from .vacancy_locations import normalize_locations
+    data=normalize_locations({**data,**{k:row[k] for k in ('location','city','work_formats','work_format','locations_status','locations_complete') if k in row}})
     for key in ('pub_date', 'origin_query'):
         if isinstance(row.get(key), str) and len(row[key]) <= 3000: data[key] = row[key]
     return data

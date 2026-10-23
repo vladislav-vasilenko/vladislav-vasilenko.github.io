@@ -15,3 +15,5 @@ importScripts("career-workflow.js", "discovery-worker.js", "resume-intake-worker
 importScripts("diagnostics-core.js", "diagnostics-worker.js");
 
 importScripts("hh-sync-core.js", "hh-cleanup-core.js", "hh-cleanup-worker.js");
+
+importScripts("linkedin-core.js","linkedin-worker.js");

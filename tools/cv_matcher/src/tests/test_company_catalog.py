@@ -50,3 +50,21 @@ class CompanyCatalogTests(unittest.TestCase):
   for url in ['javascript:alert(1)','http://example.org/jobs','https://user:secret@example.org/jobs']:
    company['boards'][0]['url']=url
    with self.assertRaises(ValueError):validate(data['companies'])
+
+ def test_regions_round_trip_and_old_catalog_gets_default_regions(self):
+  before=read(self.archive)
+  self.assertEqual(set(before['regions']),{'rus','us_uk_eu','china','jp','au_nz','other'})
+  by_id={c['id']:c for c in before['companies']}
+  self.assertEqual(by_id['meta']['region'],'us_uk_eu')
+  for region in ('jp','au_nz'):
+   before=read(self.archive)
+   before['companies'][0]['region']=region
+   result=save(self.archive,before)
+   self.assertEqual(result['companies'][0]['region'],region)
+  with self.archive.connect() as db:
+   old=[{k:v for k,v in c.items() if k!='region'} for c in before['companies'] if c['id'] not in ('meta','google')]
+   db.execute("INSERT OR REPLACE INTO archive_meta VALUES('company_catalog',?)",(json.dumps(old),))
+  current=read(self.archive)
+  self.assertEqual(next(c['region'] for c in current['companies'] if c['id']=='sber'),'rus')
+  self.assertTrue({'meta','google'}<={c['id'] for c in current['companies']})
+  save(self.archive,current)

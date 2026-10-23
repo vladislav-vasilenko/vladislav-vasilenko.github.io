@@ -251,7 +251,7 @@ class WorkflowMixin(PlanningMixin,DeliveryMixin,ChannelMixin,GigaMixin,FormAnswe
             if worker_name=='hh':
                 self.setting_in(db,'hh_auto_sync_worker',packed({'enabled':auto_sync is True,'at':time.time(),'worker_id':worker}))
                 if 'resume_bump' in kinds and type(resume_bump_version) is int and resume_bump_version==1:self.setting_in(db,'hh_resume_bump_worker',packed({'at':time.time(),'worker_id':worker,'version':1}))
-            db.execute("UPDATE browser_commands SET state='queued',worker_id=NULL WHERE state='running' AND kind NOT IN ('execute','career_fill','discover','collect','resume_bump') AND NOT (kind='sync' AND json_extract(payload,'$.automatic')=1) AND updated<?",(time.time()-300,))
+            db.execute("UPDATE browser_commands SET state='queued',worker_id=NULL WHERE state='running' AND kind NOT LIKE 'linkedin.%' AND kind NOT IN ('execute','career_fill','discover','collect','resume_bump') AND NOT (kind='sync' AND json_extract(payload,'$.automatic')=1) AND updated<?",(time.time()-300,))
             # Never repeat a claimed disclosure after an MV3 suspension/crash.
             stale=db.execute("SELECT app_id FROM browser_commands WHERE state='running' AND kind='career_fill' AND updated<?",(time.time()-300,)).fetchall()
             for old in stale:db.execute("UPDATE application_workflow SET state='needs_input',form=NULL WHERE app_id=? AND state IN ('filling','fill_approved')",(old['app_id'],))

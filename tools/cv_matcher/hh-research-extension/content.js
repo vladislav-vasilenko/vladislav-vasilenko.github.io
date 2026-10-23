@@ -54,7 +54,7 @@
     const date = document.querySelector("time[datetime]")?.getAttribute("datetime") || "";
     return {page_kind:"detail",page_url:location.href,vacancies: [{...base, ...own, title, company: company || "HH.ru (работодатель не определён)",
       description, pub_date: date, description_quality: description ? "full" : "missing",
-      locations: [text(document, '[data-qa="vacancy-view-raw-address"], [data-qa="vacancy-view-location"]')].filter(Boolean),
+      locations: [...new Set([...document.querySelectorAll('[data-qa="vacancy-view-raw-address"], [data-qa="vacancy-view-location"], [data-qa="vacancy-view-area"]')].filter(visible).map(n=>clean(n.innerText)).filter(Boolean))],
       archived}],
       warning: archived ? "Вакансия в архиве HH. Полное описание не собирается." : description ? "" : "Описание не найдено; запись требует повторного открытия полной вакансии."};
   }
@@ -71,7 +71,7 @@
     const company = card ? text(card, '[data-qa="vacancy-serp__vacancy-employer"], [data-qa="vacancy-serp__vacancy-employer-text"], a[href*="/employer/"]') : "";
     const snippet = card ? text(card, '[data-qa="vacancy-serp__vacancy_snippet_requirement"], [data-qa="vacancy-serp__vacancy_snippet_responsibility"]') : "";
     vacancies.set(job.id, {...base, ...job, title, company: company || "HH.ru (работодатель не определён)",
-      description: snippet, pub_date: "", description_quality: "snippet"});
+      description: snippet, pub_date: "", description_quality: "snippet", locations:card?[text(card,'[data-qa="vacancy-serp__vacancy-address"], [data-qa="vacancy-serp__vacancy-address-text"]')].filter(Boolean):[]});
   }
   const currentPage=Number(new URL(location.href).searchParams.get("page")||0);
   const next=[...document.querySelectorAll('a[href*="page="]')].filter(a=>{

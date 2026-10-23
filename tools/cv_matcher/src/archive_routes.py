@@ -17,10 +17,10 @@ class ArchiveAccess:
         now=time.time();self.codes={k:v for k,v in self.codes.items() if v>now};self.sessions={k:v for k,v in self.sessions.items() if v>now}
     def cookie_allowed(self,request):
         self.prune()
-        read_paths=('/archive/portfolio-publication','/archive/github-import','/archive/analytics-batch/','/archive/analytics','/archive/agent','/archive/summary','/archive/entities','/archive/entity/','/archive/diff','/archive/events','/archive/scans','/archive/restore','/archive/export','/archive/rankings','/archive/skill-analysis','/archive/skill-history','/archive/skill-history/','/archive/workflow','/archive/journey','/archive/companies','/archive/company-settings','/archive/calendar/status','/archive/calendar/ics')
+        read_paths=('/archive/embedding-batch','/archive/linkedin','/archive/portfolio-publication','/archive/github-import','/archive/analytics-batch/','/archive/analytics','/archive/agent','/archive/summary','/archive/entities','/archive/entity/','/archive/diff','/archive/events','/archive/scans','/archive/restore','/archive/export','/archive/rankings','/archive/skill-analysis','/archive/skill-history','/archive/skill-history/','/archive/workflow','/archive/journey','/archive/companies','/archive/company-settings','/archive/calendar/status','/archive/calendar/ics')
         readonly=request.method=='GET' and any(request.url.path==p or (p.endswith('/') and request.url.path.startswith(p)) for p in read_paths)
         readonly=readonly or (request.method=='POST' and request.url.path=='/archive/compare' and request.headers.get('origin') in (None,ORIGIN))
-        readonly=readonly or (request.method=='POST' and request.url.path in ('/archive/portfolio-publication','/archive/github-import','/archive/resume-source','/archive/analytics-batch','/archive/agent','/archive/resume-review','/archive/skill-analysis','/archive/skill-external','/archive/confirm-description','/archive/workflow','/archive/rank','/archive/company-settings','/archive/calendar') and request.headers.get('origin')==ORIGIN)
+        readonly=readonly or (request.method=='POST' and request.url.path in ('/archive/embedding-batch','/archive/linkedin','/archive/portfolio-publication','/archive/github-import','/archive/resume-source','/archive/analytics-batch','/archive/agent','/archive/resume-review','/archive/skill-analysis','/archive/skill-external','/archive/confirm-description','/archive/workflow','/archive/rank','/archive/company-settings','/archive/calendar') and request.headers.get('origin')==ORIGIN)
         return readonly and self.sessions.get(request.cookies.get('archive_session',''),0)>time.time()
 
 def install_archive(app,token,root,path=None):
@@ -39,6 +39,24 @@ def install_archive(app,token,root,path=None):
     install_portfolio_publication(app)
     from .workflow_routes import install_workflow
     install_workflow(app,token,root)
+    from .linkedin_routes import install as install_linkedin
+    install_linkedin(app, token)
+    from . import archive_embedding_batch as embedding_batch
+    embedding_tasks=set()
+    @app.get('/archive/embedding-batch')
+    async def embedding_status():
+        return {'batch':await asyncio.to_thread(embedding_batch.read,store())}
+    @app.post('/archive/embedding-batch')
+    async def embedding_action(request:Request):
+        data=await payload(request,20000)
+        try:
+            if data.get('op')=='prepare':return await asyncio.to_thread(embedding_batch.prepare,store(),data)
+            result=await asyncio.to_thread(embedding_batch.control,store(),data)
+            if data.get('action')=='start':
+                task=asyncio.create_task(embedding_batch.run(store(),result['id'],app.state.rank_archive))
+                embedding_tasks.add(task);task.add_done_callback(embedding_tasks.discard)
+            return result
+        except (ValueError,TypeError,KeyError) as error:raise HTTPException(422,str(error)) from None
     skill_lock=asyncio.Lock()
     async def payload(request,limit=8*1024*1024):
         body=bytearray()
@@ -60,7 +78,7 @@ def install_archive(app,token,root,path=None):
     @app.get('/assets/{name}')
     async def asset(name:str):
         if name in ('resume-portfolio.js','workflow-core.js','workflow-letter.js','workflow-career.js','vacancy-map.js','resume-sources.js','resume-compare.js','resume-compare-core.js','vacancy-selection.js','vacancy-document.js'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
-        if name in ('github-runs.js','portfolio-publication.js','github-import.js','trajectory-badges.js','career-trajectory.js','learning-impact.js','career-analytics.js','career-charts.js','career-skills.js','career-analytics.css'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
+        if name in ('embedding-batch.js','linkedin.js','linkedin.css','github-runs.js','portfolio-publication.js','github-import.js','trajectory-badges.js','career-trajectory.js','learning-impact.js','career-analytics.js','career-charts.js','career-skills.js','career-analytics.css'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
         allowed={'intake.js':root/'archive-web/intake.js','resume-profile.js':root/'archive-web/resume-profile.js','resume-profile-core.js':root/'archive-web/resume-profile-core.js','resume-profile.css':root/'archive-web/resume-profile.css','company-settings.js':root/'archive-web/company-settings.js','company-picker.js':root/'archive-web/company-picker.js','crm-planning.js':root/'archive-web/crm-planning.js','workflow.js':root/'archive-web/workflow.js','workflow.css':root/'archive-web/workflow.css','journey.js':root/'archive-web/journey.js','skill-analysis-ui.js':root/'archive-web/skill-analysis-ui.js','archive.js':root/'archive-web/archive.js','archive.css':root/'archive-web/archive.css','chatgpt-export.js':root/'hh-research-extension/chatgpt-export.js'}
         if name not in allowed:raise HTTPException(404)
         return FileResponse(allowed[name],headers={'Cache-Control':'no-cache'})
@@ -70,7 +88,7 @@ def install_archive(app,token,root,path=None):
         data=await payload(request)
         from urllib.parse import urlencode
         options={}
-        if data.get('view')=='settings':options['view']='settings'
+        if data.get('view') in ('settings','linkedin'):options['view']=data['view']
         if isinstance(data.get('resume_id'),str) and len(data['resume_id'])<180:options['resume_id']=data['resume_id']
         if isinstance(data.get('goal'),str) and len(data['goal'])<=2000:options['goal']=data['goal']
         return {'url':ORIGIN+'/'+('?' + urlencode(options) if options else '')+'#connect='+code}
@@ -206,10 +224,10 @@ def install_archive(app,token,root,path=None):
         def read():
             from .company_filter import company_key
             from .company_catalog import raw_catalog
-            catalog=raw_catalog(store());definitions={g['id']:g for g in catalog};counts={g['id']:{'id':g['id'],'label':g['label'],'tier':g['tier'],'count':0} for g in catalog}
+            catalog=raw_catalog(store());definitions={g['id']:g for g in catalog};counts={g['id']:{'id':g['id'],'label':g['label'],'tier':g['tier'],'region':g.get('region','other'),'count':0} for g in catalog}
             with store().connect() as db:
                 for row in db.execute("SELECT company,COUNT(*) n FROM entities WHERE kind='vacancy' GROUP BY company"):
-                    key=company_key(row['company'],catalog);definition=definitions.get(key,{});entry=counts.setdefault(key,{'id':key,'label':definition.get('label',row['company'] or 'Компания не указана'),'tier':definition.get('tier','others'),'count':0});entry['count']+=row['n']
+                    key=company_key(row['company'],catalog);definition=definitions.get(key,{});entry=counts.setdefault(key,{'id':key,'label':definition.get('label',row['company'] or 'Компания не указана'),'tier':definition.get('tier','others'),'region':definition.get('region','other'),'count':0});entry['count']+=row['n']
             return {'items':sorted(counts.values(),key=lambda r:r['label'].casefold())}
         return await asyncio.to_thread(read)
     @app.post('/archive/rank')

@@ -2,7 +2,7 @@
 const $=id=>document.getElementById(id),make=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;};
 const date=value=>value?new Date(value).toLocaleString('ru-RU'):'не указано';
 let tab='today',offset=0,eventOffset=0,selection=null,listRequest=0,detailRequest=0,summaryData=null,searchTimer,historyOffset=0,historyRequest=0,historyDetailRequest=0,companyOptions=[];
-const companyPicker=CompanyPicker.create({container:$('companyFilter'),list:$('companyOptions'),search:$('companySearch'),summary:$('companySummary'),selected:$('companySelected'),onChange:()=>loadList(true).catch(e=>notice(e.message))});
+const companyPicker=CompanyPicker.create({container:$('companyFilter'),region:$('companyRegion'),list:$('companyOptions'),search:$('companySearch'),summary:$('companySummary'),selected:$('companySelected'),onChange:()=>loadList(true).catch(e=>notice(e.message))});
 const labels={added:'Добавлена запись',changed:'Изменён текст',closed:'Закрытие подтверждено на HH',reopened:'Позиция снова активна',missing:'Не найдена при полном сборе',returned:'Снова найдена'};
 let lastDiagnostic;
 function notice(text){$('notice').textContent=text;if(lastDiagnostic?.message===text)showDiagnostic(lastDiagnostic,'Не удалось завершить операцию');}
@@ -40,6 +40,7 @@ const embeddingLabels={generated:'Embeddings рассчитаны',not_generated
 function analysisParams(){return new URLSearchParams({resume_id:$('analysisCV').value,goal:tab==='ranking'?$('rankingGoal').value:summaryData?.goal||'',model:$('embeddingModel').value});}
 function tags(row){
  const div=make('div','tags');
+ if(row.kind==='vacancy')div.append(make('span','tag',(row.locations||[]).join(' · ')||'Локация не указана'));
  if(row.kind==='vacancy')div.append(make('span','tag '+row.availability,row.availability==='closed'?'Закрыта на HH':row.availability==='active'?'Проверена на странице':'Активность не проверена'));
  if(row.quality==='full')div.append(make('span','tag tagTechnical','Полное описание'));
  if(row.kind==='vacancy'&&row.quality&&row.quality!=='full')div.append(make('span','tag missing',row.quality==='needs_review'?'Текст требует проверки':'Краткая карточка'));
@@ -64,7 +65,7 @@ async function reload(){
  if(!$('rankingGoal').dataset.edited)$('rankingGoal').value=summaryData.goal||'';
  const companies=await api('companies');companyOptions=companies.items;fillCompanies();
  const historyCV=$('historyResume').value,allCV=make('option','','Все резюме');allCV.value='';$('historyResume').replaceChildren(allCV);for(const row of resumes.items){const option=make('option','',row.title);option.value=row.id;$('historyResume').append(option);}$('historyResume').value=historyCV;
- if(tab==='learning'){await CareerSkills.enterPage();return;}if(tab==='analytics'){await CareerAnalytics.enter();return;}if(tab==='about')return;else if(tab==='settings')await CompanySettings.enter();else if(tab==='today')await Journey.enter();else if(tab==='applications')await Flow.enter(chosenApplication());else if(tab==='reviews')await loadReviews(true);else if(tab==='changes')await loadChanges(true);else{await loadList(true);if(selection){const [kind,...id]=selection.split(':');await openDetail(kind,id.join(':'));}if(tab==='resume')await ResumeCompare.openRequested();}
+ if(tab==='linkedin'){await LinkedInWorkspace.enter();return;}if(tab==='learning'){await CareerSkills.enterPage();return;}if(tab==='analytics'){await CareerAnalytics.enter();return;}if(tab==='about')return;else if(tab==='settings')await CompanySettings.enter();else if(tab==='today')await Journey.enter();else if(tab==='applications')await Flow.enter(chosenApplication());else if(tab==='reviews')await loadReviews(true);else if(tab==='changes')await loadChanges(true);else{await loadList(true);if(selection){const [kind,...id]=selection.split(':');await openDetail(kind,id.join(':'));}if(tab==='resume')await ResumeCompare.openRequested();}
 }
 async function loadList(reset=false){
  if(typeof GitHubImport!=='undefined')GitHubImport.enter();
@@ -85,6 +86,8 @@ async function loadList(reset=false){
 function setTab(value){
  document.documentElement.dataset.workspaceView=value;
  if(typeof window!=='undefined')window.scrollTo?.({top:0,behavior:'auto'});
+ $('linkedin').hidden=value!=='linkedin';
+ if(value==='linkedin'){tab=value;selection=null;detailRequest++;for(const id of ['today','collection','changes','reviews','applications','settings','about','learning','analytics'])$(id).hidden=true;document.querySelector('.stats').hidden=true;$('pageTitle').textContent='LinkedIn';$('pageHint').textContent='Профиль, вакансии, чаты и профессиональные контакты.';const u=new URL(location.href);u.searchParams.set('view','linkedin');u.searchParams.delete('application');history.replaceState(null,'',u.pathname+u.search);document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===value));LinkedInWorkspace.enter().catch(e=>notice(e.message));return;}
  $('analytics').hidden=value!=='analytics';$('learning').hidden=value!=='learning';
  if(value==='learning'){tab=value;selection=null;detailRequest++;for(const id of ['today','collection','changes','reviews','applications','settings','about'])$(id).hidden=true;document.querySelector('.stats').hidden=true;$('pageTitle').textContent='Карьерная траектория';$('pageHint').textContent='Цель, этапы перехода и подтверждённые результаты.';const u=new URL(location.href);u.searchParams.set('view','learning');u.searchParams.delete('application');u.searchParams.delete('compare');history.replaceState(null,'',u.pathname+u.search);document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===value));CareerSkills.enterPage().catch(e=>showDiagnostic(e,'Навыки и обучение',$('learning')));return;}
 
@@ -106,6 +109,7 @@ function setTab(value){
  if(value==='today'){tab=value;selection=null;$('collection').hidden=true;$('changes').hidden=true;$('reviews').hidden=true;$('applications').hidden=true;document.querySelector('.stats').hidden=true;$('pageTitle').textContent='Сегодня';$('pageHint').textContent='Один следующий шаг — всё остальное под рукой.';document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===value));Journey.enter().catch(e=>notice(e.message));return;}
  document.querySelector('.stats').hidden=['applications','resume','vacancy','ranking'].includes(value);$('applications').hidden=value!=='applications';
  if(value==='applications'){tab=value;selection=null;$('collection').hidden=true;$('changes').hidden=true;$('reviews').hidden=true;$('pageTitle').textContent='Отклики';$('pageHint').textContent='Продолжайте с текущего этапа. Отправка — после вашей проверки.';document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===value));Flow.enter(new URL(location.href).searchParams.get('application')).catch(e=>notice(e.message));return;}
+ if(value==='ranking')EmbeddingBatchUI.enter().catch(e=>notice(e.message));
  tab=value;selection=null;detailRequest++;historyDetailRequest++;historyRequest++;if(value==='reviews'){
   $('pageTitle').textContent='История разборов вакансий (для выбранных CV)';$('pageHint').textContent='Каждый вывод связан с версиями CV и вакансии.';$('collection').hidden=true;$('changes').hidden=true;$('reviews').hidden=false;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===value));loadReviews(true).catch(e=>notice(e.message));return;
  }$('reviews').hidden=true;$('pageTitle').textContent=value==='resume'?'Резюме':value==='changes'?'Изменения':value==='ranking'?'Рейтинг по резюме':'Вакансии';$('pageHint').textContent=value==='resume'?'Профессиональный профиль и история его развития.':value==='changes'?'Что появилось, изменилось и перестало встречаться.':'От находки до осмысленного отклика.';
@@ -187,7 +191,7 @@ async function loadChanges(reset=false){
 }
 async function start(){
  const hash=new URLSearchParams(location.hash.slice(1)),code=hash.get('connect');if(code){history.replaceState(null,'',location.pathname+location.search);await api('login',{code});}
- await reload();const requested=new URL(location.href).searchParams.get('view');if(chosenApplication())setTab('applications');else if(['learning','analytics','about','settings','vacancy','ranking','resume','reviews','changes','applications'].includes(requested))setTab(requested);$('login').hidden=true;$('app').hidden=false;notice('');
+ await reload();const requested=new URL(location.href).searchParams.get('view');if(chosenApplication())setTab('applications');else if(['linkedin','learning','analytics','about','settings','vacancy','ranking','resume','reviews','changes','applications'].includes(requested))setTab(requested);$('login').hidden=true;$('app').hidden=false;notice('');
 }
 $('connect').onclick=async()=>{const token=$('token').value.trim();try{const response=await fetch('/archive/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Resume-Import-Token':token},body:'{}'});const data=await response.json();$('token').value='';if(!response.ok)throw new Error(data.detail);await start();}catch(e){$('loginStatus').textContent=e.message;}};
 document.querySelectorAll('[data-tab]').forEach(button=>button.onclick=()=>setTab(button.dataset.tab));

@@ -1,6 +1,6 @@
 (function(root){
   async function call(path,body,token,timeout) {
-    if(!["/health","/rank","/extract","/cover-letter","/applications","/answer-draft","/archive/company-settings","/archive/manifest","/archive/sync","/archive/open","/archive/restore","/archive/hh-badges","/archive/hh-inline","/archive/workflow"].includes(path)) throw new Error("Неизвестный метод локального сервиса.");
+    if(!["/archive/linkedin","/health","/rank","/extract","/cover-letter","/applications","/answer-draft","/archive/company-settings","/archive/manifest","/archive/sync","/archive/open","/archive/restore","/archive/hh-badges","/archive/hh-inline","/archive/workflow"].includes(path)) throw new Error("Неизвестный метод локального сервиса.");
     let response;
     try {response=await fetch("http://127.0.0.1:8788"+path,{method:body?"POST":"GET",headers:{"Content-Type":"application/json","X-Resume-Import-Token":token},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(timeout)});}
     catch {throw new Error("Нет ответа локального сервиса. Запустите resume_import_server.py и оставьте эту вкладку открытой до завершения.");}

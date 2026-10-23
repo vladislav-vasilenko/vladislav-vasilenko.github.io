@@ -13,6 +13,11 @@
   const company = config.company || adapter?.label || host;
   const base = {source: "job_board_browser", source_page: location.href, collected_at: new Date().toISOString(), company, pub_date: "", collector:"chrome_extension", adapter_id:adapter?.id||"generic",board_id:adapter?.board_id||"generic",adapter_version:globalThis.JobBoardAdapters?.version||"generic-v1"};
   const own = JobBoards.identity(location.href);
+  const locationRows=(obj)=>[obj.jobLocation||[]].flat().map(item=>{const a=item?.address||item;return typeof a==='string'?a:[a?.addressLocality,a?.addressRegion,typeof a?.addressCountry==='string'?a.addressCountry:a?.addressCountry?.name].filter(Boolean).join(', ');}).filter(Boolean);
+  if(own){
+    base.locations=[...new Set([...document.querySelectorAll('[itemprop="jobLocation"],[data-qa*="vacancy-location"],[class*="vacancy-location" i]')].filter(visible).map(n=>clean(n.innerText)).filter(v=>v&&v.length<500))];
+    for(const node of document.querySelectorAll('script[type="application/ld+json"]')){try{const walk=obj=>{if(!obj||typeof obj!=='object')return;if([obj['@type']].flat().includes('JobPosting')){const same=JobBoards.identity(obj.url||location.href,location.href);if(same?.id===own.id){const loc=locationRows(obj);if(loc.length)base.locations=loc;if(obj.jobLocationType==='TELECOMMUTE')base.work_formats=['remote'];}}if(Array.isArray(obj))obj.forEach(walk);else Object.values(obj).filter(v=>typeof v==='object').forEach(walk);};walk(JSON.parse(node.textContent));}catch{}}
+  }
   if(own&&/вакансия (?:закрыта|в архиве|неактуальна)|при[её]м откликов (?:заверш[её]н|закрыт)/i.test(pageText))return {page_kind:'detail',page_url:location.href,vacancies:[{...base,...own,title:text('h1')||'Закрытая вакансия',description:'',description_quality:'snippet',archived:true,availability_checked_at:new Date().toISOString()}]};
   if(own){base.archived=false;base.availability_checked_at=new Date().toISOString();}
   let selector = config.description_selector || adapter?.description || "";
@@ -53,7 +58,7 @@
         parsed.querySelectorAll("script,style,form").forEach(n=>n.remove());
         const job = JobBoards.identity(obj.url || location.href, location.href);
         if (job && (!known||(own&&job.id===own.id&&clean(obj.title).toLowerCase()===title.toLowerCase()))) jobs.push({...base, ...job, title: clean(obj.title), company: clean(obj.hiringOrganization?.name) || company,
-          description: clean(parsed.body.textContent), description_quality: known&&pageText.includes(clean(parsed.body.textContent).slice(0,80))&&pageText.includes(clean(parsed.body.textContent).slice(-80))?"full":"needs_review", extraction_method: "schema_jobposting", pub_date: obj.datePosted || ""});
+          description: clean(parsed.body.textContent), description_quality: known&&pageText.includes(clean(parsed.body.textContent).slice(0,80))&&pageText.includes(clean(parsed.body.textContent).slice(-80))?"full":"needs_review", extraction_method: "schema_jobposting", pub_date: obj.datePosted || "", locations: locationRows(obj), ...(obj.jobLocationType==='TELECOMMUTE'?{work_formats:['remote']}: {})});
       }
       if (Array.isArray(obj)) obj.forEach(walk); else Object.values(obj).filter(v=>typeof v === "object").forEach(walk);
     };

@@ -15,6 +15,12 @@ def identity(link, base=""):
     host, path = url.hostname, url.path
     match = None
     prefix = "board"
+    if host in ('linkedin.com','www.linkedin.com'):
+        if url.netloc not in ('linkedin.com','www.linkedin.com'): return None
+        from .linkedin_workspace import linkedin_url
+        try: canonical = linkedin_url(url.geturl(), 'job')
+        except ValueError: return None
+        return {'id':'linkedin_'+canonical.rstrip('/').split('/')[-1], 'link':canonical}
     if host == "career.avito.com":
         match, prefix = re.fullmatch(r"/vacancies/[^/]+/(\d+)/?", path), "avito"
     elif host == "ozon.tech":
@@ -27,6 +33,8 @@ def identity(link, base=""):
         prefix = "ozon"
     elif host == "hh.ru" or (host or "").endswith(".hh.ru"):
         match, prefix = re.fullmatch(r"/vacancy/(\d+)/?", path), "hh"
+    elif host=='www.metacareers.com':
+        match,prefix=re.fullmatch(r'/(?:jobs|profile/job_details)/(\d+)/?',path),'meta'
     elif host in ('yandex.ru','yandex.com'):
         match,prefix=re.fullmatch(r'/jobs/vacancies/(?:[^/]+-)?(\d+)/?',path),'yandex'
     elif host in ('tbank.ru','www.tbank.ru'):

@@ -1,6 +1,6 @@
 # Career Intelligence — документация
 
-Актуализировано 22.10.2026 по исходникам. Основной локальный сервис — `resume_import_server.py`, веб — `archive-web`, исполнитель Chrome — `hh-research-extension`. Версия исходников расширения **0.11.22**, HTTP health **13**, протокол дозагрузки **2**. Это не проверка версии уже загруженного расширения в Chrome.
+Актуализировано 23.10.2026 по исходникам. Основной локальный сервис — `resume_import_server.py`, веб — `archive-web`, исполнитель Chrome — `hh-research-extension`. Версия исходников расширения **0.12.0**, HTTP health **14**, протокол дозагрузки **2**. Это не проверка версии уже загруженного расширения в Chrome.
 
 ## Начать здесь
 
@@ -27,7 +27,8 @@
 
 - [GitHub Runs → SQLite и HH → портфолио](integration/github-import-and-portfolio.md).
 - [Публичные визуализации, мобильный сайт, SEO и PWA](integration/public-portfolio.md).
-- **Следующий этап:** [LinkedIn — профиль, рекомендации вакансий, пакетные полные описания и Apply](integration/linkedin-adapters.md). Это спецификация; адаптер активной LinkedIn-сессии ещё не реализован.
+- [LinkedIn — профиль, вакансии, чаты и контакты](integration/linkedin-adapters.md): управление из отдельного раздела; границы живой проверки указаны по capability.
+- [Изменения 23 октября](release_2026_10_23.md): Meta GraphQL v2, Locations, пакетные embeddings и исправления GitHub Actions.
 - [Два проекта в одном репозитории](../../../docs/workspace.md), [публикация портфолио](../../../docs/portfolio-publication.md).
 
 ## Как читать статусы

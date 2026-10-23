@@ -14,7 +14,7 @@ from .analysis_store import AnalysisStore
 
 FIELDS={
  'resume':('id','title','source_type','source_url','quality','sections','content_hash','file_hash','filename','captured_at','checked_at','reviewed_at','changed_at','extraction_method','warnings'),
- 'vacancy':('id','title','company','link','source','source_page','search_page','origin_query','description','description_quality','locations','location','city','pub_date','collected_at','last_seen_at','first_seen','reviewed_at','review_method','recommended_for','archived','availability_checked_at','listing_verified_at','description_fetched_at','description_dirty','listing_changed_at','listing_snapshot','collector','board_id','adapter_id','adapter_version','extraction_method'),
+ 'vacancy':('id','title','company','link','source','source_page','search_page','origin_query','description','description_quality','locations','location','city','work_formats','work_format','locations_status','locations_complete','pub_date','collected_at','last_seen_at','first_seen','reviewed_at','review_method','recommended_for','archived','availability_checked_at','listing_verified_at','description_fetched_at','description_dirty','listing_changed_at','listing_snapshot','collector','board_id','adapter_id','adapter_version','extraction_method'),
  'scan':('id','scan_kind','scope_url','started_at','completed_at','ids','listing_complete','state','pages','start_page','error'),
  'profile':('primary_id','goal'),
  'ranking':('generated_at','model','resume_id','resume_title','resume_hash','input_count','ranked_count','excluded','goal','method','score_warning','usage_tokens','api_requests','company_filter','companies_filter','cache_reused','new_compared','cached','requested_count','processed_count','batches_completed','partial','all'),
@@ -116,6 +116,8 @@ class ArchiveStore(AnalysisStore):
             if data.get('description_quality') not in ('full','snippet','missing','needs_review'):raise ValueError('Неизвестное качество вакансии.')
             if not isinstance(data.get('description',''),str):raise ValueError('Описание должно быть текстом.')
             data['description']=redact_contacts(data.get('description',''))
+            from .vacancy_locations import normalize_locations
+            data=normalize_locations(data)
         old=db.execute('SELECT * FROM entities WHERE kind=? AND id=?',(kind,identifier)).fetchone()
         stamp=source_time(data,kind,received)
         if old and stamp<old['source_at']:
@@ -131,6 +133,9 @@ class ArchiveStore(AnalysisStore):
                 availability='closed' if data['archived'] else 'active'
             if old:
                 prior=json.loads(old['payload'])
+                if not data.get('locations') and prior.get('locations'):
+                    for key in ('locations','location','city','work_formats','locations_status','locations_complete'):
+                        if key in prior:data[key]=prior[key]
                 if prior.get('description_quality')=='full' and data.get('description_quality')!='full':
                     data={**prior,**data,'description':prior['description'],'description_quality':'full','title':prior['title'],'company':prior.get('company','')}
                 data['recommended_for']=sorted(set(prior.get('recommended_for',[])+data.get('recommended_for',[])))
@@ -228,6 +233,9 @@ class ArchiveStore(AnalysisStore):
             for item in items:
                 payload=item.pop('payload',None)
                 if kind=='vacancy' and 'trajectory' not in item:item['trajectory']=relations(self,json.loads(payload),route_rows)
+                if kind=='vacancy':
+                    from .vacancy_locations import normalize_locations
+                    loc=normalize_locations(json.loads(payload));item.update({k:loc[k] for k in ('locations','work_formats','locations_status')})
                 if include_payload:item['payload']=json.loads(payload)
             if kind=='vacancy' and db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='applications'").fetchone():
                 queued={}
