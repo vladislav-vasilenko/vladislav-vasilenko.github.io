@@ -30,6 +30,14 @@ node scripts/check.mjs
 | Чтение и согласованный перенос полей компании | `career-form-core.js`, `career-form-content.js`, `career-workflow.js` |
 | Встроенная панель анализа/письма | `board-widget-core.js`, `hh-badges-background.js`, `hh-badges-content.js`, `hh-inline-*.js` |
 | Диагностика | `diagnostics-core.js` → `diagnostics-worker.js` → `diagnostics.js` |
+| LinkedIn: профиль, вакансии, чаты, контакты | `linkedin-core.js` (URL и правила), `linkedin-content.js` (DOM, `LinkedInSession.handle`), `linkedin-worker.js` (очередь, вкладки; по одному обработчику на семейство команд, `perform()` только диспетчер); Python `src/linkedin_*.py` |
+| Очистка отказов HH | `hh-cleanup-core.js`, `hh-cleanup-content.js`, `hh-cleanup-worker.js`, страница `hh-cleanup.html` / `hh-cleanup.js` |
+| Бесплатное поднятие резюме HH | `resume-bump-core.js`, `resume-bump-content.js`, `resume-bump-worker.js`; Python `src/resume_bump.py` |
+| Проверка входа HH, мост к веб-сервису 8788 | `hh-connection-probe.js`, `workspace-bridge.js` (регистрирует `hh-connection.js`) |
+| Запросы к локальному сервису | только `local-service.js` (`LocalResumeService`): allowlist путей, код сопряжения, тайм-ауты |
+| Тесты | расширение — `*.test.mjs` в этой папке; веб-интерфейс `archive-web` — `../archive-web/tests/` |
+
+Ограниченное ожидание HH-скрипта — `wfReadWithin` из `hh-workflow.js`; новый код worker не создаёт собственный `Promise.race` с таймером. Адаптеры LinkedIn внедряются в вкладку один раз на загрузку страницы (`ensureAdapters`).
 
 `board-adapters.js` — готовый файл для внедрения в страницу и загрузки service worker. Его не редактируют вручную: это один и тот же контракт для обоих окружений. Сборка проверяется тестом, чтобы изменения JSON не оставались незамеченными.
 
