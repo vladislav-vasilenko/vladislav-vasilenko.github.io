@@ -45,3 +45,7 @@ tools/cv_matcher/hh-research-extension/resume-profile.local.json
 *.sqlite3-wal
 *.sqlite3-shm
 *.db
+
+# Third-party agent skill downloads (not part of the product)
+tools/cv_matcher/.agents/
+tools/cv_matcher/skills-lock.json

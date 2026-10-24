@@ -40,7 +40,21 @@ if (project === 'check') {
       throw Error('Missing project docs: ' + entry.docs);
     }
   }
-  process.stdout.write('Workspace project boundaries and entry points: OK\n');
+  // Secrets and local state must never be tracked. .gitignore does not untrack
+  // files that were committed earlier, so the index is checked explicitly.
+  const secretPathspecs = [
+    ':(glob)**/.env', ':(glob)**/.env.*', ':(glob)**/*.sqlite', ':(glob)**/*.sqlite3', ':(glob)**/*.db',
+    ':(glob)**/token.txt', 'tools/cv_matcher/.cache', 'tools/cv_matcher/.auth', 'tools/cv_matcher/chroma_db',
+    'tools/cv_matcher/google_state.json', 'tools/cv_matcher/linkedin_profile',
+  ];
+  const tracked = spawnSync('git', ['ls-files', '-z', '--', ...secretPathspecs], {cwd: root, encoding: 'utf8', shell: false});
+  if (tracked.status === 0) {
+    const hits = tracked.stdout.split('\0').filter(Boolean).filter((file) => !file.endsWith('.env.example'));
+    if (hits.length) {
+      throw Error('Secret or local-state files are tracked by git; run `git rm --cached` on them:\n  ' + hits.join('\n  '));
+    }
+  }
+  process.stdout.write('Workspace project boundaries, entry points and untracked secrets: OK\n');
   process.exit(0);
 }
 
