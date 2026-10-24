@@ -33,6 +33,8 @@ class MilestoneTests(unittest.IsolatedAsyncioTestCase):
   # Replace the untouched fixture case context; no submitted application exists.
   with self.store.connect() as db:
    ctx=json.loads(db.execute('SELECT context FROM applications WHERE id=?',(self.f.id,)).fetchone()[0]);ctx['vacancy']['description']=self.f.jd['description'];db.execute('UPDATE applications SET context=? WHERE id=?',(packed(ctx),self.f.id))
+ def new_vacancy(self):
+  self.f.jd=job('hh_2',at=self.f.jd['collected_at'],text=self.f.jd['description']);self.archive.sync({'client_id':'milestone-fixture','records':[record('vacancy',self.f.jd)]})
  def bot(self):return WorkflowBot(ApplicationStore(self.store.path),Operator(),42)
  def rank(self,payload,path,archive):return rank_vacancies(payload,path,archive=archive,backend_factory=FakeBackend)
  def clients(self,app):
@@ -51,13 +53,14 @@ class MilestoneTests(unittest.IsolatedAsyncioTestCase):
   await self.bot().update(update(text=QUERY));self.assertEqual(len(self.service.tasks()),1)
   with self.assertRaisesRegex(ValueError,'другими условиями'):await self.service.search('new-scope',{'companies':['tbank']})
  async def test_telegram_search_luna_draft_real_browser_worker_then_human_review_no_submit(self):
+  self.new_vacancy()
   bot=self.bot();await bot.update(update(text='найди вакансии'))
   run_id=json.loads(self.store.setting('pending_digest'))['discovery_id'];command=self.store.next_command('fixture-reader',kinds=['discover'])['command']
   self.store.finish_command(command['id'],'fixture-reader',{'state':'complete','ids':[self.f.jd['id']],'coverage':'complete'})
   result=discovery.advance(self.store,self.archive,run_id,self.f.temp.name,ranker=self.rank);self.assertEqual(result['state'],'complete',result)
   await bot.finish_digest();refs=json.loads(self.store.setting('last-recommendations'))['refs'];ref=refs[0]
   why=json.loads(self.store.setting('recommendation:'+ref))['explanation'];self.assertIsNotNone(why['qualification_fit']['semantic_similarity']);self.assertIn('не доля',why['qualification_fit']['meaning'])
-  await bot.update(update(callback='w:pick:'+ref));app=self.store.workflow(self.f.id);luna,editor=self.clients(app)
+  await bot.update(update(callback='w:pick:'+ref));self.f.id=next(a['id'] for a in self.store.list() if a['context']['vacancy']['id']==self.f.jd['id']);app=self.store.workflow(self.f.id);luna,editor=self.clients(app)
   await bot.update(update(callback='w:pstart:'+self.f.id+'@'+str(app['workflow']['revision'])));await bot.update(update(callback='w:pstart:'+self.f.id+'@'+str(app['workflow']['revision'])))
   with self.store.connect() as db:self.assertEqual(db.execute('SELECT COUNT(*) FROM application_preparations').fetchone()[0],1)
   result=prepare(CareerApplication(ApplicationStore(self.store.path)),analyzer=lambda a,r,j,g:analyze(a,r,j,g,client_factory=lambda:luna),drafter=lambda s,i,m,q,model:discuss(s,i,m,q,model,client_factory=lambda:editor))
@@ -97,6 +100,7 @@ class MilestoneTests(unittest.IsolatedAsyncioTestCase):
   with self.store.connect() as db:self.assertEqual(db.execute('SELECT state FROM application_preparations WHERE id=?',(row['id'],)).fetchone()[0],'needs_input')
   self.service.queue_preparation(self.f.id,'offline','offline');result=prepare(self.service,analyzer=model);self.assertEqual(result['state'],'awaiting_user');self.assertIn(self.f.jd['title'],result['result']['prompt']);self.assertEqual(result['result']['api_requests'],0);model.assert_not_called()
  async def test_cached_description_fresh_listing_and_expired_or_dirty_text(self):
+  self.new_vacancy()
   from src.analysis_store import text_hash,document_text
   now=datetime.now(timezone.utc);old=(now-timedelta(hours=2)).isoformat()
   current={**self.f.jd,'collected_at':old,'description_fetched_at':old,'listing_verified_at':now.isoformat()}
@@ -149,6 +153,7 @@ class MilestoneTests(unittest.IsolatedAsyncioTestCase):
    with self.assertRaises(ValueError):self.service.analyze_owned(self.f.id)
   self.assertEqual(api.call_count,1)
  async def test_prioritized_and_rejected_feedback_changes_next_selection(self):
+  self.new_vacancy()
   from src.career_recommendations import feedback
   self.rank({'resume_id':self.f.cv['id'],'bundle':{'resumes':[self.f.cv]},'vacancies':[self.f.jd],'goal':'Generative models','allow_api':True},Path(self.f.temp.name)/'vectors',self.archive)
   ref='feedback-fixture';self.store.setting('recommendation:'+ref,packed({'resume_id':self.f.cv['id'],'resume_hash':self.f.cv['content_hash'],'vacancy_id':self.f.jd['id']}))

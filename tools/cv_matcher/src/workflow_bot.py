@@ -1,4 +1,4 @@
-"""Private operator UI and twice-daily, cached-ranking digest. No automatic applications."""
+"""Private operator UI, action reminders and on-demand search. No automatic applications."""
 import asyncio,json,os,time,re
 from pathlib import Path
 from datetime import datetime,timezone,timedelta
@@ -28,7 +28,9 @@ class WorkflowBot(CareerApplication):
   from .delivery_store import DeliveryRejected
   self.store.deliveries()
   with self.store.connect() as db:pending=[dict(r) for r in db.execute("SELECT key FROM workflow_delivery WHERE state='pending' AND payload IS NOT NULL ORDER BY created_at LIMIT 100")]
+  from .career_notifications import prepare_delivery
   for row in pending:
+   if not prepare_delivery(self,row['key']):continue
    claim=self.store.claim_delivery_send(row['key'])
    if not claim:continue
    try:
@@ -88,7 +90,10 @@ class WorkflowBot(CareerApplication):
   cv=state['cv']['title'] if state['cv'] else 'выберите в расширении'
   pending=json.loads(self.store.setting('pending_digest') or '{}')
   status='\nПоиск: '+self.task('search:'+pending['discovery_id'])['label'] if pending.get('discovery_id') else '\n«Топ-10 без откликов» — сохранённый рейтинг. Внутри можно запустить поиск новых вакансий.'
-  await self.operator.send('🎯 Рабочий поиск\nCV: '+cv+status+'\n\nПодборки: 10:00 и 19:00, Москва. Подготовлю письмо и анкету; отправка — после отдельного согласования. /tasks — очередь и прогресс.\n\nПоиск → выбор вакансии → разбор → письмо → форма → проверка.\nНапример: «Проверь новые вакансии в Яндексе, Сбере и Авито. Интересуют исследовательские позиции».',[[('🎯 Топ-10 без откликов','w:menu:top')],[('Мои отклики и письма','w:menu:apps')],[('🧭 Навыки и обучение','w:menu:skills')],[('Система и настройки','w:menu:system')]])
+  from .career_notifications import status as notification_status
+  notifications=notification_status(self)
+  schedule=notifications['modes'][notifications['mode']]+' · '+', '.join(notifications['times'])+' · '+notifications['timezone']
+  await self.operator.send('🎯 Рабочий поиск\nCV: '+cv+status+'\n\nПо расписанию: '+schedule+'. Подборка вакансий доступна по запросу. Подготовлю письмо и анкету; отправка — после отдельного согласования. /tasks — очередь и прогресс.\n\nПоиск → выбор вакансии → разбор → письмо → форма → проверка.\nНапример: «Проверь новые вакансии в Яндексе, Сбере и Авито. Интересуют исследовательские позиции».',[[('🎯 Топ-10 без откликов','w:menu:top')],[('Мои отклики и письма','w:menu:apps')],[('🧭 Навыки и обучение','w:menu:skills')],[('Система и настройки','w:menu:system')]])
 
  async def app_list(self,page=0):
   self.clear_input()

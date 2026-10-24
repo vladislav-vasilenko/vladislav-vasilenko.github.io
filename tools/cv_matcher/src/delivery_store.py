@@ -25,7 +25,7 @@ class DeliveryMixin:
     def deliveries(self,limit=100):
         with self.connect() as db:
             db.execute("UPDATE workflow_delivery SET state='uncertain',last_error='Отправка прервана: результат Telegram неизвестен. Проверьте чат.',revision=revision+1,updated_at=? WHERE state='sending' AND lease_until<?",(time.time(),time.time()))
-            rows=db.execute("SELECT * FROM workflow_delivery WHERE state<>'sent' ORDER BY created_at LIMIT ?",(limit,)).fetchall()
+            rows=db.execute("SELECT * FROM workflow_delivery WHERE state NOT IN ('sent','cancelled') ORDER BY created_at LIMIT ?",(limit,)).fetchall()
         return [{**dict(r),'payload':json.loads(r['payload']) if r['payload'] else None,'message_ids':json.loads(r['message_ids'] or '[]')} for r in rows]
 
     def claim_delivery_send(self,key):

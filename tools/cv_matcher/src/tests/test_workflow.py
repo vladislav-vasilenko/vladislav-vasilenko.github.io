@@ -142,11 +142,12 @@ class WorkflowBotTests(unittest.IsolatedAsyncioTestCase):
  async def test_owner_only_and_crm_commands_do_not_invoke_model(self):
   await self.bot.update(update(text='/today',owner=99));self.assertEqual(self.operator.messages,[])
   await self.bot.update(update(text='/start'));self.assertIn('10:00',self.operator.messages[-1][0]);self.assertEqual(self.store.setting('pending_digest'),None)
- async def test_schedule_is_moscow_twice_daily_and_deduplicated_on_restart(self):
+ async def test_schedule_is_moscow_twice_daily_and_empty_queue_is_quiet(self):
   at=datetime(2026,10,16,10,0,tzinfo=self.bot.zone)
-  await self.bot.tick(at);n=len(self.operator.messages);await WorkflowBot(self.store,self.operator,42).tick(at+timedelta(minutes=1));self.assertEqual(len(self.operator.messages),n)
-  await self.bot.tick(at.replace(hour=19));self.assertEqual(len(self.operator.messages),n+1)
-  await self.bot.tick(at.replace(hour=22));self.assertEqual(len(self.operator.messages),n+1)
+  await self.bot.tick(at);await WorkflowBot(self.store,self.operator,42).tick(at+timedelta(minutes=1))
+  await self.bot.tick(at.replace(hour=19));await self.bot.tick(at.replace(hour=22))
+  self.assertEqual(self.operator.messages,[])
+  with self.store.connect() as db:self.assertEqual(db.execute('SELECT COUNT(*) FROM discovery_runs').fetchone()[0],0)
  async def test_selector_requires_current_cv_job_goal_rank_and_fresh_active_detail(self):
   at=datetime.now(timezone.utc);c=cv(text='Transformer PyTorch training. '*8,at=at.isoformat());c['content_hash']=content_hash(c);j=job(at=at.isoformat());archive=self.bot.archive
   archive.sync({'client_id':CLIENT,'records':[record('resume',c),record('vacancy',j),record('profile',{'primary_id':c['id'],'goal':'DiT'},'profile')]})

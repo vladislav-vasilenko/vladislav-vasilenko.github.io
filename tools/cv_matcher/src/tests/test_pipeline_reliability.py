@@ -86,6 +86,8 @@ class ReliabilityTests(unittest.IsolatedAsyncioTestCase):
   rank=Mock();result=discovery.advance(self.s,self.archive,run['id'],self.f.temp.name,ranker=rank);self.assertEqual(result['state'],'needs_input');rank.assert_not_called()
  async def test_latest_missed_slot_is_caught_up_once_after_restart(self):
   from zoneinfo import ZoneInfo
+  from src.career_notifications import config
+  config(self.s,{'mode':'discovery'})
   with patch.object(self.bot,'begin_digest',new_callable=AsyncMock) as begin:
    await self.bot.tick(datetime(2026,10,17,10,30,tzinfo=ZoneInfo('Europe/Moscow')))
    self.assertEqual(begin.await_count,1);self.assertIn('T10:00:00+03:00',begin.call_args.args[0])

@@ -154,6 +154,7 @@ class SyncDeliveryTests(unittest.IsolatedAsyncioTestCase):
         self.f = fixtures.WorkflowTests('runTest'); self.f.setUp(); self.addCleanup(self.f.doCleanups)
         self.s = self.f.store; self.op = Operator(); self.bot = WorkflowBot(self.s, self.op, 42)
         # Keep unrelated twice-daily discovery out of this notification test.
+        self.s.setting('telegram_notifications', json.dumps({'mode':'off'}))
         self.bot.finish_digest = AsyncMock(); self.bot.plan_reminders = AsyncMock(); self.bot.begin_digest = AsyncMock()
 
     async def test_successful_background_polls_quiet_and_identical_failures_one_alert(self):

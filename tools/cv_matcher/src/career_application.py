@@ -62,7 +62,13 @@ class CareerApplication:
    applied.update(r[0] for r in db.execute("SELECT vacancy_id FROM hh_observations WHERE status<>'unknown'"))
    applied.update(json.loads(r[0])['vacancy']['id'] for r in db.execute("SELECT context FROM applications WHERE status IN ('submitted','viewed','invited','rejected','withdrawn','completed')"))
    applied.update(json.loads(r[0])['vacancy']['id'] for r in db.execute("SELECT a.context FROM applications a JOIN application_crm c ON c.app_id=a.id WHERE c.stage<>'preparing'"))
-   sent={r[0] for r in db.execute("SELECT key FROM workflow_delivery WHERE key LIKE ?",('job:'+now.astimezone(self.zone).date().isoformat()+':%',))} if exclude_day else set()
+   # A started preparation is already in the action queue, not a new recommendation.
+   applied.update(json.loads(r[0])['vacancy']['id'] for r in db.execute("SELECT context FROM applications WHERE status<>'superseded'"))
+   day=now.astimezone(self.zone).date().isoformat()
+   sent={r[0] for r in db.execute("SELECT key FROM workflow_delivery WHERE key LIKE ? AND state<>'cancelled'",('job:'+day+':%',))} if exclude_day else set()
+   if exclude_day:
+    start=now.astimezone(self.zone).replace(hour=0,minute=0,second=0,microsecond=0).astimezone(timezone.utc).isoformat()
+    sent.update('job:'+day+':'+r[0].rsplit(':',1)[-1] for r in db.execute("SELECT key FROM workflow_delivery WHERE key LIKE 'job:%' AND created_at>=? AND state<>'cancelled'",(start,)))
   jobs=[j for j in jobs if j.get('description_quality')=='full' and not j.get('archived') and j['id'] not in applied and 'job:'+now.astimezone(self.zone).date().isoformat()+':'+j['id'] not in sent]
   # The same current-version, exact-goal, small-model ranking as the web list.
   rows=self.archive.entities('vacancy',status='full',resume_id=cv_id,goal=goal,model='text-embedding-3-small',ranked_only=True,exclude_closed=True,all_items=True,include_payload=True)['items']
@@ -82,9 +88,6 @@ class CareerApplication:
     valid=checked.tzinfo and fetched.tzinfo and -timedelta(minutes=5)<=now-checked<=timedelta(minutes=30) and -timedelta(minutes=5)<=now-fetched<timedelta(hours=24) and not j.get('description_dirty') and j.get('archived') is False
    except ValueError:valid=False
    if fresh and not valid:continue
-   place=' '.join(map(str,j.get('locations',[])))+' '+str(j.get('location',''))+' '+str(j.get('city',''))
-   remote=re.search(r'удал[её]нн|\bremote\b|дистанционн.{0,20}работ',j.get('description',''),re.I)
-   if fresh and not (re.search(r'москв|moscow',place,re.I) or remote):continue
    feedback=json.loads(self.store.setting('career-feedback:'+hashed([cv_id,j['id']])) or '{}')
    if feedback.get('choice')=='uninteresting' and feedback.get('resume_hash')==cv['content_hash']:continue
    results.append({'job':j,'resume':cv,'goal':goal,'score':ranked[j['id']]['score'],'ranking':ranked[j['id']]})
@@ -119,6 +122,11 @@ class CareerApplication:
   raw=self.store.setting('pending_digest')
   if not raw:return
   p=json.loads(raw);notes=[]
+  scheduled=p['key'].startswith('digest:')
+  from .career_notifications import config as notification_config
+  if scheduled and notification_config(self.store)['mode'] not in ('both','discovery'):
+   # Keep the collected data and task history, but stop scheduled delivery.
+   self.store.setting('pending_digest','');return
   if p.get('discovery_id'):
    from .discovery import advance
    run=await asyncio.to_thread(advance,self.store,self.archive,p['discovery_id'],Path(__file__).resolve().parents[1])
@@ -137,14 +145,21 @@ class CareerApplication:
   day=datetime.now(self.zone).date().isoformat()
   scope=run['payload'].get('scope',{}) if p.get('discovery_id') else {}
   ranking_goal=run['payload'].get('ranking_goal',run['payload']['goal']) if p.get('discovery_id') else None
-  candidates=self.candidates(scope=scope,ranking_goal=ranking_goal)[:min(scope.get('limit',10),10)]
+  now=datetime.now(timezone.utc)
+  candidates=self.candidates(fresh=scheduled,now=now,exclude_day=scheduled,scope=scope,ranking_goal=ranking_goal)
+  if scheduled:
+   # A failed refresh must never masquerade as a fresh global cached ranking.
+   candidates=[c for c in candidates if c['job']['id'] in p.get('ids',[])] if p.get('discovery_id') and run['state']=='complete' else []
+  candidates=candidates[:min(scope.get('limit',10),10)]
   messages=[];refs=[]
   collected_refs=[]
-  if not candidates and p.get('discovery_id'):
+  if not candidates and p.get('discovery_id') and not scheduled:
    for jid in p['ids'][:200]:
     try:
      j=self.archive.detail('vacancy',jid)['payload'];cv=self.archive.detail('resume',run['payload']['resume_id'])['payload']
      if j.get('description_quality')!='full' or j.get('archived'):continue
+     with self.store.connect() as db:
+      if db.execute("SELECT 1 FROM applications WHERE json_extract(context,'$.vacancy.id')=? AND status<>'superseded'",(jid,)).fetchone():continue
      from .career_search_scope import accepts
      if accepts(j,{**scope,'since_days':None},self.archive):continue
      ref=hashed([p['key'],jid,cv['content_hash']])[:20]
@@ -157,9 +172,9 @@ class CareerApplication:
     message='Chrome не начал проверку за 10 минут. Активность вакансий остаётся неизвестной; это не означает, что они закрыты.\n\n'+CHROME_HELP+'\nПосле подключения отправьте /today.'
    else:message='🧭 Поиск завершён без подтверждённой подборки.\n'+('Прочитанные описания доступны ниже как карточки без подтверждённого рейтинга. Выберите одну для разбора и письма или повторите отбор с другими условиями.' if collected_refs else 'Проверьте доступность источников и условия поиска. Ниже можно запустить новый поиск или проверить Chrome.')
   else:
-   message='🎯 Топ-10 без откликов · '+datetime.now(self.zone).strftime('%d.%m %H:%M')+'\nCV: '+candidates[0]['resume']['title']+'\nПолный сохранённый рейтинг · 3-small · исключены существующие отклики и «Не моё». Явные условия поиска сохранены. Проверим активность перед подготовкой.\nСемантическая близость — не процент покрытия навыков.\n\nСледующий шаг: выберите «Подготовить отклик» у вакансии. Разбор Luna и письмо доступны с API или без API; затем проверим форму в Chrome. Можно написать: «Подготовь отклики на первые две».'
+   message=('🎯 Проверенные вакансии · ' if scheduled else '🎯 Топ-10 без откликов · ')+datetime.now(self.zone).strftime('%d.%m %H:%M')+'\nCV: '+candidates[0]['resume']['title']+'\nПолный сохранённый рейтинг · 3-small · исключены существующие отклики и «Не моё». Явные условия поиска сохранены. Проверим активность перед подготовкой.\nСемантическая близость — не процент покрытия навыков.\n\nСледующий шаг: выберите «Подготовить отклик» у вакансии. Разбор Luna и письмо доступны с API или без API; затем проверим форму в Chrome. Можно написать: «Подготовь отклики на первые две».'
    for c in candidates:
-    j=c['job'];key='job:'+hashed(p['key'])[:20]+':'+j['id']
+    j=c['job'];key='job:'+(day if scheduled else hashed(p['key'])[:20])+':'+j['id']
     from .career_recommendations import explain
     explanation=explain(self,c);ref=hashed([p['key'],j['id'],c['resume']['content_hash']])[:20];refs.append(ref)
     self.store.setting('recommendation:'+ref,packed({'resume_id':c['resume']['id'],'resume_hash':c['resume']['content_hash'],'vacancy_id':j['id'],'vacancy_hash':hashed(j['description']),'goal':c['goal'],'explanation':explanation}))
@@ -172,7 +187,9 @@ class CareerApplication:
   # Header, all recommendations and completion of planning commit together.
   with self.store.connect() as db:
    db.execute('BEGIN IMMEDIATE');self.enqueue(p['key'],message,controls,db=db)
-   for key,text,keyboard in messages:self.enqueue(key,text,keyboard,db=db)
+   for key,text,keyboard in messages:
+    self.enqueue(key,text,keyboard,db=db)
+    if scheduled:self.store.setting_in(db,'notification:'+key,packed({'kind':'recommendation','vacancy_id':key.rsplit(':',1)[-1],'expires':now.timestamp()+30*60}))
    self.store.setting_in(db,'pending_digest','')
    self.store.setting_in(db,'last-selection',packed({'refs':refs or collected_refs,'created':time.time(),'ranked':bool(refs)}))
    if collected_refs:self.store.setting_in(db,'last-collected',packed({'refs':collected_refs,'created':time.time()}))
@@ -195,7 +212,12 @@ class CareerApplication:
   for stamp in self.times:
    hour,minute=map(int,stamp.strip().split(':'));slot=now.replace(hour=hour,minute=minute,second=0,microsecond=0)
    if 0<=(now-slot).total_seconds()<4*3600:slots.append(slot)
-  if slots and not self.store.setting('pending_digest'):await self.begin_digest('digest:'+max(slots).isoformat())
+  from .career_notifications import config as notification_config,plan_reviews
+  notification_mode=notification_config(self.store)['mode']
+  if slots:
+   slot=max(slots)
+   if notification_mode in ('tasks','both'):plan_reviews(self,slot,now)
+   if notification_mode in ('both','discovery') and not self.store.setting('pending_digest'):await self.begin_digest('digest:'+slot.isoformat())
   await self.enqueue_event_notifications()
   await self.enqueue_task_notifications()
   with self.store.connect() as db:commands=[dict(r) for r in db.execute("SELECT * FROM browser_commands WHERE kind='sync' AND state IN ('complete','failed','needs_input') ORDER BY created DESC LIMIT 10")]
@@ -232,9 +254,10 @@ class CareerApplication:
 
  async def plan_reminders(self,now):
   with self.store.connect() as db:
-   due=[dict(r) for r in db.execute("SELECT c.*,json_extract(a.context,'$.vacancy.title') title FROM application_crm c JOIN applications a ON a.id=c.app_id WHERE c.follow_up_at IS NOT NULL AND c.work_status<>'done' AND a.status<>'superseded'")]
+   due=[dict(r) for r in db.execute("SELECT c.*,json_extract(a.context,'$.vacancy.title') title FROM application_crm c JOIN applications a ON a.id=c.app_id WHERE c.follow_up_at IS NOT NULL AND c.work_status<>'done' AND c.stage NOT IN ('offer','rejected') AND a.status NOT IN ('superseded','completed','rejected','withdrawn')")]
    meetings=[dict(r) for r in db.execute("SELECT m.*,json_extract(a.context,'$.vacancy.company') company FROM application_appointments m JOIN applications a ON a.id=m.app_id WHERE m.status='scheduled' AND a.status<>'superseded'")]
   for plan in due:
+   if self.store.case_id(plan['app_id'])!=plan['app_id']:continue
    if datetime.fromisoformat(plan['follow_up_at'])>now:continue
    key='followup:'+plan['app_id']+':'+plan['follow_up_at']
    await self.notify(key,'Пора проверить следующий шаг\n'+plan['title']+'\n'+WORK_STATUSES[plan['work_status']]+' · '+plan['next_action'],[[('Открыть план',f'w:open:{plan["app_id"]}')]])

@@ -48,13 +48,13 @@ const Journey=(()=>{
  let request=0;const opened=new Set();
  function relevant(data){return (data.items||[]).filter(i=>i.resume_id===data.cv?.id);}
  function focus(data){
-  const items=relevant(data),attention=items.find(i=>i.needs_attention);
-  if(attention)return {title:attention.state==='uncertain'?'Проверьте результат отклика':'Отклик ждёт вашей проверки',hint:'Проверьте письмо, ответы и следующее действие перед отправкой.',label:'Открыть проверку',item:attention};
+  const items=relevant(data),attention=(data.items||[]).find(i=>i.needs_attention);
+  if(attention)return {title:attention.state==='uncertain'?'Проверьте результат отклика':'Отклик ждёт вашего действия',hint:attention.next||'Проверьте письмо, ответы и следующее действие перед отправкой.',label:'Открыть проверку',item:attention};
   if(!data.cv)return {title:'Начните с резюме',hint:'Выберите резюме и карьерную цель. На их основе появятся персональные рекомендации.',label:'Выбрать резюме',tab:'resume'};
   if(data.cv.quality!=='full')return {title:'Проверьте резюме',hint:'Для сравнения вакансий нужен полный и проверенный текст.',label:'Открыть резюме',tab:'resume'};
   if(!data.summary.full_descriptions)return {title:'Соберите первые вакансии',hint:'Подключите Chrome и выберите источники. Результаты сохранятся в вашем архиве.',label:'Настроить сбор',setup:true};
   if(!data.ranked)return {title:'Найдите подходящие вакансии',hint:'Описания уже собраны. Откройте рейтинг, чтобы сравнить их с выбранным резюме.',label:'Открыть рейтинг',tab:'ranking'};
-  const preparation=items.find(i=>i.stage_key==='preparing'&&!['approved','sending'].includes(i.state)&&!['submitted','viewed','invited','rejected','withdrawn'].includes(i.status));
+  const preparation=items.find(i=>!i.closed&&i.stage_key==='preparing'&&!['approved','sending','fill_approved','filling'].includes(i.state)&&!['submitted','viewed','invited','rejected','withdrawn','completed'].includes(i.status));
   if(preparation)return {title:'Продолжите подготовку отклика',hint:preparation.next,label:'Продолжить отклик',item:preparation};
   return {title:'Выберите следующий отклик',hint:'Сравните лучшие вакансии и выберите, куда хотите двигаться дальше.',label:'Выбрать вакансию',tab:'ranking'};
  }
@@ -76,11 +76,18 @@ const Journey=(()=>{
   const connection=make('p','todayConnection');connection.append(make('span',data.browser.connected?'todayDot':'todayDot offline'),document.createTextNode(data.browser.connected?'Chrome на связи':'Chrome недоступен — задачи ждут подключения'));summary.append(connection);
   if(data.browser.queued||data.browser.running)summary.append(make('p','todayFootnote','В очереди: '+data.browser.queued+' · выполняется: '+data.browser.running));
   layout.append(hero,summary);root.append(layout);
-  const queue=relevant(data).filter(i=>i.id!==f.item?.id&&!['rejected','withdrawn'].includes(i.status)).slice(0,3);
+  const queue=(data.items||[]).filter(i=>i.id!==f.item?.id&&!i.closed&&(i.reminder_due||i.resume_id===data.cv?.id)&&!['rejected','withdrawn'].includes(i.status)).slice(0,3);
   if(data.appointments?.length){const section=make('section','todayList');section.append(make('h2','','Ближайшие встречи'));for(const item of data.appointments.slice(0,2)){const row=make('article','todayRow'),body=make('div');body.append(make('h3','',item.title+' · '+item.company),make('p','muted',CRMPlanning.when(item.start_at,item.time_zone)));row.append(body,button('Подготовиться',()=>openApplication({id:item.app_id})));section.append(row);}root.append(section);}
   if(queue.length){const section=make('section','todayList'),heading=make('div','todaySectionHeading');heading.append(make('h2','','Дальше по плану'),button('Все отклики',()=>setTab('applications'),'todayTextButton'));section.append(heading);for(const item of queue){const row=make('article','todayRow'),body=make('div');body.append(make('h3','',item.title),make('p','muted',item.company+' · '+item.next));row.append(body,button('Открыть →',()=>openApplication(item),'todayTextButton'));section.append(row);}root.append(section);}
   const shortcuts=make('nav','todayShortcuts');shortcuts.setAttribute('aria-label','Разделы поиска');shortcuts.append(button('Карта возможностей →',()=>setTab('analytics'),'todayTextButton'),external('https://t.me/baniartbot','Продолжить в Telegram ↗'));root.append(shortcuts);
   const advanced=make('section','todayTools');advanced.append(make('h2','','Управление поиском'),make('p','muted','Настройки и служебные задачи — когда они нужны.'));
+  const notifications=data.notifications;
+  if(notifications)disclosure(advanced,'notifications','Напоминания Telegram',notifications.modes[notifications.mode]+' · '+notifications.times.join(', '),body=>{
+   body.append(make('p','muted','Telegram напоминает о действиях из раздела «Сегодня». Заполненная форма ещё требует вашей проверки. Завершённые и отложенные действия исключаются; пустых подборок напоминаний нет. Расписание: '+notifications.times.join(', ')+' · '+notifications.timezone+'. Сервис и бот должны работать; пропущенные интервалы не накапливаются.'));
+   const label=make('label','','Что присылать по расписанию'),select=make('select');select.setAttribute('aria-label','Уведомления Telegram');
+   for(const [value,text] of Object.entries(notifications.modes)){const option=make('option','',text);option.value=value;select.append(option);}select.value=notifications.mode;label.append(select);
+   body.append(label,button('Сохранить уведомления',async()=>{await api('workflow',{op:'notification_config_save',config:{mode:select.value}});await enter();}),make('p','muted','Новые сообщения HH, изменения статусов, назначенные проверки и интервью приходят отдельно. Поиск вакансий можно запустить в любой момент. Настройка не управляет сбором GitHub Actions.'));
+  });
   disclosure(advanced,'agent','Задачи и команды агенту',data.browser.running?'Есть выполняемые задачи':'Посмотреть очередь, приостановить или продолжить',agentPanel);
   const sync=data.browser.auto_sync,bump=data.browser.resume_bump;
   disclosure(advanced,'automation','Автоматизация HH',[(sync?.enabled?'Ответы: включено':'Ответы: выключено'),(bump?.resumes?.some(r=>r.blocked)?'Поднятие: нужна проверка':bump?.enabled?'Поднятие резюме: включено':'Поднятие резюме: выключено')].join(' · '),body=>{autoSync(body,sync);resumeBump(body,bump,data.cv?.id);});

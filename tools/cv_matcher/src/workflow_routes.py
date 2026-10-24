@@ -66,6 +66,11 @@ def install_workflow(app,token,root):
                 if op in ('resume_import','resume_import_status'):
                     from .resume_intake import start,read
                     return start(s,data['url']) if op=='resume_import' else read(s,data['command_id'])
+                if op in ('notification_config','notification_config_save'):
+                    from .career_notifications import config,status
+                    from .career_application import CareerApplication
+                    if op=='notification_config_save':config(s,data['config'])
+                    return status(CareerApplication(s))
                 if op in ('hh_auto_sync','hh_auto_sync_save'):
                     from .hh_auto_sync import config,status
                     if op=='hh_auto_sync_save':config(s,data['config'])
