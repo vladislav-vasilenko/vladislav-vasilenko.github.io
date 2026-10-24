@@ -1,13 +1,12 @@
 /* User-confirmed cleanup. Never runs from an alarm, content script, or Telegram. */
 let hhCleanupBusy=false,hhCleanupStop=false;
 const cleanupSave=data=>chrome.storage.local.set({hh_cleanup_status:{...data,updated_at:new Date().toISOString()}});
-async function cleanupScript(tabId,action){
- const work=(async()=>{
+function cleanupScript(tabId,action){
+ // Bounded like every other HH read: wfScript/wfReadWithin come from hh-workflow.js, loaded earlier by background.js.
+ return wfReadWithin(async()=>{
   await chrome.scripting.executeScript({target:{tabId},func:value=>{globalThis.__hhCleanupAction=value;},args:[action]});
   return wfScript(tabId,['hh-sync-core.js','hh-cleanup-core.js','hh-cleanup-content.js']);
- })();let timer;
- try{return await Promise.race([work,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('HH не ответил на очистку за 15 секунд. Проверьте вкладку вручную.')),15000);})]);}
- finally{clearTimeout(timer);}
+ },15000,'HH не ответил на очистку за 15 секунд. Проверьте вкладку вручную.');
 }
 function cleanupLock(){
  if(hhCleanupBusy||activeJobs.size||hhWorkflowBusy||collectionBusy||careerWorkflowBusy)throw Error('Дождитесь текущей задачи расширения.');
