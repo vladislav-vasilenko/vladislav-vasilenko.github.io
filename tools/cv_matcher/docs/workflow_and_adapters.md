@@ -22,7 +22,7 @@
 
 # Поиск, оценка и отклик
 
-> Сверка 22.10.2026. История UX ниже сохраняет даты релизов. Текущие точки входа — [quickstart](applicant_quickstart.md); основной worker 0.11.22. [Hybrid/backfill](architecture/hybrid-collection.md) и [LinkedIn plan](integration/linkedin-adapters.md) используют общий архив, но разные capability.
+> Сверка 22.10.2026. История UX ниже сохраняет даты релизов. Текущие точки входа — [quickstart](applicant_quickstart.md); версия worker — в [README](README.md). [Hybrid/backfill](architecture/hybrid-collection.md) и [LinkedIn plan](integration/linkedin-adapters.md) используют общий архив, но разные capability.
 
 Расширение 0.8.1 организовано в пять шагов: **Резюме → Поиск → Сбор → Оценка → Отклик**. Контекст выбранного CV остаётся видимым. Можно переходить между шагами; ничего не отправляется работодателям автоматически от перехода или просмотра.
 

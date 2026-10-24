@@ -13,17 +13,18 @@ data for the site.
 
 ### Main entrypoints
 
-- `server.py` - local FastAPI/SSE service for scraping and matching workflows.
+- `resume_import_server.py` - the current local service (FastAPI, port 8788); see `docs/README.md`.
+- `server.py` - legacy FastAPI/SSE service on port 8787 (old RAG matcher path, not the personal archive).
 - `cv_matcher.py` - legacy batch matcher pipeline.
 - `scripts/scrape_online.py` - automated scraper used by GitHub Actions.
-- `scripts/scrape_linkedin.py` - manual LinkedIn connections scraper.
+- `scripts/scrape_linkedin.py`, `scripts/cluster_linkedin.py` - legacy LinkedIn connections scraper and clustering; superseded by the LinkedIn section of `hh-research-extension` and `src/linkedin_*.py`.
 
 ### Source layout
 
 - `src/scrapers/` - scraper classes grouped by market/source family.
 - `src/scrapers/parsers/` - pure parser helpers and browser-side parser scripts.
-- `linkedin-scraper-extension/` - browser extension and userscript assets.
-- `.cache/` and `.auth/` - local generated state, ignored by git.
+- `linkedin-scraper-extension/` - legacy 2026-05 extension and userscript; not installed alongside the main extension, kept only as history.
+- `.cache/` and `.auth/` - local generated state, ignored by git. Secrets and the rule that they never enter the git index: `docs/security.md`.
 
 ### Live scraper checks
 
@@ -93,7 +94,7 @@ permissions and the distinction between semantic ranking and detailed LLM review
 `cv_matcher.py --vacancies-json ... --resume-bundle ... --resume-source bundle`
 remains available for detailed scoring. Daily scheduling and application submission
 are not implemented. Tests use mocked browser/API calls; see
-`docs/resume_catalog_testing.md` for live verification status.
+`docs/operations.md` for the verification matrix and its limits.
 # Отклики и Telegram-userbot · 0.6.0
 
 В рейтинге добавлена кнопка «Откликнуться» с привязкой к CV/версии, вакансии
@@ -134,7 +135,7 @@ are not implemented. Tests use mocked browser/API calls; see
 
 [Актуальная оценка пользы сервиса и разрывов конвейера · 16.10.2026](docs/service_assessment.md).
 
-Обновление 0.10.2: [подключение HH, ChatGPT без API и исправления](docs/release_0_10.md).
+Обновление 0.10.2 (подключение HH, ChatGPT без API): исторические заметки удалены 24.10.2026; текущее описание — [workflow_and_adapters](docs/workflow_and_adapters.md).
 
 Поддержка этапов и планирования интервью, Google Calendar, отдельный веб-рейтинг с фильтром компании и режимы «API / Без API»: [инструкция 0.10.3](docs/crm_ranking_modes.md).
 
@@ -143,6 +144,6 @@ are not implemented. Tests use mocked browser/API calls; see
 
 В локальном веб-сервисе появились **О сервисе**, **Настройки компаний** и чекбоксы нескольких компаний / tiers в архиве и рейтинге. Каталог компаний редактируется и сохраняется в SQLite; тот же редактор открывается из расширения. Панели Яндекса, Avito, Ozon и T-Bank поддерживают разбор и письмо через API / без API.
 
-[Как включить панели и настроить источники](docs/career_widgets.md) · [Аудит оставшихся разрывов конвейера](docs/pipeline_audit_2026_10_16.md).
+[Как включить панели и настроить источники](docs/career_widgets.md) · [Разрывы конвейера](docs/architecture/gap-analysis.md).
 
 Общий Career application layer, управление задачами Telegram/Web/MCP и запуск stdio-сервера: [инструкция](docs/architecture/application-layer.md).

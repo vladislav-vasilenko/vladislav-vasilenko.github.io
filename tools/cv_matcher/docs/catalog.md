@@ -1,71 +1,94 @@
 # Каталог документации
 
-Сверка 22.10.2026. Вход: [README](README.md). Архивы и исходные вложения сохраняют историческое содержание; планы не являются реализованными capabilities.
+Сверка 24.10.2026. Вход: [README](README.md). Статусы: **Действующая** — описывает текущий код; **Справочник функции** — функция существует, номер версии в заголовке исторический; **История релизов** — срез на дату, не обновляется; **План** — не реализовано; **ADR** — принятое решение; **Исходный материал** — сохранённые пользовательские тексты, не инструкции.
 
-| Документ | Статус |
-|---|---|
-| [Career Intelligence — документация](README.md) | Действующая документация |
-| [Начало работы с Career Workspace](applicant_quickstart.md) | Действующая документация |
-| [CRM откликов · 0.9.0](application_crm.md) | Действующая документация |
-| [ADR 0001 — Career Agent поверх существующего domain workflow](architecture/adr/0001-reuse-existing-workflow.md) | Архитектурное решение |
-| [ADR 0002 — Назначение SQLite и ChromaDB без преждевременной миграции](architecture/adr/0002-sqlite-and-chroma.md) | Архитектурное решение |
-| [ADR 0003 — Тонкий MCP adapter, разрешения принадлежат backend и владельцу](architecture/adr/0003-thin-mcp-and-human-approval.md) | Архитектурное решение |
-| [ADR 0004 — Локальная доступность и отдельное решение о 24/7](architecture/adr/0004-local-availability.md) | Архитектурное решение |
-| [ADR 0005 — Telegram как основной мобильный пульт общего Career Agent](architecture/adr/0005-telegram-primary-control.md) | Архитектурное решение |
-| [Общий application layer и Career MCP](architecture/application-layer.md) | Действующая документация |
-| [Карьерная траектория · 22.10.2026](architecture/career-trajectory.md) | Действующая документация |
-| [Фактическая архитектура](architecture/current-state.md) | Действующая документация |
-| [Сущности и связи](architecture/domain-model.md) | Действующая документация |
-| [Разрывы между реализацией и целевым конвейером](architecture/gap-analysis.md) | Действующая документация |
-| [Гибридный сбор вакансий](architecture/hybrid-collection.md) | Действующая документация |
-| [Корневой проект, расширения и корпоративное заполнение](architecture/repository-and-autofill.md) | Действующая документация |
-| [Сравнение нескольких резюме под карьерный трек](architecture/resume-portfolio-review.md) | Действующая документация |
-| [Career Skills Intelligence: аудит и границы реализации](architecture/skills-intelligence.md) | Действующая документация |
-| [Целевая архитектура: развитие существующего конвейера](architecture/target-state.md) | Текущая реализация; проверка по capability |
-| [Панели на сайтах работодателей · 0.10.5](career_widgets.md) | Действующая документация |
-| [Обновление 0.10.3: рейтинг, план отклика и два режима ИИ](crm_ranking_modes.md) | Действующая документация |
-| [Архив архитектурного аудита 19–20.10.2026](handoff/2026-10-19-architecture-audit.md) | Архив / исходный материал |
-| [Передача проекта следующему агенту: фактическое состояние и входные данные для плана](handoff/2026-10-20-agent-planning-brief.md) | Архив / исходный материал |
-| [Пользовательская идея развития — исходный материал для планирования](handoff/input-development-idea-2026-10-20.md) | Архив / исходный материал |
-| [Huawei R&D Russia — поиск для соискателя](huawei_search.md) | Действующая документация |
-| [Радар рынка, компаний и команд](ideas/01-market-radar.md) | План / backlog |
-| [Карьерная ценность, очередь откликов и обратная связь](ideas/02-career-value-and-feedback.md) | План / backlog |
-| [Гибридное извлечение и ограниченное восстановление](ideas/03-adaptive-extraction.md) | План / backlog |
-| [Агент качественного отклика и анкет](ideas/04-application-agent.md) | План / backlog |
-| [Эволюционная AI-native архитектура и стоимость](ideas/05-evolutionary-architecture.md) | План / backlog |
-| [От требований вакансий к траектории навыков и доказательствам](ideas/06-learning-and-evidence.md) | План / backlog |
-| [Идеи развития Career Intelligence](ideas/README.md) | План / backlog |
-| [Идея: восстановление DOM-адаптеров с помощью Luna](ideas/llm-adapter-repair.md) | План / backlog |
-| [Исходная идея: AI-native: гибридное извлечение и восстановление](ideas/sources/ai-native-extraction.md) | Архив / исходный материал |
-| [Исходная идея: Эволюционное развитие Career Intelligence Platform](ideas/sources/evolutionary-career-platform.md) | Архив / исходный материал |
-| [Идеи обзора рынка из обсуждения](ideas/sources/market-intelligence-chat.md) | Архив / исходный материал |
-| [Исходная идея: Агент откликов и анкет работодателей](ideas/sources/supervised-application-agent.md) | Архив / исходный материал |
-| [Карта возможностей и единый Telegram-рейтинг](integration/career-analytics-telegram.md) | Действующая документация |
-| [GitHub collection + primary HH portfolio · 22.10.2026](integration/github-import-and-portfolio.md) | Действующая документация |
-| [Бесплатное поднятие HH-резюме](integration/hh-resume-bump.md) | Действующая документация |
-| [LinkedIn: адаптеры профиля и вакансий](integration/linkedin-adapters.md) | План / backlog |
-| [Публичное портфолио: данные, визуализации и мобильная версия](integration/public-portfolio.md) | Действующая документация |
-| [Resume document comparison and workspace reading](integration/resume-comparison.md) | Действующая документация |
-| [Telegram → Personalized Search → Luna → Draft → Chrome → Human Review](integration/telegram-career-e2e.md) | Архив / исходный материал |
-| [Фокус рабочего места: Today, вакансии, рейтинг и отклики](integration/workspace-ux.md) | Действующая документация |
-| [Тест общего импорта job boards — 14 октября 2026](job_board_testing.md) | Действующая документация |
-| [Локальный архив и embeddings](local_archive.md) | Действующая документация |
-| [Запуск, проверка и диагностика](operations.md) | Действующая документация |
-| [Исправления конвейера — 0.11.2](pipeline_audit_2026_10_16.md) | Архив / исходный материал |
-| [Ответы рекрутеру: источники и проверка качества](recruiter_answer_quality.md) | Действующая документация |
-| [Рабочий поиск 0.10.2 · 16 октября 2026](release_0_10.md) | Архив / исходный материал |
-| [Срез реализации и документации — 22.10.2026](release_2026_10_22.md) | Действующая документация |
-| [Поиск Research Engineer ML](research_search.md) | Действующая документация |
-| [Поиск Research Engineer ML](research_search_daily.md) | Действующая документация |
-| [Проверка расширения 0.5.1 — 14.10.2026](resume_catalog_testing.md) | Действующая документация |
-| [План развития](roadmap.md) | План / backlog |
-| [Что решает сервис сейчас](service_assessment.md) | Действующая документация |
-| [Telegram как пульт поиска работы — 0.10.7](telegram_user_flow.md) | Действующая документация |
-| [Управляемый отклик: расширение + Telethon + управляющий Telegram-бот](telegram_userbot.md) | Действующая документация |
-| [Поиск, оценка и отклик](workflow_and_adapters.md) | Действующая документация |
+Текущие версии (расширение, HTTP health, протокол) указаны только в [README](README.md); размеры тестовых наборов — только в [operations](operations.md). Остальные документы на числа не ссылаются.
 
-Исходные тексты `ideas/sources/` не переписаны: сохранены происхождение и контрольные суммы в [manifest](ideas/sources/manifest.json). Счётчики и выводы в архивах относятся к их датам.
+## Основные
 
-- [Изменения 23.10.2026](release_2026_10_23.md)
+| Документ | Статус | О чём |
+|---|---|---|
+| [Career Intelligence — документация](README.md) | Действующая | Вход, сценарии, интеграции, границы. |
+| [Начало работы с Career Workspace](applicant_quickstart.md) | Действующая | Первый запуск, подключение расширения, основной сценарий. |
+| [Запуск, проверка и диагностика](operations.md) | Действующая | Команды, тестовые контуры, диагностика по симптомам, Pages, резервные копии. |
+| [Секреты, учётные данные и локальное состояние](security.md) | Действующая | Где живут секреты, проверка индекса git, инцидент 24.10.2026 и ротация. |
+| [Что решает сервис сейчас](service_assessment.md) | Действующая | Проблемы соискателя, текущая помощь и пределы. |
+| [План развития](roadmap.md) | План | Реализованная основа, приёмка LinkedIn, дальнейшие направления. |
+| [Обновление 24.10.2026 — LinkedIn и Telegram](release_2026_10_24.md) | История релизов · последний | Контакты, чаты, вакансии LinkedIn, дозировка чтения, команды вакансий, напоминания. |
+| [Изменения 23.10.2026](release_2026_10_23.md) | История релизов | Импорт GitHub Actions, Meta GraphQL v2, Locations, региональный фильтр компаний. |
+| [Срез реализации — 22.10.2026](release_2026_10_22.md) | История релизов | Гибридный сбор, представления CV, траектории, импорт GitHub, портфолио. |
 
-- [Компании, регионы и пакетный расчёт](usage/company-filter.md) — регион и уровень, флажки, счётчики и расчёт уже сохранённых вакансий.
+## Пользовательские функции
+
+| Документ | Статус | О чём |
+|---|---|---|
+| [Поиск, оценка и отклик](workflow_and_adapters.md) | Справочник функции | Режимы сбора, отметки на HH, inline-действия, пропуск закрытых вакансий; ниже — история UX 0.8–0.10. |
+| [CRM откликов](application_crm.md) | Справочник функции | Этапы отклика, статус HH отдельно, история Telegram/веб. |
+| [Рейтинг, план отклика и два режима ИИ](crm_ranking_modes.md) | Справочник функции | Страница «Рейтинг по резюме», режимы API / без API, Google Calendar. |
+| [Панели на сайтах работодателей](career_widgets.md) | Справочник функции | Панели разбора и письма на Яндексе, Avito, Ozon, T-Bank. |
+| [Локальный архив и embeddings](local_archive.md) | Справочник функции | SQLite-архив, синхронизация из расширения, рейтинги, разборы навыков. |
+| [Ответы рекрутеру: источники и проверка качества](recruiter_answer_quality.md) | Действующая | Правила обоснования ответов (R/U/H/G), запрет выдумок. |
+| [Telegram как пульт поиска работы](telegram_user_flow.md) | Справочник функции | Telegram-команды, анкеты компаний, история, качество ответов. |
+| [Управляемый отклик: расширение + Telethon + управляющий бот](telegram_userbot.md) | Справочник функции | Userbot Telethon и управляющий бот, подключение. |
+| [Huawei R&D Russia — поиск для соискателя](huawei_search.md) | Действующая | Готовые поисковые ссылки HH для исследовательских ролей Huawei. |
+| [Поиск Research Engineer ML](research_search.md) | Генерируется | План ссылок без ограничения по дате; `node scripts/build_research_search.mjs`. |
+| [Поиск Research Engineer ML · 3 дня](research_search_daily.md) | Генерируется | Тот же план за последние 3 дня; `--daily`. |
+| [Компании, регионы и пакетный расчёт](usage/company-filter.md) | Действующая | Фильтры региона и уровня, пакетный расчёт сохранённых вакансий. |
+
+## Архитектура
+
+| Документ | Статус | О чём |
+|---|---|---|
+| [Фактическая архитектура](architecture/current-state.md) | Действующая | Компоненты, данные, адаптеры, рейтинг, исполнение, LinkedIn. Главный документ «что есть сейчас». |
+| [Сущности и связи](architecture/domain-model.md) | Действующая | Логическая модель над SQLite; развёрнутая версия — [корневая модель](../../../docs/career-domain-model.md). |
+| [Общий application layer и Career MCP](architecture/application-layer.md) | Действующая | `CareerApplication`, планировщик, идентификаторы задач, инструменты MCP, разрешения. |
+| [Карьерная траектория](architecture/career-trajectory.md) | Действующая | Цель, этапы, критерии, подтверждения, подбор вакансий и CV. |
+| [Career Skills Intelligence](architecture/skills-intelligence.md) | Действующая | Требования, подтверждения, приоритеты, границы качества. |
+| [Сравнение нескольких резюме под карьерный трек](architecture/resume-portfolio-review.md) | Действующая | Разбор 2–7 снимков CV против трека и хронологии. |
+| [Гибридный сбор вакансий](architecture/hybrid-collection.md) | Действующая | Порядок Python/Chrome, дозагрузка, квоты, матрица источников. |
+| [Команды, контакты и исследовательские стримы](architecture/vacancy-teams.md) | Действующая | Команда вакансии, контакты, стримы; LinkedIn и Hugging Face как источники. |
+| [Корневой проект, расширения и корпоративное заполнение](architecture/repository-and-autofill.md) | Действующая | Карта папок репозитория и двух расширений, пределы автозаполнения. |
+| [Разрывы между реализацией и целевым конвейером](architecture/gap-analysis.md) | План · срез 19–22.10 | Реестр разрывов G01–G16; фактическое состояние сверять с current-state. |
+| [Целевая архитектура](architecture/target-state.md) | План · срез 19–22.10 | Границы, контракты данных, рейтинг, единый поток отклика. |
+| [ADR 0001 — Career Agent поверх существующего workflow](architecture/adr/0001-reuse-existing-workflow.md) | ADR | Агент строится на существующем domain workflow. |
+| [ADR 0002 — SQLite и ChromaDB без преждевременной миграции](architecture/adr/0002-sqlite-and-chroma.md) | ADR | SQLite — источник истины; Chroma — legacy производный индекс. |
+| [ADR 0003 — Тонкий MCP adapter, разрешения у backend и владельца](architecture/adr/0003-thin-mcp-and-human-approval.md) | ADR | Тонкий MCP; таблица инструментов. |
+| [ADR 0004 — Локальная доступность и отдельное решение о 24/7](architecture/adr/0004-local-availability.md) | ADR | Работа на ноутбуке; решение о 24/7 отложено. |
+| [ADR 0005 — Telegram как основной мобильный пульт](architecture/adr/0005-telegram-primary-control.md) | ADR | Telegram поверх общего состояния backend. |
+
+## Интеграции
+
+| Документ | Статус | О чём |
+|---|---|---|
+| [LinkedIn: профиль, вакансии, чаты и контакты](integration/linkedin-adapters.md) | Действующая | Управление LinkedIn через расширение; границы живой проверки по capability. |
+| [Анализ переписки и карьерные рекомендации](integration/linkedin-chat-advice.md) | Действующая | Разбор чатов через API или буфер обмена с импортом JSON. |
+| [GitHub collection + primary HH portfolio](integration/github-import-and-portfolio.md) | Действующая | Импорт GitHub Runs в SQLite; основное HH-резюме для публичного портфолио. |
+| [Публичное портфолио: данные, визуализации и мобильная версия](integration/public-portfolio.md) | Действующая | Источники публичного сайта, визуализации, SEO, PWA. |
+| [Бесплатное поднятие HH-резюме](integration/hh-resume-bump.md) | Действующая | Явно включаемое бесплатное поднятие с подтверждением владельца. |
+| [Telegram: расписание и очередь действий](integration/telegram-notifications.md) | Действующая | Напоминания из очереди «Сегодня»/CRM, отдельный режим поиска. |
+| [Карта возможностей и единый Telegram-рейтинг](integration/career-analytics-telegram.md) | Действующая | `/archive/analytics`, Sankey, общий топ-10 в Telegram. |
+| [Resume document comparison and workspace reading](integration/resume-comparison.md) | Действующая | Сравнение чанков снимков CV, alluvial, импорт документов. |
+| [Фокус рабочего места: Today, вакансии, рейтинг и отклики](integration/workspace-ux.md) | Действующая | Структура UI: следующее действие, вакансии, рейтинг, отклики. |
+
+## Идеи и исходные материалы
+
+| Документ | Статус | О чём |
+|---|---|---|
+| [Идеи развития Career Intelligence](ideas/README.md) | План | Индекс backlog. |
+| [Радар рынка, компаний и команд](ideas/01-market-radar.md) | План | Радар рынка на существующем сборе. |
+| [Карьерная ценность, очередь откликов и обратная связь](ideas/02-career-value-and-feedback.md) | План | Рейтинг по карьерной ценности, очередь, обратная связь. |
+| [Гибридное извлечение и ограниченное восстановление](ideas/03-adaptive-extraction.md) | План | Эксперимент по восстановлению адаптеров. |
+| [Агент качественного отклика и анкет](ideas/04-application-agent.md) | План | Развитие контролируемого отклика. |
+| [Эволюционная AI-native архитектура и стоимость](ideas/05-evolutionary-architecture.md) | План | Принципы переиспользования и контроля стоимости. |
+| [От требований вакансий к траектории навыков](ideas/06-learning-and-evidence.md) | План | Расширение skills intelligence в учебную траекторию. |
+| [Восстановление DOM-адаптеров с помощью Luna](ideas/llm-adapter-repair.md) | План | Предложение селекторов моделью; не реализовано. |
+| [AI-native: гибридное извлечение и восстановление](ideas/sources/ai-native-extraction.md) | Исходный материал | Дословное вложение пользователя. |
+| [Эволюционное развитие Career Intelligence Platform](ideas/sources/evolutionary-career-platform.md) | Исходный материал | Дословный brief пользователя (единственная копия). |
+| [Агент откликов и анкет работодателей](ideas/sources/supervised-application-agent.md) | Исходный материал | Дословное вложение пользователя. |
+| [Идеи обзора рынка из обсуждения](ideas/sources/market-intelligence-chat.md) | Исходный материал | Пересказ идей из обсуждения. |
+
+Контрольные суммы и происхождение дословных источников — [ideas/sources/manifest.json](ideas/sources/manifest.json).
+
+## Удалено 24.10.2026
+
+Удалены как устаревшие и полностью покрытые действующими документами: `pipeline_audit_2026_10_16.md` (0.11.2), `release_0_10.md`, `resume_catalog_testing.md` (протокол 0.5.1), `job_board_testing.md` (Chrome 0.3), `handoff/2026-10-19-architecture-audit.md`, `handoff/2026-10-20-agent-planning-brief.md`, `handoff/input-development-idea-2026-10-20.md` (дубликат `ideas/sources/evolutionary-career-platform.md`), `integration/telegram-career-e2e.md`. История доступна в git.

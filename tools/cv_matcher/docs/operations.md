@@ -1,6 +1,6 @@
 # Запуск, проверка и диагностика
 
-Актуализировано 22.10.2026. Все пути `.cache/...` ниже относятся к `tools/cv_matcher`. Для первого запуска — [quickstart](applicant_quickstart.md).
+Актуализировано 24.10.2026. Все пути `.cache/...` ниже относятся к `tools/cv_matcher`. Для первого запуска — [quickstart](applicant_quickstart.md).
 
 ## Команды из корня репозитория
 
@@ -9,7 +9,7 @@ npm run workspace:check
 npm run career:dev
 ```
 
-Локальный основной сервис: <http://127.0.0.1:8788/>. Legacy `server.py:8787` не обслуживает персональный архив. Зависимости Career Workspace: `uv sync` из `tools/cv_matcher`; портфолио — зависимости корневого package manifest. MCP extra устанавливается отдельно: `uv sync --extra mcp`.
+Локальный основной сервис: <http://127.0.0.1:8788/>. Legacy `server.py:8787` не обслуживает персональный архив. Зависимости Career Workspace: `uv sync` из `tools/cv_matcher`; портфолио — зависимости корневого package manifest. MCP extra устанавливается отдельно: `uv sync --extra mcp`. `workspace:check` дополнительно проверяет, что `.env`, базы SQLite и другие локальные секреты не попали в индекс git; правила и ротация — в [security](security.md).
 
 Проверки запускаются отдельно от рабочего сервера:
 
@@ -34,7 +34,7 @@ npm run portfolio:build
 | Публичная проекция | `test_portfolio_publication.py`, `test_portfolio_visuals.py`, корневые `tools/tests/` |
 | Исполнитель/адаптеры | `hh-research-extension/scripts/check.mjs` |
 
-Последний зафиксированный полный backend-прогон при подготовке портфолио: **472 Python tests**; JS-контура — **385 tests**. При исправлении мобильного меню повторно прошли **11 portfolio tests** и production build. Числа описывают конкретные прогоны, а не гарантированный размер будущего набора. Обновление документации не запускает платные модели или реальные отклики.
+Последний полный прогон 24.10.2026: **544 Python tests** (`career:test`, 25.6 с) и **421 Node tests** (`career:check`, сборка адаптеров актуальна). Это единственное место в документации, где фиксируются размеры наборов; числа описывают конкретный прогон, а не гарантированный размер будущего набора. Обновление документации не запускает платные модели или реальные отклики.
 
 ## Диагностика по симптомам
 
@@ -51,13 +51,13 @@ npm run portfolio:build
 | Title сайта старый | Основной CV, preview JSON, commit SHA, Pages Run и браузерный cache | Проверить последовательно источник → публикацию → deployment |
 | Сайт пустой | Pages source и артефакт dist | Использовать deploy workflow; не отдавать TypeScript из root |
 | Все точки Learning Map имеют один X | Тип действия и текущая оценка часов | Равная оценка даёт равный X; не рисовать выдуманный разброс |
-| LinkedIn не доступен в расширении | Capability ещё не реализована | См. [план LinkedIn](integration/linkedin-adapters.md), старый Python scraper её не заменяет |
+| LinkedIn не доступен в расширении | Включён ли раздел LinkedIn в настройках расширения, выдано ли разрешение на `www.linkedin.com`, нет ли паузы в сервисе | См. [LinkedIn](integration/linkedin-adapters.md); legacy Python scraper не используется |
 
 ## GitHub Pages
 
 Workflow `.github/workflows/deploy.yml` собирает публичный сайт. Проверить итоговый `conclusion`, head SHA и живые `/`, `/ru/`, `hh-experience.json`, manifests и `sw.js`. Ожидание Actions/окружения не означает ошибку Vite; сначала прочитать job/status. Настройки видимости, защиты окружения и permissions не менять ради обхода очереди.
 
-Автопубликация JSON в локальном сервисе может создавать новые коммиты main независимо от рабочего checkout. Перед push получить актуальный remote, проверить diff и объединить историю без force push. `.env`, личная SQLite и credential files не должны попадать в stage. Статус «JSON опубликован» и «новый Pages сайт доступен» показывают разные стадии.
+Автопубликация JSON в локальном сервисе может создавать новые коммиты main независимо от рабочего checkout. Перед push получить актуальный remote, проверить diff и объединить историю без force push. `.env`, личная SQLite и credential files не должны попадать в stage; `npm run workspace:check` проверяет индекс ([security](security.md)). Статус «JSON опубликован» и «новый Pages сайт доступен» показывают разные стадии.
 
 ## Резервные копии и восстановление
 
