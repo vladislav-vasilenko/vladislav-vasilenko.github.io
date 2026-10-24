@@ -216,9 +216,11 @@ Huawei R&D — Top-Tier; [ссылки поиска Huawei](../docs/huawei_searc
 ## Проверка
 
 ```sh
-node --test hh-research-extension/*.test.mjs
+node hh-research-extension/scripts/check.mjs   # сборка адаптеров, синтаксис, тесты расширения и ../archive-web/tests
 .venv/bin/python -m unittest src.tests.test_resume_source src.tests.test_resume_files src.tests.test_extension_ranking src.tests.test_board_import
 ```
+
+Тесты расширения лежат рядом с кодом (`*.test.mjs`); тесты локального веб-интерфейса — в `../archive-web/tests/`.
 
 Тесты Chrome API и API embeddings используют имитации. Платные вызовы OpenAI
 в тестах не выполняются. Автотесты не заменяют проверку установленного расширения

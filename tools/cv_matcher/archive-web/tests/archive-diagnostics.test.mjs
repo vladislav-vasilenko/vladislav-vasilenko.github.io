@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const source=fs.readFileSync(new URL('../archive-web/archive.js',import.meta.url),'utf8');
+const source=fs.readFileSync(new URL('../archive.js',import.meta.url),'utf8');
 function harness(response){
  class Node{constructor(tag){this.tag=tag;this.children=[];this.hidden=false;this.content='';}append(...nodes){this.children.push(...nodes);}setAttribute(){}set textContent(s){this.content=s;this.children=[];}get textContent(){return this.content+this.children.map(n=>n.textContent||'').join(' ');}querySelectorAll(){return this.children.filter(n=>n.className==='diagnostic');}remove(){}}
  const elements=new Map();const sandbox={Error,JSON,String,Date,AbortSignal,navigator:{clipboard:{writeText:async()=>{}}},fetch:async()=>response,$:id=>{if(!elements.has(id))elements.set(id,new Node('div'));return elements.get(id);},make:(tag,cls,text)=>{const n=new Node(tag);n.className=cls;if(text)n.textContent=text;return n;}};

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const source = name => fs.readFileSync(new URL('../archive-web/'+name+'.js', import.meta.url), 'utf8');
+const source = name => fs.readFileSync(new URL('../'+name+'.js', import.meta.url), 'utf8');
 const core = vm.createContext({}); vm.runInContext(source('workflow-core'), core);
 const {WorkflowCore} = core;
 const application = (channel='career', state='draft', draft='', form=null, status='queued') => ({id:'app',status,context:{channel,vacancy:{link:'https://career.avito.com/vacancies/data-science/19450/'},resume_title:'Selected CV'},workflow:{state,draft,form,revision:2},commands:[],form_answers:{values:{f0:'Saved answer'},revisions:{f0:3},from_profile:{},from_resume:{}},draft_versions:[],discussion:[]});
@@ -85,7 +85,7 @@ test('letter editor preserves save -> chat revision order, and stale replies do 
  const stale=ui('workflow-letter');stale.render();stale.setHandler(async()=>{stale.setCurrent(false);return {draft_applied:true};});await stale.find('Сгенерировать другой вариант').onclick();assert.deepEqual(stale.opens,[]);
 });
 test('all workflow dependencies are declared before the shell and included in asset routes',()=>{
- const html=fs.readFileSync(new URL('../archive-web/index.html',import.meta.url),'utf8'),routes=fs.readFileSync(new URL('../src/archive_routes.py',import.meta.url),'utf8');
+ const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8'),routes=fs.readFileSync(new URL('../../src/archive_routes.py',import.meta.url),'utf8');
  for(const name of ['workflow-core','workflow-letter','workflow-career']){assert.ok(html.indexOf('/assets/'+name+'.js')<html.indexOf('/assets/workflow.js'));assert.ok(routes.includes("'"+name+".js'"));new vm.Script(source(name));}
  new vm.Script(source('workflow'));
 });

@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 class Element{constructor(tag,cls,text){this.tag=tag;this.className=cls;this.textContent=text||'';this.children=[];}append(...nodes){this.children.push(...nodes);} }
-const source=fs.readFileSync(new URL('../archive-web/trajectory-badges.js',import.meta.url),'utf8');
+const source=fs.readFileSync(new URL('../trajectory-badges.js',import.meta.url),'utf8');
 function render(p){const context=vm.createContext({make:(...args)=>new Element(...args),encodeURIComponent});vm.runInContext(source+';globalThis.badges=TrajectoryBadges;',context);return context.badges.render(p,{detail:true});}
 function flat(node){return [node,...node.children.flatMap(flat)];}
 test('badge separates no association from insufficient vacancy data',()=>{assert.match(flat(render({links:[],state:'unassigned'})).map(n=>n.textContent).join(' '),/не определена/);assert.match(flat(render({links:[],state:'needs_description'})).map(n=>n.textContent).join(' '),/полный текст/);});

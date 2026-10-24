@@ -18,7 +18,7 @@ function env(){
 }
 test('analytics still renders when new skills asset is missing; failure has a retry',async()=>{
  const e=env();e.head.append=(script)=>{queueMicrotask(()=>script.onerror());};
- vm.runInContext(fs.readFileSync(new URL('../archive-web/career-analytics.js',import.meta.url),'utf8'),e.context);
+ vm.runInContext(fs.readFileSync(new URL('../career-analytics.js',import.meta.url),'utf8'),e.context);
  await vm.runInContext('CareerAnalytics.enter("fixture_cv")',e.context);await new Promise(setImmediate);
  assert.equal(e.errors.length,1);assert.equal(e.errors[0].op,'Загрузка модуля навыков');assert.doesNotMatch(e.errors[0].message,/is not defined/);
  const labels=[];function walk(n){if(n.textContent)labels.push(n.textContent);for(const c of n.children||[])walk(c);}walk(e.elements.get('analytics'));
@@ -26,7 +26,7 @@ test('analytics still renders when new skills asset is missing; failure has a re
 });
 test('skills panel mount uses authenticated common API and waits for explicit plan click',async()=>{
  const e=env(),calls=[];e.context.api=async(_path,p)=>{calls.push(p.op);return {tracks:[{id:'generative',label:'Generative'}],skills:[],actions:{}};};
- vm.runInContext(fs.readFileSync(new URL('../archive-web/career-skills.js',import.meta.url),'utf8'),e.context);e.context.fixtureRoot=new Element('div');
+ vm.runInContext(fs.readFileSync(new URL('../career-skills.js',import.meta.url),'utf8'),e.context);e.context.fixtureRoot=new Element('div');
  await vm.runInContext('CareerSkills.mount(fixtureRoot)',e.context);vm.runInContext('CareerSkills.update({resume_id:"fixture"})',e.context);
  assert.deepEqual(calls,['skills_catalog']);
 });

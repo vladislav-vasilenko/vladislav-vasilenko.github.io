@@ -3,7 +3,7 @@ class E{constructor(tag,text=''){this.tag=tag;this.textContent=text;this.childre
 const all=n=>[n,...n.children.filter(n=>n&&typeof n==='object').flatMap(all)];
 function page(){const calls=[],copied=[],host=new E('main'),chosen=[{id:'one',version:1},{id:'two',version:2}],context={key:'immutable-context',track:{label:'Generative',revision:1},employment_record:'',snapshots:[],passages:{}};
  const c=vm.createContext({document:{createTextNode:v=>v},make:(t,cls,text)=>new E(t,text),date:String,navigator:{clipboard:{writeText:async v=>copied.push(v)}},api:async(path,data)=>{calls.push({path,...data});if(path==='agent')return {tracks:[{id:'generative',label:'Generative',revision:1}]};if(path.startsWith('entity/'))return {id:path.includes('one')?'one':'two',version_id:path.includes('one')?1:2,payload:{title:'CV'}};if(data.op==='prepare_portfolio')return {context,characters:1000,estimated_input_tokens:[200,500],analysis:null};if(data.op==='prompt')return {prompt:'Full detailed prompt with immutable sources'};if(data.op==='generate')throw Error('Fixture ends before paid execution');throw Error('Unexpected operation');}});
- vm.runInContext(fs.readFileSync(new URL('../archive-web/resume-portfolio.js',import.meta.url),'utf8'),c);const find=label=>all(host).find(n=>n.textContent===label);
+ vm.runInContext(fs.readFileSync(new URL('../resume-portfolio.js',import.meta.url),'utf8'),c);const find=label=>all(host).find(n=>n.textContent===label);
  return {host,calls,copied,find,all:()=>all(host),mount:()=>vm.runInContext('ResumePortfolio',c).mount(host,chosen)};
 }
 test('multi-resume review has explicit API and offline routes; copying never generates',async()=>{

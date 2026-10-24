@@ -41,7 +41,7 @@ Market Evolution использует полученные на конкретн
 
 - Полная изолированная suite: **320 Python**, успешно; **297 JavaScript**, успешно.
 - [`test_career_analytics.py`](../../src/tests/test_career_analytics.py): восемь тестов — авторизация, отсутствие API, version-bound оценки, временные снимки, Flow Matching/CUDA/Apple, три пользовательских false positive.
-- [`career-charts.test.mjs`](../../hh-research-extension/career-charts.test.mjs): сохранение потоков/ID, OR-фокус без дублей, фильтры, доли, подписи тонких потоков.
+- [`career-charts.test.mjs`](../../archive-web/tests/career-charts.test.mjs): сохранение потоков/ID, OR-фокус без дублей, фильтры, доли, подписи тонких потоков.
 - [`test_telegram_analysis.py`](../../src/tests/test_telegram_analysis.py): прямой режим без application/browser job, источники/страницы, чужой владелец, устаревшая рекомендация, повтор неоднозначного API-запроса.
 - [`test_telegram_ranking.py`](../../src/tests/test_telegram_ranking.py): одинаковый порядок с вебом, исключение откликов, сохранение старых/уже показанных записей, глобальный топ вне последнего crawl и идемпотентность завершения.
 - Живой Chrome: аналитический раздел загрузился на 1996 реальных записях, показал сохранённые разборы и учебный опыт; визуально выявлено и исправлено наложение подписей маленьких потоков.

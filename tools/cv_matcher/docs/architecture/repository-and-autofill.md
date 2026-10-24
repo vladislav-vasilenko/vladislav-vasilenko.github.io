@@ -56,7 +56,7 @@
 
 ## Автопроверки и ограничения проверки
 
-Новые [UI-сценарии](../../hh-research-extension/workflow-ui.test.mjs): канал/состояние → следующий шаг, отсутствие побочных действий при render, preview и явное разрешение, stale activity, смена карточки, порядок save→chat и загрузка зависимостей.
+Новые [UI-сценарии](../../archive-web/tests/workflow-ui.test.mjs): канал/состояние → следующий шаг, отсутствие побочных действий при render, preview и явное разрешение, stale activity, смена карточки, порядок save→chat и загрузка зависимостей.
 
 Новые [worker-сценарии](../../hh-research-extension/career-worker.test.mjs): занятая посторонняя вкладка, поздняя форма, вход, busy original tab, архивный JD, отказ sync, переполненный кэш и повтор доставки receipt без повторного ввода. [Form-тесты](../../hh-research-extension/career-form.test.mjs) различают вход, iframe и отсутствие формы.
 

@@ -18,7 +18,7 @@ function page({clipboard=true,api}={}){
  const calls=[],copied=[],loads=[];
  const response=data=>({prompt:'PROMPT '+data.resume_id+' '+data.packet,packet:data.packet,packets:3,total:120,included:50,characters:75000,resume_title:'Selected CV',unknown_activity:4,fragments:8});
  const c=vm.createContext({tab:'vacancy',summaryData:{goal:'Research goal'},companyPicker:{value:['sber']},$:id=>ids[id],make:(tag,cls,text)=>new E(tag,text),notice(){},loadList:async()=>loads.push(ids.filter.value),navigator:{clipboard:{writeText:async text=>{if(!clipboard)throw Error('Clipboard unavailable');copied.push(text);}}},api:async(path,data)=>{calls.push({path,data});return api?api(data):response(data);}});
- vm.runInContext(fs.readFileSync(new URL('../archive-web/vacancy-selection.js',import.meta.url),'utf8'),c);
+ vm.runInContext(fs.readFileSync(new URL('../vacancy-selection.js',import.meta.url),'utf8'),c);
  const root=ids.rankingIntro.afterNode,all=node=>[node,...(node.children||[]).flatMap(all)],find=text=>all(root).find(n=>n.textContent===text),field=label=>find(label).children[0];
  return {c,ids,calls,copied,loads,root,find,field,response,copy:()=>find('Скопировать запрос на отбор вакансий · без API').onclick()};
 }

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-import '../archive-web/vacancy-document.js';
+import '../vacancy-document.js';
 
 test('vacancy Markdown keeps headings, lists, ordered start, code and paragraphs separate',()=>{
  const p=VacancyDocument.parse('## Команда\n\nОписание проекта.\n\n**Требования:**\n- Python\n- **PyTorch**\n\nУсловия\n3. Первая встреча\n4. Вторая встреча\n\n```\n<script>literal</script>\n```');
@@ -23,7 +23,7 @@ class E{
  constructor(tag){this.tag=tag;this.children=[];this.attributes={};this.textContent='';}
  append(...items){this.children.push(...items);}prepend(...items){this.children.unshift(...items);}setAttribute(k,v){this.attributes[k]=v;}
 }
-function rendered(description){const context=vm.createContext({URL,document:{createElement:t=>new E(t),createTextNode:text=>({tag:'#text',textContent:text})}});vm.runInContext(fs.readFileSync(new URL('../archive-web/vacancy-document.js',import.meta.url),'utf8'),context);const root=new E('details'),data={text:'Original\n'+description,payload:{description}};context.VacancyDocument.render(root,data);return {root,data};}
+function rendered(description){const context=vm.createContext({URL,document:{createElement:t=>new E(t),createTextNode:text=>({tag:'#text',textContent:text})}});vm.runInContext(fs.readFileSync(new URL('../vacancy-document.js',import.meta.url),'utf8'),context);const root=new E('details'),data={text:'Original\n'+description,payload:{description}};context.VacancyDocument.render(root,data);return {root,data};}
 const walk=n=>[n,...(n.children||[]).flatMap(walk)];
 test('hostile HTML stays text, only HTTP(S) links activate and the exact source toggles back',()=>{
  const {root,data}=rendered('## Требования\n- **PyTorch** и `CUDA`\n\n<script>alert(1)</script>\n\n[x](javascript:alert) [safe](https://example.org/job)');

@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-const c={};vm.runInNewContext(fs.readFileSync(new URL('../archive-web/career-charts.js',import.meta.url),'utf8'),c);const Charts=c.CareerCharts;
+const c={};vm.runInNewContext(fs.readFileSync(new URL('../career-charts.js',import.meta.url),'utf8'),c);const Charts=c.CareerCharts;
 const rows=[{id:'a',company:'Yandex',category:'pretraining',tags:['pretraining','diffusion'],first_seen:'2026-10-01',availability:'unknown',fit:75,alignment:.5,stage:'none',work_format:'remote',region:'moscow'},{id:'b',company:'Ozon',category:'diffusion',tags:['diffusion'],first_seen:'2026-10-02',availability:'active',fit:null,alignment:null,stage:'applied',work_format:'hybrid',region:'spb'},{id:'c',company:'Ozon',category:'cuda',tags:['cuda'],first_seen:'2026-10-03',availability:'active',fit:25,alignment:.1,stage:'draft',work_format:'onsite',region:'rf'}];
 const taxonomy=[{id:'pretraining',label:'Pretraining'},{id:'diffusion',label:'Flow / Diffusion'},{id:'cuda',label:'CUDA'}];
 test('Sankey conserves every vacancy at each layer and every flow drills into exact unique IDs',()=>{
@@ -34,8 +34,8 @@ test('map switches cosine CV similarity versus actual Luna percentage without su
  const luna=Charts.opportunityMap(input,'luna',{fitThreshold:80});assert.equal(luna.points.length,2);assert.equal(luna.missing,3);assert.equal(luna.max,100);assert.equal(luna.xThreshold,80);assert.equal(luna.formatX(80),'80%');assert.ok(luna.points.some(p=>p.id==='negative'&&p.x===0));assert.equal(input[0].fit,null);
 });
 test('batch module is defined before analytics runs and diagnostics contain safe request context',()=>{
- const source=fs.readFileSync(new URL('../archive-web/career-analytics.js',import.meta.url),'utf8');const sandbox={localStorage:{getItem:()=>null},CareerCharts:Charts};vm.runInNewContext(source+';globalThis.batchType=typeof CareerBatch.preview;',sandbox);assert.equal(sandbox.batchType,'function');
- const archive=fs.readFileSync(new URL('../archive-web/archive.js',import.meta.url),'utf8');assert.ok(archive.includes('X-Career-Request-Id'));assert.ok(archive.includes("window.addEventListener('unhandledrejection'"));assert.ok(archive.includes('Техническая диагностика'));
+ const source=fs.readFileSync(new URL('../career-analytics.js',import.meta.url),'utf8');const sandbox={localStorage:{getItem:()=>null},CareerCharts:Charts};vm.runInNewContext(source+';globalThis.batchType=typeof CareerBatch.preview;',sandbox);assert.equal(sandbox.batchType,'function');
+ const archive=fs.readFileSync(new URL('../archive.js',import.meta.url),'utf8');assert.ok(archive.includes('X-Career-Request-Id'));assert.ok(archive.includes("window.addEventListener('unhandledrejection'"));assert.ok(archive.includes('Техническая диагностика'));
 });
 test('linear zoom includes every point, preserves negative scores and handles single/identical points',()=>{
  for(const input of [[{similarity:.52,alignment:.21},{similarity:.7,alignment:.4}],[{similarity:0,alignment:0}],[{similarity:-1,alignment:1}],[{similarity:1,alignment:-1}],[]]){

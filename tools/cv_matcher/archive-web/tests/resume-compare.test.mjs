@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import '../archive-web/resume-profile-core.js';import '../archive-web/resume-compare-core.js';
+import test from 'node:test';import assert from 'node:assert/strict';import '../resume-profile-core.js';import '../resume-compare-core.js';
 const C=ResumeCompareCore;
 const snapshot=(id,version,sections)=>({id,version_id:version,payload:{sections}});
 const section=(text,heading='Навыки',key='skills')=>({key,heading,text});
