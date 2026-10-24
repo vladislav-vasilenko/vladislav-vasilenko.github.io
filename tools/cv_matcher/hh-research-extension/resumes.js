@@ -39,11 +39,9 @@ async function nextCandidate() {
         const digest=[...new Uint8Array(await crypto.subtle.digest("SHA-256",bytes))].map(b=>b.toString(16).padStart(2,"0")).join("");
         candidate={id:"file_"+digest,file_hash:digest,source_type:"file",title:file.name.replace(/\.[^.]+$/,""),filename:file.name,text:ResumeImports.redactContacts(text),extraction_method:"browser_text",quality:"needs_review"};
       } else {
-        const {resume_import_token:token}=await chrome.storage.session.get("resume_import_token");
-        if(!token) throw new Error("Сначала подключите локальный конвертер кнопкой ниже.");
         let binary="";for(let i=0;i<bytes.length;i+=32768) binary+=String.fromCharCode(...bytes.subarray(i,i+32768));
-        const response=await fetch("http://127.0.0.1:8788/extract",{method:"POST",headers:{"Content-Type":"application/json","X-Resume-Import-Token":token},body:JSON.stringify({filename:file.name,content_base64:btoa(binary)}),signal:AbortSignal.timeout(45000)});
-        const data=await response.json();if(!response.ok) throw new Error(data.detail||"Ошибка конвертера.");candidate=data;
+        // Shared client: endpoint allowlist, session or remembered pairing code, uniform errors.
+        candidate=await LocalResumeService.request("/extract",{filename:file.name,content_base64:btoa(binary)},45000);
       }
       status(`Прочитан ${file.name}. В очереди: ${queue.length}. Проверьте текст.`);showPreview();return;
     } catch(e) {status(`${file.name}: ${e.message}`);}
