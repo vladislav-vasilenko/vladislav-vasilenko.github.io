@@ -30,22 +30,18 @@
   while(status.continue&&status.wait_ms>0){await pause(Math.min(status.wait_ms,10000));status=await call({op:'progress',id:cmd.id,worker_id:w,count,message});}
   return status;
  }
- async function perform(cmd,w){
-  const op=cmd.kind.slice(9),p=cmd.payload;
-  if(p.expires&&Date.now()/1000>p.expires)throw Error('Предпросмотр устарел. Прочитайте страницу снова.');
-  if(op==='profile.open'){
+ // Command handlers: one per command family, bodies unchanged. Each returns the outcome for the service.
+ async function openProfileEditor({cmd,w,op,p}){
    const id=await managed(p.account,'linkedin_owner_tab_id');let data,error;await activate(id);await waitOwner(p,id);await chooseProfileLanguage(id,p);if(p.url!==p.account)await chrome.tabs.update(id,{url:p.url});await ready(id,p.url);if(p.edit_label)await dom(id,'profile.editor.open',p);
    for(let pass=0;pass<16;pass++){try{await assertOwner(p,id);data=await dom(id,'profile.form',p);break;}catch(e){error=e;await pause(500);}}
    if(!data)throw error;if(p.profile_language&&p.profile_language!=='current'&&data.profile_language!==p.profile_language)throw Error('Язык редактора изменился. Выберите нужную версию профиля и прочитайте форму заново.');return {state:'completed',message:'Редактор выбранного блока открыт. Проверьте поля перед переносом.',data:{...data,tab_id:id}};
-  }
-  if(op.startsWith('profile.')&&op!=='profile.read'){
+ }
+ async function mutateProfile({cmd,w,op,p}){
    const id=await current(p);await assertOwner(p,id);let data=await dom(id,op,p);
    if(op==='profile.save'){await pause(1200);const status=await dom(id,'mutation.status',p);return {state:status.dialog_open?'needs_input':'completed',message:status.dialog_open?'Форма осталась открыта. Проверьте ошибки LinkedIn.':'LinkedIn закрыл форму. Перечитайте профиль для проверки сохранённых полей.',data:status};}
    return {state:'completed',message:op==='profile.fill'?'Поля перенесены. Проверьте их перед отдельным сохранением.':'Форма прочитана.',data:{...data,tab_id:id}};
-  }
-  // Validate that the configured owner is editable in the current authenticated session.
-  const owner=await managed(p.account,'linkedin_owner_tab_id');if(op==='profile.read')await activate(owner);await waitOwner(p,owner);
-  if(op==='profile.read'){
+ }
+ async function readProfile({cmd,w,op,p},owner){
    let previousProfileTab;const activeProfileTabs=await chrome.tabs.query({active:true,lastFocusedWindow:true});if(activeProfileTabs[0]?.id!==owner){previousProfileTab=activeProfileTabs[0]?.id;await chrome.tabs.update(owner,{active:true});}try{
    await chooseProfileLanguage(owner,p);const data=await dom(owner,op,p);if(p.profile_language&&p.profile_language!=='current'&&data.profile_language!==p.profile_language)throw Error('Язык профиля не подтверждён. Выберите язык в LinkedIn и повторите чтение.');let unchanged=0,previous='';
    for(let pass=0;pass<18;pass++){
@@ -61,17 +57,16 @@
    const found=Object.values(data.sections).filter(s=>s.text).length;for(const section of Object.values(data.sections))if(!section.text&&section.coverage!=='empty')section.coverage='not_found';
    data.coverage=found===5&&data.headline?'visible_sections':'partial';return {state:data.headline&&found?'completed':'needs_input',message:'Прочитано секций: '+found+' из 5. '+(data.headline?'Заголовок распознан. ':'Заголовок требует проверки. ')+(found<5?'Непрочитанные секции требуют отдельной проверки.':'Развёрнутые блоки отмечены отдельно.'),data};
    }finally{if(previousProfileTab){try{const active=await chrome.tabs.query({active:true,lastFocusedWindow:true});if(active[0]?.id===owner)await chrome.tabs.update(previousProfileTab,{active:true});}catch{}}}
-  }
-  if(op==='network.prepare'){
+ }
+ async function prepareNetworkAction({cmd,w,op,p}){
    const path=['accept','ignore'].includes(p.network_action)?'https://www.linkedin.com/mynetwork/invitation-manager/':p.network_action==='withdraw'?'https://www.linkedin.com/mynetwork/invitation-manager/sent/':p.url;
    const id=await managed(path),data=await dom(id,op,p);return {state:'completed',message:'Проверьте контакт и действие.',data:{...data,tab_id:id}};
-  }
-  if(op==='network.execute'){
+ }
+ async function executeNetworkAction({cmd,w,op,p}){
    const id=p.snapshot.tab_id;await dom(id,op,p);await pause(1200);const status=await dom(id,'mutation.status',p);
    return {state:'needs_input',message:status.dialog_open?'LinkedIn открыл подтверждение. Завершите действие в этой вкладке после проверки.':'Кнопка нажата один раз. Обновите список контактов или приглашений, чтобы проверить результат.',data:status};
-  }
-  const id=await managed(p.url);
-  if(['jobs.list','network.list','messages.list'].includes(op)){
+ }
+ async function collectListing({cmd,w,op,p},id){
    let previousListingTab;try{
    if(op==='network.list'||op==='messages.list'){const active=await chrome.tabs.query({active:true,lastFocusedWindow:true});if(active[0]?.id!==id){previousListingTab=active[0]?.id;await activate(id);}}
    if(op==='messages.list'){for(let turn=0;turn<6;turn++){const navigation=await dom(id,'messages.navigate',p);if(!navigation.navigated)break;await pause(700);if(p.scope!=='all')break;}}
@@ -97,8 +92,8 @@
    if(p.diagnostics&&op==='jobs.list')diagnostics={links:diagnostics,document:await dom(id,'jobs.diagnostics',p)};
    const items=[...collected.values()].slice(0,p.limit);return {state:stopped?'cancelled':readError?'needs_input':items.length?'completed':'needs_input',message:items.length?'Сохранено '+items.length+' записей.':preferencesMissing&&p.collection==='preferences'?'Предпочтения LinkedIn не настроены: доступна кнопка Add job preferences.':'Карточки не распознаны. Проверьте открытую страницу.',data:{...(op==='jobs.list'?{items:[],collected_links:items.map(j=>j.link)}:op==='messages.list'?{items:[],collected_threads:items.map(j=>j.url)}:{items:[],collected_contacts:items.map(j=>j.url)}),...(diagnostics?{diagnostics,scroll}:{}),reason:reason+(preferencesMissing?' · Jobs based on your preferences: предпочтения пока не настроены.':'')}};
    }finally{if(previousListingTab){try{const active=await chrome.tabs.query({active:true,lastFocusedWindow:true});if(active[0]?.id===id)await chrome.tabs.update(previousListingTab,{active:true});}catch{}}}
-  }
-  if(op==='messages.thread'){
+ }
+ async function readThread({cmd,w,op,p},id){
    let item,error,unchanged=0,previous=0,coverage='scroll_limit',stopped=false,atStart=false;const ordered=[],messages=new Map(),limit=p.message_limit||200;
    for(let pass=0;pass<80;pass++){
     let result;try{result=await dom(id,op,p);}catch(e){error=e;if(/LinkedIn требует вход|ручную проверку/i.test(e.message))throw e;if(pass<10){await pause(700);continue;}throw e;}
@@ -111,8 +106,8 @@
     const scroll=await dom(id,'messages.history.advance',p);atStart=scroll.at_start;await pause(1200);
    }
    if(!item)throw error||Error('Сообщения не загружены.');return {state:stopped?'cancelled':'completed',message:'Сохранена доступная история диалога: '+item.messages.length+' сообщений.',data:{items:[item],history_coverage:coverage,reason:coverage==='top_reached'?'Достигнута верхняя граница доступной истории':'Сохранён доступный фрагмент; полнота всей переписки не подтверждена.'}};
-  }
-  if(op==='jobs.detail'||op==='team.read'){
+ }
+ async function readDetail({cmd,w,op,p},id){
    let data,error,previousTab;
    try{
     for(let i=0;i<24;i++){
@@ -135,7 +130,23 @@
    }finally{
     if(previousTab){try{const active=await chrome.tabs.query({active:true,lastFocusedWindow:true});if(active[0]?.id===id)await chrome.tabs.update(previousTab,{active:true});}catch{}}
    }
-  }
+ }
+ // Dispatcher. Order matters: the owner tab is validated before reads, and the target tab is opened
+ // only after the profile and network commands are handled.
+ async function perform(cmd,w){
+  const op=cmd.kind.slice(9),p=cmd.payload,ctx={cmd,w,op,p};
+  if(p.expires&&Date.now()/1000>p.expires)throw Error('Предпросмотр устарел. Прочитайте страницу снова.');
+  if(op==='profile.open')return openProfileEditor(ctx);
+  if(op.startsWith('profile.')&&op!=='profile.read')return mutateProfile(ctx);
+  // Validate that the configured owner is editable in the current authenticated session.
+  const owner=await managed(p.account,'linkedin_owner_tab_id');if(op==='profile.read')await activate(owner);await waitOwner(p,owner);
+  if(op==='profile.read')return readProfile(ctx,owner);
+  if(op==='network.prepare')return prepareNetworkAction(ctx);
+  if(op==='network.execute')return executeNetworkAction(ctx);
+  const id=await managed(p.url);
+  if(['jobs.list','network.list','messages.list'].includes(op))return collectListing(ctx,id);
+  if(op==='messages.thread')return readThread(ctx,id);
+  if(op==='jobs.detail'||op==='team.read')return readDetail(ctx,id);
   throw Error('Операция не поддерживается этой версией расширения.');
  }
  async function tick(){if(busy)return {ok:true,busy:true};busy=true;try{
