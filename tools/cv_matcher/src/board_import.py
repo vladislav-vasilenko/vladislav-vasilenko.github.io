@@ -15,6 +15,13 @@ def identity(link, base=""):
     host, path = url.hostname, url.path
     match = None
     prefix = "board"
+    spa_fragment=''
+    if host=='app.mokahr.com' and re.fullmatch(r'/(?:social-recruitment|apply)/[\w-]+/\d+/?',path) and re.fullmatch(r'/job/[a-f\d-]{36}',url.fragment,re.I):
+        spa_fragment=url.fragment.lower()
+    elif host=='zhaopin.kuaishou.cn' and re.fullmatch(r'/official/social/job-info/\d+',url.fragment):spa_fragment=url.fragment
+    if spa_fragment:
+        canonical=urlunsplit(('https',host,path.rstrip('/') or '/','',spa_fragment))
+        return {'id':'board_'+hashlib.sha256(canonical.encode()).hexdigest()[:24],'link':canonical}
     if host in ('linkedin.com','www.linkedin.com'):
         if url.netloc not in ('linkedin.com','www.linkedin.com'): return None
         from .linkedin_workspace import linkedin_url

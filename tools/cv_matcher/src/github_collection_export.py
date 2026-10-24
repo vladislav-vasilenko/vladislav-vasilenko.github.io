@@ -46,7 +46,7 @@ def prepare(source, target, *, run_id, attempt, sha):
     lines = ['## Vacancy collection', '', f'Exported {len(rows)} saved vacancies.', '',
              'Saved total includes earlier observations; it is not a count of live vacancies.', '',
              '| Source | New | Errors |', '| --- | ---: | ---: |']
-    for name in ('yandex', 'google', 'meta', 'sber'):
+    for name in sorted(stats):
         if name in stats:
             item = stats[name]
             added = item.get('new', 0)

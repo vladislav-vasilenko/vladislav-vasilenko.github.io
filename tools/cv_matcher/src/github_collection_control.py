@@ -7,7 +7,8 @@ import time
 from datetime import datetime, timezone
 from .github_collection_api import GitHubAPI, GitHubError, REPOSITORY, WORKFLOW
 
-CI_SOURCES = ('yandex', 'google', 'meta', 'sber')
+from .china_sources import CHINA_SOURCES
+CI_SOURCES = ('yandex', 'google', 'meta', 'sber', *CHINA_SOURCES)
 SETTINGS_KEY = 'github-collection-controls'
 
 
@@ -30,8 +31,8 @@ def save(archive, **changes):
 
 def configure(archive, data):
     sources = data.get('sources'); limit = data.get('limit')
-    if not isinstance(sources, list) or not sources or len(sources) > 4 or any(s not in CI_SOURCES for s in sources) or len(set(sources)) != len(sources):
-        raise ValueError('Выберите источники Yandex, Google, Meta или Sber.')
+    if not isinstance(sources, list) or not sources or len(sources) > len(CI_SOURCES) or any(s not in CI_SOURCES for s in sources) or len(set(sources)) != len(sources):
+        raise ValueError('Выберите поддержанные источники в списке адаптеров.')
     if type(limit) is not int or not 1 <= limit <= 500: raise ValueError('Лимит должен быть от 1 до 500 на запрос источника.')
     unlimited=data.get('meta_unlimited',state(archive).get('meta_unlimited',True))
     if type(unlimited) is not bool:raise ValueError('Нужно включить или выключить сбор Meta без лимита.')

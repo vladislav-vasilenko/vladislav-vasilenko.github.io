@@ -4,8 +4,10 @@
     try {
       const u = new URL(href, base);
       if (u.protocol !== "https:") return null;
-      u.hash = "";
       const host = u.hostname.toLowerCase();
+      const spa=(host==='app.mokahr.com'&&/^\/(social-recruitment|apply)\/[\w-]+\/\d+\/?$/.test(u.pathname)&&/^#\/job\/[a-f\d-]{36}$/i.test(u.hash))||(host==='zhaopin.kuaishou.cn'&&/^#\/official\/social\/job-info\/\d+$/.test(u.hash));
+      if(spa){u.search='';u.pathname=u.pathname.replace(/\/$/,'')||'/';u.hash=u.hash.toLowerCase();return {id:'board_'+encodeURIComponent(u.href),link:u.href};}
+      u.hash = "";
       let match;
       if (host === "hh.ru" || host.endsWith(".hh.ru")) {
         match = u.pathname.match(/^\/vacancy\/(\d+)\/?$/);

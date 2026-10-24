@@ -2,6 +2,7 @@
 import hashlib,json,re
 from pathlib import Path
 from urllib.parse import urlsplit
+from .china_sources import CHINA_SOURCES
 ROOT=Path(__file__).resolve().parents[1]
 REGIONS={'rus':'RUS','us_uk_eu':'US / UK / EU','china':'China','jp':'JP','au_nz':'Australia / New Zealand','other':'Другие'}
 TIERS={'top':'Top Tier','second':'2nd Tier','others':'Other Tier'}
@@ -27,7 +28,7 @@ def raw_catalog(store):
 def required_companies(rows):
     base={r['id']:r for r in defaults()}
     rows=[{**r,'region':r.get('region') or base.get(r['id'],{}).get('region','other')} for r in rows]
-    return rows+[r for r in base.values() if r['id'] in ('google','meta') and r['id'] not in {c['id'] for c in rows}]
+    return rows+[r for r in base.values() if r['id'] in ('google','meta',*CHINA_SOURCES) and r['id'] not in {c['id'] for c in rows}]
 
 def revision(rows):return hashlib.sha256(json.dumps(rows,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 

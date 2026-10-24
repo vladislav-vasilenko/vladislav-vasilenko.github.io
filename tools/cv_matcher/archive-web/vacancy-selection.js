@@ -46,7 +46,7 @@ const VacancySelection=(()=>{
    finally{if(token===request){copy.disabled=false;next.disabled=false;}}
   }
   copy.onclick=build;next.onclick=()=>{packet.value=String(Number(packet.value)+1);return build();};
-  $('rankingIntro').after(root);
+  (typeof document!=='undefined'&&document.getElementById('vacancyExport')||$('rankingIntro')).after(root);
  }
  return {install};
 })();

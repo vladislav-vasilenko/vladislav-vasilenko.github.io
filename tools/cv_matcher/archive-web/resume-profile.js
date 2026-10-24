@@ -8,7 +8,7 @@ const ResumeProfile=(()=>{
  function render(panel,data,options){
   const cv=data.payload,document=make('article','resumeDocument'),header=make('section','resumeHeader');
   header.append(make('p','eyebrow','ПРОФЕССИОНАЛЬНЫЙ ПРОФИЛЬ'),make('h2','',cv.title),make('p','meta','Снимок #'+data.version_id+' · сохранён '+date(data.versions?.find(v=>v.id===data.version_id)?.source_at||data.source_at||cv.captured_at)));
-  const nav=make('div','resumeHeaderActions'),toggle=make('button','secondary','Режим чтения');toggle.setAttribute('aria-pressed','false');toggle.onclick=()=>{panel.classList.toggle('resumeExpanded');const expanded=panel.classList.contains('resumeExpanded');panel.closest('.workspace').classList.toggle('resumeReading',expanded);toggle.textContent=expanded?'Вернуть список резюме':'Режим чтения';toggle.setAttribute('aria-pressed',String(expanded));};nav.append(toggle);
+  const nav=make('div','resumeHeaderActions'),toggle=make('button','secondary','Режим чтения');toggle.setAttribute('aria-pressed','false');toggle.onclick=()=>{panel.classList.toggle('resumeExpanded');const expanded=panel.classList.contains('resumeExpanded');panel.closest('.workspace').classList.toggle('resumeReading',expanded);toggle.textContent=expanded?'Вернуть список резюме':'Режим чтения';toggle.setAttribute('aria-pressed',String(expanded));};if(!options?.readOnly)nav.append(toggle);
   const exports=make('details','resumeExportMenu');exports.append(make('summary','','Экспорт ▾'));
   const print=make('button','secondary','Печать / сохранить PDF');print.onclick=()=>{exports.open=false;window.print();};exports.append(print);
   if((cv.source_type||'hh')==='hh'){const u=new URL(cv.source_url);u.searchParams.set('print','true');exports.append(external(u.href,'Печатный вид на HH ↗'));}
@@ -24,7 +24,7 @@ const ResumeProfile=(()=>{
   }
   for(const note of data.supplements||[]){const block=make('section','resumeSection resumeSupplement');block.append(make('span','tag missing','Дополнение пользователя · ещё не внесено в HH'),make('h3','',note.company),make('p','meta',note.start+' — '+note.end+' · версия дополнения #'+note.version_id),make('p','resumePosition',note.role));paragraphs(block,note.description);const copy=make('button','secondary','Скопировать блок для HH');copy.onclick=()=>navigator.clipboard.writeText(note.company+'\n'+note.start+' — '+note.end+'\n'+note.role+'\n'+note.description);block.append(copy);document.append(block);}
   if(data.user_facts?.length){const block=make('section','resumeSection resumeSupplement');block.append(make('span','tag missing','Уточнения пользователя · отдельно от HH-резюме'),make('h3','','Практический опыт и дополнительные факты'));for(const fact of data.user_facts)paragraphs(block,fact.text);document.append(block);}
-  panel.append(document);review(panel,data,options);
+  panel.append(document);if(!options?.readOnly)review(panel,data,options);
  }
  function review(panel,data,{api,goal,isCurrent}){
   const box=make('section','resumeReview'),heading=make('h3','','Карьерный разбор резюме');box.append(heading,make('p','muted','Хронология, цели, навыки и план развития. До 10 лучших вакансий из актуального сохранённого рейтинга. Изучение и планы не считаются выполненной работой.'));
@@ -46,5 +46,5 @@ const ResumeProfile=(()=>{
   for(const [title,values] of [['Что уточнить',a.questions],['Ограничения разбора',a.limitations]]){host.append(make('h4','',title));const ul=make('ul');for(const v of values)ul.append(make('li','',v));host.append(ul);}
   const sources=make('details');sources.append(make('summary','','Источники: CV #'+ctx.resume_version_id+' · вакансий '+ctx.jobs.length));for(const job of ctx.jobs){sources.append(external(job.url,job.title+' · '+job.company+' · #'+job.version_id));}host.append(sources);
  }
- return {render};
+ return {render,paragraphs};
 })();

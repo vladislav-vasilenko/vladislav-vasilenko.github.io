@@ -24,6 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from src.china_sources import CHINA_SOURCES
 from src.scrapers import (  # noqa: E402
     YandexScraper, SberScraper, GoogleCareersScraper, MetaCareersScraper,
 )
@@ -90,6 +91,8 @@ def _source_plan(headless: bool = True, include_sber: bool = False):
             SBER_QUERIES,
         ))
 
+    from src.scrapers.china import CHINA_SCRAPERS
+    plan.extend((key,lambda limit=0,cls=cls:cls(limit=limit or 100,headless=headless),[""]) for key,cls in CHINA_SCRAPERS.items())
     return plan
 
 
@@ -146,8 +149,8 @@ def main() -> int:
     args = parser.parse_args()
     if args.limit is not None and not 1 <= args.limit <= 500:
         parser.error('--limit must be between 1 and 500')
-    if args.scrapers and (not args.scrapers.strip() or any(s.strip() not in {'yandex','google','meta','sber'} for s in args.scrapers.split(','))):
-        parser.error('Unknown scraper; choose yandex,google,meta,sber')
+    if args.scrapers and (not args.scrapers.strip() or any(s.strip() not in {'yandex','google','meta','sber',*CHINA_SOURCES} for s in args.scrapers.split(','))):
+        parser.error('Unknown scraper; choose a configured source in GitHub Runs.')
 
     print(f"🚀 Online scrape @ {datetime.now(timezone.utc).isoformat()}")
     by_id = _load_existing()
@@ -177,6 +180,9 @@ def main() -> int:
         for q in queries:
             try:
                 jobs = scraper.fetch_jobs(q, existing_ids=set(by_id.keys()))
+                report=getattr(scraper,"report",{})
+                stats[key]["errors"]+=report.get("errors",0)
+                if report:stats[key]["coverage"]=report.get("coverage","partial")
                 for j in jobs:
                     jid = j["id"]
                     if jid not in by_id:

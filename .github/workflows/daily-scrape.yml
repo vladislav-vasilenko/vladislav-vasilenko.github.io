@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
     inputs:
       sources:
-        description: 'Adapters: yandex,google,meta,sber (Sber may be blocked in CI)'
+        description: 'Adapters: yandex,google,meta,sber,deepseek,moonshot,bytedance,alibaba,kuaishou,minimax,tencent,zai,shengshu'
         type: string
         default: 'yandex,google,meta'
       limit:

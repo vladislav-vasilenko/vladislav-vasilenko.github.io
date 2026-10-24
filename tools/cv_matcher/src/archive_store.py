@@ -14,7 +14,7 @@ from .analysis_store import AnalysisStore
 
 FIELDS={
  'resume':('id','title','source_type','source_url','quality','sections','content_hash','file_hash','filename','captured_at','checked_at','reviewed_at','changed_at','extraction_method','warnings'),
- 'vacancy':('id','title','company','link','source','source_page','search_page','origin_query','description','description_quality','locations','location','city','work_formats','work_format','locations_status','locations_complete','pub_date','collected_at','last_seen_at','first_seen','reviewed_at','review_method','recommended_for','archived','availability_checked_at','listing_verified_at','description_fetched_at','description_dirty','listing_changed_at','listing_snapshot','collector','board_id','adapter_id','adapter_version','extraction_method'),
+ 'vacancy':('id','title','company','company_logo_url','apply_url','apply_kind','linkedin_signals','link','source','source_page','search_page','origin_query','description','description_quality','locations','location','city','work_formats','work_format','locations_status','locations_complete','pub_date','collected_at','last_seen_at','first_seen','reviewed_at','review_method','recommended_for','archived','availability_checked_at','listing_verified_at','description_fetched_at','description_dirty','listing_changed_at','listing_snapshot','collector','board_id','adapter_id','adapter_version','extraction_method'),
  'scan':('id','scan_kind','scope_url','started_at','completed_at','ids','listing_complete','state','pages','start_page','error'),
  'profile':('primary_id','goal'),
  'ranking':('generated_at','model','resume_id','resume_title','resume_hash','input_count','ranked_count','excluded','goal','method','score_warning','usage_tokens','api_requests','company_filter','companies_filter','cache_reused','new_compared','cached','requested_count','processed_count','batches_completed','partial','all'),
@@ -116,6 +116,16 @@ class ArchiveStore(AnalysisStore):
             if data.get('description_quality') not in ('full','snippet','missing','needs_review'):raise ValueError('Неизвестное качество вакансии.')
             if not isinstance(data.get('description',''),str):raise ValueError('Описание должно быть текстом.')
             data['description']=redact_contacts(data.get('description',''))
+            if 'linkedin_signals' in data:
+                from .linkedin_job_signals import validate
+                data['linkedin_signals']=validate(data['linkedin_signals'])
+            if data.get('apply_kind','unknown') not in ('unknown','easy_apply','external'):raise ValueError('Неизвестный способ отклика.')
+            for key in ('company_logo_url','apply_url'):
+                value=data.get(key,'')
+                if not isinstance(value,str) or len(value)>3000:raise ValueError('Некорректная ссылка вакансии.')
+                if value:
+                    u=urlsplit(value)
+                    if u.scheme!='https' or not u.hostname or u.username or u.password:raise ValueError('Ссылка вакансии должна использовать HTTPS без учётных данных.')
             from .vacancy_locations import normalize_locations
             data=normalize_locations(data)
         old=db.execute('SELECT * FROM entities WHERE kind=? AND id=?',(kind,identifier)).fetchone()

@@ -43,9 +43,13 @@ SCRAPER_REGISTRY = {
     "meta":        MetaCareersScraper,
 }
 
+from .china import CHINA_SCRAPERS
+SCRAPER_REGISTRY.update(CHINA_SCRAPERS)
+
 SOURCE_GROUPS: dict = {
     "ru": ["yandex", "hh", "ozon", "avito", "tinkoff", "vk", "x5", "wildberries", "mts", "alfa"],
     "international": ["remoteok", "wwr", "hn", "linkedin", "indeed", "wttj", "wellfound"],
     "faang": ["google", "meta"],
 }
-SOURCE_GROUPS["all"] = SOURCE_GROUPS["ru"] + SOURCE_GROUPS["international"] + SOURCE_GROUPS["faang"]
+SOURCE_GROUPS["china"] = list(CHINA_SCRAPERS)
+SOURCE_GROUPS["all"] = SOURCE_GROUPS["ru"] + SOURCE_GROUPS["international"] + SOURCE_GROUPS["faang"] + SOURCE_GROUPS["china"]

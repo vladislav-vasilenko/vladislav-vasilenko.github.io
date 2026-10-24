@@ -88,7 +88,8 @@ def normalize(row, exported_at):
         raise ValueError('Локальный адрес не является вакансией.')
     params = [(k, v) for k, v in parse_qsl(u.query, keep_blank_values=True)
               if not re.match(r'^(utm_|hhtm|__rr|abt_)|^(from|ref|source|trackingId)$', k, re.I)]
-    url = urlunsplit(('https', u.hostname.lower(), re.sub('/+', '/', u.path).rstrip('/') or '/', urlencode(sorted(params)), ''))
+    # Known SPA job IDs are in the fragment, not an optional page anchor.
+    url = urlunsplit(('https', u.hostname.lower(), re.sub('/+', '/', u.path).rstrip('/') or '/', urlencode(sorted(params)), u.fragment))
     valid = identity(url)
     if not valid:
         raise ValueError('Ссылка не соответствует вакансии.')
