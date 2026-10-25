@@ -10,7 +10,7 @@ const brief=(value:string,limit:number)=>{const text=clean(value);return text.le
 const link=(url:string,label:string)=>`<a href="${escapeText(url)}" target="_blank" rel="noopener noreferrer">${escapeText(label)}</a>`;
 export function renderMinimal(cv:CVContent,lang:Lang,snapshot:HHSnapshot|null,focus:string,style:PresentationStyle='minimal',detailed=false):string{
  const copy=presentationCopy(style,lang);
- const english=new URL(location.href);english.pathname='/';english.searchParams.delete('lang');const russian=new URL(english);russian.pathname='/ru/';
+ const english=new URL(location.href);english.pathname='/';english.searchParams.set('lang','en');const russian=new URL(english);russian.pathname='/ru/';russian.searchParams.delete('lang');
  const full=new URL(location.href);if(detailed)full.searchParams.delete('layout');else full.searchParams.set('layout','full');full.searchParams.set('lang',lang);
  const projectLinks=new Map<string,string>();
  for(const job of cv.experience)for(const match of job.descriptionMd.matchAll(/https:\/\/github\.com\/[\w.-]+\/[\w.-]+/g)){const url=match[0];projectLinks.set(url,url.split('/').pop()!);}

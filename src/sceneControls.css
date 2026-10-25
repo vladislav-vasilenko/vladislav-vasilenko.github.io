@@ -1,0 +1,45 @@
+.latent-scene{position:fixed;inset:0;z-index:2;pointer-events:none}
+.latent-scene.is-standalone{z-index:0;background:#000}
+.latent-scene.is-complete{visibility:hidden}
+.latent-controls{
+  position:fixed;left:24px;bottom:max(24px,env(safe-area-inset-bottom));z-index:20;
+  box-sizing:border-box;width:304px;padding:17px 18px 16px;
+  font:400 14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  color:#f4f5f7;background:linear-gradient(135deg,#ffffff12,#ffffff02 55%),rgba(18,22,30,.24);border:1px solid #ffffff38;
+  border-radius:20px;box-shadow:inset 0 1px 0 #ffffff2b,inset 0 -1px 0 #ffffff0a,0 10px 32px #0002;backdrop-filter:blur(7px) saturate(1.3);-webkit-backdrop-filter:blur(7px) saturate(1.3);
+}
+.latent-controls-heading{display:flex;justify-content:space-between;gap:20px;align-items:center}
+.latent-controls-heading>div{display:flex;align-items:center;gap:10px;min-width:0}
+.latent-controls-title{font-size:13px;font-weight:550;letter-spacing:-.015em;white-space:nowrap}
+.latent-phase{font-size:11px;color:#c3c8d2;border-left:1px solid #ffffff30;padding-left:10px}
+.latent-readout{font:500 12px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;font-variant-numeric:tabular-nums;color:#bec3ce}
+.latent-progress{height:2px;background:#ffffff17;border-radius:4px;margin:13px 0 14px;overflow:hidden}
+.latent-progress>span{display:block;height:100%;background:#e2ddce;transform:scaleX(var(--progress,0));transform-origin:left}
+.latent-controls-actions{display:flex;gap:8px}
+.latent-control{
+  appearance:none;display:flex;align-items:center;justify-content:center;gap:7px;flex:1;
+  box-sizing:border-box;min-height:44px;padding:9px 11px;margin:0;
+  border:1px solid #ffffff38;border-radius:12px;background:linear-gradient(145deg,#ffffff0e,#ffffff03);color:#e1e5ec;
+  font:500 13px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  cursor:pointer;touch-action:manipulation;box-shadow:inset 0 1px 0 #ffffff16;transition:background .2s,color .2s,border-color .2s;
+}
+.latent-control:hover{background:#ffffff1c;color:#fff}
+.latent-control[aria-checked=true]{background:linear-gradient(145deg,#ffffff38,#ffffff14);color:#fff;border-color:#ffffff8c;box-shadow:inset 0 1px 0 #ffffff59,0 1px 8px #ffffff0a}
+.latent-control[aria-checked=true]:hover{background:#ffffff30;border-color:#ffffffb3}
+.latent-control:focus-visible{outline:2px solid #a9ccff;outline-offset:4px}
+.latent-control svg{width:18px;height:18px;flex:none}
+.latent-control-indicator{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.2;margin-left:2px}
+.latent-control[aria-checked=true] .latent-control-indicator{opacity:.65}
+.latent-stop{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:10px 0 0;padding:8px;border:1px solid #ffffff25;border-radius:10px;background:none;color:#d3d7df;min-height:36px;cursor:pointer;font:500 12px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.latent-stop>span{font-size:9px}.latent-stop:hover{background:#ffffff14;color:#fff}.latent-stop:focus-visible{outline:2px solid #a9ccff;outline-offset:4px}
+@supports not ((backdrop-filter:blur(7px)) or (-webkit-backdrop-filter:blur(7px))){.latent-controls{background:#161a24e6}}
+@media(prefers-reduced-transparency:reduce){.latent-controls{background:#161a24f2;backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media(max-width:600px){
+  .latent-controls{left:16px;right:16px;bottom:max(16px,env(safe-area-inset-bottom));width:auto;max-width:360px;margin:0 auto;padding:14px 15px;border-radius:18px}
+}
+@media(max-height:470px){
+  .latent-controls{left:16px;bottom:16px;width:280px;padding:11px 13px}
+  .latent-progress{margin:8px 0 10px}
+}
+@media(prefers-reduced-motion:reduce){.latent-control{transition:none}}
+@media print{.latent-scene,.latent-controls{display:none!important}}

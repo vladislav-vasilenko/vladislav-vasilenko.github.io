@@ -1,1 +1,1 @@
-export function mountLatentIntro(section: HTMLElement): void;
+export function mountLatentIntro(section: HTMLElement): {play(): void; stop(): void};

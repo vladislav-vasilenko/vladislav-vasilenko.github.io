@@ -5,9 +5,10 @@ import {loadHHSnapshot,applyHHSnapshot,validateSnapshot,type HHSnapshot} from '.
 import {renderMinimal} from './features/minimalPortfolio';
 import {presentationStyle} from './features/presentationStyle';
 import {exportMarkdown} from './export';
+import {portfolioLanguage} from './features/locale';
 
 const query=new URLSearchParams(location.search);
-let language:Lang=query.get('lang')==='ru'?'ru':query.get('lang')==='en'?'en':location.pathname.startsWith('/ru')?'ru':'en';
+let language:Lang=portfolioLanguage(location.href,navigator.languages);
 let focus=query.get('tech')||'all';
 let style=presentationStyle(query.get('style'));
 let snapshot:HHSnapshot|null=null;
@@ -18,6 +19,10 @@ function renderPage():void{
  setLang(language);document.documentElement.classList.add('minimal-mode');
  // Focus changes emphasis, never the source wording or work history.
  const cv=applyHHSnapshot(loadContent(language,'vision'),snapshot,language);
+ const introName=document.querySelector<HTMLElement>('.latent-intro-name');
+ if(introName)introName.textContent=language==='ru'?'Владислав Василенко':'Vladislav Vasilenko';
+ const introLabel=document.querySelector<HTMLElement>('[data-intro-play]>span');
+ if(introLabel)introLabel.textContent=language==='ru'?'Посмотреть резюме':'View resume';
  const root=document.querySelector<HTMLDivElement>('#app')!;
  root.innerHTML=renderMinimal(cv,language,snapshot,focus,style,detailed);
  root.querySelectorAll<HTMLButtonElement>('button[data-presentation]').forEach(button=>button.onclick=()=>{
@@ -39,11 +44,11 @@ renderPage();
 // The intro is static HTML (no layout shift); its three.js bundle loads lazily so the CV paints first.
 const intro=document.getElementById('latent-intro');
 if(intro){
- const skip=intro.querySelector<HTMLAnchorElement>('.latent-intro-skip');
- if(skip){skip.querySelector('span')!.textContent=language==='ru'?'Листайте вниз':'Scroll down';
-  // Smooth-scroll instead of jumping, so the scrubbed animation plays on the way to the CV.
-  skip.onclick=event=>{event.preventDefault();document.getElementById('app')?.scrollIntoView({behavior:'smooth'});};}
  if(detailed||matchMedia('(prefers-reduced-motion: reduce)').matches)intro.remove();
- else import('./latentIntro.jsx').then(m=>m.mountLatentIntro(intro)).catch(()=>intro.remove());
+ else {
+  const scene=import('./latentIntro.jsx').then(m=>m.mountLatentIntro(intro)).catch(()=>{intro.remove();return null;});
+  const play=intro.querySelector<HTMLButtonElement>('[data-intro-play]');
+  if(play)play.onclick=()=>{void scene.then(controller=>controller?.play());};
+ }
 }
 void loadHHSnapshot().then(value=>{if(value){snapshot=value;renderPage();}});

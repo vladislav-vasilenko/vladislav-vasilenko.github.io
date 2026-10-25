@@ -4,6 +4,8 @@ import { PerformanceMonitor } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { orbitOrigin, floorImpact, handoffToken, impactFloor, resumeClip, smoothRange } from '../introMotion.js';
+import '../sceneControls.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,21 +22,22 @@ const CUBE = 0.088;
 const RADIUS = 0.05; // collision sphere; 2*RADIUS < SPACING so a settled portrait never jostles
 const DEPTH = 0.9; // brightness -> relief depth
 const GAMMA = 1.8;
-const HIST = 12; // trajectory samples per patch
-const HIST_HZ = 30;
+const HIST = 32; // longer patch trails make the motion field visible
+const HIST_HZ = 24;
 
 // Physics tuning (units: world units, seconds).
-const NOISE = 2.4;
-const JITTER = 7;
+const NOISE = 0.95;
+const JITTER = 1.8;
 const WELL = 0.35;
-const QUAKE_RADIUS = 0.75;
-const BLAST = 95;
-const TREMOR = 1.4;
-const SPIN_KICK = 28;
-const VMAX = 14;
+const QUAKE_RADIUS = 1.05;
+const BLAST = 80;
+const TREMOR = 0.7;
+const SPIN_KICK = 12;
+const VMAX = 4.2;
+const HOVER_VMAX = 7;
 const RESTITUTION = 0.55;
 // Gravity mode: tokens rain into a bin below the portrait, then the flow field lifts them out.
-const GRAVITY = 9.8;
+const GRAVITY = 4.5;
 const FLOOR_Y = -(ROWS * SPACING) / 2 - 0.2;
 const BIN_X = 1.7;
 const BIN_Z = 0.7;
@@ -107,6 +110,8 @@ async function loadImage(sources) {
 function createSimulation() {
   const sim = {
     pos: new Float32Array(COUNT * 3),
+    previousY: new Float32Array(COUNT),
+    floorContact: new Uint8Array(COUNT),
     vel: new Float32Array(COUNT * 3),
     rot: new Float32Array(COUNT * 3),
     spin: new Float32Array(COUNT * 3),
@@ -114,8 +119,6 @@ function createSimulation() {
     lum: new Float32Array(COUNT).fill(0.5),
     rgb: new Float32Array(COUNT * 3).fill(0.5),
     scale: new Float32Array(COUNT).fill(1),
-    outside: new Uint8Array(COUNT), // outside the round CV avatar the portrait docks into
-    dockDelay: new Float32Array(PATCHES),
     patchOf: new Uint16Array(COUNT),
     patchSize: new Uint16Array(PATCHES),
     phase: new Float32Array(PATCHES),
@@ -131,6 +134,7 @@ function createSimulation() {
     prevPointer: new THREE.Vector3(),
     pointerSpeed: 0,
     hadPointer: false,
+    seeded: false,
   };
   for (let i = 0; i < COUNT; i++) {
     const c = i % COLS;
@@ -139,8 +143,6 @@ function createSimulation() {
     sim.patchSize[sim.patchOf[i]]++;
     sim.target[i * 3] = gridX(c);
     sim.target[i * 3 + 1] = gridY(r);
-    const half = (ROWS * SPACING) / 2;
-    sim.outside[i] = (gridX(c) / half) ** 2 + (gridY(r) / half) ** 2 > 1 ? 1 : 0;
     // Phase 1: t = 1, pure noise.
     sim.pos[i * 3] = (Math.random() - 0.5) * 6;
     sim.pos[i * 3 + 1] = (Math.random() - 0.5) * 5.2;
@@ -152,7 +154,6 @@ function createSimulation() {
   // Golden-angle phases keep neighbouring patches out of sync while each patch pulses as one.
   for (let k = 0; k < PATCHES; k++) {
     sim.phase[k] = k * 2.39996;
-    sim.dockDelay[k] = Math.random();
   }
   return sim;
 }
@@ -243,10 +244,11 @@ function CameraRig() {
   return null;
 }
 
-function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget }) {
+function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
   const meshRef = useRef(null);
   const materialRef = useRef(null);
   const linesRef = useRef(null);
+  const lineMaterialRef = useRef(null);
   const sim = useMemo(createSimulation, []);
   const scratch = useMemo(
     () => ({
@@ -259,6 +261,8 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
       ndc: new THREE.Vector2(),
       plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
       pulse: new Float32Array(PATCHES),
+      token: { x: 0, y: 0, z: 0, scale: 1 },
+      view: { halfWidth: 0, halfHeight: 0, safeLeft: 0, safeRight: 0 },
     }),
     [],
   );
@@ -308,10 +312,21 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
     const mesh = meshRef.current;
     if (!mesh) return;
     const dt = Math.min(rawDt, 1 / 30);
-    const t = state.clock.elapsedTime;
+    const t = state.clock.elapsedTime * 0.45;
     const g = field.attraction;
+    const release = playback?.release || 0;
     const { pos, vel, rot, spin, target, lum, rgb, patchOf } = sim;
     const { pulse } = scratch;
+    const worldPerPx = (2 * state.camera.position.z * Math.tan(THREE.MathUtils.degToRad(state.camera.fov / 2))) / state.size.height;
+    scratch.view.halfWidth = state.size.width * worldPerPx / 2;
+    scratch.view.halfHeight = state.size.height * worldPerPx / 2;
+    if (!sim.seeded) {
+      if (!gravity) for (let i = 0; i < COUNT; i++) {
+        const origin = orbitOrigin(scratch.token, i, sim.patchOf[i], scratch.view);
+        sim.pos[i * 3] = origin.x; sim.pos[i * 3 + 1] = origin.y; sim.pos[i * 3 + 2] = origin.z;
+      }
+      sim.seeded = true;
+    }
 
     // Phase 3 input: project the cursor onto the z = 0 plane and estimate its world-space speed.
     let energy = 0;
@@ -323,32 +338,25 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
         sim.hadPointer = true;
         const speed = sim.pointer.distanceTo(sim.prevPointer) / Math.max(rawDt, 1e-3);
         sim.prevPointer.copy(sim.pointer);
-        sim.pointerSpeed += (speed - sim.pointerSpeed) * 0.3;
-        energy = 0.2 + Math.min(sim.pointerSpeed / 4, 2.5);
+        sim.pointerSpeed += (speed - sim.pointerSpeed) * 0.12;
+        energy = 0.12 + Math.min(sim.pointerSpeed / 6, 1.5);
       }
     } else {
       sim.hadPointer = false;
       sim.pointerSpeed = 0;
     }
-    // Dock: fly the finished portrait into the CV avatar it was decoded from.
+    energy *= 1 - release;
+    // Hand over to the CV by clearing its column; the camera remains fixed.
     const d = field.dock;
-    let dock = false;
-    let dcx = 0;
-    let dcy = 0;
-    let ds = 1;
-    if (d > 0 && dockTarget) {
-      const el = document.querySelector(dockTarget);
-      if (el) {
-        const box = el.getBoundingClientRect();
-        const { width, height } = state.size;
-        const worldPerPx = (2 * state.camera.position.z * Math.tan(THREE.MathUtils.degToRad(state.camera.fov / 2))) / height;
-        dcx = (box.left + box.width / 2 - width / 2) * worldPerPx;
-        dcy = (height / 2 - box.top - box.height / 2) * worldPerPx;
-        // The avatar shows the whole square photo; the grid is its 3:4 centre crop, so heights match.
-        ds = (box.height * worldPerPx) / (ROWS * SPACING);
-        dock = true;
-        energy *= Math.max(0, 1 - d * 3);
-      }
+    const dock = handoff && d > 0;
+    if (handoff && (d > 0 || release > 0)) {
+      const { width, height } = state.size;
+      const view = scratch.view;
+      view.halfWidth = width * worldPerPx / 2;
+      view.halfHeight = height * worldPerPx / 2;
+      view.safeLeft = (field.bounds.left - width / 2) * worldPerPx;
+      view.safeRight = (field.bounds.right - width / 2) * worldPerPx;
+      energy *= 1 - smoothRange(0, 0.18, d);
     }
     const wx = sim.pointer.x;
     const wy = sim.pointer.y;
@@ -368,29 +376,28 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
       const chaos = (1 - lock) * (1 - 0.65 * g);
       // Phase 2: flow-matching velocity field as a damped spring toward x0; patch locks stiffen it into a snap.
       const pull = g * (0.25 + 0.75 * lock);
-      const k = 30 * pull + 30 * lock * lock;
-      const c = 1.6 * Math.sqrt(k) + 0.4;
+      const k = (20 * pull + 20 * lock * lock) * (1 - release);
+      const edgeSpring = !gravity && !release ? 5.5 * (1 - g) * (1 - lock) : 0;
+      const c = 2.05 * Math.sqrt(k + edgeSpring) + 0.7;
       let tx = target[ix];
       let ty = target[iy];
       let tz = target[iz];
       let size = 1;
       if (dock) {
-        // Patches leave at staggered moments, swoop toward the viewer and shrink onto the avatar.
-        const raw = Math.min(1, Math.max(0, (d - sim.dockDelay[patchOf[i]] * 0.4) / 0.6));
-        const f = raw * raw * (3 - 2 * raw);
-        tx += (dcx + tx * ds - tx) * f;
-        ty += (dcy + ty * ds - ty) * f;
-        tz += (tz * ds - tz) * f + Math.sin(Math.PI * f) * 1.2;
-        size = 1 + (ds - 1) * f;
-        if (sim.outside[i]) size *= 1 - Math.min(1, Math.max(0, (f - 0.6) / 0.4));
+        const token = handoffToken(scratch.token, i, d, tx, ty, tz, scratch.view);
+        if (!release) { tx = token.x; ty = token.y; tz = token.z; }
+        size = token.scale;
       }
       sim.scale[i] = size;
       const px = pos[ix];
       const py = pos[iy];
       const pz = pos[iz];
+      sim.previousY[i] = py;
       let ax = k * (tx - px) - c * vel[ix];
       let ay = k * (ty - py) - c * vel[iy];
       let az = k * (tz - pz) - c * vel[iz];
+      // Playback finale: grid springs release and the portrait falls onto the temporary impact plane.
+      ay -= 12 * release;
 
       // Phase 1 (gravity): free fall into the bin; fades as the flow field takes over, so the pile is lifted out.
       const heavy = gravity ? (1 - lock) * (1 - g) : 0;
@@ -404,22 +411,28 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
           else if (pz > BIN_Z) az += (BIN_Z - pz) * 80;
         }
       } else if (chaos > 1e-3) {
+        const origin = orbitOrigin(scratch.token, i, patchOf[i], scratch.view, t);
+        ax += edgeSpring * (origin.x - px);
+        ay += edgeSpring * (origin.y - py);
+        az += edgeSpring * (origin.z - pz);
         // Phase 1 (chaos): turbulent pseudo-curl noise + Brownian jitter, held in a weak harmonic well.
         const s = i * 0.618;
         ax += chaos * (NOISE * (Math.sin(1.3 * py + 0.8 * t + s) + Math.cos(1.7 * pz - 0.6 * t + 2 * s)) + JITTER * (Math.random() - 0.5) - WELL * px);
         ay += chaos * (NOISE * (Math.sin(1.1 * pz + 0.7 * t + 3 * s) + Math.cos(1.5 * px + 0.9 * t)) + JITTER * (Math.random() - 0.5) - WELL * py);
         az += chaos * (NOISE * (Math.sin(1.2 * px - 0.5 * t + s) + Math.cos(1.4 * py + 0.4 * t + s)) + JITTER * (Math.random() - 0.5) - WELL * pz);
-        spin[ix] += (Math.random() - 0.5) * 6 * chaos * dt;
-        spin[iy] += (Math.random() - 0.5) * 6 * chaos * dt;
-        spin[iz] += (Math.random() - 0.5) * 6 * chaos * dt;
+        spin[ix] += (Math.random() - 0.5) * 1.4 * chaos * dt;
+        spin[iy] += (Math.random() - 0.5) * 1.4 * chaos * dt;
+        spin[iz] += (Math.random() - 0.5) * 1.4 * chaos * dt;
       }
 
       // Phase 3: earthquake — radial blast away from the cursor column, a kick toward the viewer and a tremor.
+      let kicked = false;
       if (energy > 0) {
         const dx = px - wx;
         const dy = py - wy;
         const d2 = dx * dx + dy * dy;
         if (d2 < quakeR2) {
+          kicked = true;
           const d = Math.sqrt(d2) + 1e-4;
           const f = (1 - d / QUAKE_RADIUS) ** 2 * energy;
           ax += (dx / d) * BLAST * f;
@@ -437,8 +450,9 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
       let vy = vel[iy] + ay * dt;
       let vz = vel[iz] + az * dt;
       const v2 = vx * vx + vy * vy + vz * vz;
-      if (v2 > VMAX * VMAX) {
-        const s = VMAX / Math.sqrt(v2);
+      const maxVelocity = kicked || release > 0 ? HOVER_VMAX : VMAX;
+      if (v2 > maxVelocity * maxVelocity) {
+        const s = maxVelocity / Math.sqrt(v2);
         vx *= s;
         vy *= s;
         vz *= s;
@@ -451,7 +465,7 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
       pos[iz] = pz + vz * dt;
 
       // Tumble while noisy; unwind to grid-aligned as the patch locks.
-      const spinDamp = Math.exp(-(1.5 + 6 * lock) * dt);
+      const spinDamp = Math.exp(-(2.8 + 8 * lock) * dt);
       const unwind = Math.min(1, 6 * lock * dt);
       for (let a = ix; a <= iz; a++) {
         spin[a] *= spinDamp;
@@ -462,12 +476,25 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
 
     // Phase 4: elastic sphere-sphere contacts.
     resolveCollisions(sim);
-    if (gravity && !dock) {
+    if (!release) sim.floorContact.fill(0);
+    if (release && handoff) {
+      // Keep the first impact visible, then lower the plane as the resume rises.
+      const floor = impactFloor(scratch.view.halfHeight, state.size.height, field.controlsTop) - smoothRange(0, 0.65, d) * scratch.view.halfHeight * 2.2;
+      for (let i = 0; i < COUNT; i++) {
+        const o = i * 3, y = o + 1;
+        if (pos[y] >= floor + RADIUS || (!sim.floorContact[i] && sim.previousY[i] < floor + RADIUS)) continue;
+        pos[y] = floor + RADIUS;
+        floorImpact(vel, spin, i, pos[o], !sim.floorContact[i]);
+        sim.floorContact[i] = 1;
+      }
+    }
+    if (gravity && !dock && !release) {
       // Floor contact after collisions, so the pile cannot be pushed through it.
+      const floor = impactFloor(scratch.view.halfHeight, state.size.height, field.controlsTop, FLOOR_Y);
       for (let i = 0; i < COUNT; i++) {
         const iy = i * 3 + 1;
-        if (pos[iy] >= FLOOR_Y + RADIUS) continue;
-        pos[iy] = FLOOR_Y + RADIUS;
+        if (pos[iy] >= floor + RADIUS) continue;
+        pos[iy] = floor + RADIUS;
         if (vel[iy] < 0) vel[iy] *= -FLOOR_BOUNCE;
         vel[iy - 1] *= FLOOR_FRICTION;
         vel[iy + 1] *= FLOOR_FRICTION;
@@ -504,8 +531,8 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
     }
     mesh.instanceMatrix.needsUpdate = true;
     mesh.instanceColor.needsUpdate = true;
-    // Cross-fade: the cubes dissolve while the real avatar (driven from CSS) fades in.
-    materialRef.current.opacity = dock ? 1 - Math.min(1, Math.max(0, (d - 0.88) / 0.12)) : 1;
+    materialRef.current.opacity = dock ? 1 - smoothRange(0.35, 1, d) : 1;
+    lineMaterialRef.current.opacity = 0.65 * (dock ? 1 - smoothRange(0.02, 0.5, d) : 1);
 
     // ODE trajectories: ring buffer of the last HIST patch-center positions.
     sim.histClock += rawDt;
@@ -536,7 +563,7 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
       sim.histPrimed = true;
       sim.histHead = (sim.histHead + 1) % HIST;
 
-      if (showTrajectories && linesRef.current) {
+      if (linesRef.current) {
         const attribute = trailGeometry.attributes.position;
         const out = attribute.array;
         let w = 0;
@@ -564,46 +591,88 @@ function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget
         <boxGeometry args={[CUBE, CUBE, CUBE]} />
         <meshStandardMaterial ref={materialRef} color="#ffffff" roughness={0.95} metalness={0} transparent />
       </instancedMesh>
-      <lineSegments ref={linesRef} geometry={trailGeometry} visible={showTrajectories} frustumCulled={false}>
+      <lineSegments ref={linesRef} geometry={trailGeometry} frustumCulled={false}>
         {/* Drawn over the relief: trails run through the cube layer and would otherwise be occluded. */}
-        <lineBasicMaterial vertexColors transparent depthTest={false} depthWrite={false} />
+        <lineBasicMaterial ref={lineMaterialRef} vertexColors transparent depthTest={false} depthWrite={false} />
       </lineSegments>
     </>
   );
 }
 
-function Toggle({ checked, onChange, children }) {
+function Toggle({ checked, onChange, icon, disabled = false, children }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2 transition-colors select-none hover:text-neutral-100">
-      <input type="checkbox" className="peer sr-only" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-      <span aria-hidden="true" className="text-neutral-300 peer-focus-visible:outline peer-focus-visible:outline-1 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-neutral-300">
-        {checked ? '[x]' : '[ ]'}
-      </span>
+    <button type="button" className="latent-control" role="switch" aria-checked={checked} disabled={disabled} onClick={() => onChange(!checked)}>
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        {icon === 'gravity'
+          ? <><path d="M10 3v10m-3-3 3 3 3-3M4 16h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></>
+          : <><circle cx="7" cy="8" r="3.3" fill="currentColor" opacity=".5" /><circle cx="13" cy="8" r="3.3" fill="currentColor" opacity=".75" /><circle cx="10" cy="13" r="3.3" fill="currentColor" /></>}
+      </svg>
       <span>{children}</span>
-    </label>
+      <span className="latent-control-indicator" aria-hidden="true" />
+    </button>
   );
 }
 
 /**
  * Fixed full-viewport background: noise -> flow-matching ODE -> DiT-patch denoised portrait, driven by page scroll.
  * `trigger` is the scroll element whose top-to-bottom range maps t = 1 -> 0 (defaults to the whole document).
- * `dock` ({ trigger, endTrigger, target }): after the portrait forms, scrolling from `trigger` entering the
- * viewport until `endTrigger` reaches the top flies the cubes over a transparent page into the `target` image.
+ * `dock` ({ trigger, resume, end }): clear the resume column and finish as its first paragraph enters.
  */
-export default function LionheadDitDiffusion({ trigger, dock }) {
-  const [showTrajectories, setShowTrajectories] = useState(false);
-  const [gravity, setGravity] = useState(true);
+export default function LionheadDitDiffusion({ trigger, dock, playing = false, playback, onStop }) {
+  const [gravity, setGravity] = useState(false);
   const [color, setColor] = useState(true);
   const [docked, setDocked] = useState(false);
+  const [language, setLanguage] = useState(() => document.documentElement.lang === 'ru' ? 'ru' : 'en');
   const stageRef = useRef(null);
   const uiRef = useRef(null);
   const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, 1.75));
   const readoutRef = useRef(null);
-  const field = useMemo(() => ({ attraction: 0, dock: 0, locks: Array.from({ length: PATCHES }, () => ({ v: 0 })) }), []);
+  const phaseRef = useRef(null);
+  const progressRef = useRef(null);
+  const readout = useRef(1);
+  const text = language === 'ru'
+    ? { title: 'Шум → портрет', gravity: 'Гравитация', color: 'Цвет', stop: 'Остановить показ', fall: 'Падение', progress: 'Формирование портрета', settings: 'Настройки вступления', phases: ['Шум', 'Поток', 'Сборка', 'Портрет'] }
+    : { title: 'Noise → portrait', gravity: 'Gravity', color: 'Color', stop: 'Stop playback', fall: 'Falling', progress: 'Portrait formation', settings: 'Intro settings', phases: ['Noise', 'Flow', 'Forming', 'Portrait'] };
+  const textRef = useRef(text);
+  textRef.current = text;
+  const field = useMemo(() => ({ attraction: 0, dock: 0, controlsTop: window.innerHeight, bounds: { left: 0, right: window.innerWidth }, locks: Array.from({ length: PATCHES }, () => ({ v: 0 })) }), []);
   const pointerNdc = useMemo(() => ({ x: 0, y: 0, active: false }), []);
+
+  const setReadout = (t) => {
+    readout.current = t;
+    const p = Math.max(0, Math.min(1, 1 - t));
+    if (readoutRef.current) readoutRef.current.textContent = `${Math.round(p * 100)}%`;
+    if (phaseRef.current) phaseRef.current.textContent = playback?.releasing ? textRef.current.fall : textRef.current.phases[p < 0.12 ? 0 : p < 0.55 ? 1 : p < 0.94 ? 2 : 3];
+    if (progressRef.current) {
+      progressRef.current.style.setProperty('--progress', p);
+      progressRef.current.setAttribute('aria-valuenow', Math.round(p * 100));
+    }
+  };
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => setLanguage(document.documentElement.lang === 'ru' ? 'ru' : 'en'));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    return () => observer.disconnect();
+  }, []);
+  useLayoutEffect(() => setReadout(readout.current), [language, playing, playback?.releasing]);
+
+  useLayoutEffect(() => {
+    const panel = uiRef.current;
+    const measure = () => {
+      const box = panel.getBoundingClientRect();
+      field.controlsTop = box.left < window.innerWidth / 2 && box.right > window.innerWidth / 2
+        ? box.top : window.innerHeight;
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(panel);
+    window.addEventListener('resize', measure);
+    measure();
+    return () => { observer.disconnect(); window.removeEventListener('resize', measure); };
+  }, [field]);
 
   useEffect(() => {
     const move = (e) => {
+      if (e.target.closest?.('.latent-controls')) { pointerNdc.active = false; return; }
       const box = stageRef.current.getBoundingClientRect();
       pointerNdc.x = ((e.clientX - box.left) / box.width) * 2 - 1;
       pointerNdc.y = -((e.clientY - box.top) / box.height) * 2 + 1;
@@ -630,9 +699,6 @@ export default function LionheadDitDiffusion({ trigger, dock }) {
   }, [pointerNdc]);
 
   useEffect(() => {
-    const setReadout = (t) => {
-      if (readoutRef.current) readoutRef.current.textContent = `t = ${t.toFixed(2)}`;
-    };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       field.attraction = 1;
       for (const lock of field.locks) lock.v = 1;
@@ -647,7 +713,7 @@ export default function LionheadDitDiffusion({ trigger, dock }) {
             trigger: trigger ?? document.documentElement,
             start: 'top top',
             end: 'bottom bottom',
-            scrub: 0.8,
+            scrub: 1.25,
             onUpdate: (self) => setReadout(1 - self.progress),
           },
         })
@@ -659,10 +725,18 @@ export default function LionheadDitDiffusion({ trigger, dock }) {
       let wasDocked = false;
       const applyDock = () => {
         const d = field.dock;
-        document.documentElement.style.setProperty('--latent-avatar', String(Math.min(1, Math.max(0, (d - 0.8) / 0.2))));
+        const resume = document.querySelector(dock.resume);
+        if (resume && stageRef.current) {
+          const box = resume.getBoundingClientRect();
+          const { innerWidth: width, innerHeight: height } = window;
+          field.bounds.left = box.left; field.bounds.right = box.right;
+          stageRef.current.style.clipPath = resumeClip(box, width, height);
+        }
         if (uiRef.current) {
-          uiRef.current.style.opacity = String(Math.max(0, 1 - d * 3));
-          uiRef.current.style.visibility = d > 0.33 ? 'hidden' : '';
+          const hidden = d > 0.2;
+          uiRef.current.style.opacity = String(1 - smoothRange(0, 0.2, d));
+          uiRef.current.style.visibility = hidden ? 'hidden' : '';
+          uiRef.current.inert = hidden;
         }
         // Fully docked: stop rendering; the real avatar has taken over.
         const now = d >= 0.999;
@@ -676,19 +750,37 @@ export default function LionheadDitDiffusion({ trigger, dock }) {
         dock: 1,
         ease: 'none',
         onUpdate: applyDock,
-        scrollTrigger: { trigger: dock.trigger, endTrigger: dock.endTrigger, start: 'top bottom', end: 'top top', scrub: 0.6 },
+        scrollTrigger: {
+          trigger: dock.trigger, start: 'top bottom', scrub: 0.9,
+          end: () => {
+            const copy = document.querySelector(dock.end);
+            const start = dock.trigger.getBoundingClientRect().top + window.scrollY - window.innerHeight;
+            return Math.max(start + 100, (copy?.getBoundingClientRect().top ?? 0) + window.scrollY - window.innerHeight);
+          },
+          onRefresh: applyDock,
+        },
       });
     });
+    // Keep the protection mask in step with fast scrolls, independent of the scrubbed scene.
+    const protectResume = () => {
+      if (!dock || !stageRef.current) return;
+      const resume = document.querySelector(dock.resume);
+      if (resume) stageRef.current.style.clipPath = resumeClip(resume.getBoundingClientRect(), window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener('scroll', protectResume, { passive: true });
+    const resize = new ResizeObserver(() => ScrollTrigger.refresh());
+    if (dock && document.getElementById('app')) resize.observe(document.getElementById('app'));
     return () => {
+      window.removeEventListener('scroll', protectResume);
+      resize.disconnect();
       ctx.revert();
-      document.documentElement.style.removeProperty('--latent-avatar');
     };
   }, [field, trigger, dock]);
 
   return (
     <>
       {/* With `dock` the canvas is transparent: the page supplies the black, so cubes can fly over the CV. */}
-      <div ref={stageRef} className={`pointer-events-none fixed inset-0 z-0 ${dock ? '' : 'bg-black'} ${docked ? 'invisible' : ''}`} aria-hidden="true">
+      <div ref={stageRef} className={`latent-scene ${dock ? 'is-intro' : 'is-standalone'} ${docked ? 'is-complete' : ''}`} aria-hidden="true">
         <Canvas
           frameloop={docked ? 'never' : 'always'}
           shadows="percentage"
@@ -712,22 +804,20 @@ export default function LionheadDitDiffusion({ trigger, dock }) {
             shadow-normalBias={0.01}
           />
           <directionalLight position={[-4, 1, -3]} intensity={0.25} />
-          <Swarm field={field} pointerNdc={pointerNdc} showTrajectories={showTrajectories} gravity={gravity} color={color} dockTarget={dock?.target} />
+          <Swarm field={field} pointerNdc={pointerNdc} gravity={gravity} color={color} handoff={!!dock} playback={playback} />
         </Canvas>
       </div>
-      <div ref={uiRef} className={`fixed right-4 bottom-4 z-10 flex flex-col items-end gap-2 font-mono text-[11px] leading-none tracking-wide text-neutral-500`}>
-        <span ref={readoutRef} className="tabular-nums">
-          t = 1.00
-        </span>
-        <Toggle checked={gravity} onChange={setGravity}>
-          Gravity
-        </Toggle>
-        <Toggle checked={color} onChange={setColor}>
-          Color
-        </Toggle>
-        <Toggle checked={showTrajectories} onChange={setShowTrajectories}>
-          Visualize Latent Vector Field / ODE Trajectories
-        </Toggle>
+      <div ref={uiRef} className="latent-controls" role="group" aria-label={text.settings}>
+        <div className="latent-controls-heading">
+          <div><span className="latent-controls-title">{text.title}</span><span ref={phaseRef} className="latent-phase">{playback?.releasing ? text.fall : text.phases[0]}</span></div>
+          <span ref={readoutRef} className="latent-readout">0%</span>
+        </div>
+        <div ref={progressRef} className="latent-progress" role="progressbar" aria-label={text.progress} aria-valuemin={0} aria-valuemax={100} aria-valuenow={0}><span /></div>
+        <div className="latent-controls-actions">
+          <Toggle checked={gravity || !!playback?.releasing} onChange={setGravity} icon="gravity" disabled={!!playback?.releasing}>{text.gravity}</Toggle>
+          <Toggle checked={color} onChange={setColor} icon="color">{text.color}</Toggle>
+        </div>
+        {playing && <button className="latent-stop" type="button" onClick={onStop}><span aria-hidden="true">■</span>{text.stop}</button>}
       </div>
     </>
   );
