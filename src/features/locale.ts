@@ -7,5 +7,5 @@ export function portfolioLanguage(url: string, preferred: readonly string[] = []
   if (selected === 'en' || selected === 'ru') return selected;
   if (/^\/ru(?:\/|$)/.test(location.pathname)) return 'ru';
   const first = preferred[0] || 'en';
-  return /^ru(?:-|$)/i.test(first) ? 'ru' : 'en';
+  return /^(?:ru|uk|be|kk|ka|hy|uz|tk|ky|tg)(?:-|$)/i.test(first) ? 'ru' : 'en';
 }

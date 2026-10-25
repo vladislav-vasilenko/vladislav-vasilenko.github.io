@@ -46,6 +46,16 @@ test('initial penetration, a large frame step and a raised floor cannot skip col
   assert.equal(sim.vel[0], outward, 'resizing must not inject another outward impulse');
 });
 
+test('a pile standing on a few bottom cubes can finish without every cube touching the plane', () => {
+  const playback = resetIntroPlayback({}, true);
+  playback.releasing = true;
+  let handovers = 0;
+  waitForPlayback(playback, 'drop', () => handovers++);
+  reportPlaybackFrame(playback, {dt: 1 / 30, impacts: 30, total: 1200});
+  for (let i = 0; i < 30; i++) reportPlaybackFrame(playback, {dt: 1 / 30, impacts: 0, total: 1200});
+  assert.equal(handovers, 1);
+});
+
 test('stopping playback cancels pending handover, and a new run has fresh collision state', () => {
   const playback = resetIntroPlayback({}, true);
   playback.releasing = true;

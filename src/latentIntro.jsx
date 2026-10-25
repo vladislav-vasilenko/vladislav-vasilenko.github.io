@@ -35,7 +35,7 @@ export function mountLatentIntro(section) {
     if (['Escape', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) stop();
   }
   function play() {
-    if (timeline) return;
+    if (playback.active) return;
     resetIntroPlayback(playback, true);
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
@@ -47,18 +47,30 @@ export function mountLatentIntro(section) {
     window.addEventListener('wheel', interrupt, { passive: true });
     window.addEventListener('touchstart', interrupt, { passive: true });
     window.addEventListener('keydown', key);
-    timeline = gsap.timeline({ onComplete: stop })
-      .to(position, { y: end, duration: 5, ease: 'power1.inOut', onUpdate: move })
-      .addPause('+=0.35', () => {
-        // Mobile browser chrome can change the viewport height during the approach.
-        position.y = end(); move();
-        waitForPlayback(playback, 'portrait', () => timeline?.resume());
-      })
-      .call(() => { playback.releasing = true; draw(true); })
-      .to(playback, { release: 1, duration: 0.3, ease: 'power1.in' })
-      .addPause('>', () => waitForPlayback(playback, 'drop', () => timeline?.resume()))
-      .call(() => { playback.handingOff = true; })
-      .to(position, { y: () => window.scrollY + document.getElementById('app').getBoundingClientRect().top, duration: 1.35, ease: 'power2.inOut', onUpdate: move });
+    const handover = () => {
+      playback.handingOff = true;
+      timeline = gsap.to(position, {
+        y: () => window.scrollY + document.getElementById('app').getBoundingClientRect().top,
+        duration: 1.35, ease: 'power2.inOut', onUpdate: move, onComplete: stop,
+      });
+    };
+    const drop = () => {
+      playback.releasing = true; draw(true);
+      timeline = gsap.to(playback, {
+        release: 1, duration: 0.3, ease: 'power1.in',
+        onComplete: () => waitForPlayback(playback, 'drop', handover),
+      });
+    };
+    timeline = gsap.to(position, {
+      y: end, duration: 5, ease: 'power1.inOut', onUpdate: move,
+      onComplete: () => {
+        timeline = gsap.delayedCall(0.35, () => {
+          // Mobile browser chrome can change the viewport height during the approach.
+          position.y = end(); move();
+          waitForPlayback(playback, 'portrait', drop);
+        });
+      },
+    });
   }
   draw(false);
   return { play, stop };

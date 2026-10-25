@@ -1,25 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { orbitOrigin, floorImpact, handoffToken, impactFloor, resumeClip } from '../../src/introMotion.js';
+import { floorImpact, handoffToken, impactFloor, resumeClip } from '../../src/introMotion.js';
 
 const view = { halfWidth: 6, halfHeight: 3.5, safeLeft: -3, safeRight: 3 };
 const origin = i => [(i % 30 - 14.5) * .11, (19.5 - Math.floor(i / 30)) * .11, .2];
-
-test('the orbit is elliptical, stays inside phone screens, and leaves the center and corners open', () => {
-  for (const view of [{halfWidth: 6, halfHeight: 3.5}, {halfWidth: 1.4, halfHeight: 3.5}]) {
-    for (const time of [0, 9, 32]) {
-      for (let patch = 0; patch < 80; patch++) {
-        const position = orbitOrigin({}, patch * 16, patch, view, time);
-        const x = position.x / (view.halfWidth - .26);
-        const y = position.y / (view.halfHeight - .32);
-        const radius = Math.hypot(x, y);
-        assert.ok(radius >= .939 && radius <= 1.001);
-        assert.ok(Math.abs(position.x) < view.halfWidth && Math.abs(position.y) < view.halfHeight);
-        assert.ok(!(Math.abs(x) > .8 && Math.abs(y) > .8));
-      }
-    }
-  }
-});
 
 test('handoff leaves the formed portrait unchanged at the start and is reversible', () => {
   for (let i = 0; i < 1200; i++) {

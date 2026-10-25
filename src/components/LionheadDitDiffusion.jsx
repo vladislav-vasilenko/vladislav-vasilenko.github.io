@@ -4,8 +4,10 @@ import { PerformanceMonitor } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { collideWithFloor, orbitOrigin, handoffToken, impactFloor, resumeClip, smoothRange } from '../introMotion.js';
+import { collideWithFloor, handoffToken, impactFloor, resumeClip, smoothRange } from '../introMotion.js';
 import { reportPlaybackFrame } from '../introPlayback.js';
+import { asteroidEntrance, binaryOrbit, binaryOrbitLayout } from '../binaryOrbit.js';
+import { bindIntroPointer } from '../introPointer.js';
 import '../sceneControls.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -262,6 +264,7 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
       plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
       pulse: new Float32Array(PATCHES),
       token: { x: 0, y: 0, z: 0, scale: 1 },
+      orbit: {},
       view: { halfWidth: 0, halfHeight: 0, safeLeft: 0, safeRight: 0 },
     }),
     [],
@@ -321,10 +324,15 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
     const worldPerPx = (2 * state.camera.position.z * Math.tan(THREE.MathUtils.degToRad(state.camera.fov / 2))) / state.size.height;
     scratch.view.halfWidth = state.size.width * worldPerPx / 2;
     scratch.view.halfHeight = state.size.height * worldPerPx / 2;
+    scratch.view.width = state.size.width; scratch.view.height = state.size.height;
+    scratch.view.cameraZ = state.camera.position.z;
+    binaryOrbitLayout(scratch.orbit, scratch.view, field.wells);
     if (!sim.seeded) {
       if (!gravity) for (let i = 0; i < COUNT; i++) {
-        const origin = orbitOrigin(scratch.token, i, sim.patchOf[i], scratch.view);
+        const origin = asteroidEntrance(scratch.token, i, sim.patchOf[i], scratch.view);
         sim.pos[i * 3] = origin.x; sim.pos[i * 3 + 1] = origin.y; sim.pos[i * 3 + 2] = origin.z;
+        sim.vel[i * 3] = origin.vx; sim.vel[i * 3 + 1] = origin.vy;
+        sim.spin[i * 3] = origin.spinX; sim.spin[i * 3 + 2] = origin.spinZ;
       }
       sim.seeded = true;
     }
@@ -340,7 +348,7 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
         const speed = sim.pointer.distanceTo(sim.prevPointer) / Math.max(rawDt, 1e-3);
         sim.prevPointer.copy(sim.pointer);
         sim.pointerSpeed += (speed - sim.pointerSpeed) * 0.12;
-        energy = 0.12 + Math.min(sim.pointerSpeed / 6, 1.5);
+        energy = Math.max(0.12 + Math.min(sim.pointerSpeed / 6, 1.5), pointerNdc.touchBoost || 0);
       }
     } else {
       sim.hadPointer = false;
@@ -385,7 +393,10 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
       let tx = target[ix];
       let ty = target[iy];
       let tz = target[iz];
-      let size = 1;
+      const origin = !gravity ? binaryOrbit(scratch.token, i, patchOf[i], scratch.orbit, t) : null;
+      let size = origin ? 1 + (origin.scale - 1) * (1 - g) * (1 - lock) : 1;
+      // handoffToken reuses the scratch object; keep the orbital coordinates locally.
+      const ox = origin?.x || 0, oy = origin?.y || 0, oz = origin?.z || 0;
       if (dock) {
         const token = handoffToken(scratch.token, i, d, tx, ty, tz, scratch.view);
         if (!release) { tx = token.x; ty = token.y; tz = token.z; }
@@ -413,10 +424,9 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
           else if (pz > BIN_Z) az += (BIN_Z - pz) * 80;
         }
       } else if (chaos > 1e-3) {
-        const origin = orbitOrigin(scratch.token, i, patchOf[i], scratch.view, t);
-        ax += edgeSpring * (origin.x - px);
-        ay += edgeSpring * (origin.y - py);
-        az += edgeSpring * (origin.z - pz);
+        ax += edgeSpring * (ox - px);
+        ay += edgeSpring * (oy - py);
+        az += edgeSpring * (oz - pz);
         // Phase 1 (chaos): turbulent pseudo-curl noise + Brownian jitter, held in a weak harmonic well.
         const s = i * 0.618;
         ax += chaos * (NOISE * (Math.sin(1.3 * py + 0.8 * t + s) + Math.cos(1.7 * pz - 0.6 * t + 2 * s)) + JITTER * (Math.random() - 0.5) - WELL * px);
@@ -670,41 +680,25 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
       const box = panel.getBoundingClientRect();
       field.controlsTop = box.left < window.innerWidth / 2 && box.right > window.innerWidth / 2
         ? box.top : window.innerHeight;
+      const primary = document.querySelector('.latent-intro-primary');
+      const links = document.querySelector('.latent-intro-contacts');
+      if (primary && links) {
+        const anchor = element => {
+          const rect = element.getBoundingClientRect();
+          return {x: rect.left + rect.width / 2, y: rect.top + window.scrollY + rect.height / 2, width: rect.width, height: rect.height};
+        };
+        field.wells = {main: anchor(primary), links: anchor(links)};
+      }
     };
     const observer = new ResizeObserver(measure);
     observer.observe(panel);
+    for (const element of document.querySelectorAll('.latent-intro-primary, .latent-intro-contacts')) observer.observe(element);
     window.addEventListener('resize', measure);
     measure();
     return () => { observer.disconnect(); window.removeEventListener('resize', measure); };
   }, [field]);
 
-  useEffect(() => {
-    const move = (e) => {
-      if (e.target.closest?.('.latent-controls')) { pointerNdc.active = false; return; }
-      const box = stageRef.current.getBoundingClientRect();
-      pointerNdc.x = ((e.clientX - box.left) / box.width) * 2 - 1;
-      pointerNdc.y = -((e.clientY - box.top) / box.height) * 2 + 1;
-      pointerNdc.active = pointerNdc.x >= -1 && pointerNdc.x <= 1 && pointerNdc.y >= -1 && pointerNdc.y <= 1;
-    };
-    const leave = () => {
-      pointerNdc.active = false;
-    };
-    const release = (e) => {
-      if (e.pointerType !== 'mouse') leave();
-    };
-    window.addEventListener('pointermove', move, { passive: true });
-    window.addEventListener('pointerup', release);
-    window.addEventListener('pointercancel', leave);
-    window.addEventListener('blur', leave);
-    document.documentElement.addEventListener('pointerleave', leave);
-    return () => {
-      window.removeEventListener('pointermove', move);
-      window.removeEventListener('pointerup', release);
-      window.removeEventListener('pointercancel', leave);
-      window.removeEventListener('blur', leave);
-      document.documentElement.removeEventListener('pointerleave', leave);
-    };
-  }, [pointerNdc]);
+  useEffect(() => bindIntroPointer(stageRef.current, pointerNdc), [pointerNdc]);
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -817,7 +811,7 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
       </div>
       <div ref={uiRef} className="latent-controls" role="group" aria-label={text.settings}>
         <div className="latent-controls-heading">
-          <div><span className="latent-controls-title">{text.title}</span><span ref={phaseRef} className="latent-phase">{playback?.releasing ? text.fall : text.phases[0]}</span></div>
+          <div><span className="latent-controls-title">{text.title}</span><span ref={phaseRef} className="latent-phase">{playback?.releasing ? (playback.bounceFrames ? text.bounce : text.fall) : text.phases[0]}</span></div>
           <span ref={readoutRef} className="latent-readout">0%</span>
         </div>
         <div ref={progressRef} className="latent-progress" role="progressbar" aria-label={text.progress} aria-valuemin={0} aria-valuemax={100} aria-valuenow={0}><span /></div>

@@ -36,6 +36,9 @@ export function staticHTML(template,lang,snapshot){
  return template.replace(/<html[^>]*>/,`<html lang="${lang}" class="minimal-mode">`).replace(/<title>.*?<\/title>/s,`<title>${escape(title)}</title>`).replace('<!--portfolio:seo-->',seo)
   .replace(/(class="latent-intro-name">)[^<]*/,(_,prefix)=>prefix+escape(cv.name))
   .replace(/(data-intro-play[^>]*><span>)[^<]*/,(_,prefix)=>prefix+(lang==='ru'?'Посмотреть резюме':'View resume'))
+  .replace(/(data-intro-email-label>)[^<]*/,(_,prefix)=>prefix+(lang==='ru'?'Почта':'Email'))
+  .replace('aria-label="Contact Vladislav"',lang==='ru'?'aria-label="Связаться с Владиславом"':'aria-label="Contact Vladislav"')
+  .replace('aria-label="Animated introduction"',lang==='ru'?'aria-label="Анимационное вступление"':'aria-label="Animated introduction"')
   .replace('<div id="app"></div>',`<div id="app">${renderer.renderMinimal(cv,lang,snapshot,'all','minimal')}</div>`)
   .replace('</body>',`<script type="application/json" id="portfolio-snapshot">${JSON.stringify(snapshot).replace(/</g,'\\u003c')}</script></body>`);
 }

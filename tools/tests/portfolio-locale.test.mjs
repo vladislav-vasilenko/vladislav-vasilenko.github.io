@@ -18,4 +18,11 @@ test('browser locale is used on a first visit and explicit EN/RU navigation over
   assert.equal(portfolioLanguage('https://example.org/?lang=en', ['ru-RU']), 'en');
   assert.equal(portfolioLanguage('https://example.org/?lang=ru', ['en-US']), 'ru');
   assert.equal(portfolioLanguage('https://example.org/ru/?lang=en', ['ru-RU']), 'en');
+  for (const locale of ['ru-RU','uk-UA','be-BY','kk-KZ','ka-GE','hy-AM','uz-Latn-UZ','tk-TM','ky-KG','tg-TJ']) {
+    assert.equal(portfolioLanguage('https://example.org/', [locale]), 'ru', locale);
+    assert.equal(portfolioLanguage('https://example.org/?lang=en', [locale]), 'en');
+  }
+  for (const locale of ['en-US','fr-FR','de-DE','zh-CN','ja-JP','en-KZ']) {
+    assert.equal(portfolioLanguage('https://example.org/', [locale]), 'en', locale);
+  }
 });

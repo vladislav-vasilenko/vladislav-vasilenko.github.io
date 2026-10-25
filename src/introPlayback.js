@@ -23,7 +23,8 @@ export function reportPlaybackFrame(playback, { dt, formed, impacts = 0, total }
     playback.portraitReady = playback.formedSeconds >= 0.25 && playback.formedFrames >= 3;
   } else {
     playback.impacts += impacts;
-    if (playback.impacts >= Math.ceil(total * 0.08)) {
+    // A pile may stand on a few bottom cubes; upper cubes need not touch the floor themselves.
+    if (playback.impacts >= Math.min(8, total)) {
       const firstBounce = playback.bounceFrames === 0;
       playback.bounceSeconds += dt;
       playback.bounceFrames++;

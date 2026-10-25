@@ -5,19 +5,6 @@ export function smoothRange(start, end, value) {
   return t * t * (3 - 2 * t);
 }
 
-/** A slow elliptical orbit leaves the center open without framing the screen in a box. */
-export function orbitOrigin(out, index, patch, view, time = 0) {
-  const angle = patch / 80 * Math.PI * 2 + time * 0.075;
-  const band = 0.94 + ((index * 37) % 17) / 16 * 0.06;
-  const jitter = ((index * 53) % 19) / 18 * 0.035 - 0.0175;
-  const x = Math.max(0.12, view.halfWidth - 0.26);
-  const y = Math.max(0.12, view.halfHeight - 0.32);
-  out.x = Math.cos(angle + jitter) * x * band;
-  out.y = Math.sin(angle + jitter) * y * band;
-  out.z = -0.15 - ((index * 11) % 23) / 22 * 0.45;
-  return out;
-}
-
 /** Stable token paths: the portrait opens outwards; only a few small edge tokens linger. */
 export function handoffToken(out, index, progress, x, y, z, view) {
   const spread = smoothRange(0, 0.58, progress);

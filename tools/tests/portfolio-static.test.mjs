@@ -16,3 +16,14 @@ test('indexable bilingual HTML contains the same HH work and reviewed bio withou
   assert.match(html,/portfolio-snapshot/);assert.doesNotMatch(html,/turnstile|<div id="app"><\/div>/);
  }
 });
+
+test('prerendered Intro labels and the fixed public Email link follow the page language', () => {
+ const template = fs.readFileSync(new URL('../../index.html',import.meta.url),'utf8');
+ for (const lang of ['en','ru']) {
+  const html = staticHTML(template,lang,snapshot);
+  assert.ok(html.includes(lang==='ru'?'Посмотреть резюме':'View resume'));
+  assert.ok(html.includes(lang==='ru'?'data-intro-email-label>Почта':'data-intro-email-label>Email'));
+  assert.ok(html.includes('mailto:mr.vasilenko.vlad@yandex.ru'));
+  assert.ok(html.includes(lang==='ru'?'aria-label="Связаться с Владиславом"':'aria-label="Contact Vladislav"'));
+ }
+});

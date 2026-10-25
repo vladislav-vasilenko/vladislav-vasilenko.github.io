@@ -23,6 +23,10 @@ function renderPage():void{
  if(introName)introName.textContent=language==='ru'?'Владислав Василенко':'Vladislav Vasilenko';
  const introLabel=document.querySelector<HTMLElement>('[data-intro-play]>span');
  if(introLabel)introLabel.textContent=language==='ru'?'Посмотреть резюме':'View resume';
+ const emailLabel=document.querySelector<HTMLElement>('[data-intro-email-label]');
+ if(emailLabel)emailLabel.textContent=language==='ru'?'Почта':'Email';
+ document.querySelector('.latent-intro-contacts')?.setAttribute('aria-label',language==='ru'?'Связаться с Владиславом':'Contact Vladislav');
+ document.getElementById('latent-intro')?.setAttribute('aria-label',language==='ru'?'Анимационное вступление':'Animated introduction');
  const root=document.querySelector<HTMLDivElement>('#app')!;
  root.innerHTML=renderMinimal(cv,language,snapshot,focus,style,detailed);
  root.querySelectorAll<HTMLButtonElement>('button[data-presentation]').forEach(button=>button.onclick=()=>{
