@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import LionheadDitDiffusion from './components/LionheadDitDiffusion.jsx';
 import './latentIntro.css';
 import gsap from 'gsap';
+import { resetIntroPlayback, waitForPlayback } from './introPlayback.js';
 
 /**
  * Lazy-loaded by main.ts. The finished portrait opens to the margins as the CV arrives.
@@ -11,7 +12,7 @@ export function mountLatentIntro(section) {
   const dock = { trigger: section.querySelector('.latent-intro-fade'), resume: '.minimal-portfolio', end: '.presentation-headline, .presentation-manifest-label, .minimal-intro' };
   const root = createRoot(section.querySelector('.latent-intro-stage'));
   const button = section.querySelector('[data-intro-play]');
-  const playback = { release: 0, releasing: false };
+  const playback = resetIntroPlayback({});
   let timeline = null;
   const draw = (playing) => root.render(<LionheadDitDiffusion trigger={section.querySelector('.latent-intro-track')} dock={dock} playing={playing} playback={playback} onStop={stop} />);
   const removeListeners = () => {
@@ -21,7 +22,7 @@ export function mountLatentIntro(section) {
   };
   function stop() {
     timeline?.kill(); timeline = null;
-    playback.release = 0; playback.releasing = false;
+    resetIntroPlayback(playback);
     removeListeners();
     button.disabled = false;
     button.removeAttribute('aria-busy');
@@ -35,10 +36,11 @@ export function mountLatentIntro(section) {
   }
   function play() {
     if (timeline) return;
+    resetIntroPlayback(playback, true);
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
     const track = section.querySelector('.latent-intro-track');
-    const end = Math.max(0, window.scrollY + track.getBoundingClientRect().bottom - window.innerHeight);
+    const end = () => Math.max(0, window.scrollY + track.getBoundingClientRect().bottom - window.innerHeight);
     const position = { y: window.scrollY };
     const move = () => window.scrollTo({ top: position.y, behavior: 'instant' });
     draw(true);
@@ -47,9 +49,16 @@ export function mountLatentIntro(section) {
     window.addEventListener('keydown', key);
     timeline = gsap.timeline({ onComplete: stop })
       .to(position, { y: end, duration: 5, ease: 'power1.inOut', onUpdate: move })
-      .call(() => { playback.releasing = true; draw(true); }, [], '+=0.8')
+      .addPause('+=0.35', () => {
+        // Mobile browser chrome can change the viewport height during the approach.
+        position.y = end(); move();
+        waitForPlayback(playback, 'portrait', () => timeline?.resume());
+      })
+      .call(() => { playback.releasing = true; draw(true); })
       .to(playback, { release: 1, duration: 0.3, ease: 'power1.in' })
-      .to(position, { y: () => window.scrollY + document.getElementById('app').getBoundingClientRect().top, duration: 1.35, ease: 'power2.inOut', onUpdate: move }, '+=1.2');
+      .addPause('>', () => waitForPlayback(playback, 'drop', () => timeline?.resume()))
+      .call(() => { playback.handingOff = true; })
+      .to(position, { y: () => window.scrollY + document.getElementById('app').getBoundingClientRect().top, duration: 1.35, ease: 'power2.inOut', onUpdate: move });
   }
   draw(false);
   return { play, stop };

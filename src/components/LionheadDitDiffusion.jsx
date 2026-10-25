@@ -4,7 +4,8 @@ import { PerformanceMonitor } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { orbitOrigin, floorImpact, handoffToken, impactFloor, resumeClip, smoothRange } from '../introMotion.js';
+import { collideWithFloor, orbitOrigin, handoffToken, impactFloor, resumeClip, smoothRange } from '../introMotion.js';
+import { reportPlaybackFrame } from '../introPlayback.js';
 import '../sceneControls.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -110,7 +111,6 @@ async function loadImage(sources) {
 function createSimulation() {
   const sim = {
     pos: new Float32Array(COUNT * 3),
-    previousY: new Float32Array(COUNT),
     floorContact: new Uint8Array(COUNT),
     vel: new Float32Array(COUNT * 3),
     rot: new Float32Array(COUNT * 3),
@@ -311,7 +311,8 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
   useFrame((state, rawDt) => {
     const mesh = meshRef.current;
     if (!mesh) return;
-    const dt = Math.min(rawDt, 1 / 30);
+    // A slow phone must not advance the playback clock faster than its falling cubes.
+    const dt = Math.min(rawDt, playback?.releasing ? 0.1 : 1 / 30);
     const t = state.clock.elapsedTime * 0.45;
     const g = field.attraction;
     const release = playback?.release || 0;
@@ -345,9 +346,9 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
       sim.hadPointer = false;
       sim.pointerSpeed = 0;
     }
-    energy *= 1 - release;
+    energy *= playback?.active ? 0 : 1 - release;
     // Hand over to the CV by clearing its column; the camera remains fixed.
-    const d = field.dock;
+    const d = playback?.active && !playback.handingOff ? 0 : field.dock;
     const dock = handoff && d > 0;
     if (handoff && (d > 0 || release > 0)) {
       const { width, height } = state.size;
@@ -363,8 +364,10 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
     const quakeR2 = QUAKE_RADIUS * QUAKE_RADIUS;
 
     // Self-attention stand-in: one shared pulse per 4x4 patch, strongest mid-denoising.
+    let minLock = 1;
     for (let k = 0; k < PATCHES; k++) {
       const lock = field.locks[k].v;
+      minLock = Math.min(minLock, lock);
       pulse[k] = (0.1 + 0.55 * Math.sin(Math.PI * lock)) * (0.5 + 0.5 * Math.sin(t * 2.4 + sim.phase[k]));
     }
 
@@ -392,7 +395,6 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
       const px = pos[ix];
       const py = pos[iy];
       const pz = pos[iz];
-      sim.previousY[i] = py;
       let ax = k * (tx - px) - c * vel[ix];
       let ay = k * (ty - py) - c * vel[iy];
       let az = k * (tz - pz) - c * vel[iz];
@@ -465,8 +467,8 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
       pos[iz] = pz + vz * dt;
 
       // Tumble while noisy; unwind to grid-aligned as the patch locks.
-      const spinDamp = Math.exp(-(2.8 + 8 * lock) * dt);
-      const unwind = Math.min(1, 6 * lock * dt);
+      const spinDamp = Math.exp(-(2.8 + 8 * lock * (1 - release)) * dt);
+      const unwind = Math.min(1, 6 * lock * (1 - release) * dt);
       for (let a = ix; a <= iz; a++) {
         spin[a] *= spinDamp;
         const r = wrapAngle(rot[a] + spin[a] * dt);
@@ -476,17 +478,13 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
 
     // Phase 4: elastic sphere-sphere contacts.
     resolveCollisions(sim);
+    let impacts = 0;
     if (!release) sim.floorContact.fill(0);
     if (release && handoff) {
       // Keep the first impact visible, then lower the plane as the resume rises.
-      const floor = impactFloor(scratch.view.halfHeight, state.size.height, field.controlsTop) - smoothRange(0, 0.65, d) * scratch.view.halfHeight * 2.2;
-      for (let i = 0; i < COUNT; i++) {
-        const o = i * 3, y = o + 1;
-        if (pos[y] >= floor + RADIUS || (!sim.floorContact[i] && sim.previousY[i] < floor + RADIUS)) continue;
-        pos[y] = floor + RADIUS;
-        floorImpact(vel, spin, i, pos[o], !sim.floorContact[i]);
-        sim.floorContact[i] = 1;
-      }
+      playback.floor = Math.max(playback.floor ?? -Infinity, impactFloor(scratch.view.halfHeight, state.size.height, field.controlsTop));
+      const floor = playback.floor - smoothRange(0, 0.65, d) * scratch.view.halfHeight * 2.2;
+      impacts = collideWithFloor(sim, floor, RADIUS);
     }
     if (gravity && !dock && !release) {
       // Floor contact after collisions, so the pile cannot be pushed through it.
@@ -507,9 +505,13 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
     const matrices = mesh.instanceMatrix.array;
     const colors = mesh.instanceColor.array;
     const { matrix, position, quaternion, euler, scale } = scratch;
+    let portraitError = 0;
     for (let i = 0; i < COUNT; i++) {
       const ix = i * 3;
       position.set(pos[ix], pos[ix + 1], pos[ix + 2]);
+      if (playback?.active && !playback.releasing) {
+        for (let a = ix; a < ix + 3; a++) portraitError += (pos[a] - target[a]) ** 2;
+      }
       scale.setScalar(sim.scale[i]);
       euler.set(rot[ix], rot[ix + 1], rot[ix + 2]);
       quaternion.setFromEuler(euler);
@@ -531,6 +533,7 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
     }
     mesh.instanceMatrix.needsUpdate = true;
     mesh.instanceColor.needsUpdate = true;
+    reportPlaybackFrame(playback, { dt, formed: g > 0.995 && minLock > 0.995 && portraitError / COUNT < 0.0036, impacts, total: COUNT });
     materialRef.current.opacity = dock ? 1 - smoothRange(0.35, 1, d) : 1;
     lineMaterialRef.current.opacity = 0.65 * (dock ? 1 - smoothRange(0.02, 0.5, d) : 1);
 
@@ -631,8 +634,8 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
   const progressRef = useRef(null);
   const readout = useRef(1);
   const text = language === 'ru'
-    ? { title: 'Шум → портрет', gravity: 'Гравитация', color: 'Цвет', stop: 'Остановить показ', fall: 'Падение', progress: 'Формирование портрета', settings: 'Настройки вступления', phases: ['Шум', 'Поток', 'Сборка', 'Портрет'] }
-    : { title: 'Noise → portrait', gravity: 'Gravity', color: 'Color', stop: 'Stop playback', fall: 'Falling', progress: 'Portrait formation', settings: 'Intro settings', phases: ['Noise', 'Flow', 'Forming', 'Portrait'] };
+    ? { title: 'Шум → портрет', gravity: 'Гравитация', color: 'Цвет', stop: 'Остановить показ', fall: 'Падение', bounce: 'Разлёт', progress: 'Формирование портрета', settings: 'Настройки вступления', phases: ['Шум', 'Поток', 'Сборка', 'Портрет'] }
+    : { title: 'Noise → portrait', gravity: 'Gravity', color: 'Color', stop: 'Stop playback', fall: 'Falling', bounce: 'Scattering', progress: 'Portrait formation', settings: 'Intro settings', phases: ['Noise', 'Flow', 'Forming', 'Portrait'] };
   const textRef = useRef(text);
   textRef.current = text;
   const field = useMemo(() => ({ attraction: 0, dock: 0, controlsTop: window.innerHeight, bounds: { left: 0, right: window.innerWidth }, locks: Array.from({ length: PATCHES }, () => ({ v: 0 })) }), []);
@@ -642,7 +645,7 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
     readout.current = t;
     const p = Math.max(0, Math.min(1, 1 - t));
     if (readoutRef.current) readoutRef.current.textContent = `${Math.round(p * 100)}%`;
-    if (phaseRef.current) phaseRef.current.textContent = playback?.releasing ? textRef.current.fall : textRef.current.phases[p < 0.12 ? 0 : p < 0.55 ? 1 : p < 0.94 ? 2 : 3];
+    if (phaseRef.current) phaseRef.current.textContent = playback?.releasing ? (playback.bounceFrames ? textRef.current.bounce : textRef.current.fall) : textRef.current.phases[p < 0.12 ? 0 : p < 0.55 ? 1 : p < 0.94 ? 2 : 3];
     if (progressRef.current) {
       progressRef.current.style.setProperty('--progress', p);
       progressRef.current.setAttribute('aria-valuenow', Math.round(p * 100));
@@ -655,6 +658,11 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
     return () => observer.disconnect();
   }, []);
   useLayoutEffect(() => setReadout(readout.current), [language, playing, playback?.releasing]);
+  useLayoutEffect(() => {
+    if (!playback) return;
+    playback.onPhase = () => setReadout(readout.current);
+    return () => { playback.onPhase = null; };
+  }, [playback]);
 
   useLayoutEffect(() => {
     const panel = uiRef.current;

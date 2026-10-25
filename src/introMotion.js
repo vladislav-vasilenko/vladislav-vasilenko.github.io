@@ -61,3 +61,18 @@ export function floorImpact(velocity, spin, index, x, first) {
   spin[o] += Math.sin(index * 1.7) * 5;
   spin[o + 2] += side * 4;
 }
+
+/** The floor is solid even if a low frame rate or a resize places a cube below it. */
+export function collideWithFloor(sim, floor, radius) {
+  const { pos, vel, spin, floorContact } = sim;
+  let impacts = 0;
+  for (let i = 0; i < floorContact.length; i++) {
+    const o = i * 3;
+    if (pos[o + 1] >= floor + radius) continue;
+    pos[o + 1] = floor + radius;
+    const first = !floorContact[i];
+    floorImpact(vel, spin, i, pos[o], first);
+    if (first) { floorContact[i] = 1; impacts++; }
+  }
+  return impacts;
+}
