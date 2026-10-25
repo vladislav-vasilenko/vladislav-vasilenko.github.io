@@ -110,3 +110,6 @@ html.minimal-mode,html.minimal-mode body{background:#fff;color:#24292f;font-fami
   .presentation-picker>summary{display:flex;align-items:center;min-height:44px;box-sizing:border-box}
   .presentation-picker button{white-space:normal;overflow-wrap:anywhere}
 }
+
+/* Scroll-driven latent-flow intro above the CV; the stage pins while the section scrolls. */
+#latent-intro{position:relative;height:260vh;background:#000}.latent-intro-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}.latent-intro-skip{position:absolute;top:calc(100vh - 44px);top:calc(100svh - 44px);left:16px;z-index:2;font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em;color:#737373;text-decoration:none}.latent-intro-skip:hover,.latent-intro-skip:focus-visible{color:#f5f5f5}@media(max-width:600px){.latent-intro-skip{top:calc(100vh - 76px);top:calc(100svh - 76px)}}@media (prefers-reduced-motion:reduce),print{#latent-intro{display:none}}

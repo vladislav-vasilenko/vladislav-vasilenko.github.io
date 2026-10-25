@@ -15,6 +15,12 @@
  const sectionLabels={about:/^(about|о себе)$/i,experience:/^(experience|опыт работы|опыт)$/i,education:/^(education|образование)$/i,certifications:/^(licenses.*certifications|лицензии.*сертификаты)$/i,courses:/^(courses|курсы)(?:\s*\(\d+\))?$/i};
  const headingLabel=h=>[...new Set(txt(h).split(/\n+/).map(s=>s.trim()).filter(Boolean))].join(' ');
  const profileHeadings=()=>all('h1,h2,h3,[role="heading"]',main()).filter(visible);
+ function profileAdvance(){
+  gate();const page=document.scrollingElement;let scroller=page&&page.scrollHeight>page.clientHeight+25?page:null;
+  // Profile navigation must follow the page, never the nested Activity carousel.
+  if(!scroller)for(let node=main();node&&node!==document.body;node=node.parentElement){if(node.clientHeight>150&&node.scrollHeight>node.clientHeight+25){scroller=node;break;}}
+  if(!scroller)return {at_end:true,scroll_top:0,height:0};const state={at_end:scroller.scrollTop+scroller.clientHeight>=scroller.scrollHeight-8,scroll_top:scroller.scrollTop,height:scroller.scrollHeight,viewport:scroller.clientHeight};scroller.scrollBy(0,Math.max(300,scroller.clientHeight*.8));return state;
+ }
  function sectionScope(key,headings=profileHeadings()){
   const heading=headings.find(h=>sectionLabels[key]?.test(headingLabel(h)));
   if(!heading)return null;
@@ -123,32 +129,38 @@
   }
   return labels.slice(0,30);
  }
+ function observedAvatar(container){for(const image of all('img,image',container)){const sources=[image.currentSrc,image.src,typeof image.href==='string'?image.href:image.href?.baseVal,image.getAttribute('src'),image.getAttribute('href'),image.getAttribute('data-delayed-url')];for(const value of sources){try{const u=new URL(value);if(u.protocol==='https:'&&['media.licdn.com','static.licdn.com'].includes(u.hostname))return u.href;}catch{}}}return '';}
  function recordMetadata(container){
-  const text=txt(container),badges=visibleBadges(container),unread=all('[aria-label]',container).map(n=>n.getAttribute('aria-label')).find(s=>/unread|непрочитан/i.test(s||'')),timeNode=container.querySelector('time'),image=container.querySelector('img[src]');
-  return {badges,...(unread?{unread_label:unread}:{}),...(timeNode?{time_label:txt(timeNode),time:timeNode.getAttribute('datetime')||''}:{}),...(image?{avatar_url:image.currentSrc||image.src||''}:{}),...(text.match(/(?:\d+\s+(?:mutual|shared|общих).*?(?:connections|контакт[а-я]*))/i)?{mutual_label:text.match(/(?:\d+\s+(?:mutual|shared|общих).*?(?:connections|контакт[а-я]*))/i)[0]}:{})};
+  const text=txt(container),badges=visibleBadges(container),unread=all('[aria-label]',container).filter(visible).map(n=>n.getAttribute('aria-label')).find(s=>!/mark as|пометить/i.test(s||'')&&/unread|непрочитан/i.test(s||'')),timeNode=container.querySelector('time'),avatar_url=observedAvatar(container);
+  return {badges,...(unread?{unread_label:unread}:{}),...(timeNode?{time_label:txt(timeNode),time:timeNode.getAttribute('datetime')||''}:{}),...(avatar_url?{avatar_url}:{}),...(text.match(/(?:\d+\s+(?:mutual|shared|общих).*?(?:connections|контакт[а-я]*))/i)?{mutual_label:text.match(/(?:\d+\s+(?:mutual|shared|общих).*?(?:connections|контакт[а-я]*))/i)[0]}:{})};
  }
  function conversationCards(){
-  return all('h3.msg-conversation-listitem__participant-names',main()).filter(visible).map(h=>{const card=h.closest('li,.msg-conversation-listitem')||h.closest('.msg-conversation-card__content--selectable')||h.parentElement;return {heading:h,card,name:txt(h)};});
+  const root=main(),list=root.querySelector?.('.msg-conversations-container__conversations-list'),seen=new Set();
+  return all(list?'h3,h4,[role="heading"]':'h3.msg-conversation-listitem__participant-names',list||root).filter(visible).map(h=>{const card=h.closest('li,.msg-conversation-listitem')||h.closest('.msg-conversation-card__content--selectable')||h.parentElement;return {heading:h,card,name:txt(h)};}).filter(row=>{if(!row.name||seen.has(row.card))return false;seen.add(row.card);return true;});
  }
  function conversationPreview(row){const snippet=row.card.querySelector('.msg-conversation-card__message-snippet,.msg-conversation-listitem__message-snippet,.msg-conversation-card__message-snippet-body');if(snippet)return txt(snippet).slice(0,1000);return txt(row.card).split(/\n+/).map(s=>s.trim()).filter(s=>s&&s!==row.name&&!/^(?:Active conversation|Press return|Open the options|Select conversation|\.|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2}$)/i.test(s)).join(' ').slice(0,1000);}
  function messagesListing(p){
   gate();const items=[];for(const row of conversationCards()){const a=all('a[href]',row.card).find(a=>link(a.href,'thread'));if(!a)continue;items.push({url:link(a.href,'thread'),name:row.name,text:conversationPreview(row),preview:conversationPreview(row),...recordMetadata(row.card)});if(items.length>=p.limit)break;}
-  const diagnostics=p.diagnostics?{cards:conversationCards().slice(0,3).map(r=>({tag:r.card.tagName,attributes:[...r.card.attributes].filter(a=>/id|class|role|data-|aria-/.test(a.name)).map(a=>[a.name,a.value.slice(0,180)])})),count:conversationCards().length,controls:all('button',main()).filter(visible).map(button=>({label:txt(button).slice(0,70),pressed:button.getAttribute('aria-pressed')})).filter(button=>/jobs|unread|inmail|starred|focused|other|connections/i.test(button.label)),scroll_candidates:(()=>{const rows=[],first=conversationCards()[0];for(let n=first?.card.parentElement;n&&n!==document.body;n=n.parentElement)rows.push({tag:n.tagName,cls:String(n.className).slice(0,180),height:n.clientHeight,scroll_height:n.scrollHeight,scroll_top:n.scrollTop,overflow:getComputedStyle(n).overflowY});return rows;})()}:undefined;
+  const diagnostics=p.diagnostics?{list_structure:(()=>{const list=main().querySelector?.('.msg-conversations-container__conversations-list');return list?{children:list.children.length,headings:all('h3,h4,[role="heading"]',list).slice(0,30).map(n=>({tag:n.tagName,cls:String(n.className).slice(0,160)})),rows:[...list.children].slice(-5).map(n=>({tag:n.tagName,cls:String(n.className).slice(0,160)}))}:null;})(),cards:conversationCards().slice(0,3).map(r=>({tag:r.card.tagName,attributes:[...r.card.attributes].filter(a=>/id|class|role|data-|aria-/.test(a.name)).map(a=>[a.name,a.value.slice(0,180)])})),count:conversationCards().length,controls:all('button',main()).filter(visible).map(button=>({label:txt(button).slice(0,70),pressed:button.getAttribute('aria-pressed')})).filter(button=>/jobs|unread|inmail|starred|focused|other|connections/i.test(button.label)),scroll_candidates:(()=>{const rows=[],first=conversationCards()[0];for(let n=first?.card.parentElement;n&&n!==document.body;n=n.parentElement)rows.push({tag:n.tagName,cls:String(n.className).slice(0,180),height:n.clientHeight,scroll_height:n.scrollHeight,scroll_top:n.scrollTop,overflow:getComputedStyle(n).overflowY});return rows;})()}:undefined;
   return {items,card_count:conversationCards().length,...(diagnostics?{diagnostics}:{})};
  }
  async function messagesSelect(p){
   gate();const seen=new Set(p.seen_keys||[]),cards=conversationCards();
   for(let index=0;index<cards.length;index++){
-   const row=cards[index],key=await C.hash({name:row.name,index,element:row.card.id||''});if(seen.has(key))continue;
-   const before=link(location.href,'thread'),active=/Active conversation/i.test(txt(row.card))||/--active|is-active/.test(row.card.className||'');row.heading.click();let url;
+   const row=cards[index],thread=all('a[href]',row.card).map(a=>link(a.href,'thread')).find(Boolean),key=thread||await C.hash({name:row.name,preview:conversationPreview(row),time:txt(row.card.querySelector('time'))});if(seen.has(key))continue;
+   const metadata=recordMetadata(row.card),preview=conversationPreview(row),before=link(location.href,'thread'),active=/Active conversation/i.test(txt(row.card))||/--active|is-active/.test(row.card.className||'');row.card.scrollIntoView({block:'nearest',inline:'nearest'});row.heading.click();let url;
    for(let retry=0;retry<20;retry++){await new Promise(r=>setTimeout(r,150));url=link(location.href,'thread');if(url&&(url!==before||active))break;}
    if(!url||url===before&&!active)return {clicked:true,loading:true,key};
-   const body=conversationPreview(row);return {clicked:true,key,item:{url,name:row.name,text:body,preview:body,...recordMetadata(row.card)}};
+   return {clicked:true,key,item:{url,name:row.name,text:preview,preview,...metadata}};
   }return {clicked:false};
  }
- function messageScroller(){const first=conversationCards()[0];if(!first)return null;for(let node=first.card.parentElement;node&&node!==document.body;node=node.parentElement){if(node.clientHeight>120&&node.scrollHeight>node.clientHeight+25)return node;}return null;}
+ function messageScroller(){const first=conversationCards()[0];if(!first)return null;const list=first.card.closest('.msg-conversations-container__conversations-list');if(list&&visible(list)&&list.clientHeight>120)return list;for(let node=first.card.parentElement;node&&node!==document.body;node=node.parentElement){if(node.clientHeight>120&&node.scrollHeight>node.clientHeight+25&&/auto|scroll/.test(getComputedStyle(node).overflowY))return node;}return null;}
+ function messagesReset(){gate();const scroller=messageScroller();if(!scroller)return {reset:false};scroller.scrollTo(0,0);return {reset:true};}
  function messagesAdvance(){
-  gate();const scroller=messageScroller();if(!scroller)throw Error('Прокручиваемый список диалогов не определён. Сохранённые карточки остаются в сервисе.');const atEnd=scroller.scrollTop+scroller.clientHeight>=scroller.scrollHeight-8;scroller.scrollBy(0,Math.max(220,scroller.clientHeight*.85));return {at_end:atEnd,height:scroller.scrollHeight,scroll_top:scroller.scrollTop,viewport:scroller.clientHeight};
+  gate();const scroller=messageScroller();if(!scroller)throw Error('Прокручиваемый список диалогов не определён. Сохранённые карточки остаются в сервисе.');const atEnd=scroller.scrollTop+scroller.clientHeight>=scroller.scrollHeight-8;
+  // LinkedIn can replace automatic loading with an explicit button at the list boundary.
+  const more=atEnd?all('button',main()).filter(visible).filter(button=>/^(?:Load more conversations|Загрузить (?:больше|ещё|еще) (?:диалоги|диалогов|разговоров)|Показать (?:ещё|еще) (?:диалоги|диалогов))$/i.test(txt(button))):[];if(more.length>1)throw Error('Несколько кнопок дозагрузки диалогов. Проверьте список LinkedIn.');if(more.length){const waiting=more[0].disabled||more[0].getAttribute('aria-disabled')==='true';if(!waiting)more[0].click();return {at_end:false,load_more:!waiting,waiting:!!waiting,height:scroller.scrollHeight,scroll_top:scroller.scrollTop,viewport:scroller.clientHeight};}
+  scroller.scrollBy(0,Math.max(220,scroller.clientHeight*.85));return {at_end:atEnd,height:scroller.scrollHeight,scroll_top:scroller.scrollTop,viewport:scroller.clientHeight};
  }
  function messagesNavigate(p){
   gate();if(!p.scope||p.scope==='all'){const active=all('button',main()).find(button=>visible(button)&&button.getAttribute('aria-pressed')==='true'&&/^(jobs|работа|вакансии|unread|непрочитанные|connections|контакты|inmail|starred|избранные)$/i.test(txt(button)));if(active){active.click();return {navigated:true};}return {navigated:false};}const labels={jobs:/^(jobs|работа|вакансии)$/i,unread:/^(unread|непрочитанные)$/i,inmail:/^inmail$/i},button=all('button',main()).find(b=>visible(b)&&labels[p.scope]?.test(txt(b)));
@@ -226,14 +238,14 @@
  async function thread(p){
   gate();if(C.url(location.href,'thread')!==p.url)throw Error('Открыт другой диалог.');const container=messageContainer();if(!container)throw Error('Сообщения выбранного диалога ещё не загружены.');
   let nodes=all('li.msg-s-message-list__event',container);if(!nodes.length)nodes=all('.msg-s-event-listitem',container);
-  const messages=[],occurrences=new Map();
-  for(const n of nodes){const body=n.querySelector('.msg-s-event-listitem__body,.msg-s-event-listitem__message-bubble'),text=txt(body);if(!text)continue;const sender=txt(n.querySelector('.msg-s-message-group__name,.msg-s-message-group__profile-link'))||txt(n.closest('.msg-s-message-group')?.querySelector('.msg-s-message-group__name')),timeNode=n.querySelector('time'),sent_label=txt(timeNode)||txt(n.querySelector('.msg-s-message-group__timestamp')),sent_at=timeNode?.getAttribute('datetime')||'',urn=n.getAttribute('data-event-urn')||n.querySelector('[data-event-urn]')?.getAttribute('data-event-urn')||'';
+  const messages=[],occurrences=new Map();let currentDate='';
+  for(const n of nodes){const dateHeading=n.querySelector('.msg-s-message-list__time-heading');if(dateHeading)currentDate=txt(dateHeading).slice(0,200);const body=n.querySelector('.msg-s-event-listitem__body,.msg-s-event-listitem__message-bubble'),text=txt(body);if(!text)continue;const sender=txt(n.querySelector('.msg-s-message-group__name,.msg-s-message-group__profile-link'))||txt(n.closest('.msg-s-message-group')?.querySelector('.msg-s-message-group__name')),timeNode=n.querySelector('.msg-s-message-group__timestamp')||n.querySelector('time[datetime]')||n.querySelector('time'),sent_label=txt(timeNode)||txt(n.querySelector('.msg-s-message-group__timestamp')),sent_at=timeNode?.getAttribute('datetime')||'',urn=n.getAttribute('data-event-urn')||n.querySelector('[data-event-urn]')?.getAttribute('data-event-urn')||'';
    const fingerprint=await C.hash({sender,text,sent_label,sent_at}),occurrence=occurrences.get(fingerprint)||0;occurrences.set(fingerprint,occurrence+1);
    const attachments=all('a[href]',body||n).map(a=>{try{const u=new URL(a.href);if(u.protocol!=='https:'||u.username||u.password)return null;return {label:txt(a).slice(0,200),url:u.href.slice(0,2500)};}catch{return null;}}).filter(Boolean).slice(0,10);
-   messages.push({id:urn||fingerprint+':'+occurrence,id_kind:urn?'source':'content',sender:sender.slice(0,500),text:text.slice(0,20000),sent_label:sent_label.slice(0,200),sent_at:sent_at.slice(0,100),badges:visibleBadges(n),attachments});
+   messages.push({id:urn||fingerprint+':'+occurrence,id_kind:urn?'source':'content',sender:sender.slice(0,500),text:text.slice(0,20000),sent_label:sent_label.slice(0,200),sent_at:sent_at.slice(0,100),date_label:currentDate,avatar_url:(n.querySelector('img.msg-s-message-group__avatar,img[class*="avatar"]')||n.closest('.msg-s-message-group')?.querySelector('img[class*="avatar"]'))?.src||'',badges:visibleBadges(n),attachments});
   }
   const name=txt(main().querySelector('.msg-thread__link-to-profile,.msg-thread__topcard .msg-entity-lockup__entity-title,.msg-thread__topcard h2'));
-  return {items:[{url:p.url,name,text:txt(container).slice(-180000),messages,read_quality:'loaded',...recordMetadata(container),badges:visibleBadges(main().querySelector('.msg-thread')||container),vacancy_links:all('a[href]',container).map(a=>link(a.href,'job')).filter(Boolean)}],reason:'Видимая загруженная часть диалога'};
+  return {items:[{url:p.url,name,text:txt(container).slice(-180000),messages,read_quality:'loaded',...recordMetadata(container),avatar_url:main().querySelector('.msg-thread__topcard img,.msg-thread__link-to-profile img')?.src||'',headline:txt(main().querySelector('.msg-thread__topcard .msg-entity-lockup__entity-headline')),badges:visibleBadges(main().querySelector('.msg-thread')||container),vacancy_links:all('a[href]',container).map(a=>link(a.href,'job')).filter(Boolean)}],reason:'Видимая загруженная часть диалога'};
  }
  function threadAdvance(){
   gate();const container=messageContainer();if(!container)return {at_start:true};let scroller=null;for(let n=container;n&&n!==document.body;n=n.parentElement){if(n.clientHeight>100&&n.scrollHeight>n.clientHeight+20&&/(auto|scroll)/.test(getComputedStyle(n).overflowY)){scroller=n;break;}}
@@ -251,6 +263,7 @@
  async function handle(operation,p){
   if(operation==='profile.language'){gate();if(!owned(p))throw Error('Собственный профиль не подтверждён.');if(profileLanguage()===p.profile_language)return {changed:false};const candidates=profileLanguages().filter(item=>(p.profile_language==='en'?/English|Английск/i:/Русский|Russian/i).test(item.label));if(candidates.length!==1)throw Error('Переключатель языка профиля не распознан. Выберите язык непосредственно в LinkedIn.');candidates[0].node.click();return {changed:true};}
   if(operation==='profile.read')return profile(p);
+  if(operation==='profile.advance')return profileAdvance();
   if(operation==='profile.detail'){gate();if(!C.url(location.href).startsWith(p.account+'details/')||!sectionLabels[p.section])throw Error('Неизвестная секция профиля.');const section=readSection(p.section,p);if(!section.text)throw Error('Границы раскрытой секции не распознаны; сохранена доступная часть исходного блока.');return {url:C.url(location.href),section:p.section,...section};}
   if(operation==='profile.form')return form(p);
   if(operation==='profile.editor.open'){gate();if(!owned(p))throw Error('Собственный профиль не подтверждён.');const buttons=all('button,[role="button"]',main()).filter(button=>visible(button)&&(button.getAttribute('aria-label')||txt(button))===p.edit_label);if(buttons.length!==1)throw Error('Редактор выбранного блока не определён однозначно.');buttons[0].click();return {opened:true};}
@@ -269,6 +282,7 @@
   if(operation==='network.advance')return networkAdvance();
   if(operation==='messages.navigate')return messagesNavigate(p);
   if(operation==='messages.advance')return messagesAdvance();
+  if(operation==='messages.reset')return messagesReset();
   if(operation==='messages.select')return messagesSelect(p);
   if(operation==='messages.history.advance')return threadAdvance();
   if(operation==='messages.thread')return thread(p);

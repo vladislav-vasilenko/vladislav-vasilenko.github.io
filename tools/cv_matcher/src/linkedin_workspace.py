@@ -301,7 +301,7 @@ def enqueue(archive, data):
         db.execute('BEGIN IMMEDIATE')
         current=settings(db)
         if current.get('profile_url') != account: raise ValueError('Аккаунт изменился.')
-        if p.get('collect_all'):
+        if action=='network.list' and p.get('collect_all'):
             from .linkedin_contacts import active
             existing=active(db,account,p['scope'])
             if existing:return {'id':existing[0],'duplicate':True}
@@ -315,7 +315,7 @@ def enqueue(archive, data):
             old = db.execute("SELECT id FROM browser_commands WHERE kind=? AND payload=? AND state IN ('queued','running')", ('linkedin.'+action, canonical(p))).fetchone()
         if old: return {'id': old[0], 'duplicate': True}
         ident = secrets.token_hex(12)
-        if p.get('collect_all'):
+        if action=='network.list' and p.get('collect_all'):
             from .linkedin_contacts import start
             if previous_collection and previous_collection['state']!='completed' and not data.get('restart'):
                 previous_payload=json.loads(previous_collection['payload']);p.update(collection_id=previous_collection['id'],only_new=True,known_contacts=previous_payload['links'])
@@ -551,6 +551,9 @@ def result(archive, data, *, partial=False):
                 for key in ('unread_label','time_label','time','mutual_label'):
                     if key in item:record[key]=text(item[key],300)
                 record['avatar_url']=_logo(item.get('avatar_url',''))
+                if kind=='threads' and item.get('headline'):record['headline']=text(item['headline'],1000)
+                if action=='messages.list' and type(item.get('list_position')) is int and 0<=item['list_position']<100000:
+                    record.update(list_position=item['list_position'],listing_id=r['id'])
                 if kind=='contacts':
                     for field,maximum in [('headline',1000),('company',500),('location',500),('degree',100),('relationship',100)]:record[field]=text(item.get(field,''),maximum)
                 previous=db.execute('SELECT payload FROM linkedin_records WHERE account=? AND kind=? AND id=?',(account,kind,url)).fetchone()
@@ -596,6 +599,8 @@ def result(archive, data, *, partial=False):
                     if db.execute("SELECT 1 FROM browser_commands WHERE kind='linkedin.messages.thread' AND state IN ('queued','running') AND json_extract(payload,'$.account')=? AND json_extract(payload,'$.url')=?",(account,link)).fetchone():continue
                     now=time.time();db.execute("INSERT INTO browser_commands VALUES(?,NULL,'linkedin.messages.thread',?,'queued',NULL,?,?,NULL)",(secrets.token_hex(12),canonical({'account':account,'url':link,'message_limit':p['message_limit']}),now,now));queued+=1
             summary.update(count=count,threads_queued=queued,coverage='partial',reason=text(payload.get('reason','Доступная часть выдачи'),500))
+            if action=='messages.list' and payload.get('listing_coverage') in ('available_boundary','selected_limit','pass_limit','stopped','read_error'):
+                summary['listing_coverage']=payload['listing_coverage']
             if action=='network.list' and p.get('collection_id'):
                 from .linkedin_contacts import observe
                 collection=observe(db,p,payload,[linkedin_url(item['url'],'profile') for item in rows] if partial else payload.get('collected_contacts',[linkedin_url(item['url'],'profile') for item in rows]),outcome,partial=partial,paused=settings(db).get('paused',False))

@@ -19,7 +19,7 @@ def start(db,ident,params):
 
 
 def view(db,account):
-    row=db.execute('SELECT c.*,b.state command_state FROM linkedin_contact_collections c LEFT JOIN browser_commands b ON b.id=c.command_id WHERE c.account=? ORDER BY c.updated DESC LIMIT 1',(account,)).fetchone()
+    row=db.execute("SELECT c.*,b.state command_state FROM linkedin_contact_collections c LEFT JOIN browser_commands b ON b.id=c.command_id WHERE c.account=? AND c.scope IN ('connections','received','sent') ORDER BY c.updated DESC LIMIT 1",(account,)).fetchone()
     if not row:return None
     payload=json.loads(row['payload']);state=row['state']
     if state in ('queued','running') and row['command_state'] not in ('queued','running'):state='needs_input'
