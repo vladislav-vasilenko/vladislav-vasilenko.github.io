@@ -6,8 +6,10 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { collideWithFloor, handoffToken, impactFloor, resumeClip, smoothRange } from '../introMotion.js';
 import { reportPlaybackFrame } from '../introPlayback.js';
-import { asteroidEntrance, binaryOrbit, binaryOrbitLayout } from '../binaryOrbit.js';
+import { asteroidEntrance, binaryOrbitLayout } from '../binaryOrbit.js';
+import { orbitPoint } from '../orbitFields.js';
 import { bindIntroPointer } from '../introPointer.js';
+import { portraitScrollEnd } from '../introScroll.js';
 import '../sceneControls.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -246,7 +248,13 @@ function CameraRig() {
   return null;
 }
 
-function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
+function IntroLight() {
+  const width = useThree(state => state.size.width);
+  const mapSize = width <= 600 ? 512 : 1024;
+  return <spotLight position={[2.5,3.5,7]} angle={.6} penumbra={.12} intensity={3.4} decay={0} castShadow shadow-mapSize={[mapSize,mapSize]} shadow-bias={-.0004} shadow-normalBias={.01} />;
+}
+
+function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode }) {
   const meshRef = useRef(null);
   const materialRef = useRef(null);
   const linesRef = useRef(null);
@@ -326,7 +334,7 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
     scratch.view.halfHeight = state.size.height * worldPerPx / 2;
     scratch.view.width = state.size.width; scratch.view.height = state.size.height;
     scratch.view.cameraZ = state.camera.position.z;
-    binaryOrbitLayout(scratch.orbit, scratch.view, field.wells);
+    binaryOrbitLayout(scratch.orbit, scratch.view);
     if (!sim.seeded) {
       if (!gravity) for (let i = 0; i < COUNT; i++) {
         const origin = asteroidEntrance(scratch.token, i, sim.patchOf[i], scratch.view);
@@ -393,7 +401,7 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback }) {
       let tx = target[ix];
       let ty = target[iy];
       let tz = target[iz];
-      const origin = !gravity ? binaryOrbit(scratch.token, i, patchOf[i], scratch.orbit, t) : null;
+      const origin = !gravity ? orbitPoint(scratch.token, i, patchOf[i], scratch.orbit, t, orbitMode) : null;
       let size = origin ? 1 + (origin.scale - 1) * (1 - g) * (1 - lock) : 1;
       // handoffToken reuses the scratch object; keep the orbital coordinates locally.
       const ox = origin?.x || 0, oy = origin?.y || 0, oz = origin?.z || 0;
@@ -634,10 +642,13 @@ function Toggle({ checked, onChange, icon, disabled = false, children }) {
 export default function LionheadDitDiffusion({ trigger, dock, playing = false, playback, onStop }) {
   const [gravity, setGravity] = useState(false);
   const [color, setColor] = useState(true);
+  const [orbitMode, setOrbitMode] = useState('binary');
   const [docked, setDocked] = useState(false);
   const [language, setLanguage] = useState(() => document.documentElement.lang === 'ru' ? 'ru' : 'en');
   const stageRef = useRef(null);
   const uiRef = useRef(null);
+  const dockSyncRef = useRef(null);
+  const [visible, setVisible] = useState(() => !document.hidden);
   const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, 1.75));
   const readoutRef = useRef(null);
   const phaseRef = useRef(null);
@@ -668,6 +679,12 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
     return () => observer.disconnect();
   }, []);
   useLayoutEffect(() => setReadout(readout.current), [language, playing, playback?.releasing]);
+  useLayoutEffect(() => dockSyncRef.current?.(), [playing, playback?.handingOff]);
+  useEffect(() => {
+    const change = () => setVisible(!document.hidden);
+    document.addEventListener('visibilitychange', change);
+    return () => document.removeEventListener('visibilitychange', change);
+  }, []);
   useLayoutEffect(() => {
     if (!playback) return;
     playback.onPhase = () => setReadout(readout.current);
@@ -680,19 +697,9 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
       const box = panel.getBoundingClientRect();
       field.controlsTop = box.left < window.innerWidth / 2 && box.right > window.innerWidth / 2
         ? box.top : window.innerHeight;
-      const primary = document.querySelector('.latent-intro-primary');
-      const links = document.querySelector('.latent-intro-contacts');
-      if (primary && links) {
-        const anchor = element => {
-          const rect = element.getBoundingClientRect();
-          return {x: rect.left + rect.width / 2, y: rect.top + window.scrollY + rect.height / 2, width: rect.width, height: rect.height};
-        };
-        field.wells = {main: anchor(primary), links: anchor(links)};
-      }
     };
     const observer = new ResizeObserver(measure);
     observer.observe(panel);
-    for (const element of document.querySelectorAll('.latent-intro-primary, .latent-intro-contacts')) observer.observe(element);
     window.addEventListener('resize', measure);
     measure();
     return () => { observer.disconnect(); window.removeEventListener('resize', measure); };
@@ -714,7 +721,7 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
           scrollTrigger: {
             trigger: trigger ?? document.documentElement,
             start: 'top top',
-            end: 'bottom bottom',
+            end: dock ? () => portraitScrollEnd(trigger.getBoundingClientRect().bottom + window.scrollY, window.innerHeight) : 'bottom bottom',
             scrub: 1.25,
             onUpdate: (self) => setReadout(1 - self.progress),
           },
@@ -741,12 +748,13 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
           uiRef.current.inert = hidden;
         }
         // Fully docked: stop rendering; the real avatar has taken over.
-        const now = d >= 0.999;
+        const now = d >= 0.999 && (!playback?.active || playback.handingOff);
         if (now !== wasDocked) {
           wasDocked = now;
           setDocked(now);
         }
       };
+      dockSyncRef.current = applyDock;
       applyDock();
       gsap.to(field, {
         dock: 1,
@@ -775,6 +783,7 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
     return () => {
       window.removeEventListener('scroll', protectResume);
       resize.disconnect();
+      dockSyncRef.current = null;
       ctx.revert();
     };
   }, [field, trigger, dock]);
@@ -784,7 +793,7 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
       {/* With `dock` the canvas is transparent: the page supplies the black, so cubes can fly over the CV. */}
       <div ref={stageRef} className={`latent-scene ${dock ? 'is-intro' : 'is-standalone'} ${docked ? 'is-complete' : ''}`} aria-hidden="true">
         <Canvas
-          frameloop={docked ? 'never' : 'always'}
+          frameloop={docked || !visible ? 'never' : 'always'}
           shadows="percentage"
           dpr={dpr}
           gl={{ antialias: true, powerPreference: 'high-performance' }}
@@ -794,24 +803,14 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
           {!dock && <color attach="background" args={['#000000']} />}
           <CameraRig />
           <ambientLight intensity={0.05} />
-          <spotLight
-            position={[2.5, 3.5, 7]}
-            angle={0.6}
-            penumbra={0.12}
-            intensity={3.4}
-            decay={0}
-            castShadow
-            shadow-mapSize={[1024, 1024]}
-            shadow-bias={-0.0004}
-            shadow-normalBias={0.01}
-          />
+          <IntroLight />
           <directionalLight position={[-4, 1, -3]} intensity={0.25} />
-          <Swarm field={field} pointerNdc={pointerNdc} gravity={gravity} color={color} handoff={!!dock} playback={playback} />
+          <Swarm field={field} pointerNdc={pointerNdc} gravity={gravity} color={color} handoff={!!dock} playback={playback} orbitMode={orbitMode} />
         </Canvas>
       </div>
       <div ref={uiRef} className="latent-controls" role="group" aria-label={text.settings}>
         <div className="latent-controls-heading">
-          <div><span className="latent-controls-title">{text.title}</span><span ref={phaseRef} className="latent-phase">{playback?.releasing ? (playback.bounceFrames ? text.bounce : text.fall) : text.phases[0]}</span></div>
+          <div><select className="latent-orbit-select" aria-label={language === 'ru' ? 'Орбита' : 'Orbit'} value={orbitMode} disabled={!!playback?.active} onChange={event => setOrbitMode(event.target.value)}><option value="binary">{language === 'ru' ? 'Двойная орбита' : 'Binary wells'}</option><option value="galaxy">{language === 'ru' ? 'Галактика' : 'Galaxy'}</option><option value="dna">{language === 'ru' ? 'ДНК-спираль' : 'DNA helix'}</option></select><span ref={phaseRef} className="latent-phase">{playback?.releasing ? (playback.bounceFrames ? text.bounce : text.fall) : text.phases[0]}</span></div>
           <span ref={readoutRef} className="latent-readout">0%</span>
         </div>
         <div ref={progressRef} className="latent-progress" role="progressbar" aria-label={text.progress} aria-valuemin={0} aria-valuemax={100} aria-valuenow={0}><span /></div>

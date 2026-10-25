@@ -1,7 +1,7 @@
 /** Playback waits for simulated, rendered motion rather than a wall-clock timeout. */
 export function resetIntroPlayback(playback, active = false) {
   Object.assign(playback, {
-    active, release: 0, releasing: false, handingOff: false, floor: null,
+    active, mode: null, release: 0, releasing: false, handingOff: false, floor: null,
     formedSeconds: 0, formedFrames: 0, portraitReady: false,
     impacts: 0, bounceSeconds: 0, bounceFrames: 0, dropReady: false,
     waiting: null, onReady: null,

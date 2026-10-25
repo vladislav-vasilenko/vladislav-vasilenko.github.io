@@ -3,6 +3,7 @@ import LionheadDitDiffusion from './components/LionheadDitDiffusion.jsx';
 import './latentIntro.css';
 import gsap from 'gsap';
 import { resetIntroPlayback, waitForPlayback } from './introPlayback.js';
+import { portraitScrollEnd } from './introScroll.js';
 
 /**
  * Lazy-loaded by main.ts. The finished portrait opens to the margins as the CV arrives.
@@ -12,8 +13,12 @@ export function mountLatentIntro(section) {
   const dock = { trigger: section.querySelector('.latent-intro-fade'), resume: '.minimal-portfolio', end: '.presentation-headline, .presentation-manifest-label, .minimal-intro' };
   const root = createRoot(section.querySelector('.latent-intro-stage'));
   const button = section.querySelector('[data-intro-play]');
+  const track = section.querySelector('.latent-intro-track');
+  const portraitEnd = () => portraitScrollEnd(window.scrollY + track.getBoundingClientRect().bottom, window.innerHeight);
   const playback = resetIntroPlayback({});
   let timeline = null;
+  let manualConsumed = false;
+  let destroyed = false;
   const draw = (playing) => root.render(<LionheadDitDiffusion trigger={section.querySelector('.latent-intro-track')} dock={dock} playing={playing} playback={playback} onStop={stop} />);
   const removeListeners = () => {
     window.removeEventListener('wheel', interrupt);
@@ -26,21 +31,39 @@ export function mountLatentIntro(section) {
     removeListeners();
     button.disabled = false;
     button.removeAttribute('aria-busy');
+    if (!destroyed) draw(false);
+  }
+  function finishManualDrop() {
+    playback.handingOff = true;
+    button.disabled = false; button.removeAttribute('aria-busy');
     draw(false);
   }
+  function drop(onReady) {
+    playback.releasing = true; draw(true);
+    timeline = gsap.to(playback, {
+      release: 1, duration: 0.3, ease: 'power1.in',
+      onComplete: () => waitForPlayback(playback, 'drop', onReady),
+    });
+  }
   function interrupt(event) {
-    if (!event.target.closest?.('.latent-controls')) stop();
+    if (event.target.closest?.('.latent-controls')) return;
+    if (playback.releasing && !playback.handingOff) {
+      timeline?.kill(); timeline = null;
+      removeListeners();
+      playback.mode = 'manual'; playback.release = 1; manualConsumed = true;
+      waitForPlayback(playback, 'drop', finishManualDrop);
+    } else stop();
   }
   function key(event) {
-    if (['Escape', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) stop();
+    if (event.key === 'Escape') stop();
+    else if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) interrupt(event);
   }
   function play() {
     if (playback.active) return;
     resetIntroPlayback(playback, true);
+    playback.mode = 'auto';
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
-    const track = section.querySelector('.latent-intro-track');
-    const end = () => Math.max(0, window.scrollY + track.getBoundingClientRect().bottom - window.innerHeight);
     const position = { y: window.scrollY };
     const move = () => window.scrollTo({ top: position.y, behavior: 'instant' });
     draw(true);
@@ -54,24 +77,42 @@ export function mountLatentIntro(section) {
         duration: 1.35, ease: 'power2.inOut', onUpdate: move, onComplete: stop,
       });
     };
-    const drop = () => {
-      playback.releasing = true; draw(true);
-      timeline = gsap.to(playback, {
-        release: 1, duration: 0.3, ease: 'power1.in',
-        onComplete: () => waitForPlayback(playback, 'drop', handover),
-      });
-    };
     timeline = gsap.to(position, {
-      y: end, duration: 5, ease: 'power1.inOut', onUpdate: move,
+      y: portraitEnd, duration: 5, ease: 'power1.inOut', onUpdate: move,
       onComplete: () => {
         timeline = gsap.delayedCall(0.35, () => {
           // Mobile browser chrome can change the viewport height during the approach.
-          position.y = end(); move();
-          waitForPlayback(playback, 'portrait', drop);
+          position.y = portraitEnd(); move();
+          waitForPlayback(playback, 'portrait', () => drop(handover));
         });
       },
     });
   }
+  function manualScroll() {
+    if (destroyed || playback.mode === 'auto') return;
+    const end = portraitEnd();
+    if (window.scrollY < end - window.innerHeight * .15) {
+      manualConsumed = false;
+      if (playback.mode === 'manual') stop();
+      return;
+    }
+    if (window.scrollY < end || manualConsumed || playback.active) return;
+    manualConsumed = true;
+    // A jump straight to the CV must not restart an invisible animation.
+    if (document.getElementById('app').getBoundingClientRect().top <= 0) return;
+    resetIntroPlayback(playback, true); playback.mode = 'manual';
+    button.disabled = true; button.setAttribute('aria-busy', 'true');
+    draw(true);
+    waitForPlayback(playback, 'portrait', () => drop(finishManualDrop));
+  }
+  function destroy() {
+    destroyed = true;
+    stop();
+    window.removeEventListener('scroll', manualScroll);
+    root.unmount();
+  }
+  window.addEventListener('scroll', manualScroll, {passive: true});
   draw(false);
-  return { play, stop };
+  manualScroll();
+  return { play, stop, destroy };
 }

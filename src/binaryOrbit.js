@@ -18,11 +18,11 @@ export function asteroidEntrance(out, index, patch, view) {
   return out;
 }
 
-/** Measured UI centres remain stationary and tappable while their orbital planes precess. */
-export function binaryOrbitLayout(out, view, anchors) {
+/** The orbital composition depends only on the viewport, never on the UI's text or buttons. */
+export function binaryOrbitLayout(out, view) {
   const vertical = view.width <= 900;
-  const main = anchors?.main || {x: view.width * (vertical ? .5 : .31), y: view.height * (vertical ? .31 : .46), width: view.width * .5, height: 130};
-  const links = anchors?.links || {x: view.width * (vertical ? .5 : .77), y: view.height * (vertical ? .66 : .5), width: 280, height: 100};
+  const main = {x: view.width * (vertical ? .5 : .31), y: view.height * (vertical ? .31 : .46), width: view.width * .5, height: 130};
+  const links = {x: view.width * (vertical ? .5 : .77), y: view.height * (vertical ? .66 : .5), width: 280, height: 100};
   const units = view.halfHeight * 2 / view.height;
   out.mainX = (main.x - view.width / 2) * units;
   out.mainY = (view.height / 2 - main.y) * units;
@@ -41,6 +41,7 @@ export function binaryOrbitLayout(out, view, anchors) {
   out.majorCross = cross(main, out.major);
   out.minorCross = cross(links, out.minor);
   out.cameraZ = view.cameraZ;
+  out.halfWidth = view.halfWidth; out.halfHeight = view.halfHeight;
   return out;
 }
 

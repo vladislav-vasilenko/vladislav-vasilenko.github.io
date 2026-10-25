@@ -1,0 +1,16 @@
+html.print-resume-mode body{background:#f1f2f4;color:#111}
+.print-toolbar{max-width:794px;box-sizing:border-box;margin:20px auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;font:13px/1.4 Arial,sans-serif}
+.print-toolbar a{color:#245b91;text-decoration:none}.print-toolbar button{min-height:42px;border:1px solid #cad2da;border-radius:7px;padding:9px 15px;background:white;font:inherit;color:#233c54;cursor:pointer}
+.print-resume{box-sizing:border-box;max-width:210mm;margin:0 auto 40px;padding:15mm;background:#fff;color:#111;box-shadow:0 3px 24px #00000012;font:14px/1.55 Arial,Helvetica,sans-serif}
+.print-resume *{box-sizing:border-box}.print-resume a{color:inherit;text-decoration:none;overflow-wrap:anywhere}
+.print-resume-header{display:flex;justify-content:space-between;gap:30px;margin-bottom:18px}.print-resume-header>div{min-width:0}
+.print-resume-header img{object-fit:cover;flex:none;border-radius:0}.print-resume h1{font-size:29px;line-height:1.15;font-weight:700;margin:0 0 12px;overflow-wrap:anywhere}
+.print-resume h2{font-size:18px;font-weight:600;line-height:1.3;margin:0 0 16px}.print-resume-header h2{font-size:17px;font-weight:400}
+.print-resume section{border-top:1px solid #d7dce1;margin-top:26px;padding-top:20px}.print-resume h3{font-size:15px;font-weight:700;line-height:1.4;margin:0 0 3px}
+.print-resume p{margin:6px 0 12px;overflow-wrap:anywhere;orphans:3;widows:3}.print-resume .print-source{font-size:11px;color:#69737d}
+.print-experience-entry,.print-education-entry{display:grid;grid-template-columns:125px minmax(0,1fr);gap:22px;margin:0 0 26px}
+.print-resume .print-position{font-weight:600;margin-top:2px}.print-period{font-size:12px;line-height:1.5;color:#5f6872}.print-period span{display:inline-block;margin-top:7px}
+.print-social{font-size:12px}
+@media(max-width:650px){.print-resume{padding:24px 20px;box-shadow:none;margin-bottom:0}.print-toolbar{padding:0 15px;gap:10px;font-size:12px}.print-resume-header{gap:18px}.print-resume-header img{width:72px;height:92px}.print-resume h1{font-size:25px}.print-experience-entry,.print-education-entry{grid-template-columns:1fr;gap:7px}.print-period span{margin:0 0 0 8px}.print-toolbar button{padding:9px;font-size:11px}}
+@page{size:A4;margin:14mm 15mm}
+@media print{html.print-resume-mode,html.print-resume-mode body{background:#fff}.print-toolbar{display:none!important}.print-resume{max-width:none;margin:0;padding:0;box-shadow:none;font-size:10.5pt;line-height:1.5}.print-resume-header img{width:27mm;height:35mm}.print-resume h1{font-size:24pt}.print-resume section{margin-top:18px;padding-top:14px}.print-resume h2,.print-resume h3{break-after:avoid}.print-experience-entry,.print-education-entry{grid-template-columns:29mm minmax(0,1fr);gap:6mm}.print-education-entry,.print-resume-header{break-inside:avoid}.print-resume .print-period{font-size:9pt}}

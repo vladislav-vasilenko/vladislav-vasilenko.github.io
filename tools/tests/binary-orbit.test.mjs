@@ -19,14 +19,12 @@ test('the entrance starts outside both side edges and flies inward and downward'
   }
 });
 
-test('the gravity centres follow the measured controls instead of drifting with the orbits', () => {
+test('gravity centres stay independent of UI layout and retain a larger primary orbit', () => {
   const view = views[0];
-  const main = {x: 440, y: 410, width: 500, height: 200};
-  const links = {x: 1110, y: 450, width: 300, height: 100};
-  const layout = binaryOrbitLayout({}, view, {main, links});
+  const layout = binaryOrbitLayout({}, view);
   const units = view.halfHeight * 2 / view.height;
-  assert.equal(layout.mainX, (440 - 720) * units);
-  assert.equal(layout.linksX, (1110 - 720) * units);
+  assert.equal(layout.mainX, (view.width * .31 - 720) * units);
+  assert.equal(layout.linksX, (view.width * .77 - 720) * units);
   assert.ok(layout.major > layout.minor);
 });
 
