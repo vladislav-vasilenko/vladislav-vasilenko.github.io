@@ -11,8 +11,9 @@ const PortfolioPublication=(()=>{
   if(state.error)root.append(make('p','githubImportWarning',state.error));
   const actions=make('div','githubImportActions'),preview=make('button','secondary','Предпросмотр и редактирование'),publish=make('button','secondary','Обновить сайт сейчас'),body=make('div');
   preview.type=publish.type='button';
-  preview.onclick=async()=>{preview.disabled=true;try{const data=await api('portfolio-publication',{op:'preview'});body.replaceChildren();body.append(make('h3','',data.resume_title),make('p','muted','Из основного HH: '+data.payload.experience.length+' блоков. Язык источника: '+data.payload.source.language.toUpperCase()+'. Для другого языка — «Ожидается перевод», оригинал доступен отдельно.'));
+  preview.onclick=async()=>{preview.disabled=true;try{const data=await api('portfolio-publication',{op:'preview'});body.replaceChildren();body.append(make('h3','',data.resume_title),make('p','muted','Из основного HH: '+data.payload.experience.length+' блоков. Язык источника: '+data.payload.source.language.toUpperCase()+'. Перевод для другого языка редактируется ниже; до его проверки доступен исходный текст.'));
    await aboutEditor(body,data);
+   experienceEditor(body,data);
    visualEditor(body).catch(e=>notice(e.message));
    const experienceTitle=make('h3','','Опыт из основного HH-резюме');body.append(experienceTitle);
    for(const item of data.payload.experience){const card=make('details');card.append(make('summary','',item.company+' · '+item.role+' · '+item.period),make('pre','flowText',item.description));body.append(card);}
@@ -43,6 +44,31 @@ const PortfolioPublication=(()=>{
   activity.onclick=async()=>{activity.disabled=true;activity.textContent='Читаю GitHub…';try{const value=await api('portfolio-publication',{op:'github_activity'},240000);results.replaceChildren(make('p','muted','Проверено: '+date(value.checked_at)+'. Активность репозитория не подтверждает личное авторство или владение навыком.'));for(const item of value.items){results.append(external(item.url,item.url.split('/').pop()+' ↗'));for(const commit of item.commits)results.append(make('p','muted',date(commit.date)+' · '+commit.message));}}catch(e){notice(e.message);}finally{activity.disabled=false;activity.textContent='Обновить публичную активность GitHub';}};
   prompt.onclick=async()=>{const context=await api('portfolio-publication',{op:'context'});context.current_draft=text.value;await navigator.clipboard.writeText(context.instruction+'\n\n'+JSON.stringify(context,null,2));notice('Контекст для обсуждения скопирован. API модели не вызывается.');};
   const toolActions=make('div','githubImportActions');toolActions.append(activity,prompt);tools.append(make('p','muted','Только публичные репозитории, найденные в описании опыта HH, до 6 проектов и 3 последних коммитов. Приватные репозитории и секреты не включаются. Карьерная цель и этот контекст остаются в локальном сервисе до вашего копирования.'),toolActions,results);box.append(tools);host.append(box);
+ }
+ function experienceEditor(host,data){
+  const language=data.payload.source.language==='ru'?'en':'ru',source=data.payload.source.language;
+  const section=make('details');section.append(make('summary','','Перевод опыта для сайта · '+source.toUpperCase()+' → '+language.toUpperCase()));
+  section.append(make('p','muted','Перевод относится только к текущему основному резюме. Даты и продолжительность должны совпадать с источником. Изменение HH отключает старый перевод до новой проверки; отдельное англоязычное резюме с другими местами работы не подставляется. API модели не вызывается.'));
+  if((data.experience_needs_review||[]).includes(language))section.append(make('p','githubImportWarning','Исходный опыт изменился. Предыдущий перевод требует проверки; на сайте используется свежий оригинал.'));
+  const saved=new Map((data.payload.experience_translations?.[language]?.items||[]).map(row=>[row.id,row])),fields=[];
+  const review=make('label'),check=make('input');check.type='checkbox';check.style.width='auto';
+  for(const original of data.payload.experience){
+   const translated=saved.get(original.id)||original,card=make('details');card.append(make('summary','',original.company+' · '+original.period));
+   card.append(make('pre','flowText',original.company+'\n'+original.role+'\n'+original.period+' · '+original.duration+'\n\n'+original.description));
+   const inputs={};for(const [key,label] of [['company','Компания'],['role','Роль'],['period','Период'],['duration','Продолжительность'],['description','Описание']]){
+    const field=make(key==='description'?'textarea':'input'),row=make('label','',label+' · '+language.toUpperCase());
+    if(key==='description'){field.rows=8;field.maxLength=100000;}else{field.type='text';field.maxLength=2000;}
+    field.value=translated[key];field.oninput=()=>{check.checked=false;};inputs[key]=field;row.append(field);card.append(row);
+   }
+   fields.push({id:original.id,inputs});section.append(card);
+  }
+  review.append(check,document.createTextNode(' Я проверил перевод, работодателей, числа и даты для публикации'));section.append(review);
+  const actions=make('div','githubImportActions'),save=make('button','secondary','Сохранить перевод опыта'),copy=make('button','secondary','Скопировать для перевода · без API'),reset=make('button','secondary','Удалить перевод и показать оригинал');
+  const collect=()=>fields.map(({id,inputs})=>({id,...Object.fromEntries(Object.entries(inputs).map(([key,input])=>[key,input.value]))}));
+  save.onclick=async()=>{save.disabled=true;try{await api('portfolio-publication',{op:'save_experience_translation',language,basis:data.experience_basis,items:collect(),reviewed:check.checked});check.checked=false;notice('Перевод сохранён для этой версии HH. Используйте обновление сайта или автопубликацию.');}catch(e){notice(e.message);}finally{save.disabled=false;}};
+  copy.onclick=()=>navigator.clipboard.writeText('Переведи опыт '+source.toUpperCase()+' → '+language.toUpperCase()+'. Сохрани все работодатели, периоды, продолжительность, числа, ссылки и факты. Не добавляй новые достижения и роли. Верни только JSON-массив с теми же id и ключами company, role, period, duration, description.\n\n'+JSON.stringify(data.payload.experience,null,2)).then(()=>notice('Исходный опыт и правила перевода скопированы.'));
+  reset.onclick=async()=>{await api('portfolio-publication',{op:'save_experience_translation',language,reset:true});check.checked=false;notice('Перевод удалён. Следующее обновление сайта покажет исходный опыт.');};
+  actions.append(save,copy,reset);section.append(actions);host.append(section);
  }
  async function visualEditor(host){
   const details=make('details');details.append(make('summary','','Публичные визуализации · выборка и предпросмотр JSON'));const body=make('div');details.append(body);host.append(details);let ready=false;

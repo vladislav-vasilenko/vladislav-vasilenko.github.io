@@ -1,10 +1,11 @@
+import {directionArrow} from './directionArrow';
 import type {Lang} from '../i18n';
 export const presentationStyles=['minimal','macintosh','openai','material','glass','raw','yandex','sber'] as const;
 export type PresentationStyle=typeof presentationStyles[number];
 export function presentationStyle(value:string|null):PresentationStyle{return presentationStyles.includes(value as PresentationStyle)?value as PresentationStyle:'minimal';}
 export function stylePicker(style:PresentationStyle,lang:Lang):string{
  const entries=[['minimal','Minimal',lang==='ru'?'Факты и ясная структура':'Facts, clearly presented'],['macintosh','Macintosh ’84',lang==='ru'?'Манифест. Монохром. Hello.':'A manifesto. Monochrome. Hello.'],['openai','OpenAI-inspired · Calm',lang==='ru'?'Спокойная типографика, прозрачные источники':'Quiet typography, transparent sources'],['material','Material 3 Expressive',lang==='ru'?'Тональные поверхности, выразительные формы':'Tonal surfaces, expressive shapes'],['glass','Quiet Glass',lang==='ru'?'Мягкий свет и прозрачная навигация':'Soft light and translucent navigation'],['raw','Raw / Structural',lang==='ru'?'Открытая сетка. Типографика. Без глянца.':'Exposed grid. Typography. No gloss.'],['yandex','Yandex-inspired',lang==='ru'?'Жёлтый акцент и ясность Gravity UI':'Yellow accents and Gravity UI clarity'],['sber','Sber-inspired',lang==='ru'?'Зелёная палитра, мягкие поверхности Plasma':'Green palette, soft Plasma surfaces']];
- return `<details class="presentation-picker"><summary>${lang==='ru'?'Оформление':'Appearance'} ↗</summary><div role="group" aria-label="${lang==='ru'?'Стиль резюме':'Resume presentation'}">${entries.map(([id,title,note])=>`<button type="button" data-presentation="${id}" aria-label="${title}" aria-pressed="${style===id}"><strong>${title}</strong><small>${note}</small></button>`).join('')}</div></details>`;
+ return `<details class="presentation-picker"><summary>${lang==='ru'?'Оформление':'Appearance'} ${directionArrow('external')}</summary><div role="group" aria-label="${lang==='ru'?'Стиль резюме':'Resume presentation'}">${entries.map(([id,title,note])=>`<button type="button" data-presentation="${id}" aria-label="${title}" aria-pressed="${style===id}"><strong>${title}</strong><small>${note}</small></button>`).join('')}</div></details>`;
 }
 export function presentationCopy(style:PresentationStyle,lang:Lang){
  const ru=lang==='ru';

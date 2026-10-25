@@ -31,6 +31,8 @@ test('print view exposes complete dated experience and evidence with no interact
  assert.match(html,/&lt;script&gt;alert/);
  assert.doesNotMatch(html,/Legacy subtitle|\*\*Result/);
  assert.match(html,/data-print-document/);assert.match(html,/resumeView=true/);
+ assert.doesNotMatch(html,/\+1 555 0100|tel:/);assert.match(html,/huggingface.co\/VVladTech/);
+ assert.match(html,/Show Intro animation|Показать Intro-анимацию/);assert.match(html,/direction-arrow--left/);
  assert.ok(html.includes(snapshot.source.url));assert.ok(html.includes('https://github.com/example/lab'));
  assert.equal(JSON.stringify(cv),original);
 });

@@ -4,6 +4,15 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 function load(name){const code=ts.transpileModule(fs.readFileSync(new URL('../../src/features/'+name+'.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;const context=vm.createContext({exports:{},URL,location:{href:'https://example.org/?lang=ru'},require:path=>load(path.replace('./',''))});vm.runInContext(code,context);return context.exports;}
+test('print links keep the chosen language and bypass stale theme, layout and scroll parameters',()=>{
+ const {printResumeURL}=load('resumeLinks');
+ for(const lang of ['en','ru']){
+  const url=new URL(printResumeURL('https://example.org/ru/?layout=full&style=macintosh&resumeView=true&tech=llm#app',lang));
+  assert.equal(url.origin,'https://example.org');assert.equal(url.pathname,'/');
+  assert.equal(url.searchParams.get('print'),'true');assert.equal(url.searchParams.get('lang'),lang);
+  assert.equal([...url.searchParams].length,2);assert.equal(url.hash,'');
+ }
+});
 const hh=load('hhExperience'),focus=load('experienceFocus');
 const snapshot=()=>({schema_version:1,enabled:true,source:{label:'HH',language:'ru',captured_at:'2026-10-22T10:00:00Z'},experience:[{id:'hh-1',company:'Example',role:'Engineer',period:'2023–2025',duration:'2 years',description:'<script>alert(1)</script>\nPyTorch project'}],confirmed_skills:[{id:'pytorch',label:'PyTorch',links:[{url:'https://github.com/example/lab',label:'lab'}]}]});
 test('HH experience renders escaped source text and exposes pending translation honestly',()=>{const data=snapshot();assert.ok(hh.validateSnapshot(data));const result=hh.applyHHSnapshot({experience:[]},data);assert.match(result.experience[0].descriptionHtml,/&lt;script&gt;/);assert.doesNotMatch(result.experience[0].descriptionHtml,/<script>/);assert.match(hh.renderHHSource(data,'en'),/Translation pending/);assert.doesNotMatch(hh.renderHHSource(data,'ru'),/Ожидается перевод/);data.confirmed_skills[0].links[0].url='https://github.com@evil.org/a/b';assert.equal(hh.validateSnapshot(data),null);});
@@ -56,3 +65,33 @@ test('public visuals validate totals and expose neither CRM nor raw review field
  const data=snapshot();data.title='Research Engineer / ML Engineer – Generative Models, PyTorch';const cv=hh.applyHHSnapshot({title:'Senior Applied AI & Systems Engineer',experience:[]},data);assert.equal(cv.title,data.title);
  assert.equal(hh.validateSnapshot({...data,title:'x'.repeat(1001)}),null);
  });
+
+
+test('reviewed translations cover the exact HH source revision without changing its facts or URL',()=>{
+ const original=snapshot();original.source.url='https://hh.ru/resume/'+'a'.repeat(40);
+ original.experience_basis='a'.repeat(64);
+ original.experience_translations={en:{basis:original.experience_basis,items:original.experience.map(row=>({...row,company:'Translated employer',description:'English responsibilities <script>bad</script>'}))}};
+ const before=JSON.stringify(original);
+ assert.ok(hh.validateSnapshot(original));
+ const translated=hh.localizeHHSnapshot(original,'en');
+ assert.equal(translated.source.language,'en');assert.equal(translated.source.translated_from,'ru');
+ assert.equal(translated.source.url,original.source.url);assert.equal(translated.experience[0].period,original.experience[0].period);
+ assert.match(hh.applyHHSnapshot({experience:[]},translated,'en').experience[0].descriptionHtml,/&lt;script&gt;/);
+ assert.equal(hh.localizeHHSnapshot(original,'ru'),original);
+ assert.equal(JSON.stringify(original),before);
+ for(const mutation of [data=>data.experience_translations.en.basis='b'.repeat(64),data=>data.experience_translations.en.items=[],data=>data.experience_translations.en.items.push(data.experience_translations.en.items[0])]){
+  const stale=JSON.parse(before);mutation(stale);assert.equal(hh.localizeHHSnapshot(stale,'en'),stale);
+ }
+});
+
+test('Intro is reachable in every resume mode and resets print and skip parameters',()=>{
+ const {introURL}=load('resumeLinks'),minimal=load('minimalPortfolio');
+ const url=new URL(introURL('https://example.org/ru/?print=true&resumeView=true&layout=full#app','en'));
+ assert.equal(url.pathname,'/');assert.equal(url.search,'?lang=en');assert.equal(url.hash,'');
+ const cv={name:'Candidate',title:'Engineer',contact:{email:'public@example.org'},aboutMd:'Research.',experience:[],education:[],techStack:{categories:[]}};
+ for(const detailed of [false,true]){
+  const html=minimal.renderMinimal(cv,'en',null,'all','minimal',detailed);
+  assert.match(html,/Show Intro animation/);assert.match(html,/https:\/\/huggingface.co\/VVladTech/);
+  assert.doesNotMatch(html,/↗|↺| →<\/a>/);
+ }
+});

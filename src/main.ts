@@ -2,13 +2,14 @@ import {initializePWA} from './features/pwa';
 import './style.css';
 import './printResume.css';
 import {setLang,loadContent,type Lang} from './i18n';
-import {loadHHSnapshot,applyHHSnapshot,validateSnapshot,type HHSnapshot} from './features/hhExperience';
+import {loadHHSnapshot,applyHHSnapshot,localizeHHSnapshot,validateSnapshot,type HHSnapshot} from './features/hhExperience';
 import {renderMinimal} from './features/minimalPortfolio';
 import {presentationStyle} from './features/presentationStyle';
 import {exportMarkdown} from './export';
 import {portfolioLanguage} from './features/locale';
 import {watchIntroPower} from './features/introPower';
 import {renderPrintResume} from './features/printResume';
+import {printResumeURL} from './features/resumeLinks';
 
 const query=new URLSearchParams(location.search);
 let language:Lang=portfolioLanguage(location.href,navigator.languages);
@@ -23,11 +24,17 @@ const resumeOnly=printView||query.get('resumeView')==='true';
 function renderPage():void{
  setLang(language);document.documentElement.classList.add('minimal-mode');
  // Focus changes emphasis, never the source wording or work history.
- const cv=applyHHSnapshot(loadContent(language,'vision'),snapshot,language);
+ const pageSnapshot=localizeHHSnapshot(snapshot,language);
+ const cv=applyHHSnapshot(loadContent(language,'vision'),pageSnapshot,language);
  const introName=document.querySelector<HTMLElement>('.latent-intro-name');
  if(introName)introName.textContent=language==='ru'?'Владислав Василенко':'Vladislav Vasilenko';
  const introLabel=document.querySelector<HTMLElement>('[data-intro-play]>span');
  if(introLabel)introLabel.textContent=language==='ru'?'Посмотреть резюме':'View resume';
+ const introPrint=document.querySelector<HTMLAnchorElement>('[data-intro-print]');
+ if(introPrint){
+  introPrint.href=printResumeURL(location.href,language);
+  introPrint.querySelector<HTMLElement>('[data-intro-print-label]')!.textContent=language==='ru'?'Резюме для печати':'Print-friendly resume';
+ }
  const emailLabel=document.querySelector<HTMLElement>('[data-intro-email-label]');
  if(emailLabel)emailLabel.textContent=language==='ru'?'Почта':'Email';
  document.querySelector('.latent-intro-contacts')?.setAttribute('aria-label',language==='ru'?'Связаться с Владиславом':'Contact Vladislav');
@@ -35,11 +42,11 @@ function renderPage():void{
  const root=document.querySelector<HTMLDivElement>('#app')!;
  if(printView){
   document.documentElement.classList.add('print-resume-mode');
-  root.innerHTML=renderPrintResume(cv,language,snapshot);
+  root.innerHTML=renderPrintResume(cv,language,pageSnapshot);
   root.querySelector<HTMLButtonElement>('[data-print-document]')!.onclick=()=>window.print();
   return;
  }
- root.innerHTML=renderMinimal(cv,language,snapshot,focus,style,detailed);
+ root.innerHTML=renderMinimal(cv,language,pageSnapshot,focus,style,detailed);
  root.querySelectorAll<HTMLButtonElement>('button[data-presentation]').forEach(button=>button.onclick=()=>{
   style=presentationStyle(button.dataset.presentation||null);const url=new URL(location.href);
   if(style==='minimal')url.searchParams.delete('style');else url.searchParams.set('style',style);
@@ -51,7 +58,7 @@ function renderPage():void{
  });
  const selector=root.querySelector<HTMLSelectElement>('.minimal-focus')!;
  selector.onchange=()=>{focus=selector.value;const url=new URL(location.href);if(focus==='all')url.searchParams.delete('tech');else url.searchParams.set('tech',focus);window.history.replaceState(null,'',url);renderPage();};
- root.querySelector<HTMLButtonElement>('[data-export="print"]')?.addEventListener('click',()=>window.print());
+ root.querySelector<HTMLButtonElement>('[data-export="print"]')?.addEventListener('click',()=>location.assign(printResumeURL(location.href,language)));
  root.querySelector<HTMLButtonElement>('[data-export="markdown"]')?.addEventListener('click',()=>exportMarkdown(cv));
  initializePWA();
 }

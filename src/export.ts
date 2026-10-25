@@ -40,7 +40,7 @@ export function exportDOC(cv: CVContent): void {
 </head><body>
   <h1>${cv.name}</h1>
   <p class="subtitle">${cv.title}</p>
-  <p class="contact">${cv.contact.location} &bull; <a href="mailto:${cv.contact.email}">${cv.contact.email}</a> &bull; ${cv.contact.phone} &bull; ${cv.contact.relocation}</p>
+  <p class="contact">${cv.contact.location} &bull; <a href="mailto:${cv.contact.email}">${cv.contact.email}</a> &bull; ${cv.contact.relocation}</p>
 
   <h2>${cv.labels.about}</h2>
   ${cv.aboutHtml}
@@ -79,7 +79,7 @@ export function buildMarkdown(cv: CVContent): string {
 
   lines.push(`# ${cv.name}`);
   lines.push(`**${cv.title}**\n`);
-  lines.push(`${cv.contact.location} | [${cv.contact.email}](mailto:${cv.contact.email}) | ${cv.contact.phone}`);
+  lines.push(`${cv.contact.location} | [${cv.contact.email}](mailto:${cv.contact.email})`);
   lines.push(`${cv.contact.relocation}\n`);
 
   lines.push(`## ${cv.labels.about}\n`);
@@ -130,7 +130,7 @@ export async function copyAsText(cv: CVContent): Promise<void> {
   lines.push(cv.name);
   lines.push(cv.title);
   lines.push('');
-  lines.push(`${cv.contact.location} | ${cv.contact.email} | ${cv.contact.phone}`);
+  lines.push(`${cv.contact.location} | ${cv.contact.email}`);
   lines.push(cv.contact.relocation);
   lines.push('');
 

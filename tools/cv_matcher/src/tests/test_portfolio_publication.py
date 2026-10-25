@@ -114,3 +114,41 @@ class PublicationTests(unittest.TestCase):
             self.assertEqual(client.post('/archive/portfolio-publication', json={'op': 'publish'}, headers={'Origin': 'https://evil.org'}).status_code, 401)
             response = client.post('/archive/portfolio-publication', json={'op': 'preview'}, headers={'Origin': 'http://127.0.0.1:8788'})
             self.assertEqual(response.status_code, 200)
+
+    def test_reviewed_experience_translation_preserves_dates_and_expires_on_source_change(self):
+        proposal = publication.preview(self.archive)
+        rows = [{**proposal['payload']['experience'][0], 'period': 'January 2023 — February 2025',
+                 'duration': '2 years', 'description': 'Implemented a PyTorch experiment and documented metrics.'}]
+        data = {'language': 'en', 'basis': proposal['experience_basis'], 'items': rows, 'reviewed': True}
+        with self.assertRaises(ValueError):
+            publication.save_experience_translation(self.archive, {**data, 'reviewed': False})
+        with self.assertRaises(ValueError):
+            publication.save_experience_translation(self.archive, {**data, 'items': [{**rows[0], 'period': 'January 2023 — March 2025'}]})
+        with self.assertRaises(ValueError):
+            publication.save_experience_translation(self.archive, {**data, 'items': rows + rows})
+        with self.assertRaises(ValueError):
+            publication.save_experience_translation(self.archive, {**data, 'items': [{**rows[0], 'description': 'Contact person@example.org'}]})
+        publication.save_experience_translation(self.archive, data)
+        current = publication.preview(self.archive)
+        self.assertEqual(current['payload']['experience_translations']['en']['items'], rows)
+        self.assertEqual(current['payload']['source']['language'], 'ru')
+        fake = Publisher()
+        publication.publish(self.archive, fake)
+        self.assertEqual(fake.calls[0]['experience_translations']['en']['items'], rows)
+        changed = {**self.resume, 'sections': [{**self.resume['sections'][0], 'text': EXPERIENCE.replace('описал метрики', 'описал обновлённые метрики')}]}
+        self.archive.sync({'client_id': 'publication-test', 'records': [record('resume', changed)]})
+        fresh = publication.preview(self.archive)
+        self.assertEqual(fresh['experience_needs_review'], ['en'])
+        self.assertEqual(fresh['payload']['experience_translations'], {})
+        self.assertIn('обновлённые', fresh['payload']['experience'][0]['description'])
+        with self.assertRaises(ValueError):
+            publication.save_experience_translation(self.archive, data)
+
+    def test_translation_does_not_follow_another_primary_resume_with_identical_work(self):
+        from src.portfolio_translations import current_translations
+        proposal = publication.preview(self.archive)
+        rows = [{**proposal['payload']['experience'][0], 'period': 'January 2023 — February 2025', 'duration': '2 years'}]
+        publication.save_experience_translation(self.archive, {'language': 'en', 'basis': proposal['experience_basis'], 'items': rows, 'reviewed': True})
+        _, translations, stale = current_translations(publication.read(self.archive), 'another-primary', proposal['payload']['experience'], 'ru')
+        self.assertEqual(translations, {})
+        self.assertEqual(stale, ['en'])

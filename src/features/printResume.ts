@@ -1,5 +1,7 @@
+import {directionArrow} from './directionArrow';
 import type {CVContent, Lang} from '../i18n';
 import {escapeText as e, type HHSnapshot} from './hhExperience';
+import {introURL} from './resumeLinks';
 
 const titleText = (value: string) => value.split(/<br\s*\/?\s*>/i)[0].replace(/<[^>]+>/g,' ').trim();
 function blocks(value: string): string {
@@ -16,13 +18,13 @@ export function renderPrintResume(cv:CVContent, lang:Lang, snapshot:HHSnapshot|n
  const pending=!!snapshot&&snapshot.source.language!==lang;
  const aboutPending=!!snapshot?.about&&snapshot.about.language!==lang&&!snapshot.about.translations?.[lang];
  const contact=[cv.contact.location,cv.contact.relocation].filter(Boolean);
- return `<nav class="print-toolbar" aria-label="${ru?'Управление печатью':'Print controls'}"><a href="${e(back.href)}">← ${ru?'К портфолио':'Portfolio'}</a><span><a href="${e(english.href)}" hreflang="en">EN</a> / <a href="${e(russian.href)}" hreflang="ru">RU</a></span><button type="button" data-print-document>${ru?'Печать / Сохранить PDF':'Print / Save PDF'}</button></nav>
+ return `<nav class="print-toolbar" aria-label="${ru?'Управление печатью':'Print controls'}"><a href="${e(back.href)}">${directionArrow('left')} ${ru?'К портфолио':'Portfolio'}</a><a href="${e(introURL(location.href,lang))}" aria-label="${ru?'Показать Intro-анимацию':'Show Intro animation'}">${directionArrow('up')} Intro</a><span><a href="${e(english.href)}" hreflang="en">EN</a> / <a href="${e(russian.href)}" hreflang="ru">RU</a></span><button type="button" data-print-document>${ru?'Печать / Сохранить PDF':'Print / Save PDF'}</button></nav>
  <main class="print-resume">
  <header class="print-resume-header"><div><h1>${e(cv.name)}</h1><h2>${e(titleText(cv.title))}</h2>
- <p>${cv.contact.phone?'<a href="tel:'+e(cv.contact.phone.replace(/[^+\d]/g,''))+'">'+e(cv.contact.phone)+'</a><br>':''}<a href="mailto:${e(cv.contact.email)}">${e(cv.contact.email)}</a></p>
+ <p><a href="mailto:${e(cv.contact.email)}">${e(cv.contact.email)}</a></p>
  <p>${contact.map(e).join('<br>')}</p>
- <p class="print-social"><a href="https://github.com/vladislav-vasilenko">github.com/vladislav-vasilenko</a><br><a href="https://linkedin.com/in/tech">linkedin.com/in/tech</a> · <a href="https://t.me/vsvladis">t.me/vsvladis</a></p></div><img src="/profile.jpg" width="110" height="140" alt="${e(cv.name)}"></header>
- ${source?'<p class="print-source">'+(ru?'Источник: ':'Source: ')+'<a href="'+e(source)+'">'+(ru?'основное HH-резюме':'primary HH resume')+'</a></p>':''}
+ <p class="print-social"><a href="https://github.com/vladislav-vasilenko">github.com/vladislav-vasilenko</a><br><a href="https://huggingface.co/VVladTech">huggingface.co/VVladTech</a><br><a href="https://linkedin.com/in/tech">linkedin.com/in/tech</a> · <a href="https://t.me/vsvladis">t.me/vsvladis</a></p></div><img src="/profile.jpg" width="110" height="140" alt="${e(cv.name)}"></header>
+ ${source?'<p class="print-source">'+(ru?'Источник: ':'Source: ')+'<a href="'+e(source)+'">'+(ru?'основное HH-резюме':'primary HH resume')+'</a>'+(snapshot?.source.translated_from?' · '+(ru?'Перевод с ':'Translated from ')+snapshot.source.translated_from.toUpperCase():'')+'</p>':''}
  <section><h2>${ru?'Обо мне':'About'}</h2>${aboutPending?'<p class="print-source">'+(ru?'Ожидается перевод · оригинал: ':'Translation pending · original: ')+snapshot!.about!.language.toUpperCase()+'</p>':''}${blocks(about)}</section>
  <section><h2>${ru?'Опыт работы':'Work experience'}</h2>${pending?'<p class="print-source">'+(ru?'Показан исходный текст опыта · ':'Original experience text · ')+snapshot!.source.language.toUpperCase()+'</p>':''}
  ${cv.experience.map(job=>`<article class="print-experience-entry"><div class="print-period">${e(job.period)}${job.duration?'<br><span>'+e(job.duration)+'</span>':''}</div><div><h3>${e(job.company)}</h3><p class="print-position">${e(job.role)}</p>${job.location?'<p>'+e(job.location)+'</p>':''}${blocks(job.descriptionMd)}</div></article>`).join('')}</section>

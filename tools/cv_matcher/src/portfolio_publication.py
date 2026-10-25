@@ -96,6 +96,8 @@ def preview(archive):
     source_language = 'ru' if len(re.findall('[А-Яа-яЁё]', text)) > len(re.findall('[A-Za-z]', text)) / 3 else 'en'
     translations = dict(draft.get('translations', {})) if reviewed else {}
     if reviewed: translations[draft['language']] = draft['text']
+    from .portfolio_translations import current_translations
+    experience_basis, experience_translations, stale_translations = current_translations(state, primary, items, source_language)
     payload = {'schema_version': 1, 'enabled': True, 'title': cv['title'],
                'source': {'label': 'HH', 'captured_at': cv.get('checked_at') or cv.get('captured_at') or detail['source_at'],
                           'language': source_language,
@@ -103,12 +105,14 @@ def preview(archive):
                'about': {'text': translations.get(source_language, about),
                          'language': source_language, 'translations': translations,
                          'origin': 'reviewed' if reviewed else 'hh'},
-               'experience': items, 'confirmed_skills': skills}
+               'experience': items, 'experience_basis': experience_basis,
+               'experience_translations': experience_translations, 'confirmed_skills': skills}
     from .portfolio_visuals import project
     payload['visuals'] = project(archive, state.get('visual_settings', {}))
     return {'resume_title': cv['title'], 'resume_id': primary, 'version_id': detail['version_id'],
             'about_basis': about_key, 'about_source': about, 'about_needs_review': bool(draft) and not reviewed,
-            'fingerprint': digest({'title': payload['title'], 'experience': items, 'skills': skills, 'language': payload['source']['language'], 'about': payload['about'], 'url': payload['source']['url'], 'visuals': payload['visuals']}), 'payload': payload,
+            'experience_basis': experience_basis, 'experience_needs_review': stale_translations,
+            'fingerprint': digest({'title': payload['title'], 'experience': items, 'experience_translations': experience_translations, 'skills': skills, 'language': payload['source']['language'], 'about': payload['about'], 'url': payload['source']['url'], 'visuals': payload['visuals']}), 'payload': payload,
             'skills_text': 'Подтверждённые навыки · проекты и лабораторные\n' + '\n'.join(
                 s['label'] + ': ' + ', '.join(link['url'] for link in s['links']) for s in skills)}
 
@@ -128,6 +132,26 @@ def save_about(archive, data):
     translations[language] = text.strip()
     return write(archive, about_draft={'text': text.strip(), 'language': language, 'translations': translations,
                  'basis': proposal['about_basis'], 'resume_id': proposal['resume_id'], 'saved_at': now_iso()})
+
+
+def save_experience_translation(archive, data):
+    proposal = preview(archive)
+    language = data.get('language')
+    if language not in ('ru', 'en'):
+        raise ValueError('Укажите язык RU / EN.')
+    drafts = dict(read(archive).get('experience_translations', {}))
+    if data.get('reset') is True:
+        drafts.pop(language, None)
+        return write(archive, experience_translations=drafts)
+    if data.get('reviewed') is not True:
+        raise ValueError('Проверьте перевод перед использованием на публичном сайте.')
+    if data.get('basis') != proposal['experience_basis']:
+        raise ValueError('Опыт HH изменился. Обновите предпросмотр и перевод.')
+    from .portfolio_translations import validate_translation
+    items = validate_translation(data.get('items'), proposal['payload']['experience'], language, proposal['payload']['source']['language'])
+    drafts[language] = {'resume_id': proposal['resume_id'], 'basis': proposal['experience_basis'],
+                       'language': language, 'items': items, 'saved_at': now_iso()}
+    return write(archive, experience_translations=drafts)
 
 
 def discussion_context(archive):

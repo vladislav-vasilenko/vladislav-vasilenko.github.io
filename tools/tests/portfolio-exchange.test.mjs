@@ -13,7 +13,7 @@ test('shared Markdown exchange preserves selected CV text, dates and evidence li
   vm.runInContext(code, context);
   const cv = {
     name: 'Candidate', title: 'Research Engineer',
-    contact: {location: 'Remote', email: 'example@example.org', phone: '', relocation: ''},
+    contact: {location: 'Remote', email: 'example@example.org', phone: '+1 555 0100', relocation: ''},
     labels: {
       about: 'О себе', employment: 'Занятость', experience: 'Опыт',
       education: 'Образование', skills: 'Навыки', languages: 'Языки',
@@ -34,5 +34,14 @@ test('shared Markdown exchange preserves selected CV text, dates and evidence li
   assert.match(markdown, /Воспроизведён эксперимент/);
   assert.match(markdown, /https:\/\/github.com\/example\/project/);
   assert.match(markdown, /PyTorch/);
+  assert.doesNotMatch(markdown, /\+1 555 0100|tel:/);
   assert.deepEqual(cv, before);
+});
+
+
+test('public resume source copies omit the mobile number',()=>{
+ for(const lang of ['en','ru']){
+  const cv=JSON.parse(fs.readFileSync(new URL('../../content/'+lang+'/cv.json',import.meta.url),'utf8'));
+  assert.equal(cv.contact.phone,'');
+ }
 });
