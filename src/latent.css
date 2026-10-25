@@ -1,0 +1,4 @@
+/* Scoped to latent.html only: the CV pages keep their own CSS and never load Tailwind's preflight. */
+@import "tailwindcss" source(none);
+@source "./latent.jsx";
+@source "./components/LionheadDitDiffusion.jsx";

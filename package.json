@@ -18,11 +18,20 @@
     "portfolio:test": "node --test tools/tests/*.test.mjs"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^5",
+    "tailwindcss": "^4.3.3",
     "typescript": "~5.9.3",
     "vite": "^7.3.1"
   },
   "dependencies": {
-    "marked": "^17.0.3"
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
+    "gsap": "^3.15.0",
+    "marked": "^17.0.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "three": "^0.186.1"
   },
   "description": "Workspace: public personal portfolio and local Career Intelligence service"
 }
