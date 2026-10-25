@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ML Research Vacancy Search",
-  "version": "0.13.2",
+  "version": "0.13.7",
   "description": "Поиск по CV, сбор вакансий, оценки и помощник отклика на HH, Яндексе, Avito, Ozon и T-Bank. История и кэш — в локальной SQLite.",
   "permissions": [
     "activeTab",

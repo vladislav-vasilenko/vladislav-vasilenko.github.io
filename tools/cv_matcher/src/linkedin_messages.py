@@ -12,7 +12,9 @@ def messages(rows):
     result=[];seen=set()
     for row in rows:
         if not isinstance(row,dict):raise ValueError('Неверный формат сообщения.')
-        item={key:string(row.get(key,''),limit) for key,limit in [('id',1000),('sender',500),('text',20000),('sent_label',200),('sent_at',100)]}
+        item={key:string(row.get(key,''),limit) for key,limit in [('id',1000),('sender',500),('text',20000),('sent_label',200),('sent_at',100),('date_label',200)]}
+        avatar=string(row.get('avatar_url',''),2500);u=urlsplit(avatar)
+        item['avatar_url']=avatar if u.scheme=='https' and u.hostname in ('media.licdn.com','static.licdn.com') and not u.username and not u.password else ''
         if not item['id'] or item['id'] in seen:continue
         seen.add(item['id']);item['id_kind']='source' if row.get('id_kind')=='source' else 'content'
         badges=row.get('badges',[])

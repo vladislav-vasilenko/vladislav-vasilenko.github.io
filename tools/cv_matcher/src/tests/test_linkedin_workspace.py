@@ -78,6 +78,11 @@ class WorkspaceTests(unittest.TestCase):
   c=self.queue('network.list');self.finish(c,{'items':[{'url':OTHER,'name':'Colleague','text':'Recruiter'}]});note={'kind':'contacts','id':OTHER,'text':'PRIVATE NOTE','revision':0};self.assertEqual(li.save_note(self.archive,note)['revision'],1)
   with self.assertRaises(ValueError):li.save_note(self.archive,note)
   c=self.queue('messages.thread',url='https://www.linkedin.com/messaging/thread/abc/');self.finish(c,{'items':[{'url':c['payload']['url'],'text':'PRIVATE CHAT','name':'Recruiter','vacancy_links':['https://www.linkedin.com/jobs/view/123/']}]});self.assertNotIn('PRIVATE',json.dumps(self.archive.restore()));self.assertEqual(len(li.overview(self.archive)['records']['threads']),1)
+ def test_chat_sender_avatars_and_observed_dates_are_preserved_without_replacing_the_conversation_avatar(self):
+  url='https://www.linkedin.com/messaging/thread/avatars/'
+  command=self.queue('messages.list');self.finish(command,{'items':[{'url':url,'name':'Recruiter','avatar_url':'https://media.licdn.com/recruiter.jpg'}]})
+  command=self.queue('messages.thread',url=url);self.finish(command,{'items':[{'url':url,'name':'Recruiter','avatar_url':'','headline':'Research recruiter','messages':[{'id':'m1','sender':'Recruiter','text':'Interview','avatar_url':'https://media.licdn.com/sender.jpg','date_label':'MONDAY','sent_label':'12:38 PM'},{'id':'m2','sender':'Unknown','text':'Another message','avatar_url':'https://untrusted.example/track.gif'}]}]})
+  detail=li.thread_detail(self.archive,{'url':url});self.assertEqual(detail['avatar_url'],'https://media.licdn.com/recruiter.jpg');self.assertEqual(detail['headline'],'Research recruiter');self.assertEqual(detail['messages'][0]['date_label'],'MONDAY');self.assertEqual(detail['messages'][0]['avatar_url'],'https://media.licdn.com/sender.jpg');self.assertEqual(detail['messages'][1]['avatar_url'],'')
  def test_contact_batches_preserve_richer_fields_notes_and_search_across_scopes(self):
   c=self.queue('network.list',scope='connections',limit=3)
   batch={'id':c['id'],'worker_id':WORKER,'outcome':{'state':'completed','message':'batch','data':{'items':[{'url':OTHER,'name':'Коллега','headline':'Engineer at Lab','company':'Lab','badges':['Verified'],'degree':'1st'}]}}}
@@ -131,6 +136,14 @@ class WorkspaceTests(unittest.TestCase):
   c=self.queue('network.list',collect_all=True);li.control(self.archive,{'id':c['id']});self.finish(c,{'items':[],'collected_contacts':[]},'cancelled')
   self.assertEqual(li.contacts(self.archive,{})['collection']['state'],'cancelled')
   self.assertIsNone(li.claim(self.archive,{'worker_id':WORKER,'version':'0.12.4'})['command'])
+ def test_complete_chat_collection_never_creates_or_resumes_a_contact_collection(self):
+  command=self.queue('messages.list',collect_all=True,scope='all',load_threads=False)
+  self.assertEqual(command['payload']['limit'],10000);self.assertNotIn('collection_id',command['payload']);self.assertNotIn('known_contacts',command['payload'])
+  with self.archive.connect() as db:self.assertEqual(db.execute('SELECT count(*) FROM linkedin_contact_collections').fetchone()[0],0)
+  with self.archive.connect() as db:
+   from src.linkedin_contacts import start
+   start(db,'legacy-chat-walk',{'account':ACCOUNT,'scope':'all'})
+  self.finish(command,{'items':[],'collected_threads':[]});self.assertIsNone(li.overview(self.archive)['contact_collection'])
  def test_network_exact_preview_no_automatic_write_retry(self):
   c=self.queue('network.prepare',url=OTHER,network_action='connect');r=self.finish(c,{'url':OTHER,'action':'connect','target_fingerprint':'domhash','name':'Colleague','button_label':'Connect'});s=li.overview(self.archive)['snapshots']['network.prepare'];p={'action':'network.execute','snapshot_id':r['snapshot_id'],'fingerprint':s['fingerprint'],'confirmed':True}
   with self.assertRaises(ValueError):li.enqueue(self.archive,{**p,'confirmed':False})
@@ -233,7 +246,7 @@ class WorkspaceTests(unittest.TestCase):
   self.assertEqual(li.linkedin_url(url.replace('==','%3D%3D'),'thread'),url)
   command=self.queue('messages.list',limit=3,load_threads=True)
   li.checkpoint(self.archive,{'id':command['id'],'worker_id':WORKER,'outcome':{'state':'completed','message':'preview','data':{'items':[{'url':url,'name':'Recruiter','text':'Preview','preview':'Preview','badges':['InMail']}]}}})
-  result=self.finish(command,{'items':[],'collected_threads':[url]});self.assertEqual(result['count'],1);self.assertEqual(result['threads_queued'],1)
+  result=self.finish(command,{'items':[],'collected_threads':[url],'listing_coverage':'available_boundary'});self.assertEqual(result['count'],1);self.assertEqual(result['threads_queued'],1);self.assertEqual(result['listing_coverage'],'available_boundary')
   command=li.claim(self.archive,{'worker_id':WORKER})['command'];self.assertEqual(command['kind'],'linkedin.messages.thread')
   rows=[{'id':str(i),'sender':'Recruiter','text':'Message '+str(i),'sent_label':'Today','attachments':[],'badges':[]} for i in range(60)]
   self.finish(command,{'items':[{'url':url,'name':'Recruiter','text':'PRIVATE THREAD','messages':rows}],'history_coverage':'message_limit'})
