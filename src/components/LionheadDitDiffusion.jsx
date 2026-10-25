@@ -470,9 +470,12 @@ function Swarm({ field, pointerNdc, showTrajectories }) {
 /**
  * Fixed full-viewport background: noise -> flow-matching ODE -> DiT-patch denoised portrait, driven by page scroll.
  * `trigger` is the scroll element whose top-to-bottom range maps t = 1 -> 0 (defaults to the whole document).
+ * `contained` fills the nearest positioned parent (e.g. a sticky intro stage) instead of the viewport.
  */
-export default function LionheadDitDiffusion({ trigger }) {
+export default function LionheadDitDiffusion({ trigger, contained = false }) {
   const [showTrajectories, setShowTrajectories] = useState(false);
+  const [onScreen, setOnScreen] = useState(true);
+  const stageRef = useRef(null);
   const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, 1.75));
   const readoutRef = useRef(null);
   const field = useMemo(() => ({ attraction: 0, locks: Array.from({ length: PATCHES }, () => ({ v: 0 })) }), []);
@@ -480,9 +483,11 @@ export default function LionheadDitDiffusion({ trigger }) {
 
   useEffect(() => {
     const move = (e) => {
-      pointerNdc.x = (e.clientX / window.innerWidth) * 2 - 1;
-      pointerNdc.y = -(e.clientY / window.innerHeight) * 2 + 1;
-      pointerNdc.active = true;
+      // Relative to the canvas box, which only equals the viewport while a contained stage is pinned.
+      const box = stageRef.current.getBoundingClientRect();
+      pointerNdc.x = ((e.clientX - box.left) / box.width) * 2 - 1;
+      pointerNdc.y = -((e.clientY - box.top) / box.height) * 2 + 1;
+      pointerNdc.active = pointerNdc.x >= -1 && pointerNdc.x <= 1 && pointerNdc.y >= -1 && pointerNdc.y <= 1;
     };
     const leave = () => {
       pointerNdc.active = false;
@@ -503,6 +508,13 @@ export default function LionheadDitDiffusion({ trigger }) {
       document.documentElement.removeEventListener('pointerleave', leave);
     };
   }, [pointerNdc]);
+
+  useEffect(() => {
+    // Stop simulating and rendering once the canvas is scrolled out of view.
+    const observer = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting));
+    observer.observe(stageRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const setReadout = (t) => {
@@ -536,8 +548,9 @@ export default function LionheadDitDiffusion({ trigger }) {
 
   return (
     <>
-      <div className="pointer-events-none fixed inset-0 z-0 bg-black" aria-hidden="true">
+      <div ref={stageRef} className={`pointer-events-none ${contained ? 'absolute' : 'fixed'} inset-0 z-0 bg-black`} aria-hidden="true">
         <Canvas
+          frameloop={onScreen ? 'always' : 'never'}
           shadows="percentage"
           dpr={dpr}
           gl={{ antialias: true, powerPreference: 'high-performance' }}
@@ -562,7 +575,7 @@ export default function LionheadDitDiffusion({ trigger }) {
           <Swarm field={field} pointerNdc={pointerNdc} showTrajectories={showTrajectories} />
         </Canvas>
       </div>
-      <div className="fixed right-4 bottom-4 z-10 flex flex-col items-end gap-2 font-mono text-[11px] leading-none tracking-wide text-neutral-500">
+      <div className={`${contained ? 'absolute' : 'fixed'} right-4 bottom-4 z-10 flex flex-col items-end gap-2 font-mono text-[11px] leading-none tracking-wide text-neutral-500`}>
         <span ref={readoutRef} className="tabular-nums">
           t = 1.00
         </span>

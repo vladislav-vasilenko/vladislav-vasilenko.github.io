@@ -36,4 +36,11 @@ function renderPage():void{
  initializePWA();
 }
 renderPage();
+// The intro is static HTML (no layout shift); its three.js bundle loads lazily so the CV paints first.
+const intro=document.getElementById('latent-intro');
+if(intro){
+ const skip=intro.querySelector<HTMLAnchorElement>('.latent-intro-skip');if(skip)skip.textContent=language==='ru'?'Прокрутите к резюме ↓':'Scroll to CV ↓';
+ if(detailed||matchMedia('(prefers-reduced-motion: reduce)').matches)intro.remove();
+ else import('./latentIntro.jsx').then(m=>m.mountLatentIntro(intro)).catch(()=>intro.remove());
+}
 void loadHHSnapshot().then(value=>{if(value){snapshot=value;renderPage();}});
