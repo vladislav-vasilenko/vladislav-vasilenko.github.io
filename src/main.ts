@@ -39,7 +39,10 @@ renderPage();
 // The intro is static HTML (no layout shift); its three.js bundle loads lazily so the CV paints first.
 const intro=document.getElementById('latent-intro');
 if(intro){
- const skip=intro.querySelector<HTMLAnchorElement>('.latent-intro-skip');if(skip)skip.textContent=language==='ru'?'Прокрутите к резюме ↓':'Scroll to CV ↓';
+ const skip=intro.querySelector<HTMLAnchorElement>('.latent-intro-skip');
+ if(skip){skip.querySelector('span')!.textContent=language==='ru'?'Листайте вниз':'Scroll down';
+  // Smooth-scroll instead of jumping, so the scrubbed animation plays on the way to the CV.
+  skip.onclick=event=>{event.preventDefault();document.getElementById('app')?.scrollIntoView({behavior:'smooth'});};}
  if(detailed||matchMedia('(prefers-reduced-motion: reduce)').matches)intro.remove();
  else import('./latentIntro.jsx').then(m=>m.mountLatentIntro(intro)).catch(()=>intro.remove());
 }

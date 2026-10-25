@@ -33,10 +33,17 @@ const TREMOR = 1.4;
 const SPIN_KICK = 28;
 const VMAX = 14;
 const RESTITUTION = 0.55;
+// Gravity mode: tokens rain into a bin below the portrait, then the flow field lifts them out.
+const GRAVITY = 9.8;
+const FLOOR_Y = -(ROWS * SPACING) / 2 - 0.2;
+const BIN_X = 1.7;
+const BIN_Z = 0.7;
+const FLOOR_BOUNCE = 0.3;
+const FLOOR_FRICTION = 0.85;
+const SATURATION = 1.8; // the source photo is muted; push its hues so they read on cubes
 
 const HASH_SIZE = 8192; // power of two
 const INV_CELL = 1 / (2 * RADIUS);
-const DIAM2 = 4 * RADIUS * RADIUS;
 
 const DEFAULT_SOURCES = ['/avatar.jpg', '/profile.jpg'];
 
@@ -44,8 +51,11 @@ const gridX = (c) => (c - (COLS - 1) / 2) * SPACING;
 const gridY = (r) => ((ROWS - 1) / 2 - r) * SPACING;
 const hashCell = (x, y, z) => (Math.imul(x, 73856093) ^ Math.imul(y, 19349663) ^ Math.imul(z, 83492791)) & (HASH_SIZE - 1);
 
-/** VAE "decoder" init: downsample the avatar to COLSxROWS grayscale bytes (0-255), contrast-stretched. */
-async function loadBrightness(sources) {
+/**
+ * VAE "decoder" init: downsample the avatar to COLSxROWS grayscale bytes (0-255), contrast-stretched,
+ * plus the matching RGB (0-1) at that stretched brightness.
+ */
+async function loadImage(sources) {
   for (const src of sources) {
     try {
       const img = new Image();
@@ -73,9 +83,20 @@ async function loadBrightness(sources) {
       const lo = sorted[Math.floor(COUNT * 0.02)];
       const hi = sorted[Math.floor(COUNT * 0.98)];
       const range = Math.max(1, hi - lo);
-      const out = new Uint8Array(COUNT);
-      for (let i = 0; i < COUNT; i++) out[i] = 255 * Math.min(1, Math.max(0, (gray[i] - lo) / range)) ** GAMMA;
-      return out;
+      const brightness = new Uint8Array(COUNT);
+      const rgb = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT; i++) {
+        const stretched = Math.min(1, Math.max(0, (gray[i] - lo) / range)) ** GAMMA;
+        brightness[i] = 255 * stretched;
+        // Rescale the pixel to the stretched luma (same albedo range as monochrome), then boost saturation.
+        const luma = 0.06 + 0.9 * stretched;
+        const gain = luma / Math.max(gray[i] / 255, 0.02);
+        for (let ch = 0; ch < 3; ch++) {
+          const v = (data[i * 4 + ch] / 255) * gain;
+          rgb[i * 3 + ch] = Math.min(1, Math.max(0, luma + (v - luma) * SATURATION));
+        }
+      }
+      return { brightness, rgb };
     } catch {
       // Try the next source.
     }
@@ -91,6 +112,10 @@ function createSimulation() {
     spin: new Float32Array(COUNT * 3),
     target: new Float32Array(COUNT * 3),
     lum: new Float32Array(COUNT).fill(0.5),
+    rgb: new Float32Array(COUNT * 3).fill(0.5),
+    scale: new Float32Array(COUNT).fill(1),
+    outside: new Uint8Array(COUNT), // outside the round CV avatar the portrait docks into
+    dockDelay: new Float32Array(PATCHES),
     patchOf: new Uint16Array(COUNT),
     patchSize: new Uint16Array(PATCHES),
     phase: new Float32Array(PATCHES),
@@ -114,6 +139,8 @@ function createSimulation() {
     sim.patchSize[sim.patchOf[i]]++;
     sim.target[i * 3] = gridX(c);
     sim.target[i * 3 + 1] = gridY(r);
+    const half = (ROWS * SPACING) / 2;
+    sim.outside[i] = (gridX(c) / half) ** 2 + (gridY(r) / half) ** 2 > 1 ? 1 : 0;
     // Phase 1: t = 1, pure noise.
     sim.pos[i * 3] = (Math.random() - 0.5) * 6;
     sim.pos[i * 3 + 1] = (Math.random() - 0.5) * 5.2;
@@ -123,20 +150,24 @@ function createSimulation() {
     sim.rot[i * 3 + 2] = Math.random() * Math.PI * 2;
   }
   // Golden-angle phases keep neighbouring patches out of sync while each patch pulses as one.
-  for (let k = 0; k < PATCHES; k++) sim.phase[k] = k * 2.39996;
+  for (let k = 0; k < PATCHES; k++) {
+    sim.phase[k] = k * 2.39996;
+    sim.dockDelay[k] = Math.random();
+  }
   return sim;
 }
 
-function applyBrightness(sim, bytes) {
+function applyImage(sim, { brightness, rgb }) {
+  sim.rgb.set(rgb);
   for (let i = 0; i < COUNT; i++) {
-    sim.lum[i] = bytes[i] / 255;
+    sim.lum[i] = brightness[i] / 255;
     sim.target[i * 3 + 2] = (sim.lum[i] - 0.5) * DEPTH;
   }
 }
 
 /** Sphere-sphere collisions over a spatial hash: O(N) instead of O(N^2) pair checks. */
 function resolveCollisions(sim) {
-  const { pos, vel, head, next, cell } = sim;
+  const { pos, vel, head, next, cell, scale } = sim;
   head.fill(-1);
   for (let i = 0; i < COUNT; i++) {
     const cx = Math.floor(pos[i * 3] * INV_CELL);
@@ -162,13 +193,15 @@ function resolveCollisions(sim) {
             const dy = pos[i * 3 + 1] - pos[j * 3 + 1];
             const dz = pos[i * 3 + 2] - pos[j * 3 + 2];
             const d2 = dx * dx + dy * dy + dz * dz;
-            if (d2 >= DIAM2 || d2 < 1e-12) continue;
+            // Contact distance follows each cube's scale, so the shrunken docked portrait does not explode.
+            const reach = RADIUS * (scale[i] + scale[j]);
+            if (d2 >= reach * reach || d2 < 1e-12) continue;
             const d = Math.sqrt(d2);
             const nx = dx / d;
             const ny = dy / d;
             const nz = dz / d;
             // Split the overlap evenly, then exchange momentum along the contact normal.
-            const push = (2 * RADIUS - d) * 0.5;
+            const push = (reach - d) * 0.5;
             pos[i * 3] += nx * push;
             pos[i * 3 + 1] += ny * push;
             pos[i * 3 + 2] += nz * push;
@@ -201,7 +234,7 @@ function CameraRig() {
     // Fit the finished portrait (plus a margin) on any viewport, portrait phones included.
     const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const aspect = width / height;
-    const fitH = (ROWS * SPACING) / 2 + 0.5;
+    const fitH = (ROWS * SPACING) / 2 + 0.65;
     const fitW = (COLS * SPACING) / 2 + 0.3;
     camera.position.set(0, 0, Math.max(fitH / tan, fitW / (tan * aspect)));
     camera.lookAt(0, 0, 0);
@@ -210,8 +243,9 @@ function CameraRig() {
   return null;
 }
 
-function Swarm({ field, pointerNdc, showTrajectories }) {
+function Swarm({ field, pointerNdc, showTrajectories, gravity, color, dockTarget }) {
   const meshRef = useRef(null);
+  const materialRef = useRef(null);
   const linesRef = useRef(null);
   const sim = useMemo(createSimulation, []);
   const scratch = useMemo(
@@ -262,8 +296,8 @@ function Swarm({ field, pointerNdc, showTrajectories }) {
 
   useEffect(() => {
     let cancelled = false;
-    loadBrightness(DEFAULT_SOURCES).then((bytes) => {
-      if (!cancelled && bytes) applyBrightness(sim, bytes);
+    loadImage(DEFAULT_SOURCES).then((image) => {
+      if (!cancelled && image) applyImage(sim, image);
     });
     return () => {
       cancelled = true;
@@ -276,7 +310,7 @@ function Swarm({ field, pointerNdc, showTrajectories }) {
     const dt = Math.min(rawDt, 1 / 30);
     const t = state.clock.elapsedTime;
     const g = field.attraction;
-    const { pos, vel, rot, spin, target, lum, patchOf } = sim;
+    const { pos, vel, rot, spin, target, lum, rgb, patchOf } = sim;
     const { pulse } = scratch;
 
     // Phase 3 input: project the cursor onto the z = 0 plane and estimate its world-space speed.
@@ -295,6 +329,26 @@ function Swarm({ field, pointerNdc, showTrajectories }) {
     } else {
       sim.hadPointer = false;
       sim.pointerSpeed = 0;
+    }
+    // Dock: fly the finished portrait into the CV avatar it was decoded from.
+    const d = field.dock;
+    let dock = false;
+    let dcx = 0;
+    let dcy = 0;
+    let ds = 1;
+    if (d > 0 && dockTarget) {
+      const el = document.querySelector(dockTarget);
+      if (el) {
+        const box = el.getBoundingClientRect();
+        const { width, height } = state.size;
+        const worldPerPx = (2 * state.camera.position.z * Math.tan(THREE.MathUtils.degToRad(state.camera.fov / 2))) / height;
+        dcx = (box.left + box.width / 2 - width / 2) * worldPerPx;
+        dcy = (height / 2 - box.top - box.height / 2) * worldPerPx;
+        // The avatar shows the whole square photo; the grid is its 3:4 centre crop, so heights match.
+        ds = (box.height * worldPerPx) / (ROWS * SPACING);
+        dock = true;
+        energy *= Math.max(0, 1 - d * 3);
+      }
     }
     const wx = sim.pointer.x;
     const wy = sim.pointer.y;
@@ -316,15 +370,41 @@ function Swarm({ field, pointerNdc, showTrajectories }) {
       const pull = g * (0.25 + 0.75 * lock);
       const k = 30 * pull + 30 * lock * lock;
       const c = 1.6 * Math.sqrt(k) + 0.4;
+      let tx = target[ix];
+      let ty = target[iy];
+      let tz = target[iz];
+      let size = 1;
+      if (dock) {
+        // Patches leave at staggered moments, swoop toward the viewer and shrink onto the avatar.
+        const raw = Math.min(1, Math.max(0, (d - sim.dockDelay[patchOf[i]] * 0.4) / 0.6));
+        const f = raw * raw * (3 - 2 * raw);
+        tx += (dcx + tx * ds - tx) * f;
+        ty += (dcy + ty * ds - ty) * f;
+        tz += (tz * ds - tz) * f + Math.sin(Math.PI * f) * 1.2;
+        size = 1 + (ds - 1) * f;
+        if (sim.outside[i]) size *= 1 - Math.min(1, Math.max(0, (f - 0.6) / 0.4));
+      }
+      sim.scale[i] = size;
       const px = pos[ix];
       const py = pos[iy];
       const pz = pos[iz];
-      let ax = k * (target[ix] - px) - c * vel[ix];
-      let ay = k * (target[iy] - py) - c * vel[iy];
-      let az = k * (target[iz] - pz) - c * vel[iz];
+      let ax = k * (tx - px) - c * vel[ix];
+      let ay = k * (ty - py) - c * vel[iy];
+      let az = k * (tz - pz) - c * vel[iz];
 
-      // Phase 1: turbulent pseudo-curl noise + Brownian jitter, held in a weak harmonic well.
-      if (chaos > 1e-3) {
+      // Phase 1 (gravity): free fall into the bin; fades as the flow field takes over, so the pile is lifted out.
+      const heavy = gravity ? (1 - lock) * (1 - g) : 0;
+      if (gravity) {
+        ay -= GRAVITY * heavy;
+        if (heavy > 0.02) {
+          // Soft bin walls keep the pile under the portrait instead of spreading across the floor.
+          if (px < -BIN_X) ax += (-BIN_X - px) * 80;
+          else if (px > BIN_X) ax += (BIN_X - px) * 80;
+          if (pz < -BIN_Z) az += (-BIN_Z - pz) * 80;
+          else if (pz > BIN_Z) az += (BIN_Z - pz) * 80;
+        }
+      } else if (chaos > 1e-3) {
+        // Phase 1 (chaos): turbulent pseudo-curl noise + Brownian jitter, held in a weak harmonic well.
         const s = i * 0.618;
         ax += chaos * (NOISE * (Math.sin(1.3 * py + 0.8 * t + s) + Math.cos(1.7 * pz - 0.6 * t + 2 * s)) + JITTER * (Math.random() - 0.5) - WELL * px);
         ay += chaos * (NOISE * (Math.sin(1.1 * pz + 0.7 * t + 3 * s) + Math.cos(1.5 * px + 0.9 * t)) + JITTER * (Math.random() - 0.5) - WELL * py);
@@ -382,6 +462,20 @@ function Swarm({ field, pointerNdc, showTrajectories }) {
 
     // Phase 4: elastic sphere-sphere contacts.
     resolveCollisions(sim);
+    if (gravity && !dock) {
+      // Floor contact after collisions, so the pile cannot be pushed through it.
+      for (let i = 0; i < COUNT; i++) {
+        const iy = i * 3 + 1;
+        if (pos[iy] >= FLOOR_Y + RADIUS) continue;
+        pos[iy] = FLOOR_Y + RADIUS;
+        if (vel[iy] < 0) vel[iy] *= -FLOOR_BOUNCE;
+        vel[iy - 1] *= FLOOR_FRICTION;
+        vel[iy + 1] *= FLOOR_FRICTION;
+        spin[iy - 1] *= FLOOR_FRICTION;
+        spin[iy] *= FLOOR_FRICTION;
+        spin[iy + 1] *= FLOOR_FRICTION;
+      }
+    }
 
     const matrices = mesh.instanceMatrix.array;
     const colors = mesh.instanceColor.array;
@@ -389,18 +483,29 @@ function Swarm({ field, pointerNdc, showTrajectories }) {
     for (let i = 0; i < COUNT; i++) {
       const ix = i * 3;
       position.set(pos[ix], pos[ix + 1], pos[ix + 2]);
+      scale.setScalar(sim.scale[i]);
       euler.set(rot[ix], rot[ix + 1], rot[ix + 2]);
       quaternion.setFromEuler(euler);
       matrix.compose(position, quaternion, scale);
       matrix.toArray(matrices, i * 16);
       const k = patchOf[i];
       const lock = field.locks[k].v;
-      const base = 0.5 + (0.06 + 0.9 * lum[i] - 0.5) * lock;
-      const v = Math.min(1, base * (0.85 + pulse[k]));
-      colors[ix] = colors[ix + 1] = colors[ix + 2] = v;
+      const gain = 0.85 + pulse[k];
+      if (color) {
+        // Noise carries a faint tint of its token's colour; locking resolves it fully.
+        const mix = 0.25 + 0.75 * lock;
+        colors[ix] = Math.min(1, (0.5 + (rgb[ix] - 0.5) * mix) * gain);
+        colors[ix + 1] = Math.min(1, (0.5 + (rgb[ix + 1] - 0.5) * mix) * gain);
+        colors[ix + 2] = Math.min(1, (0.5 + (rgb[ix + 2] - 0.5) * mix) * gain);
+      } else {
+        const base = 0.5 + (0.06 + 0.9 * lum[i] - 0.5) * lock;
+        colors[ix] = colors[ix + 1] = colors[ix + 2] = Math.min(1, base * gain);
+      }
     }
     mesh.instanceMatrix.needsUpdate = true;
     mesh.instanceColor.needsUpdate = true;
+    // Cross-fade: the cubes dissolve while the real avatar (driven from CSS) fades in.
+    materialRef.current.opacity = dock ? 1 - Math.min(1, Math.max(0, (d - 0.88) / 0.12)) : 1;
 
     // ODE trajectories: ring buffer of the last HIST patch-center positions.
     sim.histClock += rawDt;
@@ -457,7 +562,7 @@ function Swarm({ field, pointerNdc, showTrajectories }) {
     <>
       <instancedMesh ref={meshRef} args={[undefined, undefined, COUNT]} castShadow receiveShadow frustumCulled={false}>
         <boxGeometry args={[CUBE, CUBE, CUBE]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.95} metalness={0} />
+        <meshStandardMaterial ref={materialRef} color="#ffffff" roughness={0.95} metalness={0} transparent />
       </instancedMesh>
       <lineSegments ref={linesRef} geometry={trailGeometry} visible={showTrajectories} frustumCulled={false}>
         {/* Drawn over the relief: trails run through the cube layer and would otherwise be occluded. */}
@@ -467,23 +572,38 @@ function Swarm({ field, pointerNdc, showTrajectories }) {
   );
 }
 
+function Toggle({ checked, onChange, children }) {
+  return (
+    <label className="flex cursor-pointer items-center gap-2 transition-colors select-none hover:text-neutral-100">
+      <input type="checkbox" className="peer sr-only" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span aria-hidden="true" className="text-neutral-300 peer-focus-visible:outline peer-focus-visible:outline-1 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-neutral-300">
+        {checked ? '[x]' : '[ ]'}
+      </span>
+      <span>{children}</span>
+    </label>
+  );
+}
+
 /**
  * Fixed full-viewport background: noise -> flow-matching ODE -> DiT-patch denoised portrait, driven by page scroll.
  * `trigger` is the scroll element whose top-to-bottom range maps t = 1 -> 0 (defaults to the whole document).
- * `contained` fills the nearest positioned parent (e.g. a sticky intro stage) instead of the viewport.
+ * `dock` ({ trigger, endTrigger, target }): after the portrait forms, scrolling from `trigger` entering the
+ * viewport until `endTrigger` reaches the top flies the cubes over a transparent page into the `target` image.
  */
-export default function LionheadDitDiffusion({ trigger, contained = false }) {
+export default function LionheadDitDiffusion({ trigger, dock }) {
   const [showTrajectories, setShowTrajectories] = useState(false);
-  const [onScreen, setOnScreen] = useState(true);
+  const [gravity, setGravity] = useState(true);
+  const [color, setColor] = useState(true);
+  const [docked, setDocked] = useState(false);
   const stageRef = useRef(null);
+  const uiRef = useRef(null);
   const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio || 1, 1.75));
   const readoutRef = useRef(null);
-  const field = useMemo(() => ({ attraction: 0, locks: Array.from({ length: PATCHES }, () => ({ v: 0 })) }), []);
+  const field = useMemo(() => ({ attraction: 0, dock: 0, locks: Array.from({ length: PATCHES }, () => ({ v: 0 })) }), []);
   const pointerNdc = useMemo(() => ({ x: 0, y: 0, active: false }), []);
 
   useEffect(() => {
     const move = (e) => {
-      // Relative to the canvas box, which only equals the viewport while a contained stage is pinned.
       const box = stageRef.current.getBoundingClientRect();
       pointerNdc.x = ((e.clientX - box.left) / box.width) * 2 - 1;
       pointerNdc.y = -((e.clientY - box.top) / box.height) * 2 + 1;
@@ -508,13 +628,6 @@ export default function LionheadDitDiffusion({ trigger, contained = false }) {
       document.documentElement.removeEventListener('pointerleave', leave);
     };
   }, [pointerNdc]);
-
-  useEffect(() => {
-    // Stop simulating and rendering once the canvas is scrolled out of view.
-    const observer = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting));
-    observer.observe(stageRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     const setReadout = (t) => {
@@ -542,27 +655,54 @@ export default function LionheadDitDiffusion({ trigger, contained = false }) {
         .to(field, { attraction: 1, duration: 0.55, ease: 'power2.in' }, 0)
         // ...then patches lock center-out, one denoising step at a time.
         .to(field.locks, { v: 1, duration: 0.3, ease: 'power3.inOut', stagger: { amount: 0.55, grid: [PATCH_ROWS, PATCH_COLS], from: 'center' } }, 0.25);
+      if (!dock) return;
+      let wasDocked = false;
+      const applyDock = () => {
+        const d = field.dock;
+        document.documentElement.style.setProperty('--latent-avatar', String(Math.min(1, Math.max(0, (d - 0.8) / 0.2))));
+        if (uiRef.current) {
+          uiRef.current.style.opacity = String(Math.max(0, 1 - d * 3));
+          uiRef.current.style.visibility = d > 0.33 ? 'hidden' : '';
+        }
+        // Fully docked: stop rendering; the real avatar has taken over.
+        const now = d >= 0.999;
+        if (now !== wasDocked) {
+          wasDocked = now;
+          setDocked(now);
+        }
+      };
+      applyDock();
+      gsap.to(field, {
+        dock: 1,
+        ease: 'none',
+        onUpdate: applyDock,
+        scrollTrigger: { trigger: dock.trigger, endTrigger: dock.endTrigger, start: 'top bottom', end: 'top top', scrub: 0.6 },
+      });
     });
-    return () => ctx.revert();
-  }, [field, trigger]);
+    return () => {
+      ctx.revert();
+      document.documentElement.style.removeProperty('--latent-avatar');
+    };
+  }, [field, trigger, dock]);
 
   return (
     <>
-      <div ref={stageRef} className={`pointer-events-none ${contained ? 'absolute' : 'fixed'} inset-0 z-0 bg-black`} aria-hidden="true">
+      {/* With `dock` the canvas is transparent: the page supplies the black, so cubes can fly over the CV. */}
+      <div ref={stageRef} className={`pointer-events-none fixed inset-0 z-0 ${dock ? '' : 'bg-black'} ${docked ? 'invisible' : ''}`} aria-hidden="true">
         <Canvas
-          frameloop={onScreen ? 'always' : 'never'}
+          frameloop={docked ? 'never' : 'always'}
           shadows="percentage"
           dpr={dpr}
           gl={{ antialias: true, powerPreference: 'high-performance' }}
           camera={{ fov: 40, near: 0.1, far: 60, position: [0, 0, 8] }}
         >
           <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(Math.min(window.devicePixelRatio || 1, 1.75))} />
-          <color attach="background" args={['#000000']} />
+          {!dock && <color attach="background" args={['#000000']} />}
           <CameraRig />
           <ambientLight intensity={0.05} />
           <spotLight
             position={[2.5, 3.5, 7]}
-            angle={0.42}
+            angle={0.6}
             penumbra={0.12}
             intensity={3.4}
             decay={0}
@@ -572,20 +712,22 @@ export default function LionheadDitDiffusion({ trigger, contained = false }) {
             shadow-normalBias={0.01}
           />
           <directionalLight position={[-4, 1, -3]} intensity={0.25} />
-          <Swarm field={field} pointerNdc={pointerNdc} showTrajectories={showTrajectories} />
+          <Swarm field={field} pointerNdc={pointerNdc} showTrajectories={showTrajectories} gravity={gravity} color={color} dockTarget={dock?.target} />
         </Canvas>
       </div>
-      <div className={`${contained ? 'absolute' : 'fixed'} right-4 bottom-4 z-10 flex flex-col items-end gap-2 font-mono text-[11px] leading-none tracking-wide text-neutral-500`}>
+      <div ref={uiRef} className={`fixed right-4 bottom-4 z-10 flex flex-col items-end gap-2 font-mono text-[11px] leading-none tracking-wide text-neutral-500`}>
         <span ref={readoutRef} className="tabular-nums">
           t = 1.00
         </span>
-        <label className="flex cursor-pointer items-center gap-2 transition-colors select-none hover:text-neutral-100">
-          <input type="checkbox" className="peer sr-only" checked={showTrajectories} onChange={(e) => setShowTrajectories(e.target.checked)} />
-          <span aria-hidden="true" className="text-neutral-300 peer-focus-visible:outline peer-focus-visible:outline-1 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-neutral-300">
-            {showTrajectories ? '[x]' : '[ ]'}
-          </span>
-          <span>Visualize Latent Vector Field / ODE Trajectories</span>
-        </label>
+        <Toggle checked={gravity} onChange={setGravity}>
+          Gravity
+        </Toggle>
+        <Toggle checked={color} onChange={setColor}>
+          Color
+        </Toggle>
+        <Toggle checked={showTrajectories} onChange={setShowTrajectories}>
+          Visualize Latent Vector Field / ODE Trajectories
+        </Toggle>
       </div>
     </>
   );

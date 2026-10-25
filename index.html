@@ -9,8 +9,11 @@
 </head>
 <body>
   <section id="latent-intro" aria-label="Animated introduction">
-    <div class="latent-intro-stage"></div>
-    <a class="latent-intro-skip" href="#app">Scroll ↓</a>
+    <div class="latent-intro-track">
+      <div class="latent-intro-stage"></div>
+      <a class="latent-intro-skip" href="#app"><span>Scroll down</span><b aria-hidden="true">↓</b></a>
+    </div>
+    <div class="latent-intro-fade"></div>
   </section>
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
