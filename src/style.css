@@ -205,3 +205,5 @@ html.minimal-mode #latent-intro+#app{position:relative;margin-top:-24px;border-r
 
 .latent-intro-print,.latent-intro-contacts{transition:opacity .25s ease,visibility 0s}
 #latent-intro.is-playing-intro .latent-intro-print,#latent-intro.is-playing-intro .latent-intro-contacts{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,visibility 0s .25s}
+
+#latent-intro.is-playing-intro .latent-intro-play{pointer-events:none}

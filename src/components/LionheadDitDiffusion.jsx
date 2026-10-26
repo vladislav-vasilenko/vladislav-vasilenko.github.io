@@ -8,6 +8,7 @@ import { collideWithFloor, handoffToken, impactFloor, resumeClip, smoothRange } 
 import { reportPlaybackFrame } from '../introPlayback.js';
 import { asteroidEntrance, binaryOrbitLayout } from '../binaryOrbit.js';
 import { orbitPoint } from '../orbitFields.js';
+import { trailTokens, anchorTrailHeads, playbackInteraction } from '../introTrails.js';
 import { bindIntroPointer } from '../introPointer.js';
 import { portraitScrollEnd } from '../introScroll.js';
 import { chooseVisitOrbit } from '../introOrbitChoice.js';
@@ -127,7 +128,7 @@ function createSimulation() {
     head: new Int32Array(HASH_SIZE),
     next: new Int32Array(COUNT),
     cell: new Int32Array(COUNT * 3),
-    centers: new Float32Array(PATCHES * 3),
+    trailToken: null,
     hist: new Float32Array(PATCHES * HIST * 3),
     histHead: 0,
     histPrimed: false,
@@ -153,6 +154,7 @@ function createSimulation() {
     sim.rot[i * 3 + 1] = Math.random() * Math.PI * 2;
     sim.rot[i * 3 + 2] = Math.random() * Math.PI * 2;
   }
+  sim.trailToken=trailTokens(sim.patchOf,PATCHES);
   // Golden-angle phases keep neighbouring patches out of sync while each patch pulses as one.
   for (let k = 0; k < PATCHES; k++) {
     sim.phase[k] = k * 2.39996;
@@ -374,7 +376,7 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
       sim.hadPointer = false;
       sim.pointerSpeed = 0;
     }
-    energy *= playback?.active ? 0 : 1 - release;
+    energy *= playbackInteraction(sim.pointerSpeed,pointerNdc.touchBoost||0,!!playback?.active,release);
     // Hand over to the CV by clearing its column; the camera remains fixed.
     const d = playback?.active && !playback.handingOff ? 0 : field.dock;
     const dock = handoff && d > 0;
@@ -575,26 +577,15 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
     sim.histClock += rawDt;
     if (sim.histClock >= 1 / HIST_HZ || !sim.histPrimed) {
       sim.histClock = 0;
-      const { centers, hist, patchSize } = sim;
-      centers.fill(0);
-      for (let i = 0; i < COUNT; i++) {
-        const o = patchOf[i] * 3;
-        centers[o] += pos[i * 3];
-        centers[o + 1] += pos[i * 3 + 1];
-        centers[o + 2] += pos[i * 3 + 2];
-      }
+      const { hist, trailToken } = sim;
       for (let k = 0; k < PATCHES; k++) {
-        const n = patchSize[k];
-        const o = k * 3;
-        centers[o] /= n;
-        centers[o + 1] /= n;
-        centers[o + 2] /= n;
+        const source=trailToken[k]*3;
         // The first sample fills the whole history so trails grow out of a point instead of the origin.
         for (let h = sim.histPrimed ? sim.histHead : 0; h < (sim.histPrimed ? sim.histHead + 1 : HIST); h++) {
           const w = (k * HIST + h) * 3;
-          hist[w] = centers[o];
-          hist[w + 1] = centers[o + 1];
-          hist[w + 2] = centers[o + 2];
+          hist[w] = pos[source];
+          hist[w + 1] = pos[source + 1];
+          hist[w + 2] = pos[source + 2];
         }
       }
       sim.histPrimed = true;
@@ -619,6 +610,10 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
         }
         attribute.needsUpdate = true;
       }
+    }
+    if(linesRef.current){
+      anchorTrailHeads(trailGeometry.attributes.position.array,pos,sim.trailToken,HIST);
+      trailGeometry.attributes.position.needsUpdate=true;
     }
   });
 
@@ -705,7 +700,7 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
     return () => { observer.disconnect(); window.removeEventListener('resize', measure); };
   }, [field]);
 
-  useEffect(() => bindIntroPointer(stageRef.current, pointerNdc), [pointerNdc]);
+  useEffect(() => {pointerNdc.onVerticalGesture=()=>playback?.onVerticalGesture?.();return bindIntroPointer(stageRef.current, pointerNdc);}, [pointerNdc,playback]);
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

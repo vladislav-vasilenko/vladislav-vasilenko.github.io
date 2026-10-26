@@ -121,3 +121,10 @@ test('clicking the actual combined name/action waits for the swarm vortex before
  f.controller.stop();assert.equal(f.playback.textBurst,null);assert.equal(f.playback.active,false);
  f.controller.destroy();
 });
+
+
+test('a vertical touch gesture returns active playback to native scrolling',()=>{
+ const f=fixture();f.controller.play();assert.equal(f.playback.active,true);
+ f.playback.onVerticalGesture();assert.equal(f.playback.active,false);
+ f.controller.destroy();
+});

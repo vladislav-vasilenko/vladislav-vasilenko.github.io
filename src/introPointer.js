@@ -13,15 +13,19 @@ export function bindIntroPointer(stage, pointer) {
   const down = event => {
     if (event.pointerType === 'mouse') return;
     if (!scope.contains(event.target) || event.target.closest?.('.latent-controls')) return;
-    if (gesture) { gesture = null; leave(); return; } // Leave pinch gestures to the browser.
+    if (gesture) { gesture = null; leave(); pointer.onVerticalGesture?.(); return; } // Leave pinch gestures to the browser.
     gesture = {id: event.pointerId, x: event.clientX, y: event.clientY, time: event.timeStamp, intent: 'pending'};
   };
   const move = event => {
     if (event.target.closest?.('.latent-controls')) { leave(); return; }
     if (event.pointerType !== 'mouse') {
       if (!gesture || gesture.id !== event.pointerId) return;
+      const previousIntent = gesture.intent;
       gesture.intent = swipeIntent(event.clientX - gesture.x, event.clientY - gesture.y, gesture.intent);
-      if (gesture.intent !== 'horizontal') { leave(); return; }
+      if (gesture.intent !== 'horizontal') {
+        if (gesture.intent === 'vertical' && previousIntent !== 'vertical') pointer.onVerticalGesture?.();
+        leave(); return;
+      }
       // Capture only after direction is clear; taps and vertical drags stay native.
       if (!scope.hasPointerCapture?.(event.pointerId)) scope.setPointerCapture?.(event.pointerId);
       pointer.touchBoost = Math.min(1.8, Math.abs(event.clientX - gesture.x) / Math.max(16, event.timeStamp - gesture.time) * 1.4);
@@ -39,7 +43,7 @@ export function bindIntroPointer(stage, pointer) {
     }
     if (event.pointerType !== 'mouse') leave();
   };
-  const cancel = () => { gesture = null; leave(); };
+  const cancel = () => { if(gesture)pointer.onVerticalGesture?.(); gesture = null; leave(); };
   const click = event => {
     if (performance.now() < suppressClickUntil && event.detail !== 0) {
       suppressClickUntil = 0;

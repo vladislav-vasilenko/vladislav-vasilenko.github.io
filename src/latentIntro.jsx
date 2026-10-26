@@ -29,7 +29,6 @@ export function mountLatentIntro(section) {
   const draw = (playing) => root.render(<LionheadDitDiffusion trigger={section.querySelector('.latent-intro-track')} dock={dock} playing={playing} playback={playback} onStop={stop} />);
   const removeListeners = () => {
     window.removeEventListener('wheel', interrupt);
-    window.removeEventListener('touchstart', interrupt);
     window.removeEventListener('keydown', key);
   };
   function stop() {
@@ -56,7 +55,7 @@ export function mountLatentIntro(section) {
     });
   }
   function interrupt(event) {
-    if (event.target.closest?.('.latent-controls')) return;
+    if (event?.target?.closest?.('.latent-controls')) return;
     if (playback.releasing && !playback.handingOff) {
       timeline?.kill(); timeline = null;
       removeListeners();
@@ -64,6 +63,7 @@ export function mountLatentIntro(section) {
       waitForPlayback(playback, 'drop', finishManualDrop);
     } else stop();
   }
+  playback.onVerticalGesture=()=>{if(playback.active)interrupt();};
   function key(event) {
     if (event.key === 'Escape') stop();
     else if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) interrupt(event);
@@ -81,7 +81,6 @@ export function mountLatentIntro(section) {
     const move = () => window.scrollTo({ top: position.y, behavior: 'instant' });
     draw(true);
     window.addEventListener('wheel', interrupt, { passive: true });
-    window.addEventListener('touchstart', interrupt, { passive: true });
     window.addEventListener('keydown', key);
     const handover = () => {
       playback.handingOff = true;

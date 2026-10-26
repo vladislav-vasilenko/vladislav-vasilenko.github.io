@@ -30,7 +30,8 @@ test('a swipe starting on a link scatters cubes without activating it; taps and 
   const code = ts.transpileModule(fs.readFileSync(new URL('../../src/introPointer.js', import.meta.url), 'utf8'),
     {compilerOptions: {module: ts.ModuleKind.CommonJS}}).outputText;
   vm.runInContext(code, context);
-  const pointer = {}, cleanup = context.exports.bindIntroPointer(stage, pointer);
+  let verticalGestures=0;
+  const pointer = {onVerticalGesture:()=>verticalGestures++}, cleanup = context.exports.bindIntroPointer(stage, pointer);
   const pointerEvent = (x, y) => ({target, pointerType: 'touch', pointerId: 1, clientX: x, clientY: y, timeStamp: now += 50});
   const click = () => {
     let prevented = false;
@@ -49,6 +50,7 @@ test('a swipe starting on a link scatters cubes without activating it; taps and 
   events.get('pointerdown')(pointerEvent(90, 150));
   events.get('pointermove')(pointerEvent(95, 220));
   assert.equal(pointer.active, false);
+  assert.equal(verticalGestures,1);
   assert.equal(captures.size, 0, 'vertical scrolling must not capture the pointer');
   events.get('pointerup')(pointerEvent(95, 260));
   assert.equal(click(), false);
