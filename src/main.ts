@@ -28,7 +28,7 @@ function renderPage():void{
  const cv=applyHHSnapshot(loadContent(language,'vision'),pageSnapshot,language);
  const introName=document.querySelector<HTMLElement>('.latent-intro-name');
  if(introName)introName.textContent=language==='ru'?'Владислав Василенко':'Vladislav Vasilenko';
- const introLabel=document.querySelector<HTMLElement>('[data-intro-play]>span');
+ const introLabel=document.querySelector<HTMLElement>('[data-intro-action]');
  if(introLabel)introLabel.textContent=language==='ru'?'Посмотреть резюме':'View resume';
  const introPrint=document.querySelector<HTMLAnchorElement>('[data-intro-print]');
  if(introPrint){
@@ -43,7 +43,24 @@ function renderPage():void{
  if(printView){
   document.documentElement.classList.add('print-resume-mode');
   root.innerHTML=renderPrintResume(cv,language,pageSnapshot);
-  root.querySelector<HTMLButtonElement>('[data-print-document]')!.onclick=()=>window.print();
+  const printButton=root.querySelector<HTMLButtonElement>('[data-print-document]')!;
+  const pdfButton=root.querySelector<HTMLButtonElement>('[data-download-resume]')!;
+  const status=root.querySelector<HTMLElement>('[data-pdf-status]')!;
+  const savePDF=async()=>{
+   printButton.disabled=true;pdfButton.disabled=true;status.hidden=false;
+   status.textContent=language==='ru'?'Подготавливаем PDF…':'Preparing PDF…';
+   try{
+    const {downloadResumePDF}=await import('./features/resumePdf');
+    await downloadResumePDF(cv,language,pageSnapshot);
+    status.textContent=language==='ru'?'PDF подготовлен. Если открыт предпросмотр, сохраните файл через «Поделиться».':'PDF prepared. If a preview opened, use Share to save the file.';
+   }catch{
+    status.textContent=language==='ru'?'PDF не удалось подготовить. Проверьте подключение и повторите; печатная версия остаётся доступна.':'Could not prepare the PDF. Check the connection and retry; the print document remains available.';
+   }finally{printButton.disabled=false;pdfButton.disabled=false;}
+  };
+  pdfButton.onclick=()=>{void savePDF();};
+  const standalone=matchMedia('(display-mode: standalone)').matches||!!(navigator as Navigator&{standalone?:boolean}).standalone;
+  if(standalone){printButton.textContent=language==='ru'?'Сохранить PDF':'Save PDF';pdfButton.hidden=true;printButton.onclick=()=>{void savePDF();};}
+  else printButton.onclick=()=>window.print();
   return;
  }
  root.innerHTML=renderMinimal(cv,language,pageSnapshot,focus,style,detailed);
@@ -51,7 +68,7 @@ function renderPage():void{
   style=presentationStyle(button.dataset.presentation||null);const url=new URL(location.href);
   if(style==='minimal')url.searchParams.delete('style');else url.searchParams.set('style',style);
   window.history.replaceState(null,'',url);
-  const change=()=>{renderPage();document.querySelector<HTMLDetailsElement>('.presentation-picker')?.setAttribute('open','');document.querySelector<HTMLButtonElement>('button[data-presentation="'+style+'"]')?.focus();};
+  const change=()=>{renderPage();root.querySelector<HTMLElement>('.presentation-picker>summary')?.focus();};
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){change();return;}
   if(document.startViewTransition)document.startViewTransition(change);
   else{change();root.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'translateY(0)'}],{duration:420,easing:'ease-out'});}

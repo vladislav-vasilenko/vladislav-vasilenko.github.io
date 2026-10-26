@@ -5,8 +5,9 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import * as physics from '../../src/introPlayback.js';
 import * as scroll from '../../src/introScroll.js';
+import * as fragments from '../../src/introTextFragments.js';
 
-function fixture() {
+function fixture(textBurst = null) {
   const pending = [], listeners = new Map();
   let props;
   const button = {disabled: false, setAttribute() {}, removeAttribute() {}};
@@ -33,6 +34,7 @@ function fixture() {
     if (name === 'gsap') return {default: gsap};
     if (name === './introPlayback.js') return physics;
     if (name === './introScroll.js') return scroll;
+    if (name === './introTextFragments.js') return {...fragments,captureIntroText:()=>textBurst};
     return {};
   };
   const context = vm.createContext({exports: {}, require, window, document: {getElementById: () => app}});
@@ -108,4 +110,14 @@ test('interrupting button playback during the fall hands it to native scrolling'
   assert.equal(f.window.scrollY, y);
   assert.equal(f.pending.length, 0);
   f.controller.destroy();
+});
+
+
+test('clicking the actual combined name/action waits for the swarm vortex before the scroll approach',()=>{
+ const f=fixture({points:[{x:1,y:1}],width:390,height:844});
+ f.controller.play();assert.equal(f.pending.length,0);
+ for(let i=0;i<100;i++)physics.reportPlaybackFrame(f.playback,{dt:1/30,formed:false,total:1200,textActive:true});
+ assert.equal(f.pending.length,1);f.pending.shift().complete();
+ f.controller.stop();assert.equal(f.playback.textBurst,null);assert.equal(f.playback.active,false);
+ f.controller.destroy();
 });

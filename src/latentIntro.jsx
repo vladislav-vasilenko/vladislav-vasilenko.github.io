@@ -4,6 +4,7 @@ import './latentIntro.css';
 import gsap from 'gsap';
 import { resetIntroPlayback, waitForPlayback } from './introPlayback.js';
 import { portraitScrollEnd } from './introScroll.js';
+import { captureIntroText } from './introTextFragments.js';
 
 /**
  * Lazy-loaded by main.ts. The finished portrait opens to the margins as the CV arrives.
@@ -14,8 +15,14 @@ export function mountLatentIntro(section) {
   const root = createRoot(section.querySelector('.latent-intro-stage'));
   const button = section.querySelector('[data-intro-play]');
   const track = section.querySelector('.latent-intro-track');
+  const auxiliary = section.querySelectorAll?.('.latent-intro-print, .latent-intro-contacts') || [];
+  const hideAuxiliary = hidden => {
+    section.classList?.toggle('is-playing-intro',hidden);
+    for(const element of auxiliary)element.inert=hidden;
+  };
   const portraitEnd = () => portraitScrollEnd(window.scrollY + track.getBoundingClientRect().bottom, window.innerHeight);
   const playback = resetIntroPlayback({});
+
   let timeline = null;
   let manualConsumed = false;
   let destroyed = false;
@@ -28,12 +35,15 @@ export function mountLatentIntro(section) {
   function stop() {
     timeline?.kill(); timeline = null;
     resetIntroPlayback(playback);
+    section.classList?.remove('is-text-burst');
+    hideAuxiliary(false);
     removeListeners();
     button.disabled = false;
     button.removeAttribute('aria-busy');
     if (!destroyed) draw(false);
   }
   function finishManualDrop() {
+    hideAuxiliary(false);
     playback.handingOff = true;
     button.disabled = false; button.removeAttribute('aria-busy');
     draw(false);
@@ -62,6 +72,9 @@ export function mountLatentIntro(section) {
     if (playback.active) return;
     resetIntroPlayback(playback, true);
     playback.mode = 'auto';
+    hideAuxiliary(true);
+    playback.textBurst = captureIntroText(section);
+    playback.onTextStart = () => section.classList?.add('is-text-burst');
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
     const position = { y: window.scrollY };
@@ -77,7 +90,7 @@ export function mountLatentIntro(section) {
         duration: 1.35, ease: 'power2.inOut', onUpdate: move, onComplete: stop,
       });
     };
-    timeline = gsap.to(position, {
+    const approach = () => { timeline = gsap.to(position, {
       y: portraitEnd, duration: 5, ease: 'power1.inOut', onUpdate: move,
       onComplete: () => {
         timeline = gsap.delayedCall(0.35, () => {
@@ -86,7 +99,9 @@ export function mountLatentIntro(section) {
           waitForPlayback(playback, 'portrait', () => drop(handover));
         });
       },
-    });
+    }); };
+    if (playback.textBurst) waitForPlayback(playback, 'text', approach);
+    else approach();
   }
   function manualScroll() {
     if (destroyed || playback.mode === 'auto') return;
@@ -109,6 +124,7 @@ export function mountLatentIntro(section) {
     destroyed = true;
     stop();
     window.removeEventListener('scroll', manualScroll);
+
     root.unmount();
   }
   window.addEventListener('scroll', manualScroll, {passive: true});

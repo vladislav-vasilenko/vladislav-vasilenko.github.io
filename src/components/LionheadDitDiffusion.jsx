@@ -10,6 +10,8 @@ import { asteroidEntrance, binaryOrbitLayout } from '../binaryOrbit.js';
 import { orbitPoint } from '../orbitFields.js';
 import { bindIntroPointer } from '../introPointer.js';
 import { portraitScrollEnd } from '../introScroll.js';
+import { chooseVisitOrbit } from '../introOrbitChoice.js';
+import { seedTextFragments, textVortex, swarmVortex, vortexStrength as swarmVortexStrength, fireSupernova, SUPERNOVA_AT } from '../introTextFragments.js';
 import '../sceneControls.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -41,13 +43,8 @@ const SPIN_KICK = 12;
 const VMAX = 4.2;
 const HOVER_VMAX = 7;
 const RESTITUTION = 0.55;
-// Gravity mode: tokens rain into a bin below the portrait, then the flow field lifts them out.
-const GRAVITY = 4.5;
-const FLOOR_Y = -(ROWS * SPACING) / 2 - 0.2;
-const BIN_X = 1.7;
-const BIN_Z = 0.7;
-const FLOOR_BOUNCE = 0.3;
-const FLOOR_FRICTION = 0.85;
+const GALAXY_TONES = [[1,.83,.5], [.34,.52,.9], [1,1,.98]];
+const DNA_TONES = [[.36,.74,1], [.98,.65,.42], [.65,.9,.65]];
 const SATURATION = 1.8; // the source photo is muted; push its hues so they read on cubes
 
 const HASH_SIZE = 8192; // power of two
@@ -121,6 +118,7 @@ function createSimulation() {
     spin: new Float32Array(COUNT * 3),
     target: new Float32Array(COUNT * 3),
     lum: new Float32Array(COUNT).fill(0.5),
+    textMask: new Uint8Array(COUNT), textAge: 10, textBurst: null,
     rgb: new Float32Array(COUNT * 3).fill(0.5),
     scale: new Float32Array(COUNT).fill(1),
     patchOf: new Uint16Array(COUNT),
@@ -171,10 +169,11 @@ function applyImage(sim, { brightness, rgb }) {
 }
 
 /** Sphere-sphere collisions over a spatial hash: O(N) instead of O(N^2) pair checks. */
-function resolveCollisions(sim) {
+function resolveCollisions(sim, skipLettering = false) {
   const { pos, vel, head, next, cell, scale } = sim;
   head.fill(-1);
   for (let i = 0; i < COUNT; i++) {
+    if (skipLettering && sim.textMask[i]) continue;
     const cx = Math.floor(pos[i * 3] * INV_CELL);
     const cy = Math.floor(pos[i * 3 + 1] * INV_CELL);
     const cz = Math.floor(pos[i * 3 + 2] * INV_CELL);
@@ -186,6 +185,7 @@ function resolveCollisions(sim) {
     head[h] = i;
   }
   for (let i = 0; i < COUNT; i++) {
+    if (skipLettering && sim.textMask[i]) continue;
     const cx = cell[i * 3];
     const cy = cell[i * 3 + 1];
     const cz = cell[i * 3 + 2];
@@ -254,7 +254,7 @@ function IntroLight() {
   return <spotLight position={[2.5,3.5,7]} angle={.6} penumbra={.12} intensity={3.4} decay={0} castShadow shadow-mapSize={[mapSize,mapSize]} shadow-bias={-.0004} shadow-normalBias={.01} />;
 }
 
-function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode }) {
+function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
   const meshRef = useRef(null);
   const materialRef = useRef(null);
   const linesRef = useRef(null);
@@ -272,7 +272,7 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
       plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
       pulse: new Float32Array(PATCHES),
       token: { x: 0, y: 0, z: 0, scale: 1 },
-      orbit: {},
+      orbit: {}, vortex: {}, vortexPoint: {}, vortexCore: {x:0,y:0},
       view: { halfWidth: 0, halfHeight: 0, safeLeft: 0, safeRight: 0 },
     }),
     [],
@@ -327,7 +327,7 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
     const t = state.clock.elapsedTime * 0.45;
     const g = field.attraction;
     const release = playback?.release || 0;
-    const { pos, vel, rot, spin, target, lum, rgb, patchOf } = sim;
+    const { pos, vel, rot, spin, target, rgb, patchOf } = sim;
     const { pulse } = scratch;
     const worldPerPx = (2 * state.camera.position.z * Math.tan(THREE.MathUtils.degToRad(state.camera.fov / 2))) / state.size.height;
     scratch.view.halfWidth = state.size.width * worldPerPx / 2;
@@ -336,7 +336,7 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
     scratch.view.cameraZ = state.camera.position.z;
     binaryOrbitLayout(scratch.orbit, scratch.view);
     if (!sim.seeded) {
-      if (!gravity) for (let i = 0; i < COUNT; i++) {
+      for (let i = 0; i < COUNT; i++) {
         const origin = asteroidEntrance(scratch.token, i, sim.patchOf[i], scratch.view);
         sim.pos[i * 3] = origin.x; sim.pos[i * 3 + 1] = origin.y; sim.pos[i * 3 + 2] = origin.z;
         sim.vel[i * 3] = origin.vx; sim.vel[i * 3 + 1] = origin.vy;
@@ -344,6 +344,18 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
       }
       sim.seeded = true;
     }
+
+    if (playback?.textBurst && sim.textBurst !== playback.textBurst) {
+      seedTextFragments(sim, playback.textBurst, scratch.view.halfHeight);
+      sim.textBurst = playback.textBurst; sim.textAge = 0;
+      playback.onTextStart?.();
+    }
+    sim.textAge += dt;
+    if (playback?.active && sim.textBurst && sim.textAge >= SUPERNOVA_AT && sim.novaFor !== sim.textBurst) {
+      fireSupernova(sim);sim.novaFor=sim.textBurst;playback.bursting=true;playback.onPhase?.();
+    }
+    if(playback?.bursting && sim.textAge >= SUPERNOVA_AT+.6){playback.bursting=false;playback.onPhase?.();}
+    const vortexStrength = playback?.active && sim.textBurst && !release ? swarmVortexStrength(sim.textAge) : 0;
 
     // Phase 3 input: project the cursor onto the z = 0 plane and estimate its world-space speed.
     let energy = 0;
@@ -396,19 +408,24 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
       // Phase 2: flow-matching velocity field as a damped spring toward x0; patch locks stiffen it into a snap.
       const pull = g * (0.25 + 0.75 * lock);
       const k = (20 * pull + 20 * lock * lock) * (1 - release);
-      const edgeSpring = !gravity && !release ? 5.5 * (1 - g) * (1 - lock) : 0;
+      const textFragment = sim.textMask[i] ? 1 - smoothRange(4.4, 6, sim.textAge) : 0;
+      const edgeSpring = !release ? (orbitMode === 'dna' || orbitMode === 'galaxy' ? 18 : 5.5) * (1 - g) * (1 - lock) * (1 - textFragment) * (1 - vortexStrength) : 0;
       const c = 2.05 * Math.sqrt(k + edgeSpring) + 0.7;
       let tx = target[ix];
       let ty = target[iy];
       let tz = target[iz];
-      const origin = !gravity ? orbitPoint(scratch.token, i, patchOf[i], scratch.orbit, t, orbitMode) : null;
-      let size = origin ? 1 + (origin.scale - 1) * (1 - g) * (1 - lock) : 1;
+      const origin = orbitPoint(scratch.token, i, patchOf[i], scratch.orbit, t, orbitMode);
+      let size = (1 + (origin.scale - 1) * (1 - g) * (1 - lock)) * (1 - .25 * textFragment);
       // handoffToken reuses the scratch object; keep the orbital coordinates locally.
-      const ox = origin?.x || 0, oy = origin?.y || 0, oz = origin?.z || 0;
+      const ox = origin.x, oy = origin.y, oz = origin.z;
       if (dock) {
         const token = handoffToken(scratch.token, i, d, tx, ty, tz, scratch.view);
         if (!release) { tx = token.x; ty = token.y; tz = token.z; }
         size = token.scale;
+      }
+      if(playback?.active && sim.textBurst){
+        const collapse=sim.textAge<SUPERNOVA_AT?smoothRange(3.7,SUPERNOVA_AT,sim.textAge):1-smoothRange(SUPERNOVA_AT,SUPERNOVA_AT+.4,sim.textAge);
+        size*=1-.65*collapse;
       }
       sim.scale[i] = size;
       const px = pos[ix];
@@ -420,29 +437,35 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
       // Playback finale: grid springs release and the portrait falls onto the temporary impact plane.
       ay -= 12 * release;
 
-      // Phase 1 (gravity): free fall into the bin; fades as the flow field takes over, so the pile is lifted out.
-      const heavy = gravity ? (1 - lock) * (1 - g) : 0;
-      if (gravity) {
-        ay -= GRAVITY * heavy;
-        if (heavy > 0.02) {
-          // Soft bin walls keep the pile under the portrait instead of spreading across the floor.
-          if (px < -BIN_X) ax += (-BIN_X - px) * 80;
-          else if (px > BIN_X) ax += (BIN_X - px) * 80;
-          if (pz < -BIN_Z) az += (-BIN_Z - pz) * 80;
-          else if (pz > BIN_Z) az += (BIN_Z - pz) * 80;
-        }
-      } else if (chaos > 1e-3) {
+      if (chaos > 1e-3) {
         ax += edgeSpring * (ox - px);
         ay += edgeSpring * (oy - py);
         az += edgeSpring * (oz - pz);
         // Phase 1 (chaos): turbulent pseudo-curl noise + Brownian jitter, held in a weak harmonic well.
+        const turbulence = chaos * (orbitMode === 'dna' || orbitMode === 'galaxy' ? .035 : 1) * (1 - vortexStrength);
         const s = i * 0.618;
-        ax += chaos * (NOISE * (Math.sin(1.3 * py + 0.8 * t + s) + Math.cos(1.7 * pz - 0.6 * t + 2 * s)) + JITTER * (Math.random() - 0.5) - WELL * px);
-        ay += chaos * (NOISE * (Math.sin(1.1 * pz + 0.7 * t + 3 * s) + Math.cos(1.5 * px + 0.9 * t)) + JITTER * (Math.random() - 0.5) - WELL * py);
-        az += chaos * (NOISE * (Math.sin(1.2 * px - 0.5 * t + s) + Math.cos(1.4 * py + 0.4 * t + s)) + JITTER * (Math.random() - 0.5) - WELL * pz);
-        spin[ix] += (Math.random() - 0.5) * 1.4 * chaos * dt;
-        spin[iy] += (Math.random() - 0.5) * 1.4 * chaos * dt;
-        spin[iz] += (Math.random() - 0.5) * 1.4 * chaos * dt;
+        ax += turbulence * (NOISE * (Math.sin(1.3 * py + 0.8 * t + s) + Math.cos(1.7 * pz - 0.6 * t + 2 * s)) + JITTER * (Math.random() - 0.5) - WELL * px);
+        ay += turbulence * (NOISE * (Math.sin(1.1 * pz + 0.7 * t + 3 * s) + Math.cos(1.5 * px + 0.9 * t)) + JITTER * (Math.random() - 0.5) - WELL * py);
+        az += turbulence * (NOISE * (Math.sin(1.2 * px - 0.5 * t + s) + Math.cos(1.4 * py + 0.4 * t + s)) + JITTER * (Math.random() - 0.5) - WELL * pz);
+        spin[ix] += (Math.random() - 0.5) * 1.4 * turbulence * dt;
+        spin[iy] += (Math.random() - 0.5) * 1.4 * turbulence * dt;
+        spin[iz] += (Math.random() - 0.5) * 1.4 * turbulence * dt;
+      }
+
+      if (vortexStrength > 0) {
+        if (sim.textMask[i]) {
+          const delay = 1.2 + (i % 17) / 17 * .9;
+          const peel = smoothRange(delay, delay + .35, sim.textAge);
+          const vortex = textVortex(scratch.vortex, px, py, pz, sim.textAge, scratch.vortexCore);
+          ax = ax * (1 - vortexStrength) + (vortex.vx - vel[ix]) * vortexStrength * peel * 8;
+          ay = ay * (1 - vortexStrength) + (vortex.vy - vel[iy]) * vortexStrength * peel * 8;
+          az = az * (1 - vortexStrength) + (vortex.vz - vel[iz]) * vortexStrength * peel * 8;
+        } else {
+          const point = swarmVortex(scratch.vortexPoint, i, scratch.view, sim.textAge);
+          ax += ((point.x - px) * 22 - vel[ix] * 5) * vortexStrength;
+          ay += ((point.y - py) * 22 - vel[iy] * 5) * vortexStrength;
+          az += ((point.z - pz) * 22 - vel[iz] * 5) * vortexStrength;
+        }
       }
 
       // Phase 3: earthquake — radial blast away from the cursor column, a kick toward the viewer and a tremor.
@@ -470,7 +493,7 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
       let vy = vel[iy] + ay * dt;
       let vz = vel[iz] + az * dt;
       const v2 = vx * vx + vy * vy + vz * vz;
-      const maxVelocity = kicked || release > 0 ? HOVER_VMAX : VMAX;
+      const maxVelocity = kicked || release > 0 || vortexStrength > 0 ? HOVER_VMAX : VMAX;
       if (v2 > maxVelocity * maxVelocity) {
         const s = maxVelocity / Math.sqrt(v2);
         vx *= s;
@@ -495,7 +518,7 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
     }
 
     // Phase 4: elastic sphere-sphere contacts.
-    resolveCollisions(sim);
+    if(!(playback?.active && sim.textBurst && sim.textAge>4.25 && sim.textAge<SUPERNOVA_AT)) resolveCollisions(sim, !!playback?.active && sim.textAge < 3.1);
     let impacts = 0;
     if (!release) sim.floorContact.fill(0);
     if (release && handoff) {
@@ -503,21 +526,6 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
       playback.floor = Math.max(playback.floor ?? -Infinity, impactFloor(scratch.view.halfHeight, state.size.height, field.controlsTop));
       const floor = playback.floor - smoothRange(0, 0.65, d) * scratch.view.halfHeight * 2.2;
       impacts = collideWithFloor(sim, floor, RADIUS);
-    }
-    if (gravity && !dock && !release) {
-      // Floor contact after collisions, so the pile cannot be pushed through it.
-      const floor = impactFloor(scratch.view.halfHeight, state.size.height, field.controlsTop, FLOOR_Y);
-      for (let i = 0; i < COUNT; i++) {
-        const iy = i * 3 + 1;
-        if (pos[iy] >= floor + RADIUS) continue;
-        pos[iy] = floor + RADIUS;
-        if (vel[iy] < 0) vel[iy] *= -FLOOR_BOUNCE;
-        vel[iy - 1] *= FLOOR_FRICTION;
-        vel[iy + 1] *= FLOOR_FRICTION;
-        spin[iy - 1] *= FLOOR_FRICTION;
-        spin[iy] *= FLOOR_FRICTION;
-        spin[iy + 1] *= FLOOR_FRICTION;
-      }
     }
 
     const matrices = mesh.instanceMatrix.array;
@@ -538,22 +546,30 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
       const k = patchOf[i];
       const lock = field.locks[k].v;
       const gain = 0.85 + pulse[k];
-      if (color) {
-        // Noise carries a faint tint of its token's colour; locking resolves it fully.
-        const mix = 0.25 + 0.75 * lock;
-        colors[ix] = Math.min(1, (0.5 + (rgb[ix] - 0.5) * mix) * gain);
-        colors[ix + 1] = Math.min(1, (0.5 + (rgb[ix + 1] - 0.5) * mix) * gain);
-        colors[ix + 2] = Math.min(1, (0.5 + (rgb[ix + 2] - 0.5) * mix) * gain);
-      } else {
-        const base = 0.5 + (0.06 + 0.9 * lum[i] - 0.5) * lock;
-        colors[ix] = colors[ix + 1] = colors[ix + 2] = Math.min(1, base * gain);
+      // Color resolves from the source photo; fresh lettering fragments start white.
+      const mix = 0.25 + 0.75 * lock;
+      const nova=playback?.bursting?1-smoothRange(SUPERNOVA_AT,SUPERNOVA_AT+.35,sim.textAge):0;
+      const white = Math.max(nova,sim.textMask[i] ? 1 - smoothRange(1.4, 3.1, sim.textAge) : 0);
+      for (let channel = 0; channel < 3; channel++) {
+        let photo = Math.min(1, (0.5 + (rgb[ix + channel] - 0.5) * mix) * gain);
+        if (orbitMode === 'galaxy') {
+          const core = i % 11 < 2;
+          const tone = sim.lum[i] > .72 ? GALAXY_TONES[2] : GALAXY_TONES[core ? 0 : 1];
+          photo += (tone[channel] * (core ? 1.15 : 1) - photo) * (1 - g) * (1 - lock);
+        }
+        if (orbitMode === 'dna') {
+          const group = i % 10;
+          const tone = DNA_TONES[group < 6 ? i % 2 : 2];
+          photo += (tone[channel] * gain - photo) * (1 - g) * (1 - lock);
+        }
+        colors[ix + channel] = photo + (1 - photo) * white;
       }
     }
     mesh.instanceMatrix.needsUpdate = true;
     mesh.instanceColor.needsUpdate = true;
-    reportPlaybackFrame(playback, { dt, formed: g > 0.995 && minLock > 0.995 && portraitError / COUNT < 0.0036, impacts, total: COUNT });
+    reportPlaybackFrame(playback, { dt, textActive: !!playback?.textBurst && sim.textBurst === playback.textBurst, formed: g > 0.995 && minLock > 0.995 && portraitError / COUNT < 0.0036, impacts, total: COUNT });
     materialRef.current.opacity = dock ? 1 - smoothRange(0.35, 1, d) : 1;
-    lineMaterialRef.current.opacity = 0.65 * (dock ? 1 - smoothRange(0.02, 0.5, d) : 1);
+    lineMaterialRef.current.opacity = (orbitMode === 'dna' ? .28 : .65) * (dock ? 1 - smoothRange(0.02, 0.5, d) : 1);
 
     // ODE trajectories: ring buffer of the last HIST patch-center positions.
     sim.histClock += rawDt;
@@ -620,29 +636,13 @@ function Swarm({ field, pointerNdc, gravity, color, handoff, playback, orbitMode
   );
 }
 
-function Toggle({ checked, onChange, icon, disabled = false, children }) {
-  return (
-    <button type="button" className="latent-control" role="switch" aria-checked={checked} disabled={disabled} onClick={() => onChange(!checked)}>
-      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        {icon === 'gravity'
-          ? <><path d="M10 3v10m-3-3 3 3 3-3M4 16h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></>
-          : <><circle cx="7" cy="8" r="3.3" fill="currentColor" opacity=".5" /><circle cx="13" cy="8" r="3.3" fill="currentColor" opacity=".75" /><circle cx="10" cy="13" r="3.3" fill="currentColor" /></>}
-      </svg>
-      <span>{children}</span>
-      <span className="latent-control-indicator" aria-hidden="true" />
-    </button>
-  );
-}
-
 /**
  * Fixed full-viewport background: noise -> flow-matching ODE -> DiT-patch denoised portrait, driven by page scroll.
  * `trigger` is the scroll element whose top-to-bottom range maps t = 1 -> 0 (defaults to the whole document).
  * `dock` ({ trigger, resume, end }): clear the resume column and finish as its first paragraph enters.
  */
 export default function LionheadDitDiffusion({ trigger, dock, playing = false, playback, onStop }) {
-  const [gravity, setGravity] = useState(false);
-  const [color, setColor] = useState(true);
-  const [orbitMode, setOrbitMode] = useState('binary');
+  const [orbitMode] = useState(chooseVisitOrbit);
   const [docked, setDocked] = useState(false);
   const [language, setLanguage] = useState(() => document.documentElement.lang === 'ru' ? 'ru' : 'en');
   const stageRef = useRef(null);
@@ -655,8 +655,8 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
   const progressRef = useRef(null);
   const readout = useRef(1);
   const text = language === 'ru'
-    ? { title: 'Шум → портрет', gravity: 'Гравитация', color: 'Цвет', stop: 'Остановить показ', fall: 'Падение', bounce: 'Разлёт', progress: 'Формирование портрета', settings: 'Настройки вступления', phases: ['Шум', 'Поток', 'Сборка', 'Портрет'] }
-    : { title: 'Noise → portrait', gravity: 'Gravity', color: 'Color', stop: 'Stop playback', fall: 'Falling', bounce: 'Scattering', progress: 'Portrait formation', settings: 'Intro settings', phases: ['Noise', 'Flow', 'Forming', 'Portrait'] };
+    ? { stop: 'Остановить показ', vortex: 'Вихрь', nova: 'Сверхновая', fall: 'Падение', bounce: 'Разлёт', progress: 'Формирование портрета', settings: 'Ход анимации', phases: ['Шум', 'Поток', 'Сборка', 'Портрет'] }
+    : { stop: 'Stop playback', vortex: 'Vortex', nova: 'Supernova', fall: 'Falling', bounce: 'Scattering', progress: 'Portrait formation', settings: 'Intro progress', phases: ['Noise', 'Flow', 'Forming', 'Portrait'] };
   const textRef = useRef(text);
   textRef.current = text;
   const field = useMemo(() => ({ attraction: 0, dock: 0, controlsTop: window.innerHeight, bounds: { left: 0, right: window.innerWidth }, locks: Array.from({ length: PATCHES }, () => ({ v: 0 })) }), []);
@@ -666,7 +666,7 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
     readout.current = t;
     const p = Math.max(0, Math.min(1, 1 - t));
     if (readoutRef.current) readoutRef.current.textContent = `${Math.round(p * 100)}%`;
-    if (phaseRef.current) phaseRef.current.textContent = playback?.releasing ? (playback.bounceFrames ? textRef.current.bounce : textRef.current.fall) : textRef.current.phases[p < 0.12 ? 0 : p < 0.55 ? 1 : p < 0.94 ? 2 : 3];
+    if (phaseRef.current) phaseRef.current.textContent = playback?.bursting ? textRef.current.nova : playback?.textBurst && !playback.textReady ? textRef.current.vortex : playback?.releasing ? (playback.bounceFrames ? textRef.current.bounce : textRef.current.fall) : textRef.current.phases[p < 0.12 ? 0 : p < 0.55 ? 1 : p < 0.94 ? 2 : 3];
     if (progressRef.current) {
       progressRef.current.style.setProperty('--progress', p);
       progressRef.current.setAttribute('aria-valuenow', Math.round(p * 100));
@@ -805,20 +805,18 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
           <ambientLight intensity={0.05} />
           <IntroLight />
           <directionalLight position={[-4, 1, -3]} intensity={0.25} />
-          <Swarm field={field} pointerNdc={pointerNdc} gravity={gravity} color={color} handoff={!!dock} playback={playback} orbitMode={orbitMode} />
+          <Swarm field={field} pointerNdc={pointerNdc} handoff={!!dock} playback={playback} orbitMode={orbitMode} />
         </Canvas>
       </div>
-      <div ref={uiRef} className="latent-controls" role="group" aria-label={text.settings}>
-        <div className="latent-controls-heading">
-          <div><select className="latent-orbit-select" aria-label={language === 'ru' ? 'Орбита' : 'Orbit'} value={orbitMode} disabled={!!playback?.active} onChange={event => setOrbitMode(event.target.value)}><option value="binary">{language === 'ru' ? 'Двойная орбита' : 'Binary wells'}</option><option value="galaxy">{language === 'ru' ? 'Галактика' : 'Galaxy'}</option><option value="dna">{language === 'ru' ? 'ДНК-спираль' : 'DNA helix'}</option></select><span ref={phaseRef} className="latent-phase">{playback?.releasing ? (playback.bounceFrames ? text.bounce : text.fall) : text.phases[0]}</span></div>
-          <span ref={readoutRef} className="latent-readout">0%</span>
+      <div ref={uiRef} className={`latent-controls${playing ? ' is-playing' : ''}`} data-orbit={orbitMode} role="group" aria-label={text.settings}>
+        <div className="latent-meter">
+          <div className="latent-controls-heading">
+            <span ref={phaseRef} className="latent-phase">{playback?.releasing ? (playback.bounceFrames ? text.bounce : text.fall) : text.phases[0]}</span>
+            <span ref={readoutRef} className="latent-readout">0%</span>
+          </div>
+          <div ref={progressRef} className="latent-progress" role="progressbar" aria-label={text.progress} aria-valuemin={0} aria-valuemax={100} aria-valuenow={0}><span /></div>
         </div>
-        <div ref={progressRef} className="latent-progress" role="progressbar" aria-label={text.progress} aria-valuemin={0} aria-valuemax={100} aria-valuenow={0}><span /></div>
-        <div className="latent-controls-actions">
-          <Toggle checked={gravity || !!playback?.releasing} onChange={setGravity} icon="gravity" disabled={!!playback?.releasing}>{text.gravity}</Toggle>
-          <Toggle checked={color} onChange={setColor} icon="color">{text.color}</Toggle>
-        </div>
-        {playing && <button className="latent-stop" type="button" onClick={onStop}><span aria-hidden="true">■</span>{text.stop}</button>}
+        {playing && <button className="latent-stop" type="button" onClick={onStop} aria-label={text.stop} title={text.stop}><span aria-hidden="true">■</span></button>}
       </div>
     </>
   );

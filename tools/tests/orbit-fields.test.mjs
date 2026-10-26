@@ -22,3 +22,23 @@ test('Galaxy and DNA produce distinct finite, rotating 3D fields within camera d
  }
  assert.notDeepEqual(orbitPoint({},8,7,layout,2,'galaxy'),orbitPoint({},8,7,layout,2,'dna'));
 });
+
+
+test('DNA backbones pair at the same height and its crossbars meet both strands',()=>{
+ for(const row of [0,30,60,119]){
+  const a=orbitPoint({},row*10,0,layout,0,'dna');
+  const b=orbitPoint({},row*10+1,0,layout,0,'dna');
+  assert.equal(a.y,b.y);assert.ok(a.x*b.x<=0);
+ }
+ const rungs=[];
+ for(let i=0;i<1200;i++)if(i%10>=6)rungs.push(orbitPoint({},i,0,layout,0,'dna'));
+ assert.equal(new Set(rungs.map(p=>p.y)).size,24);
+});
+
+
+test('DNA rotates at the requested doubled rate without changing its vertical structure',()=>{
+ const before=orbitPoint({},100,0,layout,0,'dna'),after=orbitPoint({},100,0,layout,1,'dna');
+ assert.equal(before.y,after.y);
+ const angle=Math.atan2(after.z,after.x)-Math.atan2(before.z,before.x);
+ assert.ok(Math.abs(Math.abs(angle)-.28)<1e-8);
+});
