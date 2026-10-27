@@ -3,6 +3,8 @@
 .latent-scene.is-complete{visibility:hidden}
 /* A quiet readout, rather than a settings panel over the animation. */
 .latent-controls{position:fixed;left:24px;bottom:max(24px,env(safe-area-inset-bottom));z-index:20;box-sizing:border-box;width:208px;padding:10px 12px;border-radius:12px;background:#10141c52;color:#e9edf3;font:400 11px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none}
+.latent-controls[hidden]{display:none}
+.latent-structure-source-short{display:none}
 .latent-controls.is-playing{display:flex;align-items:center;gap:12px;width:260px;padding:8px 10px}
 .latent-meter{flex:1;min-width:0}
 .latent-controls-heading{display:flex;justify-content:space-between;align-items:center;gap:14px}

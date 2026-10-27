@@ -757,6 +757,7 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
   useLayoutEffect(() => {
     const panel = uiRef.current;
     const measure = () => {
+      if (panel.hidden) { field.controlsTop=window.innerHeight; return; }
       const box = panel.getBoundingClientRect();
       field.controlsTop = box.left < window.innerWidth / 2 && box.right > window.innerWidth / 2
         ? box.top : window.innerHeight;
@@ -876,10 +877,10 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
           <strong>{labels?.[0]}</strong>
           <span className="latent-structure-formula">{labels?.[1]}</span>
           {molecules[structure] && <span className="latent-structure-association">{labels?.[2]}</span>}
-          {molecules[structure] && <a href={molecules[structure].source} target="_blank" rel="noopener noreferrer">{language === 'ru' ? 'Образ поп-культуры · модель без H · источник' : 'Pop-culture association · H omitted · source'} <span aria-hidden="true">➤</span></a>}
+          {molecules[structure] && <a href={molecules[structure].source} target="_blank" rel="noopener noreferrer"><span className="latent-structure-source-full">{language === 'ru' ? 'Образ поп-культуры · модель без H · источник' : 'Pop-culture association · H omitted · source'}</span><span className="latent-structure-source-short">{language === 'ru' ? 'Источник' : 'Source'}</span><span aria-hidden="true">➤</span></a>}
         </div>
       </aside>}
-      <div ref={uiRef} className={`latent-controls${playing ? ' is-playing' : ''}`} data-orbit={orbitMode} role="group" aria-label={text.settings}>
+      <div ref={uiRef} className={`latent-controls${playing ? ' is-playing' : ''}`} hidden={!playing} data-orbit={orbitMode} role="group" aria-label={text.settings}>
         <div className="latent-meter">
           <div className="latent-controls-heading">
             <span ref={phaseRef} className="latent-phase">{playback?.releasing ? (playback.bounceFrames ? text.bounce : text.fall) : text.phases[0]}</span>

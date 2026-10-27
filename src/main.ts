@@ -1,6 +1,7 @@
 import {initializePWA} from './features/pwa';
 import './style.css';
 import './printResume.css';
+import './styles/introMobile.css';
 import {setLang,loadContent,type Lang} from './i18n';
 import {loadHHSnapshot,applyHHSnapshot,localizeHHSnapshot,validateSnapshot,type HHSnapshot} from './features/hhExperience';
 import {renderMinimal} from './features/minimalPortfolio';
