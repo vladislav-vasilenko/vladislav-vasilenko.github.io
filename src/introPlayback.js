@@ -4,7 +4,7 @@ import {VORTEX_APPROACH_AFTER} from './introTextFragments.js';
 export function resetIntroPlayback(playback, active = false) {
   Object.assign(playback, {
     active, mode: null, bursting: false, textBurst: null, textSeconds: 0, textReady: false, onTextStart: null, release: 0, releasing: false, handingOff: false, floor: null,
-    formedSeconds: 0, formedFrames: 0, portraitReady: false,
+    formedSeconds: 0, formedFrames: 0, portraitReady: false, supernova: false, communicating: false,
     impacts: 0, bounceSeconds: 0, bounceFrames: 0, dropReady: false,
     waiting: null, onReady: null,
   });
@@ -28,7 +28,9 @@ export function reportPlaybackFrame(playback, { dt, formed, impacts = 0, total, 
   if (!playback.releasing) {
     playback.formedSeconds = formed ? playback.formedSeconds + dt : 0;
     playback.formedFrames = formed ? playback.formedFrames + 1 : 0;
-    playback.portraitReady = playback.formedSeconds >= 0.25 && playback.formedFrames >= 3;
+    playback.portraitReady = playback.formedSeconds >= .25 && playback.formedFrames >= 3;
+    const communicating = playback.supernova && !formed;
+    if (communicating !== playback.communicating) { playback.communicating=communicating; playback.onPhase?.(); }
   } else {
     playback.impacts += impacts;
     // A pile may stand on a few bottom cubes; upper cubes need not touch the floor themselves.

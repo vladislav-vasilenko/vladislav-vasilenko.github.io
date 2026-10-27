@@ -2,6 +2,14 @@ export const VORTEX_APPROACH_AFTER = 3.2;
 export const VORTEX_END = 6;
 export const SUPERNOVA_AT = 4.8;
 
+/** Heterogeneous stars/atoms become one coherent particle scale before the funnel contracts. */
+export function vortexCubeScale(current, age) {
+  const ramp=Math.min(1,Math.max(0,age/.85));
+  const fade=Math.min(1,Math.max(0,(age-SUPERNOVA_AT)/.65));
+  const weight=ramp*ramp*(3-2*ramp)*(1-fade*fade*(3-2*fade));
+  return current+(.85-current)*weight;
+}
+
 export function vortexStrength(age) {
   if (age >= SUPERNOVA_AT) return 0;
   const ramp = Math.min(1, Math.max(0, age / .85));

@@ -12,7 +12,11 @@ import { trailTokens, anchorTrailHeads, playbackInteraction } from '../introTrai
 import { bindIntroPointer } from '../introPointer.js';
 import { portraitScrollEnd } from '../introScroll.js';
 import { chooseVisitOrbit } from '../introOrbitChoice.js';
-import { seedTextFragments, textVortex, swarmVortex, vortexStrength as swarmVortexStrength, fireSupernova, SUPERNOVA_AT } from '../introTextFragments.js';
+import { biologySequence, createMoleculeClouds, moleculePoint, BIOLOGY_LABELS, molecules } from '../molecularFields.js';
+import { patchSignal, attentionMaterial } from '../introAttention.js';
+import { astronomySequence, astronomyPoint, initialAccretion, ACCRETION_SECONDS, COSMIC_LABELS } from '../cosmicFields.js';
+import SupernovaPlasma from './SupernovaPlasma.jsx';
+import { seedTextFragments, textVortex, swarmVortex, vortexStrength as swarmVortexStrength, fireSupernova, SUPERNOVA_AT, vortexCubeScale } from '../introTextFragments.js';
 import '../sceneControls.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -44,8 +48,8 @@ const SPIN_KICK = 12;
 const VMAX = 4.2;
 const HOVER_VMAX = 7;
 const RESTITUTION = 0.55;
-const GALAXY_TONES = [[1,.83,.5], [.34,.52,.9], [1,1,.98]];
 const DNA_TONES = [[.36,.74,1], [.98,.65,.42], [.65,.9,.65]];
+const RGB_CHANNELS = ['r','g','b'];
 const SATURATION = 1.8; // the source photo is muted; push its hues so they read on cubes
 
 const HASH_SIZE = 8192; // power of two
@@ -121,6 +125,9 @@ function createSimulation() {
     lum: new Float32Array(COUNT).fill(0.5),
     textMask: new Uint8Array(COUNT), textAge: 10, textBurst: null,
     rgb: new Float32Array(COUNT * 3).fill(0.5),
+    orbitColor: new Float32Array(COUNT * 3),
+    orbitGlow: new Float32Array(COUNT),
+    structureSeconds: 0, entranceSeconds: 0, reportedStructure: null,
     scale: new Float32Array(COUNT).fill(1),
     patchOf: new Uint16Array(COUNT),
     patchSize: new Uint16Array(PATCHES),
@@ -256,12 +263,14 @@ function IntroLight() {
   return <spotLight position={[2.5,3.5,7]} angle={.6} penumbra={.12} intensity={3.4} decay={0} castShadow shadow-mapSize={[mapSize,mapSize]} shadow-bias={-.0004} shadow-normalBias={.01} />;
 }
 
-function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
+function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, captionRef }) {
   const meshRef = useRef(null);
   const materialRef = useRef(null);
   const linesRef = useRef(null);
   const lineMaterialRef = useRef(null);
   const sim = useMemo(createSimulation, []);
+  const moleculeClouds = useMemo(() => orbitMode === 'dna' ? createMoleculeClouds(COUNT) : null, [orbitMode]);
+  const attentionAttribute = useMemo(() => new THREE.InstancedBufferAttribute(new Float32Array(COUNT * 3), 3).setUsage(THREE.DynamicDrawUsage), []);
   const scratch = useMemo(
     () => ({
       matrix: new THREE.Matrix4(),
@@ -273,6 +282,8 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
       ndc: new THREE.Vector2(),
       plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
       pulse: new Float32Array(PATCHES),
+      signals: Array.from({length: PATCHES}, () => new Float32Array(3)),
+      biology: {}, molecule: {}, previousMolecule: {}, entrance: {},
       token: { x: 0, y: 0, z: 0, scale: 1 },
       orbit: {}, vortex: {}, vortexPoint: {}, vortexCore: {x:0,y:0},
       view: { halfWidth: 0, halfHeight: 0, safeLeft: 0, safeRight: 0 },
@@ -337,12 +348,30 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
     scratch.view.width = state.size.width; scratch.view.height = state.size.height;
     scratch.view.cameraZ = state.camera.position.z;
     binaryOrbitLayout(scratch.orbit, scratch.view);
+    // This clock pauses in a hidden tab, during playback and once the reader starts the CV.
+    if (!playback?.active && g < .12 && field.dock < .02) {
+      sim.entranceSeconds += Math.min(rawDt,.1);
+      if (orbitMode !== 'binary' && (orbitMode !== 'galaxy' || sim.entranceSeconds >= ACCRETION_SECONDS)) sim.structureSeconds += Math.min(rawDt,.1);
+    }
+    const accretion = orbitMode === 'galaxy' && !playback?.active ? 1-smoothRange(2.3,ACCRETION_SECONDS,sim.entranceSeconds) : 0;
+    const biology = orbitMode === 'dna' ? biologySequence(scratch.biology, sim.structureSeconds)
+      : astronomySequence(scratch.biology, sim.structureSeconds);
+    if (orbitMode !== 'binary' && sim.reportedStructure !== biology.id) {
+      sim.reportedStructure = biology.id; onStructure(biology.id);
+    }
+    if (captionRef.current) {
+      const alpha = !playback?.active && field.dock < .02 ? 1 - smoothRange(0,.18,g) : 0;
+      captionRef.current.style.opacity = String(alpha);
+      captionRef.current.style.visibility = alpha > .01 ? 'visible' : 'hidden';
+      captionRef.current.dataset.morph = biology.mix >= .999 ? 'ready' : 'transition';
+    }
     if (!sim.seeded) {
       for (let i = 0; i < COUNT; i++) {
-        const origin = asteroidEntrance(scratch.token, i, sim.patchOf[i], scratch.view);
+        const origin = orbitMode === 'galaxy' ? initialAccretion(scratch.token,i,scratch.view,0)
+          : asteroidEntrance(scratch.token, i, sim.patchOf[i], scratch.view);
         sim.pos[i * 3] = origin.x; sim.pos[i * 3 + 1] = origin.y; sim.pos[i * 3 + 2] = origin.z;
-        sim.vel[i * 3] = origin.vx; sim.vel[i * 3 + 1] = origin.vy;
-        sim.spin[i * 3] = origin.spinX; sim.spin[i * 3 + 2] = origin.spinZ;
+        sim.vel[i * 3] = origin.vx || 0; sim.vel[i * 3 + 1] = origin.vy || 0;
+        sim.spin[i * 3] = origin.spinX || 0; sim.spin[i * 3 + 2] = origin.spinZ || 0;
       }
       sim.seeded = true;
     }
@@ -354,7 +383,7 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
     }
     sim.textAge += dt;
     if (playback?.active && sim.textBurst && sim.textAge >= SUPERNOVA_AT && sim.novaFor !== sim.textBurst) {
-      fireSupernova(sim);sim.novaFor=sim.textBurst;playback.bursting=true;playback.onPhase?.();
+      fireSupernova(sim);sim.novaFor=sim.textBurst;playback.bursting=true;playback.supernova=true;playback.onPhase?.();
     }
     if(playback?.bursting && sim.textAge >= SUPERNOVA_AT+.6){playback.bursting=false;playback.onPhase?.();}
     const vortexStrength = playback?.active && sim.textBurst && !release ? swarmVortexStrength(sim.textAge) : 0;
@@ -398,7 +427,9 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
     for (let k = 0; k < PATCHES; k++) {
       const lock = field.locks[k].v;
       minLock = Math.min(minLock, lock);
-      pulse[k] = (0.1 + 0.55 * Math.sin(Math.PI * lock)) * (0.5 + 0.5 * Math.sin(t * 2.4 + sim.phase[k]));
+      pulse[k] = (0.1 + 0.55 * Math.sin(Math.PI * lock)) * (0.5 + 0.5 * Math.sin(t * 2.4 + sim.phase[k])) * (1-smoothRange(.9,1,lock));
+      patchSignal(scratch.signals[k], k, sim.textAge - SUPERNOVA_AT,
+        playback?.active && playback.supernova ? (1-smoothRange(.7,.98,g*lock)) * smoothRange(SUPERNOVA_AT+.1,SUPERNOVA_AT+.6,sim.textAge) : 0, release);
     }
 
     for (let i = 0; i < COUNT; i++) {
@@ -417,6 +448,40 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
       let ty = target[iy];
       let tz = target[iz];
       const origin = orbitPoint(scratch.token, i, patchOf[i], scratch.orbit, t, orbitMode);
+      sim.orbitGlow[i]=0;
+      if (orbitMode === 'dna') {
+        const tone = DNA_TONES[i % 10 < 6 ? i % 2 : 2];
+        sim.orbitColor.set(tone, ix);
+        if (biology.id !== 'dna') {
+          const current = moleculePoint(scratch.molecule, i, moleculeClouds[biology.id], scratch.view, sim.structureSeconds);
+          const previous = biology.previous === 'dna' ? origin
+            : moleculePoint(scratch.previousMolecule, i, moleculeClouds[biology.previous], scratch.view, sim.structureSeconds);
+          const mix = biology.mix;
+          origin.x = previous.x + (current.x - previous.x) * mix;
+          origin.y = previous.y + (current.y - previous.y) * mix;
+          origin.z = previous.z + (current.z - previous.z) * mix;
+          origin.scale = previous.scale + (current.scale - previous.scale) * mix;
+          for (let ch=0;ch<3;ch++) {
+            const channel = RGB_CHANNELS[ch];
+            const before = biology.previous === 'dna' ? tone[ch] : previous[channel];
+            sim.orbitColor[ix+ch] = before + (current[channel] - before) * mix;
+          }
+        }
+      }
+      if (orbitMode === 'galaxy') {
+        const current=astronomyPoint(scratch.molecule,i,scratch.view,sim.structureSeconds,biology.id);
+        const previous=astronomyPoint(scratch.previousMolecule,i,scratch.view,sim.structureSeconds,biology.previous);
+        const mix=biology.mix;
+        origin.x=previous.x+(current.x-previous.x)*mix;origin.y=previous.y+(current.y-previous.y)*mix;
+        origin.z=previous.z+(current.z-previous.z)*mix;origin.scale=previous.scale+(current.scale-previous.scale)*mix;
+        for(let ch=0;ch<3;ch++)sim.orbitColor[ix+ch]=previous[RGB_CHANNELS[ch]]+(current[RGB_CHANNELS[ch]]-previous[RGB_CHANNELS[ch]])*mix;
+        sim.orbitGlow[i]=previous.glow+(current.glow-previous.glow)*mix;
+        if(accretion>0){
+          const entry=initialAccretion(scratch.entrance,i,scratch.view,sim.entranceSeconds);
+          origin.x+=(entry.x-origin.x)*accretion;origin.y+=(entry.y-origin.y)*accretion;
+          origin.z+=(entry.z-origin.z)*accretion;origin.scale+=(entry.scale-origin.scale)*accretion;
+        }
+      }
       let size = (1 + (origin.scale - 1) * (1 - g) * (1 - lock)) * (1 - .25 * textFragment);
       // handoffToken reuses the scratch object; keep the orbital coordinates locally.
       const ox = origin.x, oy = origin.y, oz = origin.z;
@@ -426,6 +491,7 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
         size = token.scale;
       }
       if(playback?.active && sim.textBurst){
+        size=vortexCubeScale(size,sim.textAge);
         const collapse=sim.textAge<SUPERNOVA_AT?smoothRange(3.7,SUPERNOVA_AT,sim.textAge):1-smoothRange(SUPERNOVA_AT,SUPERNOVA_AT+.4,sim.textAge);
         size*=1-.65*collapse;
       }
@@ -495,7 +561,7 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
       let vy = vel[iy] + ay * dt;
       let vz = vel[iz] + az * dt;
       const v2 = vx * vx + vy * vy + vz * vz;
-      const maxVelocity = kicked || release > 0 || vortexStrength > 0 ? HOVER_VMAX : VMAX;
+      const maxVelocity = kicked || release > 0 || vortexStrength > 0 || accretion > 0 ? HOVER_VMAX : VMAX;
       if (v2 > maxVelocity * maxVelocity) {
         const s = maxVelocity / Math.sqrt(v2);
         vx *= s;
@@ -511,7 +577,8 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
 
       // Tumble while noisy; unwind to grid-aligned as the patch locks.
       const spinDamp = Math.exp(-(2.8 + 8 * lock * (1 - release)) * dt);
-      const unwind = Math.min(1, 6 * lock * (1 - release) * dt);
+      const voxelAlignment = orbitMode === 'galaxy' && !playback?.active ? 2.2 : 0;
+      const unwind = Math.min(1, (6 * lock + voxelAlignment) * (1 - release) * dt);
       for (let a = ix; a <= iz; a++) {
         spin[a] *= spinDamp;
         const r = wrapAngle(rot[a] + spin[a] * dt);
@@ -519,8 +586,9 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
       }
     }
 
-    // Phase 4: elastic sphere-sphere contacts.
-    if(!(playback?.active && sim.textBurst && sim.textAge>4.25 && sim.textAge<SUPERNOVA_AT)) resolveCollisions(sim, !!playback?.active && sim.textAge < 3.1);
+    // Atomic clusters are a voxel surface: contacts must not inflate their bonds into a cloud.
+    const molecularSurface = (orbitMode === 'galaxy' || orbitMode === 'dna' && biology.id !== 'dna') && g < .2 && !playback?.active;
+    if(!molecularSurface && !(playback?.active && sim.textBurst && sim.textAge>4.25 && sim.textAge<SUPERNOVA_AT)) resolveCollisions(sim, !!playback?.active && sim.textAge < 3.1);
     let impacts = 0;
     if (!release) sim.floorContact.fill(0);
     if (release && handoff) {
@@ -547,31 +615,27 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
       matrix.toArray(matrices, i * 16);
       const k = patchOf[i];
       const lock = field.locks[k].v;
-      const gain = 0.85 + pulse[k];
+      const gain = 0.85 + .1 * lock + pulse[k];
       // Color resolves from the source photo; fresh lettering fragments start white.
       const mix = 0.25 + 0.75 * lock;
       const nova=playback?.bursting?1-smoothRange(SUPERNOVA_AT,SUPERNOVA_AT+.35,sim.textAge):0;
       const white = Math.max(nova,sim.textMask[i] ? 1 - smoothRange(1.4, 3.1, sim.textAge) : 0);
       for (let channel = 0; channel < 3; channel++) {
         let photo = Math.min(1, (0.5 + (rgb[ix + channel] - 0.5) * mix) * gain);
-        if (orbitMode === 'galaxy') {
-          const core = i % 11 < 2;
-          const tone = sim.lum[i] > .72 ? GALAXY_TONES[2] : GALAXY_TONES[core ? 0 : 1];
-          photo += (tone[channel] * (core ? 1.15 : 1) - photo) * (1 - g) * (1 - lock);
-        }
-        if (orbitMode === 'dna') {
-          const group = i % 10;
-          const tone = DNA_TONES[group < 6 ? i % 2 : 2];
-          photo += (tone[channel] * gain - photo) * (1 - g) * (1 - lock);
+        if (orbitMode === 'dna' || orbitMode === 'galaxy') {
+          photo += (sim.orbitColor[ix+channel] * gain - photo) * (1 - g) * (1 - lock);
         }
         colors[ix + channel] = photo + (1 - photo) * white;
+        attentionAttribute.array[ix + channel] = scratch.signals[k][channel] + sim.orbitColor[ix+channel] * sim.orbitGlow[i] * (1-g) * (1-lock);
       }
     }
     mesh.instanceMatrix.needsUpdate = true;
     mesh.instanceColor.needsUpdate = true;
+    attentionAttribute.needsUpdate = true;
     reportPlaybackFrame(playback, { dt, textActive: !!playback?.textBurst && sim.textBurst === playback.textBurst, formed: g > 0.995 && minLock > 0.995 && portraitError / COUNT < 0.0036, impacts, total: COUNT });
     materialRef.current.opacity = dock ? 1 - smoothRange(0.35, 1, d) : 1;
-    lineMaterialRef.current.opacity = (orbitMode === 'dna' ? .28 : .65) * (dock ? 1 - smoothRange(0.02, 0.5, d) : 1);
+    const biologyTrails = orbitMode === 'dna' && biology.id !== 'dna' ? .08 : orbitMode === 'dna' ? .28 : orbitMode === 'galaxy' ? .055 : .65;
+    lineMaterialRef.current.opacity = biologyTrails * (dock ? 1 - smoothRange(0.02, 0.5, d) : 1);
 
     // ODE trajectories: ring buffer of the last HIST patch-center positions.
     sim.histClock += rawDt;
@@ -620,13 +684,14 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
   return (
     <>
       <instancedMesh ref={meshRef} args={[undefined, undefined, COUNT]} castShadow receiveShadow frustumCulled={false}>
-        <boxGeometry args={[CUBE, CUBE, CUBE]} />
-        <meshStandardMaterial ref={materialRef} color="#ffffff" roughness={0.95} metalness={0} transparent />
+        <boxGeometry args={[CUBE, CUBE, CUBE]}><primitive object={attentionAttribute} attach="attributes-attentionSignal" /></boxGeometry>
+        <meshStandardMaterial ref={materialRef} color="#ffffff" roughness={0.95} metalness={0} transparent onBeforeCompile={attentionMaterial} customProgramCacheKey={() => 'patch-attention-v1'} />
       </instancedMesh>
       <lineSegments ref={linesRef} geometry={trailGeometry} frustumCulled={false}>
         {/* Drawn over the relief: trails run through the cube layer and would otherwise be occluded. */}
         <lineBasicMaterial ref={lineMaterialRef} vertexColors transparent depthTest={false} depthWrite={false} />
       </lineSegments>
+      <SupernovaPlasma playback={playback} simulation={sim} />
     </>
   );
 }
@@ -638,6 +703,8 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode }) {
  */
 export default function LionheadDitDiffusion({ trigger, dock, playing = false, playback, onStop }) {
   const [orbitMode] = useState(chooseVisitOrbit);
+  const [structure, setStructure] = useState(() => orbitMode === 'galaxy' ? 'solar' : 'dna');
+  const captionRef = useRef(null);
   const [docked, setDocked] = useState(false);
   const [language, setLanguage] = useState(() => document.documentElement.lang === 'ru' ? 'ru' : 'en');
   const stageRef = useRef(null);
@@ -650,18 +717,19 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
   const progressRef = useRef(null);
   const readout = useRef(1);
   const text = language === 'ru'
-    ? { stop: 'Остановить показ', vortex: 'Вихрь', nova: 'Сверхновая', fall: 'Падение', bounce: 'Разлёт', progress: 'Формирование портрета', settings: 'Ход анимации', phases: ['Шум', 'Поток', 'Сборка', 'Портрет'] }
-    : { stop: 'Stop playback', vortex: 'Vortex', nova: 'Supernova', fall: 'Falling', bounce: 'Scattering', progress: 'Portrait formation', settings: 'Intro progress', phases: ['Noise', 'Flow', 'Forming', 'Portrait'] };
+    ? { stop: 'Остановить показ', attention: 'Attention · патчи', vortex: 'Вихрь', nova: 'Сверхновая', fall: 'Падение', bounce: 'Разлёт', progress: 'Формирование портрета', settings: 'Ход анимации', phases: ['Шум', 'Поток', 'Сборка', 'Портрет'] }
+    : { stop: 'Stop playback', attention: 'Attention · patches', vortex: 'Vortex', nova: 'Supernova', fall: 'Falling', bounce: 'Scattering', progress: 'Portrait formation', settings: 'Intro progress', phases: ['Noise', 'Flow', 'Forming', 'Portrait'] };
   const textRef = useRef(text);
   textRef.current = text;
   const field = useMemo(() => ({ attraction: 0, dock: 0, controlsTop: window.innerHeight, bounds: { left: 0, right: window.innerWidth }, locks: Array.from({ length: PATCHES }, () => ({ v: 0 })) }), []);
+  const labels = (orbitMode === 'dna' ? BIOLOGY_LABELS : COSMIC_LABELS)[language][structure];
   const pointerNdc = useMemo(() => ({ x: 0, y: 0, active: false }), []);
 
   const setReadout = (t) => {
     readout.current = t;
     const p = Math.max(0, Math.min(1, 1 - t));
     if (readoutRef.current) readoutRef.current.textContent = `${Math.round(p * 100)}%`;
-    if (phaseRef.current) phaseRef.current.textContent = playback?.bursting ? textRef.current.nova : playback?.textBurst && !playback.textReady ? textRef.current.vortex : playback?.releasing ? (playback.bounceFrames ? textRef.current.bounce : textRef.current.fall) : textRef.current.phases[p < 0.12 ? 0 : p < 0.55 ? 1 : p < 0.94 ? 2 : 3];
+    if (phaseRef.current) phaseRef.current.textContent = playback?.bursting ? textRef.current.nova : playback?.textBurst && !playback.textReady ? textRef.current.vortex : playback?.releasing ? (playback.bounceFrames ? textRef.current.bounce : textRef.current.fall) : playback?.communicating ? textRef.current.attention : textRef.current.phases[p < 0.12 ? 0 : p < 0.55 ? 1 : p < 0.94 ? 2 : 3];
     if (progressRef.current) {
       progressRef.current.style.setProperty('--progress', p);
       progressRef.current.setAttribute('aria-valuenow', Math.round(p * 100));
@@ -800,9 +868,17 @@ export default function LionheadDitDiffusion({ trigger, dock, playing = false, p
           <ambientLight intensity={0.05} />
           <IntroLight />
           <directionalLight position={[-4, 1, -3]} intensity={0.25} />
-          <Swarm field={field} pointerNdc={pointerNdc} handoff={!!dock} playback={playback} orbitMode={orbitMode} />
+          <Swarm field={field} pointerNdc={pointerNdc} handoff={!!dock} playback={playback} orbitMode={orbitMode} onStructure={setStructure} captionRef={captionRef} />
         </Canvas>
       </div>
+      {orbitMode !== 'binary' && <aside ref={captionRef} className={`latent-structure-caption${orbitMode === 'galaxy' ? ' is-cosmic' : ''}`} data-structure={structure} aria-label={language === 'ru' ? 'Текущая структура' : 'Current structure'}>
+        <div key={`${structure}-${language}`} className="latent-structure-copy">
+          <strong>{labels?.[0]}</strong>
+          <span className="latent-structure-formula">{labels?.[1]}</span>
+          {molecules[structure] && <span className="latent-structure-association">{labels?.[2]}</span>}
+          {molecules[structure] && <a href={molecules[structure].source} target="_blank" rel="noopener noreferrer">{language === 'ru' ? 'Образ поп-культуры · модель без H · источник' : 'Pop-culture association · H omitted · source'} <span aria-hidden="true">➤</span></a>}
+        </div>
+      </aside>}
       <div ref={uiRef} className={`latent-controls${playing ? ' is-playing' : ''}`} data-orbit={orbitMode} role="group" aria-label={text.settings}>
         <div className="latent-meter">
           <div className="latent-controls-heading">

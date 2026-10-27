@@ -12,8 +12,25 @@
 .latent-progress>span{display:block;height:100%;background:#e2ddce;transform:scaleX(var(--progress,0));transform-origin:left}
 .latent-stop{flex:none;display:grid;place-items:center;width:44px;min-height:44px;margin:0;padding:0;border:1px solid #ffffff30;border-radius:50%;background:#ffffff0c;color:#e9edf3;cursor:pointer;pointer-events:auto;touch-action:manipulation}
 .latent-stop>span{font-size:10px}.latent-stop:hover{background:#ffffff24}.latent-stop:focus-visible{outline:2px solid #a9ccff;outline-offset:3px}
+.latent-structure-caption{position:fixed;right:24px;top:max(24px,env(safe-area-inset-top));z-index:12;box-sizing:border-box;width:204px;max-width:calc(100vw - 32px);padding:10px 12px;border:1px solid #ffffff26;border-radius:14px 14px 4px 14px;background:#0b111a70;color:#f0f3fa;font:400 11px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;transition:opacity .35s}
+.latent-structure-caption::after{content:"";position:absolute;right:13px;bottom:-7px;width:12px;height:12px;border-right:1px solid #ffffff26;border-bottom:1px solid #ffffff26;background:#101720;transform:rotate(45deg);opacity:.65}
+.latent-structure-copy{display:grid;gap:3px;animation:structure-caption-in .6s ease both}
+.latent-structure-index{display:none}
+.latent-structure-copy strong{font-size:17px;line-height:1.2;font-weight:600;letter-spacing:-.02em}
+.latent-structure-formula{color:#bbd9f1;font-variant-numeric:tabular-nums;letter-spacing:.025em}
+.latent-structure-association{color:#d4d9e3}
+.latent-structure-copy small{color:#aebaca;font-size:9px;margin-top:3px}
+.latent-structure-caption.is-cosmic .latent-structure-association{display:none}
+.latent-structure-copy a{margin-top:3px;color:#aebaca;font-size:9px;text-decoration:none;pointer-events:auto;min-height:24px;display:flex;align-items:center;gap:5px}
+.latent-structure-copy a:hover{text-decoration:underline}.latent-structure-copy a:focus-visible{outline:2px solid #a9ccff;outline-offset:3px}
+@keyframes structure-caption-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 @supports not ((backdrop-filter:blur(6px)) or (-webkit-backdrop-filter:blur(6px))){.latent-controls{background:#161a24dc}}
 @media(prefers-reduced-transparency:reduce){.latent-controls{background:#161a24e6;backdrop-filter:none;-webkit-backdrop-filter:none}}
 @media(max-width:600px){.latent-controls{left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);width:180px;padding:8px 10px}.latent-controls.is-playing{width:228px}}
+.latent-structure-caption a{min-height:28px}
+@media(max-width:600px){.latent-structure-caption{top:max(16px,env(safe-area-inset-top));right:16px;width:178px;padding:8px 10px;font-size:10px}.latent-structure-copy strong{font-size:16px}.latent-structure-caption::after{display:none}}
 @media(max-height:470px){.latent-controls{bottom:max(12px,env(safe-area-inset-bottom))}}
-@media print{.latent-scene,.latent-controls{display:none!important}}
+@media(max-height:470px){.latent-structure-caption{top:12px;right:12px;width:164px;padding:8px 10px}.latent-structure-copy strong{font-size:15px}.latent-structure-association,.latent-structure-index{display:none}}
+@media(prefers-reduced-motion:reduce){.latent-structure-copy{animation:none}.latent-structure-caption{transition:none}}
+@media(prefers-reduced-transparency:reduce){.latent-structure-caption{background:#101720f2;backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media print{.latent-scene,.latent-controls,.latent-structure-caption{display:none!important}}

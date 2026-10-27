@@ -207,3 +207,18 @@ html.minimal-mode #latent-intro+#app{position:relative;margin-top:-24px;border-r
 #latent-intro.is-playing-intro .latent-intro-print,#latent-intro.is-playing-intro .latent-intro-contacts{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,visibility 0s .25s}
 
 #latent-intro.is-playing-intro .latent-intro-play{pointer-events:none}
+
+/* Exhibition above, a compact invitation anchored above the bottom progress readout. */
+.latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-invitation{height:calc(100vh - 88px);height:calc(100svh - max(88px,calc(env(safe-area-inset-bottom) + 72px)));display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:10px}
+.latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-primary{position:static;transform:none;flex:none;margin:0 auto;gap:8px}
+.latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-contacts{position:static;transform:none;flex:none;margin:0 auto}
+.latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-print{min-height:36px;padding:6px 12px}
+@media(max-height:470px){
+ .latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-invitation{flex-direction:row;align-items:flex-end;justify-content:center;gap:12px;padding:0 16px;box-sizing:border-box}
+ .latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-primary{width:53%;gap:4px;margin:0}
+ .latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-play{font-size:17px;padding:8px 10px}
+ .latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-name{font-size:22px}
+ .latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-contacts{width:42%;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0}
+ .latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-contacts a{min-height:40px}
+ .latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-contacts .intro-huggingface{grid-column:1/-1;justify-self:center}
+}

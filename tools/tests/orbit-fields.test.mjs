@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {binaryOrbit,binaryOrbitLayout} from '../../src/binaryOrbit.js';
-import {orbitPoint} from '../../src/orbitFields.js';
+import {orbitPoint,DNA_FRAME} from '../../src/orbitFields.js';
 const layout=binaryOrbitLayout({}, {width:390,height:844,halfWidth:1.95,halfHeight:4.22,cameraZ:11.6});
 test('Binary remains the default, including unknown orbit choices', () => {
  const expected=binaryOrbit({},5,7,layout,3);
@@ -24,21 +24,29 @@ test('Galaxy and DNA produce distinct finite, rotating 3D fields within camera d
 });
 
 
-test('DNA backbones pair at the same height and its crossbars meet both strands',()=>{
+test('DNA has a diagonal receding axis and 24 crossbars between opposite backbones',()=>{
+ const project=(p,v)=>p.x*v[0]+p.y*v[1]+p.z*v[2];
+ const axis=p=>project(p,DNA_FRAME.axis);
  for(const row of [0,30,60,119]){
   const a=orbitPoint({},row*10,0,layout,0,'dna');
   const b=orbitPoint({},row*10+1,0,layout,0,'dna');
-  assert.equal(a.y,b.y);assert.ok(a.x*b.x<=0);
+  assert.ok(Math.abs(axis(a)-axis(b))<.001);
  }
  const rungs=[];
- for(let i=0;i<1200;i++)if(i%10>=6)rungs.push(orbitPoint({},i,0,layout,0,'dna'));
- assert.equal(new Set(rungs.map(p=>p.y)).size,24);
+ for(let i=0;i<1200;i++)if(i%10>=6)rungs.push(axis(orbitPoint({},i,0,layout,0,'dna')).toFixed(2));
+ assert.equal(new Set(rungs).size,24);
+ const near=orbitPoint({},0,0,layout,0,'dna'),far=orbitPoint({},1191,0,layout,0,'dna');
+ assert.ok(near.x<far.x&&near.y<far.y&&near.z>far.z);
 });
 
 
-test('DNA rotates at the requested doubled rate without changing its vertical structure',()=>{
- const before=orbitPoint({},100,0,layout,0,'dna'),after=orbitPoint({},100,0,layout,1,'dna');
- assert.equal(before.y,after.y);
- const angle=Math.atan2(after.z,after.x)-Math.atan2(before.z,before.x);
- assert.ok(Math.abs(Math.abs(angle)-.28)<1e-8);
+test('DNA rotates at the requested doubled rate around its tilted axis',()=>{
+ const radial=time=>{
+  const a=orbitPoint({},100,0,layout,time,'dna'),b=orbitPoint({},101,0,layout,time,'dna');
+  return {x:a.x-b.x,y:a.y-b.y,z:a.z-b.z};
+ };
+ const before=radial(0),after=radial(1);
+ const project=(p,v)=>p.x*v[0]+p.y*v[1]+p.z*v[2];
+ const angle=p=>Math.atan2(project(p,DNA_FRAME.depth),project(p,DNA_FRAME.across));
+ assert.ok(Math.abs(Math.abs(angle(after)-angle(before))-.28)<.001);
 });
