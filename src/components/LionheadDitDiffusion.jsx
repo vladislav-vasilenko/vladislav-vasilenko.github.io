@@ -268,6 +268,7 @@ function IntroLight() {
 function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, captionRef }) {
   const meshRef = useRef(null);
   const materialRef = useRef(null);
+  const trailMaterialRef = useRef(null);
   const sim = useMemo(createSimulation, []);
   const moleculeClouds = useMemo(() => orbitMode === 'dna' ? createMoleculeClouds(COUNT) : null, [orbitMode]);
   const attentionAttribute = useMemo(() => new THREE.InstancedBufferAttribute(new Float32Array(COUNT * 3), 3).setUsage(THREE.DynamicDrawUsage), []);
@@ -635,7 +636,7 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, c
     reportPlaybackFrame(playback, { dt, textActive: !!playback?.textBurst && sim.textBurst === playback.textBurst, formed: g > 0.995 && minLock > 0.995 && portraitError / COUNT < 0.0036, impacts, total: COUNT });
     materialRef.current.opacity = dock ? 1 - smoothRange(0.35, 1, d) : 1;
     const biologyTrails = orbitMode === 'dna' && biology.id !== 'dna' ? .08 : orbitMode === 'dna' ? .28 : orbitMode === 'galaxy' ? .055 : .65;
-    trailUniforms.opacity.value = biologyTrails * (dock ? 1 - smoothRange(0.02, 0.5, d) : 1);
+    trailMaterialRef.current.uniforms.opacity.value = biologyTrails * (dock ? 1 - smoothRange(0.02, 0.5, d) : 1);
 
     // ODE trajectories: a GPU ring of the last HIST samples per trail. Each sample is uploaded once,
     // plus the live head segment each frame; the shader ages and fades the rest.
@@ -654,7 +655,8 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, c
       sim.histHead = (sim.histHead + 1) % HIST;
     }
     // histHead now points at the oldest sample.
-    trailUniforms.head.value = sim.histHead;
+    // R3F copies uniform objects into the material, so live values go through the material itself.
+    trailMaterialRef.current.uniforms.head.value = sim.histHead;
     upload(anchorTrailHeads(trail.array, pos, sim.trailToken, HIST));
     trail.needsUpdate = true;
   });
@@ -673,7 +675,7 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, c
       </instancedMesh>
       <lineSegments geometry={trailGeometry} frustumCulled={false}>
         {/* Drawn over the relief: trails run through the cube layer and would otherwise be occluded. */}
-        <shaderMaterial vertexShader={TRAIL_VERTEX} fragmentShader={TRAIL_FRAGMENT} uniforms={trailUniforms} transparent depthTest={false} depthWrite={false} />
+        <shaderMaterial ref={trailMaterialRef} vertexShader={TRAIL_VERTEX} fragmentShader={TRAIL_FRAGMENT} uniforms={trailUniforms} transparent depthTest={false} depthWrite={false} />
       </lineSegments>
       <SupernovaPlasma playback={playback} simulation={sim} />
     </>
