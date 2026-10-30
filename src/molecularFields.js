@@ -1,12 +1,11 @@
 import molecules from './data/intro-molecules.json' with {type: 'json'};
-import {smoothRange} from './introMotion.js';
+import {hash, smoothRange} from './introMotion.js';
 
 export {molecules};
 export const MOLECULE_ORDER = ['dopamine', 'serotonin', 'oxytocin', 'adrenaline'];
 export const STRUCTURE_SECONDS = 7;
 export const MORPH_SECONDS = 1.6;
 const GOLDEN = 2.399963229728653;
-const hash = n => {const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v);};
 const TONES = {C: [.72,.8,.86], N: [.3,.55,1], O: [1,.25,.2], S: [1,.79,.17]};
 
 /** DNA is an opening only. Subsequent laps contain the four molecules. */
@@ -78,22 +77,37 @@ export function moleculePoint(out, index, cloud, view, seconds) {
     out.r=.20;out.g=.27;out.b=.38;
     return out;
   }
-  const i = index * 3, yaw = .32 + Math.sin(seconds * .12) * .26;
+  const i = index * 3, pose = moleculePose(cloud, view, seconds);
+  const y = cloud.points[i+1] * pose.cosRoll - cloud.points[i+2] * pose.sinRoll;
+  const depth = cloud.points[i+1] * pose.sinRoll + cloud.points[i+2] * pose.cosRoll;
+  const x = cloud.points[i] * pose.cosYaw + depth * pose.sinYaw;
+  const z = -cloud.points[i] * pose.sinYaw + depth * pose.cosYaw;
+  out.x = (x * pose.cosTilt - y * pose.sinTilt) * pose.size;
+  out.y = (x * pose.sinTilt + y * pose.cosTilt) * pose.size + pose.lift;
+  out.z = z * pose.size;
+  out.scale = pose.scale;
+  out.r = cloud.colors[i]; out.g = cloud.colors[i+1]; out.b = cloud.colors[i+2];
+  return out;
+}
+
+/** The rigid-body pose is shared by every atom: evaluate its trigonometry once per frame, not per cube. */
+function moleculePose(cloud, view, seconds) {
+  const pose = cloud.pose ??= {};
+  if (pose.seconds === seconds && pose.halfWidth === view.halfWidth && pose.halfHeight === view.halfHeight) return pose;
+  const yaw = .32 + Math.sin(seconds * .12) * .26;
   const roll = seconds * .42, tilt = -.18 + Math.sin(seconds * .14) * .12;
   const transverse = Math.hypot(cloud.maxY,cloud.maxZ);
   const fit = Math.min(view.halfWidth * .84 / (cloud.maxX + transverse * .55),
     view.halfHeight * .4 / (transverse + cloud.maxX * .32));
-  const breathing = 1 + Math.sin(seconds * 1.3) * .015;
-  const y = cloud.points[i+1] * Math.cos(roll) - cloud.points[i+2] * Math.sin(roll);
-  const depth = cloud.points[i+1] * Math.sin(roll) + cloud.points[i+2] * Math.cos(roll);
-  const x = cloud.points[i] * Math.cos(yaw) + depth * Math.sin(yaw);
-  const z = -cloud.points[i] * Math.sin(yaw) + depth * Math.cos(yaw);
-  out.x = (x * Math.cos(tilt) - y * Math.sin(tilt)) * fit * breathing;
-  out.y = (x * Math.sin(tilt) + y * Math.cos(tilt)) * fit * breathing + view.halfHeight * .34 + Math.sin(seconds * .7) * .025;
-  out.z = z * fit * breathing;
-  out.scale = Math.max(.23,Math.min(1.05,fit * .21 / .088));
-  out.r = cloud.colors[i]; out.g = cloud.colors[i+1]; out.b = cloud.colors[i+2];
-  return out;
+  Object.assign(pose, {
+    seconds, halfWidth: view.halfWidth, halfHeight: view.halfHeight,
+    cosYaw: Math.cos(yaw), sinYaw: Math.sin(yaw), cosRoll: Math.cos(roll), sinRoll: Math.sin(roll),
+    cosTilt: Math.cos(tilt), sinTilt: Math.sin(tilt),
+    size: fit * (1 + Math.sin(seconds * 1.3) * .015),
+    lift: view.halfHeight * .34 + Math.sin(seconds * .7) * .025,
+    scale: Math.max(.23,Math.min(1.05,fit * .21 / .088)),
+  });
+  return pose;
 }
 
 export const BIOLOGY_LABELS = {

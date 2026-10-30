@@ -8,7 +8,8 @@ import { collideWithFloor, handoffToken, impactFloor, resumeClip, smoothRange } 
 import { reportPlaybackFrame } from '../introPlayback.js';
 import { asteroidEntrance, binaryOrbitLayout } from '../binaryOrbit.js';
 import { orbitPoint } from '../orbitFields.js';
-import { trailTokens, anchorTrailHeads, playbackInteraction } from '../introTrails.js';
+import { trailTokens, trailRing, writeTrailSample, anchorTrailHeads, playbackInteraction, TRAIL_VERTEX, TRAIL_FRAGMENT } from '../introTrails.js';
+import { cubeTransformMaterial } from '../introCubes.js';
 import { bindIntroPointer } from '../introPointer.js';
 import { portraitScrollEnd } from '../introScroll.js';
 import { chooseVisitOrbit } from '../introOrbitChoice.js';
@@ -136,7 +137,6 @@ function createSimulation() {
     next: new Int32Array(COUNT),
     cell: new Int32Array(COUNT * 3),
     trailToken: null,
-    hist: new Float32Array(PATCHES * HIST * 3),
     histHead: 0,
     histPrimed: false,
     histClock: 0,
@@ -238,6 +238,8 @@ function resolveCollisions(sim, skipLettering = false) {
   }
 }
 
+const cubeMaterial = (shader) => { cubeTransformMaterial(shader); attentionMaterial(shader); };
+
 const wrapAngle = (a) => a - Math.PI * 2 * Math.floor((a + Math.PI) / (Math.PI * 2));
 
 function CameraRig() {
@@ -266,18 +268,24 @@ function IntroLight() {
 function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, captionRef }) {
   const meshRef = useRef(null);
   const materialRef = useRef(null);
-  const linesRef = useRef(null);
-  const lineMaterialRef = useRef(null);
   const sim = useMemo(createSimulation, []);
   const moleculeClouds = useMemo(() => orbitMode === 'dna' ? createMoleculeClouds(COUNT) : null, [orbitMode]);
   const attentionAttribute = useMemo(() => new THREE.InstancedBufferAttribute(new Float32Array(COUNT * 3), 3).setUsage(THREE.DynamicDrawUsage), []);
+  // The simulation arrays are the instance attributes: no per-frame copy, the vertex shader composes each cube.
+  const cubeAttributes = useMemo(() => ({
+    position: new THREE.InstancedBufferAttribute(sim.pos, 3).setUsage(THREE.DynamicDrawUsage),
+    rotation: new THREE.InstancedBufferAttribute(sim.rot, 3).setUsage(THREE.DynamicDrawUsage),
+    scale: new THREE.InstancedBufferAttribute(sim.scale, 1).setUsage(THREE.DynamicDrawUsage),
+  }), [sim]);
+  const depthMaterial = useMemo(() => {
+    const material = new THREE.MeshDepthMaterial();
+    material.onBeforeCompile = cubeTransformMaterial;
+    material.customProgramCacheKey = () => 'cube-transform-v1';
+    return material;
+  }, []);
+  const trailUniforms = useMemo(() => ({ opacity: { value: 1 }, head: { value: 0 }, history: { value: HIST } }), []);
   const scratch = useMemo(
     () => ({
-      matrix: new THREE.Matrix4(),
-      position: new THREE.Vector3(),
-      quaternion: new THREE.Quaternion(),
-      euler: new THREE.Euler(),
-      scale: new THREE.Vector3(1, 1, 1),
       raycaster: new THREE.Raycaster(),
       ndc: new THREE.Vector2(),
       plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
@@ -285,35 +293,24 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, c
       signals: Array.from({length: PATCHES}, () => new Float32Array(3)),
       biology: {}, molecule: {}, previousMolecule: {}, entrance: {},
       token: { x: 0, y: 0, z: 0, scale: 1 },
-      orbit: {}, vortex: {}, vortexPoint: {}, vortexCore: {x:0,y:0},
+      orbit: {}, vortex: {}, vortexPoint: {}, vortexCore: {x:0,y:0}, rest: { x: 0, y: 0, z: 0, scale: 1 },
       view: { halfWidth: 0, halfHeight: 0, safeLeft: 0, safeRight: 0 },
     }),
     [],
   );
 
   const trailGeometry = useMemo(() => {
-    const segments = PATCHES * (HIST - 1);
+    // Ages and the fading gradient are derived on the GPU from the ring head; samples are never shifted.
+    const { segment, end, index, vertices } = trailRing(PATCHES, HIST);
     const geometry = new THREE.BufferGeometry();
-    const position = new THREE.BufferAttribute(new Float32Array(segments * 2 * 3), 3);
-    position.setUsage(THREE.DynamicDrawUsage);
-    // RGBA vertex colors: three.js enables per-vertex alpha for itemSize 4, giving a fading gradient for free.
-    const color = new Float32Array(segments * 2 * 4);
-    for (let k = 0; k < PATCHES; k++) {
-      for (let s = 0; s < HIST - 1; s++) {
-        for (let e = 0; e < 2; e++) {
-          const age = (s + e) / (HIST - 1); // 0 = oldest, 1 = newest
-          const o = ((k * (HIST - 1) + s) * 2 + e) * 4;
-          color[o] = color[o + 1] = color[o + 2] = 0.55 + 0.45 * age;
-          color[o + 3] = 0.85 * age * age;
-        }
-      }
-    }
-    geometry.setAttribute('position', position);
-    geometry.setAttribute('color', new THREE.BufferAttribute(color, 4));
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices * 3), 3).setUsage(THREE.DynamicDrawUsage));
+    geometry.setAttribute('trailSegment', new THREE.BufferAttribute(segment, 1));
+    geometry.setAttribute('trailEnd', new THREE.BufferAttribute(end, 1));
+    geometry.setIndex(new THREE.BufferAttribute(index, 1));
     return geometry;
   }, []);
 
-  useEffect(() => () => trailGeometry.dispose(), [trailGeometry]);
+  useEffect(() => () => { trailGeometry.dispose(); depthMaterial.dispose(); }, [trailGeometry, depthMaterial]);
 
   useLayoutEffect(() => {
     // Allocate instanceColor before the first frame so the shader compiles with instance colors.
@@ -432,6 +429,46 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, c
         playback?.active && playback.supernova ? (1-smoothRange(.7,.98,g*lock)) * smoothRange(SUPERNOVA_AT+.1,SUPERNOVA_AT+.6,sim.textAge) : 0, release);
     }
 
+    // A finished morph (mix = 1) never evaluates the previous structure.
+    const orbitTarget = (i, ix) => {
+      const mix = biology.mix, morphing = mix < 1;
+      sim.orbitGlow[i] = 0;
+      if (orbitMode === 'galaxy') {
+        const current = astronomyPoint(scratch.molecule, i, scratch.view, sim.structureSeconds, biology.id);
+        const previous = morphing ? astronomyPoint(scratch.previousMolecule, i, scratch.view, sim.structureSeconds, biology.previous) : current;
+        const origin = scratch.token;
+        origin.x = previous.x + (current.x - previous.x) * mix; origin.y = previous.y + (current.y - previous.y) * mix;
+        origin.z = previous.z + (current.z - previous.z) * mix; origin.scale = previous.scale + (current.scale - previous.scale) * mix;
+        for (let ch = 0; ch < 3; ch++) sim.orbitColor[ix + ch] = previous[RGB_CHANNELS[ch]] + (current[RGB_CHANNELS[ch]] - previous[RGB_CHANNELS[ch]]) * mix;
+        sim.orbitGlow[i] = previous.glow + (current.glow - previous.glow) * mix;
+        if (accretion > 0) {
+          const entry = initialAccretion(scratch.entrance, i, scratch.view, sim.entranceSeconds);
+          origin.x += (entry.x - origin.x) * accretion; origin.y += (entry.y - origin.y) * accretion;
+          origin.z += (entry.z - origin.z) * accretion; origin.scale += (entry.scale - origin.scale) * accretion;
+        }
+        return origin;
+      }
+      if (orbitMode !== 'dna') return orbitPoint(scratch.token, i, patchOf[i], scratch.orbit, t, orbitMode);
+      const tone = DNA_TONES[i % 10 < 6 ? i % 2 : 2];
+      sim.orbitColor.set(tone, ix);
+      const fromHelix = biology.previous === 'dna' && morphing;
+      const origin = biology.id === 'dna' || fromHelix ? orbitPoint(scratch.token, i, patchOf[i], scratch.orbit, t, orbitMode) : scratch.token;
+      if (biology.id === 'dna') return origin;
+      const current = moleculePoint(scratch.molecule, i, moleculeClouds[biology.id], scratch.view, sim.structureSeconds);
+      const previous = !morphing ? current : fromHelix ? origin
+        : moleculePoint(scratch.previousMolecule, i, moleculeClouds[biology.previous], scratch.view, sim.structureSeconds);
+      origin.x = previous.x + (current.x - previous.x) * mix;
+      origin.y = previous.y + (current.y - previous.y) * mix;
+      origin.z = previous.z + (current.z - previous.z) * mix;
+      origin.scale = previous.scale + (current.scale - previous.scale) * mix;
+      for (let ch = 0; ch < 3; ch++) {
+        const channel = RGB_CHANNELS[ch];
+        const before = fromHelix ? tone[ch] : previous[channel];
+        sim.orbitColor[ix + ch] = before + (current[channel] - before) * mix;
+      }
+      return origin;
+    };
+
     for (let i = 0; i < COUNT; i++) {
       const ix = i * 3;
       const iy = ix + 1;
@@ -447,42 +484,10 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, c
       let tx = target[ix];
       let ty = target[iy];
       let tz = target[iz];
-      const origin = orbitPoint(scratch.token, i, patchOf[i], scratch.orbit, t, orbitMode);
-      sim.orbitGlow[i]=0;
-      if (orbitMode === 'dna') {
-        const tone = DNA_TONES[i % 10 < 6 ? i % 2 : 2];
-        sim.orbitColor.set(tone, ix);
-        if (biology.id !== 'dna') {
-          const current = moleculePoint(scratch.molecule, i, moleculeClouds[biology.id], scratch.view, sim.structureSeconds);
-          const previous = biology.previous === 'dna' ? origin
-            : moleculePoint(scratch.previousMolecule, i, moleculeClouds[biology.previous], scratch.view, sim.structureSeconds);
-          const mix = biology.mix;
-          origin.x = previous.x + (current.x - previous.x) * mix;
-          origin.y = previous.y + (current.y - previous.y) * mix;
-          origin.z = previous.z + (current.z - previous.z) * mix;
-          origin.scale = previous.scale + (current.scale - previous.scale) * mix;
-          for (let ch=0;ch<3;ch++) {
-            const channel = RGB_CHANNELS[ch];
-            const before = biology.previous === 'dna' ? tone[ch] : previous[channel];
-            sim.orbitColor[ix+ch] = before + (current[channel] - before) * mix;
-          }
-        }
-      }
-      if (orbitMode === 'galaxy') {
-        const current=astronomyPoint(scratch.molecule,i,scratch.view,sim.structureSeconds,biology.id);
-        const previous=astronomyPoint(scratch.previousMolecule,i,scratch.view,sim.structureSeconds,biology.previous);
-        const mix=biology.mix;
-        origin.x=previous.x+(current.x-previous.x)*mix;origin.y=previous.y+(current.y-previous.y)*mix;
-        origin.z=previous.z+(current.z-previous.z)*mix;origin.scale=previous.scale+(current.scale-previous.scale)*mix;
-        for(let ch=0;ch<3;ch++)sim.orbitColor[ix+ch]=previous[RGB_CHANNELS[ch]]+(current[RGB_CHANNELS[ch]]-previous[RGB_CHANNELS[ch]])*mix;
-        sim.orbitGlow[i]=previous.glow+(current.glow-previous.glow)*mix;
-        if(accretion>0){
-          const entry=initialAccretion(scratch.entrance,i,scratch.view,sim.entranceSeconds);
-          origin.x+=(entry.x-origin.x)*accretion;origin.y+=(entry.y-origin.y)*accretion;
-          origin.z+=(entry.z-origin.z)*accretion;origin.scale+=(entry.scale-origin.scale)*accretion;
-        }
-      }
-      let size = (1 + (origin.scale - 1) * (1 - g) * (1 - lock)) * (1 - .25 * textFragment);
+      // Orbit targets only act through (1 - g)(1 - lock): a formed patch skips the field entirely.
+      const orbitWeight = (1 - g) * (1 - lock);
+      const origin = orbitWeight > 0 ? orbitTarget(i, ix) : scratch.rest;
+      let size = (1 + (origin.scale - 1) * orbitWeight) * (1 - .25 * textFragment);
       // handoffToken reuses the scratch object; keep the orbital coordinates locally.
       const ox = origin.x, oy = origin.y, oz = origin.z;
       if (dock) {
@@ -598,27 +603,20 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, c
       impacts = collideWithFloor(sim, floor, RADIUS);
     }
 
-    const matrices = mesh.instanceMatrix.array;
     const colors = mesh.instanceColor.array;
-    const { matrix, position, quaternion, euler, scale } = scratch;
+    const measureError = playback?.active && !playback.releasing;
+    const nova = playback?.bursting ? 1 - smoothRange(SUPERNOVA_AT, SUPERNOVA_AT + .35, sim.textAge) : 0;
     let portraitError = 0;
     for (let i = 0; i < COUNT; i++) {
       const ix = i * 3;
-      position.set(pos[ix], pos[ix + 1], pos[ix + 2]);
-      if (playback?.active && !playback.releasing) {
+      if (measureError) {
         for (let a = ix; a < ix + 3; a++) portraitError += (pos[a] - target[a]) ** 2;
       }
-      scale.setScalar(sim.scale[i]);
-      euler.set(rot[ix], rot[ix + 1], rot[ix + 2]);
-      quaternion.setFromEuler(euler);
-      matrix.compose(position, quaternion, scale);
-      matrix.toArray(matrices, i * 16);
       const k = patchOf[i];
       const lock = field.locks[k].v;
       const gain = 0.85 + .1 * lock + pulse[k];
       // Color resolves from the source photo; fresh lettering fragments start white.
       const mix = 0.25 + 0.75 * lock;
-      const nova=playback?.bursting?1-smoothRange(SUPERNOVA_AT,SUPERNOVA_AT+.35,sim.textAge):0;
       const white = Math.max(nova,sim.textMask[i] ? 1 - smoothRange(1.4, 3.1, sim.textAge) : 0);
       for (let channel = 0; channel < 3; channel++) {
         let photo = Math.min(1, (0.5 + (rgb[ix + channel] - 0.5) * mix) * gain);
@@ -629,67 +627,53 @@ function Swarm({ field, pointerNdc, handoff, playback, orbitMode, onStructure, c
         attentionAttribute.array[ix + channel] = scratch.signals[k][channel] + sim.orbitColor[ix+channel] * sim.orbitGlow[i] * (1-g) * (1-lock);
       }
     }
-    mesh.instanceMatrix.needsUpdate = true;
+    cubeAttributes.position.needsUpdate = true;
+    cubeAttributes.rotation.needsUpdate = true;
+    cubeAttributes.scale.needsUpdate = true;
     mesh.instanceColor.needsUpdate = true;
     attentionAttribute.needsUpdate = true;
     reportPlaybackFrame(playback, { dt, textActive: !!playback?.textBurst && sim.textBurst === playback.textBurst, formed: g > 0.995 && minLock > 0.995 && portraitError / COUNT < 0.0036, impacts, total: COUNT });
     materialRef.current.opacity = dock ? 1 - smoothRange(0.35, 1, d) : 1;
     const biologyTrails = orbitMode === 'dna' && biology.id !== 'dna' ? .08 : orbitMode === 'dna' ? .28 : orbitMode === 'galaxy' ? .055 : .65;
-    lineMaterialRef.current.opacity = biologyTrails * (dock ? 1 - smoothRange(0.02, 0.5, d) : 1);
+    trailUniforms.opacity.value = biologyTrails * (dock ? 1 - smoothRange(0.02, 0.5, d) : 1);
 
-    // ODE trajectories: ring buffer of the last HIST patch-center positions.
+    // ODE trajectories: a GPU ring of the last HIST samples per trail. Each sample is uploaded once,
+    // plus the live head segment each frame; the shader ages and fades the rest.
+    const trail = trailGeometry.attributes.position;
+    const block = PATCHES * 3;
+    const priming = !sim.histPrimed; // no update ranges: the whole buffer is uploaded once
+    const upload = b => { if (!priming) trail.addUpdateRange(b * block, block); };
     sim.histClock += rawDt;
-    if (sim.histClock >= 1 / HIST_HZ || !sim.histPrimed) {
+    if (priming) {
+      // The first sample fills the whole history so trails grow out of a point instead of the origin.
+      for (let h = 0; h < HIST; h++) writeTrailSample(trail.array, pos, sim.trailToken, HIST, h);
+      sim.histPrimed = true; sim.histClock = 0; sim.histHead = 0;
+    } else if (sim.histClock >= 1 / HIST_HZ) {
       sim.histClock = 0;
-      const { hist, trailToken } = sim;
-      for (let k = 0; k < PATCHES; k++) {
-        const source=trailToken[k]*3;
-        // The first sample fills the whole history so trails grow out of a point instead of the origin.
-        for (let h = sim.histPrimed ? sim.histHead : 0; h < (sim.histPrimed ? sim.histHead + 1 : HIST); h++) {
-          const w = (k * HIST + h) * 3;
-          hist[w] = pos[source];
-          hist[w + 1] = pos[source + 1];
-          hist[w + 2] = pos[source + 2];
-        }
-      }
-      sim.histPrimed = true;
+      writeTrailSample(trail.array, pos, sim.trailToken, HIST, sim.histHead).forEach(upload);
       sim.histHead = (sim.histHead + 1) % HIST;
-
-      if (linesRef.current) {
-        const attribute = trailGeometry.attributes.position;
-        const out = attribute.array;
-        let w = 0;
-        for (let k = 0; k < PATCHES; k++) {
-          for (let s = 0; s < HIST - 1; s++) {
-            // histHead now points at the oldest sample.
-            const a = (k * HIST + ((sim.histHead + s) % HIST)) * 3;
-            const b = (k * HIST + ((sim.histHead + s + 1) % HIST)) * 3;
-            out[w++] = hist[a];
-            out[w++] = hist[a + 1];
-            out[w++] = hist[a + 2];
-            out[w++] = hist[b];
-            out[w++] = hist[b + 1];
-            out[w++] = hist[b + 2];
-          }
-        }
-        attribute.needsUpdate = true;
-      }
     }
-    if(linesRef.current){
-      anchorTrailHeads(trailGeometry.attributes.position.array,pos,sim.trailToken,HIST);
-      trailGeometry.attributes.position.needsUpdate=true;
-    }
+    // histHead now points at the oldest sample.
+    trailUniforms.head.value = sim.histHead;
+    upload(anchorTrailHeads(trail.array, pos, sim.trailToken, HIST));
+    trail.needsUpdate = true;
   });
 
   return (
     <>
-      <instancedMesh ref={meshRef} args={[undefined, undefined, COUNT]} castShadow receiveShadow frustumCulled={false}>
-        <boxGeometry args={[CUBE, CUBE, CUBE]}><primitive object={attentionAttribute} attach="attributes-attentionSignal" /></boxGeometry>
-        <meshStandardMaterial ref={materialRef} color="#ffffff" roughness={0.95} metalness={0} transparent onBeforeCompile={attentionMaterial} customProgramCacheKey={() => 'patch-attention-v1'} />
+      {/* instanceMatrix stays identity: cubeTransformMaterial places each cube from the simulation arrays. */}
+      <instancedMesh ref={meshRef} args={[undefined, undefined, COUNT]} castShadow receiveShadow frustumCulled={false} customDepthMaterial={depthMaterial}>
+        <boxGeometry args={[CUBE, CUBE, CUBE]}>
+          <primitive object={attentionAttribute} attach="attributes-attentionSignal" />
+          <primitive object={cubeAttributes.position} attach="attributes-cubePosition" />
+          <primitive object={cubeAttributes.rotation} attach="attributes-cubeRotation" />
+          <primitive object={cubeAttributes.scale} attach="attributes-cubeScale" />
+        </boxGeometry>
+        <meshStandardMaterial ref={materialRef} color="#ffffff" roughness={0.95} metalness={0} transparent onBeforeCompile={cubeMaterial} customProgramCacheKey={() => 'patch-attention-cube-v2'} />
       </instancedMesh>
-      <lineSegments ref={linesRef} geometry={trailGeometry} frustumCulled={false}>
+      <lineSegments geometry={trailGeometry} frustumCulled={false}>
         {/* Drawn over the relief: trails run through the cube layer and would otherwise be occluded. */}
-        <lineBasicMaterial ref={lineMaterialRef} vertexColors transparent depthTest={false} depthWrite={false} />
+        <shaderMaterial vertexShader={TRAIL_VERTEX} fragmentShader={TRAIL_FRAGMENT} uniforms={trailUniforms} transparent depthTest={false} depthWrite={false} />
       </lineSegments>
       <SupernovaPlasma playback={playback} simulation={sim} />
     </>

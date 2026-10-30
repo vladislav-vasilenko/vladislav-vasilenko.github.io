@@ -1,8 +1,6 @@
-import {smoothRange} from './introMotion.js';
+import {hash, normal, smoothRange} from './introMotion.js';
 
 const TAU = Math.PI * 2;
-const hash = n => {const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v);};
-const normal = n => Math.sqrt(-2*Math.log(Math.max(.001,hash(n))))*Math.cos(TAU*hash(n+63));
 export const COSMIC_ORDER = ['solar','saturn','galaxy'];
 export const COSMIC_DURATIONS = {solar:14,saturn:7,galaxy:21};
 export const ACCRETION_SECONDS = 4.6;
@@ -34,26 +32,36 @@ function project(out,x,y,z,view) {
 
 /** An uneven stellar disk: broad logarithmic arms, a thick bulge and a sparse halo. */
 export function galaxyPoint(out,index,view,seconds) {
-  const extent=Math.min(view.halfWidth*1.12,view.halfHeight*.72);
+  const extent=Math.min(view.halfWidth*1.12,view.halfHeight*.72),star=galaxyStar(index);
+  const radius=extent*star.radius,angle=star.angle-seconds*star.rate;
+  project(out,Math.cos(angle)*radius,Math.sin(angle)*radius,extent*star.thickness,view);
+  out.scale=star.scale;out.r=star.tone[0];out.g=star.tone[1];out.b=star.tone[2];out.glow=star.glow;
+  return out;
+}
+
+// A star's shape in extent units never changes; only the disk's rotation is evaluated per frame.
+const galaxyStars=[];
+function galaxyStar(index) {
+  if(galaxyStars[index])return galaxyStars[index];
   const u=hash(index+17),v=hash(index+53),core=index%7<2,halo=index%29===0;
   let radius,angle,thickness;
   if(core){
-    radius=extent*.24*Math.cbrt(u);angle=v*TAU;
-    thickness=normal(index+31)*extent*.07*(1-radius/extent);
+    radius=.24*Math.cbrt(u);angle=v*TAU;
+    thickness=normal(index+31)*.07*(1-radius);
   } else {
-    radius=extent*(.15+Math.sqrt(u)*.85);
+    radius=.15+Math.sqrt(u)*.85;
     // Six lanes with variable thickness, spurs and gaps, rather than solid spiral tubes.
-    angle=(index%6)*TAU/6+Math.log(.12+radius/extent)*1.8+normal(index+91)*(.08+.19*u);
+    angle=(index%6)*TAU/6+Math.log(.12+radius)*1.8+normal(index+91)*(.08+.19*u);
     if(index%11===0)angle+=normal(index+29)*.48;
-    thickness=normal(index+71)*extent*(halo?.19:.018);
+    thickness=normal(index+71)*(halo?.19:.018);
   }
-  angle-=seconds*(.045+.025*(1-radius/extent));
-  project(out,Math.cos(angle)*radius,Math.sin(angle)*radius,thickness,view);
   const bright=index%19===0, dust=!core&&index%9===0;
-  out.scale=bright?.39:core?.16+v*.14:.12+v*.15;
-  const tone=dust?[.23,.16,.13]:core?[1,.73,.35]:bright?[.83,.91,1]:[.28+v*.18,.46+v*.17,.83];
-  out.r=tone[0];out.g=tone[1];out.b=tone[2];out.glow=dust?0:core?.28:bright?.30:.07;
-  return out;
+  const star={radius,angle,thickness,rate:.045+.025*(1-radius),
+    scale:bright?.39:core?.16+v*.14:.12+v*.15,
+    tone:dust?[.23,.16,.13]:core?[1,.73,.35]:bright?[.83,.91,1]:[.28+v*.18,.46+v*.17,.83],
+    glow:dust?0:core?.28:bright?.30:.07};
+  if(Number.isInteger(index)&&index>=0)galaxyStars[index]=star;
+  return star;
 }
 
 // Actual integer lattice voxels make the planets solid, with a deliberately cubic surface.

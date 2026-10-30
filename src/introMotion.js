@@ -63,3 +63,23 @@ export function collideWithFloor(sim, floor, radius) {
   }
   return impacts;
 }
+
+// Per-index randomness never changes: tabulate it once instead of re-deriving sin/log every frame.
+const TABLE = 4096;
+const hashes = new Float64Array(TABLE).fill(-1), normals = new Float64Array(TABLE).fill(NaN);
+const rawHash = n => {const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v);};
+const tabulated = n => n >= 0 && n < TABLE && n === (n | 0);
+
+export function hash(n) {
+  if (!tabulated(n)) return rawHash(n);
+  if (hashes[n] < 0) hashes[n] = rawHash(n);
+  return hashes[n];
+}
+
+/** Box-Muller sample from two stable hashes. */
+export function normal(n) {
+  if (tabulated(n) && !Number.isNaN(normals[n])) return normals[n];
+  const v = Math.sqrt(-2*Math.log(Math.max(.001,hash(n))))*Math.cos(Math.PI*2*hash(n+63));
+  if (tabulated(n)) normals[n] = v;
+  return v;
+}
