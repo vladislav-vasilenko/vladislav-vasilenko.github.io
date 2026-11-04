@@ -19,6 +19,10 @@ Started 2026-11-04. A new agent session should be able to continue from this fil
 
 The user approved stage 1 and asked for stages 2, 3 and 4 as additions. The user approved stage 5. Stages 6 and 7 were proposed in the review and are not yet approved.
 
+## Portfolio block review
+
+On branch `portfolio/kandinsky-and-block-review`. `src/portfolio_blocks.py` and `archive-web/portfolio-blocks.js` compare the published `public/hh-experience.json` with the latest primary HH capture, block by block, and apply keep, accept or rewrite decisions. The contract is in `docs/integration/github-import-and-portfolio.md`. Tested in isolation and on a copy of the real database (no pending differences, block-mode text equal to the site, no publish triggered). A real publish through the UI has not been run. Block mode is off until the owner enables it, and the running service needs a restart to load the new code.
+
 ## Visualisation notes
 
 The opportunities screen already draws a Sankey diagram (`funnel` in `archive-web/career-analytics.js`, layout in `career-charts.js`), and resume comparison already has an alluvial chart (`archive-web/resume-compare.js`). "Market Evolution" is a stacked area chart. A category alluvial over time was offered to the user on 2026-11-04 and is not scheduled. It needs several months of history; the archive had two calendar months.

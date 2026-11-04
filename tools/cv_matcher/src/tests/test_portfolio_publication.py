@@ -6,6 +6,7 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 from resume_import_server import create_app
 from src.archive_store import ArchiveStore, digest
+from src import portfolio_blocks as blocks
 from src import portfolio_publication as publication
 from src.career_trajectory import save_evidence
 from src.tests.test_archive import cv, record
@@ -152,3 +153,125 @@ class PublicationTests(unittest.TestCase):
         _, translations, stale = current_translations(publication.read(self.archive), 'another-primary', proposal['payload']['experience'], 'ru')
         self.assertEqual(translations, {})
         self.assertEqual(stale, ['en'])
+
+
+class BlockPublisher(Publisher):
+    def __init__(self, site): super().__init__(); self.site = site
+    def read_site(self): return json.loads(json.dumps(self.site))
+    def publish(self, payload): self.site = json.loads(json.dumps(payload)); return super().publish(payload)
+
+
+NEW_JOB = '''New Lab
+1
+год
+Research Engineer
+Март
+2025
+—
+Июнь
+2026
+(
+1
+год
+)
+Обучал видеомодели на PyTorch и измерял качество.
+'''
+
+
+class BlockReviewTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
+        self.archive = ArchiveStore(Path(self.tmp.name) / 'archive.sqlite3')
+        self.resume = cv()
+        self.resume['sections'] = [{'key': 'experience', 'heading': 'Опыт работы', 'text': EXPERIENCE}]
+        self.archive.sync({'client_id': 'block-test', 'records': [record('resume', self.resume),
+                          {'kind': 'profile', 'id': 'profile', 'data': {'primary_id': self.resume['id']}, 'digest': digest({'primary_id': self.resume['id']})}]})
+        self.fake = BlockPublisher({}); publication.publish(self.archive, self.fake); self.fake.calls.clear()
+
+    def capture(self, text):
+        self.resume = {**self.resume, 'sections': [{'key': 'experience', 'heading': 'Опыт работы', 'text': text}], 'content_hash': digest(text)}
+        self.archive.sync({'client_id': 'block-test', 'records': [record('resume', self.resume)]})
+
+    def block(self, comparison, company):
+        return next(b for b in comparison['blocks'] if b['kind'] == 'experience' and company in b['label'])
+
+    def test_unchanged_capture_shows_nothing_pending(self):
+        value = blocks.compare(self.archive, self.fake)
+        self.assertEqual(value['counts']['pending'], 0)
+        self.assertEqual({b['status'] for b in value['blocks']}, {'same'})
+
+    def test_changed_and_added_blocks_are_reported_with_a_word_diff(self):
+        self.capture(EXPERIENCE.replace('описал метрики', 'опубликовал метрики') + NEW_JOB)
+        value = blocks.compare(self.archive, self.fake)
+        changed, added = self.block(value, 'Example'), self.block(value, 'New Lab')
+        self.assertEqual((changed['status'], changed['fields_changed']), ('changed', ['description']))
+        self.assertEqual(added['status'], 'added')
+        ops = {part['op']: part['text'] for part in changed['diff']['description'] if part['op'] != 'same'}
+        self.assertIn('описал', ops['del']); self.assertIn('опубликовал', ops['add'])
+
+    def test_block_mode_stops_automatic_publication_from_overwriting_the_site(self):
+        blocks.set_mode(self.archive, True, self.fake)
+        original = self.fake.site['experience']
+        self.capture(EXPERIENCE.replace('описал метрики', 'опубликовал метрики'))
+        publication.publish(self.archive, self.fake)
+        self.assertEqual(self.fake.site['experience'], original)
+        blocks.set_mode(self.archive, False)
+        publication.publish(self.archive, self.fake)
+        self.assertIn('опубликовал', self.fake.site['experience'][0]['description'])
+
+    def test_applies_one_block_and_keeps_the_other_on_the_site(self):
+        self.capture(EXPERIENCE.replace('описал метрики', 'опубликовал метрики') + NEW_JOB)
+        value = blocks.compare(self.archive, self.fake)
+        added = self.block(value, 'New Lab')
+        result = blocks.apply_blocks(self.archive, {'basis': value['basis'], 'reviewed': True, 'decisions': {added['key']: {'action': 'hh'}}}, self.fake)
+        self.assertEqual(result['phase'], 'published')
+        self.assertEqual([row['company'] for row in self.fake.site['experience']], ['New Lab', 'Example Company'])
+        self.assertEqual([row['id'] for row in self.fake.site['experience']], ['hh-0', 'hh-1'])
+        self.assertIn('описал', self.fake.site['experience'][1]['description'])
+        self.assertEqual(result['comparison']['counts']['pending'], 1)
+
+    def test_rewrite_is_published_acknowledged_and_reopens_when_hh_changes_again(self):
+        self.capture(EXPERIENCE.replace('описал метрики', 'опубликовал метрики'))
+        value = blocks.compare(self.archive, self.fake); block = self.block(value, 'Example')
+        rewritten = {**block['hh'], 'description': 'Своя редакция описания проекта на PyTorch.'}
+        result = blocks.apply_blocks(self.archive, {'basis': value['basis'], 'reviewed': True, 'decisions': {block['key']: {'action': 'rewrite', 'value': rewritten}}}, self.fake)
+        self.assertEqual(self.fake.site['experience'][0]['description'], rewritten['description'])
+        self.assertEqual(result['comparison']['counts']['pending'], 0)
+        self.assertEqual(result['comparison']['counts']['acknowledged'], 1)
+        self.capture(EXPERIENCE.replace('описал метрики', 'пересчитал метрики'))
+        self.assertEqual(blocks.compare(self.archive, self.fake)['counts']['pending'], 1)
+
+    def test_rewrites_reject_contacts_and_applying_needs_review_and_fresh_basis(self):
+        self.capture(EXPERIENCE.replace('описал метрики', 'опубликовал метрики'))
+        value = blocks.compare(self.archive, self.fake); block = self.block(value, 'Example')
+        accept = {block['key']: {'action': 'hh'}}
+        with self.assertRaises(ValueError): blocks.apply_blocks(self.archive, {'basis': value['basis'], 'decisions': accept}, self.fake)
+        with self.assertRaises(ValueError): blocks.apply_blocks(self.archive, {'basis': 'stale', 'reviewed': True, 'decisions': accept}, self.fake)
+        with self.assertRaises(ValueError): blocks.apply_blocks(self.archive, {'basis': value['basis'], 'reviewed': True, 'decisions': {'unknown': {'action': 'hh'}}}, self.fake)
+        with self.assertRaises(ValueError): blocks.apply_blocks(self.archive, {'basis': value['basis'], 'reviewed': True, 'decisions': {block['key']: {'action': 'rewrite', 'value': {**block['hh'], 'description': 'Пишите на person@example.org'}}}}, self.fake)
+        self.assertEqual(self.fake.calls, [])
+
+    def test_changed_block_requires_translation_and_other_rows_keep_theirs(self):
+        source = publication.preview(self.archive)['payload']['experience']
+        translation = [{**source[0], 'company': 'Example Company', 'role': 'ML Engineer', 'period': 'January 2023 — February 2025', 'duration': '2 years', 'description': 'Built a PyTorch experiment.'}]
+        publication.save_experience_translation(self.archive, {'language': 'en', 'basis': publication.preview(self.archive)['experience_basis'], 'items': translation, 'reviewed': True})
+        publication.publish(self.archive, self.fake)
+        self.capture(EXPERIENCE.replace('описал метрики', 'опубликовал метрики') + NEW_JOB)
+        value = blocks.compare(self.archive, self.fake); added = self.block(value, 'New Lab')
+        self.assertEqual(value['translation_language'], 'en')
+        with self.assertRaises(ValueError): blocks.apply_blocks(self.archive, {'basis': value['basis'], 'reviewed': True, 'decisions': {added['key']: {'action': 'hh'}}}, self.fake)
+        english = {'company': 'New Lab', 'role': 'Research Engineer', 'period': 'March 2025 — June 2026', 'duration': '1 year', 'description': 'Trained video models.'}
+        blocks.apply_blocks(self.archive, {'basis': value['basis'], 'reviewed': True, 'decisions': {added['key']: {'action': 'hh', 'translation': english}}}, self.fake)
+        rows = self.fake.site['experience_translations']['en']['items']
+        self.assertEqual(self.fake.site['experience_translations']['en']['basis'], self.fake.site['experience_basis'])
+        self.assertEqual([row['description'] for row in rows], ['Trained video models.', 'Built a PyTorch experiment.'])
+
+    def test_failed_publication_restores_the_previous_decisions(self):
+        self.capture(EXPERIENCE.replace('описал метрики', 'опубликовал метрики'))
+        value = blocks.compare(self.archive, self.fake); block = self.block(value, 'Example')
+        class Broken(BlockPublisher):
+            def publish(self, payload): raise publication.GitHubError('GitHub не принял публикацию.')
+        with self.assertRaises(ValueError): blocks.apply_blocks(self.archive, {'basis': value['basis'], 'reviewed': True, 'decisions': {block['key']: {'action': 'hh'}}}, Broken(self.fake.site))
+        state = publication.read(self.archive)
+        self.assertFalse(state.get('block_review')); self.assertFalse(state.get('block_decisions'))
+        self.assertEqual(blocks.compare(self.archive, self.fake)['counts']['pending'], 1)

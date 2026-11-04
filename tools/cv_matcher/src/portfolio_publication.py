@@ -97,19 +97,22 @@ def preview(archive):
     translations = dict(draft.get('translations', {})) if reviewed else {}
     if reviewed: translations[draft['language']] = draft['text']
     from .portfolio_translations import current_translations
+    about_block = {'text': translations.get(source_language, about), 'language': source_language, 'translations': translations, 'origin': 'reviewed' if reviewed else 'hh'}
+    # Block mode: the site keeps reviewed text until the owner applies an HH difference.
+    candidate = {'title': cv['title'], 'about': about_block, 'experience': items}
+    site = state.get('site_blocks') if state.get('block_review') else None
+    if site: items = site['experience']
     experience_basis, experience_translations, stale_translations = current_translations(state, primary, items, source_language)
-    payload = {'schema_version': 1, 'enabled': True, 'title': cv['title'],
+    payload = {'schema_version': 1, 'enabled': True, 'title': site['title'] if site else cv['title'],
                'source': {'label': 'HH', 'captured_at': cv.get('checked_at') or cv.get('captured_at') or detail['source_at'],
                           'language': source_language,
                           'url': 'https://hh.ru/resume/' + primary if re.fullmatch('[a-fA-F0-9]{30,64}', primary) else ''},
-               'about': {'text': translations.get(source_language, about),
-                         'language': source_language, 'translations': translations,
-                         'origin': 'reviewed' if reviewed else 'hh'},
+               'about': (site.get('about') or about_block) if site else about_block,
                'experience': items, 'experience_basis': experience_basis,
                'experience_translations': experience_translations, 'confirmed_skills': skills}
     from .portfolio_visuals import project
     payload['visuals'] = project(archive, state.get('visual_settings', {}))
-    return {'resume_title': cv['title'], 'resume_id': primary, 'version_id': detail['version_id'],
+    return {'resume_title': cv['title'], 'resume_id': primary, 'version_id': detail['version_id'], 'candidate': candidate, 'block_review': bool(site),
             'about_basis': about_key, 'about_source': about, 'about_needs_review': bool(draft) and not reviewed,
             'experience_basis': experience_basis, 'experience_needs_review': stale_translations,
             'fingerprint': digest({'title': payload['title'], 'experience': items, 'experience_translations': experience_translations, 'skills': skills, 'language': payload['source']['language'], 'about': payload['about'], 'url': payload['source']['url'], 'visuals': payload['visuals']}), 'payload': payload,
@@ -120,7 +123,8 @@ def preview(archive):
 def save_about(archive, data):
     proposal = preview(archive)
     if data.get('reset') is True:
-        return write(archive, about_draft={})
+        write(archive, about_draft={})
+        return sync_site_about(archive)
     text = data.get('text'); language = data.get('language')
     if data.get('reviewed') is not True: raise ValueError('Проверьте текст перед сохранением для сайта.')
     if not isinstance(text, str) or not 30 <= len(text.strip()) <= 6000 or language not in ('ru', 'en'):
@@ -130,8 +134,16 @@ def save_about(archive, data):
     old = read(archive).get('about_draft', {})
     translations = dict(old.get('translations', {})) if old.get('basis') == proposal['about_basis'] else {}
     translations[language] = text.strip()
-    return write(archive, about_draft={'text': text.strip(), 'language': language, 'translations': translations,
+    write(archive, about_draft={'text': text.strip(), 'language': language, 'translations': translations,
                  'basis': proposal['about_basis'], 'resume_id': proposal['resume_id'], 'saved_at': now_iso()})
+    return sync_site_about(archive)
+
+
+def sync_site_about(archive):
+    """The introduction editor is an explicit owner review, so it also updates the block-mode site text."""
+    state = read(archive)
+    if not state.get('block_review') or not state.get('site_blocks'): return state
+    return write(archive, site_blocks={**state['site_blocks'], 'about': preview(archive)['candidate']['about']})
 
 
 def save_experience_translation(archive, data):
@@ -192,6 +204,12 @@ class Publisher(GitHubAPI):
         if result.returncode or len(result.stdout) > 1000000:
             raise GitHubError('Не удалось прочитать публичную активность GitHub. Предыдущий снимок сохранён.')
         return json.loads(result.stdout)
+
+    def read_site(self):
+        # Reads the published file itself, so a comparison shows what the site really serves.
+        raw = self.request(f'repos/{REPOSITORY}/contents/{TARGET}?ref=main&_fresh={time.time_ns()}', raw=True)
+        try: return json.loads(raw)
+        except (ValueError, UnicodeError): raise GitHubError('Опубликованный файл портфолио содержит некорректный JSON.') from None
 
     def public_repository(self, owner, repo):
         # Only metadata is read, never repository files or lab contents.
