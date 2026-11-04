@@ -222,3 +222,4 @@ html.minimal-mode #latent-intro+#app{position:relative;margin-top:-24px;border-r
  .latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-contacts a{min-height:40px}
  .latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-contacts .intro-huggingface{grid-column:1/-1;justify-self:center}
 }
+.minimal-open-source{margin-bottom:48px}

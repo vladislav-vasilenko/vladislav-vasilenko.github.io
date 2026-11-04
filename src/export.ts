@@ -90,6 +90,19 @@ export function buildMarkdown(cv: CVContent): string {
   lines.push(cv.employment);
   lines.push('');
 
+  if (cv.projects?.length) {
+    lines.push('## Open-source\n');
+    for (const project of cv.projects) {
+      lines.push(`### ${project.role}`);
+      lines.push(`**${project.name}** | ${project.period}\n`);
+      lines.push(project.summary + '\n');
+      for (const item of project.highlights) lines.push(`- ${item}`);
+      lines.push('');
+      lines.push(project.links.map(item => `[${item.label}](${item.url})`).join(' · '));
+      lines.push('');
+    }
+  }
+
   lines.push(`## ${cv.labels.experience}\n`);
   for (const exp of cv.experience) {
     lines.push(`### ${exp.role}`);

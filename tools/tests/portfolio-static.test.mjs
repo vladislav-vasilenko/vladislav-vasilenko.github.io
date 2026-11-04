@@ -8,7 +8,9 @@ test('indexable bilingual HTML contains the same HH work and reviewed bio withou
  for(const lang of ['en','ru']){
   const html=staticHTML(template,lang,snapshot),url=origin+(lang==='ru'?'/ru/':'/');
   assert.match(html,new RegExp('<html lang="'+lang+'"'));assert.ok(html.includes('rel="canonical" href="'+url+'"'));
-  assert.equal((html.match(/class="minimal-entry/g)||[]).length,snapshot.experience.length);
+  const projects=JSON.parse(fs.readFileSync(new URL('../../content/'+lang+'/cv.json',import.meta.url),'utf8')).projects;
+  assert.equal((html.match(/class="minimal-entry/g)||[]).length,snapshot.experience.length+projects.length);
+  for(const project of projects){assert.ok(html.includes(project.summary));for(const item of project.links)assert.ok(html.includes(item.url));}
   const rendered=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'');
   const expected=lang==='en'&&snapshot.experience_translations?.en&&snapshot.experience_translations.en.basis===snapshot.experience_basis?snapshot.experience_translations.en.items:snapshot.experience;
   assert.ok(rendered.includes(expected[0].period));assert.ok(rendered.includes(expected[0].role));assert.match(html,/hreflang="en"/);assert.match(html,/hreflang="ru"/);

@@ -131,6 +131,12 @@
           "color": "#F97316"
         },
         {
+          "name": "MLX",
+          "icon": null,
+          "url": "https://github.com/ml-explore/mlx",
+          "color": "#6B7280"
+        },
+        {
           "name": "Transformer",
           "icon": null,
           "url": "https://arxiv.org/abs/1706.03762",
