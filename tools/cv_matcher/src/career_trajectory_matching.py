@@ -62,12 +62,17 @@ def _profile(serialized):
 
 def profile(job):return _profile(json.dumps(job,sort_keys=True,ensure_ascii=False))
 
+def profile_value(job):
+    """What relations() needs from a vacancy, in a form that can be saved per version."""
+    if job.get('description_quality')!='full':return {'role':role(job),'requirements':[]}
+    p=_profile.__wrapped__(json.dumps(job,sort_keys=True,ensure_ascii=False));return {'role':p['role'],'requirements':p['requirements']}
+
 def paths(store):
     with store.connect() as db:return [json.loads(r[0]) for r in db.execute("SELECT value FROM archive_meta WHERE key LIKE 'career-skills:trajectory:%' ORDER BY key")]
 
-def relations(store,job,path_rows=None):
+def relations(store,job,path_rows=None,saved=None):
     routes=paths(store) if path_rows is None else path_rows
-    p=profile(job) if job.get('description_quality')=='full' else {'role':role(job),'requirements':[]};demand={r['skill_id'] for r in p['requirements']};links=[]
+    p=saved or (profile(job) if job.get('description_quality')=='full' else {'role':role(job),'requirements':[]});demand={r['skill_id'] for r in p['requirements']};links=[]
     for route in routes:
         explicit=job['id'] in route.get('target_vacancy_ids',[]) or job['id']==route.get('basis',{}).get('vacancy_id')
         # Domain mentions can associate a role without becoming completion blockers.

@@ -30,8 +30,13 @@ def create_app(token, *, ranker=None, cover_writer=None, archive_path=None):
         github_import=asyncio.create_task(run_github_import(app.state.archive_store))
         from src.portfolio_publication import scheduler as run_portfolio_publication
         publication=asyncio.create_task(run_portfolio_publication(app.state.archive_store))
+        from src.vacancy_derived import Warmer
+        app.state.derived_warmer=Warmer(app.state.archive_store)
+        derived=asyncio.create_task(app.state.derived_warmer.scheduler())
         try:yield
         finally:
+            derived.cancel()
+            with suppress(asyncio.CancelledError):await derived
             publication.cancel()
             with suppress(asyncio.CancelledError):await publication
             github_import.cancel()

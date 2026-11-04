@@ -13,6 +13,7 @@ data for the site.
 
 ### Main entrypoints
 
+- macOS Dock app «Рабочий поиск»: install with `.venv/bin/python scripts/install_macos_app.py`. To pick up new code or stop the service, use `.venv/bin/python scripts/service.py restart` or `stop`.
 - `resume_import_server.py` - the current local service (FastAPI, port 8788); see `docs/README.md`.
 - `server.py` - legacy FastAPI/SSE service on port 8787 (old RAG matcher path, not the personal archive).
 - `cv_matcher.py` - legacy batch matcher pipeline.

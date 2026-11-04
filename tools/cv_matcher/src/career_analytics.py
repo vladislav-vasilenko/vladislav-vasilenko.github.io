@@ -82,30 +82,45 @@ def history(entities,versions,events,now):
             if (parsed(entity['first_seen']) or now)>cut:continue
             available=[v for v in by_id.get(entity['id'],[]) if (parsed(v['received_at']) or now)<=cut]
             if not available:continue
-            latest=max(available,key=lambda v:(parsed(v['received_at']),v['id']));data=json.loads(latest['payload'])
+            latest=max(available,key=lambda v:(parsed(v['received_at']),v['id']))
             known=[e for e in changes.get(entity['id'],[]) if (parsed(e['at']) or now)<=cut]
-            closed=bool(data.get('archived'))
+            closed=bool(latest['archived'])
             if known:closed=max(known,key=lambda e:(parsed(e['at']),e['id']))['event']=='closed'
-            if not closed:buckets[classify(data)['primary']].append(entity['id'])
+            if not closed:buckets[latest['primary']].append(entity['id'])
         points.append({'month':cursor.strftime('%Y-%m'),'as_of':cut.isoformat(),'ids':buckets,'partial_month':cut==now})
         cursor=next_month
     return points,first.isoformat()
 
-def snapshot(archive,resume_id='',goal=None,model='text-embedding-3-small',*,now=None):
+def history_part(archive,*,now=None):
+    """The history chart on its own, so the rest of the screen needn't wait for it."""
+    from . import vacancy_derived as derived
+    now=now or datetime.now(timezone.utc)
+    with archive.connect() as db:
+        entities=[dict(r) for r in db.execute("SELECT id,first_seen FROM entities WHERE kind='vacancy' ORDER BY id")]
+        derived.ensure(db,'taxonomy',versions=True)
+        categories=derived.version_categories(db)
+        versions=[{**dict(r),'primary':categories.get((r['entity_id'],r['content_hash']),'other')} for r in db.execute("SELECT id,entity_id,content_hash,received_at,json_extract(payload,'$.archived') archived FROM versions WHERE kind='vacancy' ORDER BY received_at,id")]
+        events=[dict(r) for r in db.execute("SELECT id,entity_id,event,at FROM events WHERE kind='vacancy' AND event IN ('closed','reopened') ORDER BY at,id")]
+    points,first=history(entities,versions,events,now)
+    return {'history':points,'first_observation':first}
+
+def snapshot(archive,resume_id='',goal=None,model='text-embedding-3-small',*,now=None,include_history=True,include_evidence=True):
     if model not in ('text-embedding-3-small','text-embedding-3-large'):raise ValueError('Неизвестная embedding-модель.')
     summary=archive.summary();resume_id=resume_id or summary.get('primary_id') or '';goal=summary.get('goal','') if goal is None else goal
     if len(goal)>2000:raise ValueError('Цель слишком длинная.')
     now=now or datetime.now(timezone.utc)
     with archive.connect() as db:
-        entities=[dict(r) for r in db.execute("SELECT * FROM entities WHERE kind='vacancy' ORDER BY id")]
-        archive.analysis_states(db,entities,resume_id,goal,model)
+        from . import vacancy_derived as derived
+        from .manual_applications import all_marks
+        derived.ensure(db,'basic');derived.ensure(db,'taxonomy')
+        facts=derived.heads(db,'basic');categories=derived.heads(db,'taxonomy');marks=all_marks(db)
+        entities=[{**dict(r),'derived':facts[r['id']]} for r in db.execute("SELECT * FROM entities WHERE kind='vacancy' ORDER BY id")]
+        archive.ranking_states(db,entities,resume_id,goal,model)
         cv_row=db.execute("SELECT payload FROM entities WHERE kind='resume' AND id=?",(resume_id,)).fetchone()
         cv=json.loads(cv_row[0]) if cv_row else None
         analyses=[dict(r) for r in db.execute('SELECT * FROM skill_analyses WHERE resume_id=? AND goal=? ORDER BY created_at DESC',(resume_id,goal))]
         applications=[dict(r) for r in db.execute('SELECT a.id,a.context,a.status,c.stage FROM applications a LEFT JOIN application_crm c ON c.app_id=a.id ORDER BY a.created DESC')]
         observations=[dict(r) for r in db.execute('SELECT vacancy_id,status FROM hh_observations ORDER BY observed_at DESC')]
-        versions=[dict(r) for r in db.execute("SELECT id,entity_id,payload,received_at FROM versions WHERE kind='vacancy' ORDER BY received_at,id")]
-        events=[dict(r) for r in db.execute("SELECT id,entity_id,event,at FROM events WHERE kind='vacancy' AND event IN ('closed','reopened') ORDER BY at,id")]
     cv_hash=text_hash(redact_contacts(matching_text(cv))) if cv else None
     apps={}
     for a in applications:
@@ -114,10 +129,11 @@ def snapshot(archive,resume_id='',goal=None,model='text-embedding-3-small',*,now
     observed={}
     for o in observations:
         if o['status']!='unknown':observed.setdefault(o['vacancy_id'],o['status'])
-    valid_analyses={};rows=[]
+    valid_analyses={};rows=[];reviews={}
+    for a in analyses:
+        if a['resume_hash']==cv_hash:reviews.setdefault((a['vacancy_id'],a['vacancy_hash']),a)
     for entity in entities:
-        data=json.loads(entity['payload']);jid=entity['id'];jh=text_hash(document_text('vacancy',data))
-        review=next((a for a in analyses if a['vacancy_id']==jid and a['resume_hash']==cv_hash and a['vacancy_hash']==jh),None)
+        data=json.loads(entity['payload']);jid=entity['id'];review=reviews.get((jid,entity['derived']['text_hash']))
         analysis=json.loads(review['payload']) if review else None
         # Recompute from validated statuses, do not trust a saved model percentage.
         from .skill_analysis import metrics
@@ -131,16 +147,15 @@ def snapshot(archive,resume_id='',goal=None,model='text-embedding-3-small',*,now
             status=observed.get(jid)
             if status=='rejected':stage='rejected'
             elif status in ('submitted','viewed','invited'):stage='applied'
-        manual=entity.get('manual_application',{})
+        manual=marks.get(jid,{'marked':False,'revision':0})
         if manual.get('marked') and stage in ('none','draft'):stage='applied'
-        ranking=entity.get('ranking') or {};taxonomy=classify(data)
-        from .career_taxonomy import classify_work_format
-        work_fmt,reg=classify_work_format(data,data.get('description',''))
-        rows.append({'id':jid,'title':entity['title'],'company':entity['company'],'url':data.get('link'),'category':taxonomy['primary'],'tags':taxonomy['tags'],'classification_evidence':taxonomy['evidence'],
+        ranking=entity.get('ranking') or {};taxonomy=categories.get(jid) or derived.compute('taxonomy',data)
+        work_fmt,reg=taxonomy['work_format'],taxonomy['region']
+        rows.append({'id':jid,'title':entity['title'],'company':entity['company'],'url':data.get('link'),'category':taxonomy['primary'],'tags':taxonomy['tags'],**({'classification_evidence':taxonomy['evidence']} if include_evidence else {}),
                      'work_format':work_fmt,'region':reg,'location':data.get('location') or data.get('city') or (data.get('locations') or [''])[0],
                      'manual_application':manual,'first_seen':entity['first_seen'],'availability':entity['availability'],'quality':data.get('description_quality'),'fit':number(percent,0,100),'alignment':number(ranking.get('goal_similarity'),-1,1),'similarity':number(ranking.get('cv_similarity'),-1,1),'ranking':number(ranking.get('score'),-1,1),'ranking_stale':entity.get('ranking_stale',False),
                      'stage':stage,'application_id':a['id'] if a else None,'analysis_key':analysis.get('key') if analysis else None,'dimensions':metrics(analysis['requirements'])['dimensions'] if analysis else [],'salary':None})
-    points,first=history(entities,versions,events,now)
+    points,first=(lambda part:(part['history'],part['first_observation']))(history_part(archive,now=now)) if include_history else ([],min((r['first_seen'] for r in entities if r['first_seen']),default=None))
     dimensions={}
     for a in valid_analyses.values():
         for d in metrics(a['requirements'])['dimensions']:

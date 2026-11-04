@@ -79,6 +79,7 @@ def moka_detail(html,url):
 
 class ChinaScraper(BaseScraper):
     source_key=''
+    empty_listing_is_error=False
 
     def fetch_jobs(self,query='',existing_ids=None):
         if not self.source_key:raise ValueError('Не выбран источник.')

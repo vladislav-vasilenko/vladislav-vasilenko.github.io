@@ -14,3 +14,9 @@ test('non JSON and client errors retain diagnostics, credential details are reda
  const h=harness({status:502,ok:false,headers:{get:()=> 'd-502'},json:async()=>{throw Error('bad JSON');}});await assert.rejects(h.api('analytics'),/не является JSON/);assert.ok(h.elements.get('notice').textContent.includes('502'));
  h.showDiagnostic(new Error('Failed at https://localhost/#connect=secret-code'),'Загрузка');assert.ok(!h.elements.get('notice').textContent.includes('secret-code'));
 });
+test('a timeout keeps its real reason, although DOMException.message is read-only',async()=>{
+ const h=harness({});h.sandbox.fetch=async()=>{throw new DOMException('signal timed out','TimeoutError');};
+ const error=await h.api('analytics/evidence?ids=1',undefined,30000).catch(e=>e);
+ assert.equal(error.name,'TimeoutError');assert.ok(error.message.includes('Сервис не ответил за 30 секунд'));assert.equal(error.endpoint,'/archive/analytics/evidence');
+ h.showDiagnostic(new DOMException('Write permission denied','NotAllowedError'),'Копирование');assert.ok(h.elements.get('notice').textContent.includes('Write permission denied'));
+});

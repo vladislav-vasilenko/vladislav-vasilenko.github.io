@@ -54,7 +54,7 @@ class SberScraper(BaseScraper):
         # sometimes a challenge page shows up — detect and bail early
         html_head = (page.content() or "").lower()[:2000]
         if "проверк" in html_head and ("человек" in html_head or "робот" in html_head):
-            print("  ⚠️ Сбер: JS-challenge detected — requires storage_state or headed mode")
+            self._fail("JS-challenge detected; requires storage_state or headed mode")
             return []
 
         try:
@@ -67,9 +67,10 @@ class SberScraper(BaseScraper):
                 "scrollDelayMs": self.scroll_delay_ms,
             })
         except Exception as e:
-            print(f"  ⚠️ Сбер browser parser failed: {e}")
+            self._fail(f"browser parser failed: {type(e).__name__}")
             return []
 
+        self.report["listed"] = len(raw_items or [])
         q_lower = query.lower()
         vacancies: List[Dict[str, Any]] = []
         for raw in raw_items or []:
@@ -108,5 +109,6 @@ class SberScraper(BaseScraper):
             self._emit("vacancy", id=jid, title=title, company=self.company_name, link=job_url)
             print(f"  ✓ {title}")
 
+        self._finish_coverage(len(vacancies))
         print(f"  Сбер: собрано {len(vacancies)} вакансий через browser-side parser")
         return vacancies

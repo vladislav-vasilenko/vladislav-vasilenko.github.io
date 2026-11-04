@@ -85,6 +85,7 @@ class MetaCareersScraper(BaseScraper):
     def fetch_jobs(self, query: str, existing_ids: Optional[Set[str]] = None) -> List[Dict[str, Any]]:
         if existing_ids is None:
             existing_ids = set()
+        self._new_report()
         print(
             f"🔍 {self.company_name}: запрос '{query}' "
             f"(limit={self.limit}, headless={self.headless}, "
@@ -93,6 +94,8 @@ class MetaCareersScraper(BaseScraper):
         self._emit("source_start", company=self.company_name, query=query, limit=self.limit)
         try:
             result = asyncio.run(self._async_scrape(query, existing_ids))
+            self.report["accepted"] = len(result)
+            self._finish_coverage(len(result))
             self._emit("source_done", company=self.company_name, query=query, count=len(result))
             return result
         except Exception as e:
@@ -131,6 +134,7 @@ class MetaCareersScraper(BaseScraper):
 
             try:
                 raw_jobs = await self._capture_listing_async(context)
+                self.report["listed"] = len(raw_jobs)
                 print(f"  Meta: {len(raw_jobs)} вакансий получено из GraphQL")
                 self._emit("listing_captured", company=self.company_name, count=len(raw_jobs))
                 if not raw_jobs:
@@ -216,6 +220,7 @@ class MetaCareersScraper(BaseScraper):
             outputs = await asyncio.gather(*tasks, return_exceptions=True)
             for raw, out in zip(batch, outputs):
                 if isinstance(out, Exception):
+                    self.report["errors"] += 1
                     print(f"  ⚠️ meta_{raw.get('id')}: {type(out).__name__}: {out}")
                     continue
                 if out is None:
@@ -262,6 +267,7 @@ class MetaCareersScraper(BaseScraper):
                     attempt, attempts=self.detail_attempts, base_delay=0.6, label=f"meta:{vid}",
                 )
             except Exception as e:
+                self.report["errors"] += 1
                 print(f"  ⚠️ {job_url} failed after {self.detail_attempts} attempts: {e}")
                 return None
 
@@ -285,6 +291,7 @@ class MetaCareersScraper(BaseScraper):
                 )
             except ValidationError as e:
                 # Schema drift — log loudly so it shows up in CI logs.
+                self.report["errors"] += 1
                 print(f"  ⚠️ schema validation failed for meta_{vid}: {e}")
                 return None
 

@@ -114,12 +114,16 @@ class BaseScraper:
     # are injected before the first goto(). Sub-classes can set as a class default
     # (Sber/Google/Meta do this); callers can override via __init__.
     stealth: bool = False
+    # A listing with no rows means a broken source, not an empty board. Adapters
+    # whose `listed` excludes known rows turn this off and raise their own error.
+    empty_listing_is_error: bool = True
 
     def __init__(self, limit: int = 20, headless: bool = True,
                  storage_state_path: Optional[str] = None,
                  event_sink: Optional[Callable[[Dict[str, Any]], None]] = None,
                  stealth: Optional[bool] = None, archive_path=None):
         self.limit = limit
+        self._new_report()
         self.archive_path = archive_path
         self.headless = headless
         if storage_state_path:
@@ -128,6 +132,19 @@ class BaseScraper:
             self.event_sink = event_sink
         if stealth is not None:
             self.stealth = stealth
+
+    def _new_report(self) -> None:
+        self.report: Dict[str, Any] = {"listed": 0, "accepted": 0, "errors": 0, "coverage": "partial"}
+
+    def _fail(self, message: str) -> None:
+        """Count a source failure so that an empty result can't look like success."""
+        self.report["errors"] += 1
+        print(f"  ⚠️ {self.company_name}: {message}")
+        self._emit("error", company=self.company_name, message=message)
+
+    def _finish_coverage(self, accepted: int) -> None:
+        if not self.report["errors"]:
+            self.report["coverage"] = "limited" if self.limit and accepted >= self.limit else "listing_exhausted"
 
     def _emit(self, event_type: str, **data: Any) -> None:
         """Push a live event through the optional event_sink (no-op if unset)."""
@@ -155,6 +172,7 @@ class BaseScraper:
     def fetch_jobs(self, query: str, existing_ids: Optional[Set[str]] = None) -> List[Dict[str, Any]]:
         if existing_ids is None:
             existing_ids = set()
+        self._new_report()
         print(f"🔍 {self.company_name}: запрос '{query}' (limit={self.limit}, headless={self.headless})")
         self._emit("source_start", company=self.company_name, query=query, limit=self.limit)
         try:
@@ -174,11 +192,13 @@ class BaseScraper:
                     except Exception as error:
                         print(f'  Архив не обновлён: {type(error).__name__}. Собранные записи остаются в результате запуска.')
                         self._emit('error',company=self.company_name,message='Сбор выполнен, но локальный архив не обновлён.')
+                    self.report["accepted"] = len(result)
                     self._emit("source_done", company=self.company_name, query=query, count=len(result))
                     return result
                 finally:
                     browser.close()
         except Exception as e:
+            self.report["errors"] += 1
             print(f"❌ {self.company_name}: ошибка — {e}")
             self._emit("error", company=self.company_name, query=query, message=str(e))
             return []

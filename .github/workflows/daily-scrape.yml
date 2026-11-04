@@ -106,8 +106,7 @@ jobs:
             EXTRA_ARGS+=(--meta-unlimited)
           fi
           uv run python -u scripts/scrape_online.py --scrapers "$COLLECTION_SOURCES" --limit "$COLLECTION_LIMIT" "${EXTRA_ARGS[@]}" 2>&1 | tee "$RUNNER_TEMP/vacancy-scrape.log"
-        # don't fail the workflow on per-source errors; script returns 0
-        continue-on-error: false
+        # Per-source errors don't stop publishing; "Check source health" reports them last.
 
       - name: Prepare this run's vacancy export
         id: export
@@ -156,6 +155,11 @@ jobs:
           done
           echo "::error::Could not publish after 3 attempts. The vacancy artifact remains available for local import."
           exit 1
+
+      - name: Check source health
+        if: ${{ !cancelled() && steps.scrape.outcome == 'success' }}
+        working-directory: tools/cv_matcher
+        run: python3 scripts/check_scrape_health.py
 
       - name: Upload log on failure
         if: failure()

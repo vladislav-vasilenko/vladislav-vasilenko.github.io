@@ -18,7 +18,7 @@ function env(){
 }
 test('analytics still renders when new skills asset is missing; failure has a retry',async()=>{
  const e=env();e.head.append=(script)=>{queueMicrotask(()=>script.onerror());};
- vm.runInContext(fs.readFileSync(new URL('../career-analytics.js',import.meta.url),'utf8'),e.context);
+ vm.runInContext(fs.readFileSync(new URL('../busy.js',import.meta.url),'utf8'),e.context);vm.runInContext(fs.readFileSync(new URL('../career-analytics.js',import.meta.url),'utf8'),e.context);
  await vm.runInContext('CareerAnalytics.enter("fixture_cv")',e.context);await new Promise(setImmediate);
  assert.equal(e.errors.length,1);assert.equal(e.errors[0].op,'Загрузка модуля навыков');assert.doesNotMatch(e.errors[0].message,/is not defined/);
  const labels=[];function walk(n){if(n.textContent)labels.push(n.textContent);for(const c of n.children||[])walk(c);}walk(e.elements.get('analytics'));

@@ -52,7 +52,7 @@ class GoogleCareersScraper(BaseScraper):
                 page.goto(url, wait_until="domcontentloaded", timeout=60000)
                 page.wait_for_timeout(self._HYDRATION_WAIT_MS)
             except Exception as e:
-                print(f"  ⚠️ Google page {page_num}: navigation error — {e}")
+                self._fail(f"page {page_num}: navigation error {type(e).__name__}")
                 break
 
             html = page.content()
@@ -65,9 +65,11 @@ class GoogleCareersScraper(BaseScraper):
                     page.wait_for_timeout(3000)
                     wiz_data = extract_wiz_data(page.content())
                 if wiz_data is None:
+                    self._fail(f"page {page_num}: listing data not recognised")
                     break
 
             job_records = wiz_data[0]  # list of job arrays
+            self.report["listed"] += len(job_records or [])
             if total_available is None and len(wiz_data) > GOOGLE_TOTAL_IDX:
                 total_available = wiz_data[GOOGLE_TOTAL_IDX]
                 print(f"  Google: {total_available} total results for query '{query}'")
@@ -97,6 +99,7 @@ class GoogleCareersScraper(BaseScraper):
                         )
                 except Exception as e:
                     vid = record[0] if isinstance(record, list) and len(record) > 0 else "?"
+                    self.report["errors"] += 1
                     print(f"  ⚠️ Google record {vid}: {e}")
 
             print(f"  Google page {page_num}: {len(job_records)} records → {len(vacancies)} total accepted")
@@ -113,5 +116,6 @@ class GoogleCareersScraper(BaseScraper):
 
             page_num += 1
 
+        self._finish_coverage(len(vacancies))
         print(f"  Google: ✓ {len(vacancies)} vacancies collected across {page_num} pages")
         return vacancies

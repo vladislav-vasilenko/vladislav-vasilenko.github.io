@@ -168,7 +168,8 @@ def main() -> int:
         if allowed and key not in allowed:
             continue
             
-        stats[key] = {"new": 0, "errors": 0}
+        stats[key] = {"new": 0, "errors": 0, "listed": 0}
+        empty_is_error = True
         print(f"\n── {key} ──")
         try:
             scraper = factory(limit=0 if key == "meta" and args.meta_unlimited else args.limit or 0)
@@ -180,9 +181,12 @@ def main() -> int:
         for q in queries:
             try:
                 jobs = scraper.fetch_jobs(q, existing_ids=set(by_id.keys()))
-                report=getattr(scraper,"report",{})
+                report=getattr(scraper,"report",None)
+                report=report if isinstance(report,dict) else {}
                 stats[key]["errors"]+=report.get("errors",0)
+                stats[key]["listed"]+=report.get("listed",0)
                 if report:stats[key]["coverage"]=report.get("coverage","partial")
+                empty_is_error=getattr(scraper,"empty_listing_is_error",True) is not False
                 for j in jobs:
                     jid = j["id"]
                     if jid not in by_id:
@@ -198,12 +202,14 @@ def main() -> int:
                 print(f"  ✗ {key} on '{q}': {e}")
                 traceback.print_exc(limit=2, file=sys.stderr)
                 stats[key]["errors"] += 1
+        # Saved rows are kept either way; check_scrape_health.py turns this into a failed run.
+        stats[key]["failed"] = stats[key]["listed"] == 0 and (stats[key]["errors"] > 0 or empty_is_error)
 
     _save(by_id, stats, now_iso)  # Includes the final source failures and empty results.
     total_new = sum(s["new"] for s in stats.values())
     print(f"\n✅ Done. {total_new} new, {len(by_id)} total → {OUTPUT}")
     for k, s in stats.items():
-        print(f"   {k}: +{s['new']} new, {s['errors']} errors")
+        print(f"   {k}: +{s['new']} new, {s.get('listed',0)} listed, {s['errors']} errors" + (" — FAILED" if s.get('failed') else ""))
     return 0
 
 
