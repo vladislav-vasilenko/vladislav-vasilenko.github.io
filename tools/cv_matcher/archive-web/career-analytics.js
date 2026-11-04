@@ -48,7 +48,7 @@ const CareerAnalytics=(()=>{
   const wrap=el('label','acField',label),input=el('select');for(const [value,text] of values){const o=el('option','',text);o.value=value;input.append(o);}input.value=initial;wrap.append(input);input.onchange=()=>{selected=null;render();};controls.bar.append(wrap);return input;
  }
  function dateInput(label){const wrap=el('label','acField',label),input=el('input');input.type='date';wrap.append(input);input.onchange=()=>{selected=null;render();};controls.bar.append(wrap);return input;}
- function options(){return {company:controls.company.value,category:controls.category.value,workFormat:controls.workFormat?.value||'',region:controls.region?.value||'',from:controls.from.value,to:controls.to.value,availability:controls.availability.value,fit:controls.fit.value,fitThreshold:Number(controls.threshold.value),alignmentThreshold:Number(controls.alignment.value),focus:controls.focus.checked,focusCategories:controls.focusCategories.filter(c=>c.input.checked).map(c=>c.id)};}
+ function options(){return {company:controls.company.value,category:controls.category.value,workFormat:controls.workFormat?.value||'',region:controls.region?.value||'',companyRegion:controls.companyRegion?.value||'',from:controls.from.value,to:controls.to.value,availability:controls.availability.value,fit:controls.fit.value,fitThreshold:Number(controls.threshold.value),alignmentThreshold:Number(controls.alignment.value),focus:controls.focus.checked,focusCategories:controls.focusCategories.filter(c=>c.input.checked).map(c=>c.id)};}
  function panel(title,hint){const p=el('section','acPanel');p.append(el('h2','',title),el('p','muted',hint));return p;}
  function activate(node,label,ids){node.setAttribute('tabindex','0');node.setAttribute('role','button');node.setAttribute('aria-label',label);node.append(svg('title',{},label));const run=()=>{selected={label,ids};skillsScope();drill();controls.drill.scrollIntoView({behavior:'smooth',block:'start'});};node.onclick=run;node.onkeydown=e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();run();}};return node;}
  function chart(w,h,label){const s=svg('svg',{viewBox:`0 0 ${w} ${h}`,role:'group','aria-label':label});s.append(svg('title',{},label));return s;}
@@ -73,17 +73,18 @@ const CareerAnalytics=(()=>{
   controls.bar=el('div','acFilters');root.append(controls.bar);
   controls.cv=select('Резюме',data.resumes.map(r=>[r.id,r.title]),data.resume.id);
   controls.cv.onchange=()=>enter(controls.cv.value).catch(error);
-  controls.company=select('Компания',[['','Все компании'],...[...new Set(data.rows.map(r=>r.company))].sort().map(c=>[c,c||'Не указана'])]);
+  controls.companyRegion=select('Регион компаний',[['','Все регионы'],...Object.entries(data.regions||{})],document.getElementById('companyRegion')?.value||'');controls.companyRegion.onchange=()=>{selected=null;shareRegion();render();};
+  controls.company=select('Компания',[['','Все компании']]);
   controls.category=select('Направление / тег',[['','Все направления'],...data.taxonomy.map(c=>[c.id,c.label])]);controls.category.onchange=()=>selectCategory(controls.category.value);
   controls.workFormat=select('Формат работы',[['','Все форматы'],['remote','Удалёнка'],['hybrid','Гибрид'],['onsite','Офис']]);
-  controls.region=select('Регион',[['','Все локации'],['moscow','Москва'],['spb','Санкт-Петербург'],['rf','Регионы РФ'],['global','Global / Зарубеж']]);
+  controls.region=select('Локация вакансии',[['','Все локации'],['moscow','Москва'],['spb','Санкт-Петербург'],['rf','Регионы РФ'],['global','Global / Зарубеж']]);
   controls.availability=select('Активность',[['','Все наблюдения'],['active','Проверена активность'],['unknown','Не проверена'],['closed','Закрытие подтверждено']]);
   controls.from=dateInput('Впервые обнаружены с');controls.to=dateInput('По');
   controls.fit=select('Подтверждения в CV',[['','Любой разбор'],['known','Есть Luna-разбор'],['high','Выше порога'],['unknown','Разбора нет']]);
   controls.threshold=select('Порог требований',[['40','40%'],['60','60%'],['80','80%']],'60');
   controls.alignment=select('Порог близости к цели',[['0.3','0,3'],['0.4','0,4'],['0.5','0,5']],'0.4');
   const salary=select('Зарплата',[['','Нет структурированных данных']]);salary.disabled=true;
-  const reset=el('button','secondary','Сбросить фильтры');reset.onclick=()=>{for(const k of ['company','category','workFormat','region','availability','from','to','fit'])controls[k].value='';controls.focus.checked=false;saveFocus();selected=null;render();};controls.bar.append(reset);
+  const reset=el('button','secondary','Сбросить фильтры');reset.onclick=()=>{for(const k of ['company','companyRegion','category','workFormat','region','availability','from','to','fit'])controls[k].value='';shareRegion();controls.focus.checked=false;saveFocus();selected=null;render();};controls.bar.append(reset);
   controls.unclassified=el('p','acUnclassified');root.append(controls.unclassified);
   controls.status=el('p','acStatus');controls.status.setAttribute('role','status');root.append(controls.status);const learning=el('button','secondary','Навыки и обучение → по текущей выборке');learning.onclick=()=>{skillsScope();setTab('learning');};root.append(learning);
   const tabs=el('div','acModes');controls.mode=el('select');controls.mode.setAttribute('aria-label','Режим аналитики');for(const [v,t] of [['funnel','Market → Candidate Funnel'],['evolution','Market Evolution']]){const o=el('option','',t);o.value=v;controls.mode.append(o);}controls.mode.onchange=render;tabs.append(controls.mode);controls.share=el('select');controls.share.setAttribute('aria-label','Количество или доля');for(const [v,t] of [['count','Количество'],['share','Доля, %']]){const o=el('option','',t);o.value=v;controls.share.append(o);}controls.share.onchange=render;tabs.append(controls.share);root.append(tabs);
@@ -102,10 +103,18 @@ const CareerAnalytics=(()=>{
   }catch(e){if(element.isConnected){showDiagnostic(e,'Загрузка модуля навыков',element);const retry=el('button','secondary','Повторить загрузку навыков');retry.onclick=()=>{element.replaceChildren();mountSkills(element);};element.append(retry);}}
  }
  function skillsScope(){if(typeof CareerSkills==='undefined')return;CareerSkills.update({resume_id:data.resume.id,goal:data.resume.goal,model:data.resume.model,filters:options(),available_vacancies:CareerCharts.filters(data.rows,options()),vacancy_ids:selected?selected.ids:null});}
+ // The list follows the other filters. A chosen company with no vacancies left is dropped, and that is returned.
+ function fillCompanies(){
+  const input=controls.company,current=input.value,choices=CareerCharts.companyCounts(data.rows,options()),all=el('option','','Все компании ('+choices.reduce((sum,c)=>sum+c.count,0)+')');all.value='';
+  input.replaceChildren(all,...choices.map(c=>{const o=el('option','',(c.company||'Не указана')+' ('+c.count+')');o.value=c.company;return o;}));
+  const kept=!current||choices.some(c=>c.company===current);input.value=kept?current:'';return kept?'':current;
+ }
+ // One region choice for this screen and the vacancy list.
+ function shareRegion(){const shared=document.getElementById('companyRegion');if(shared){shared.value=controls.companyRegion.value;try{localStorage.setItem('cvMatcher.companyRegion.v1',shared.value);}catch{}if(typeof fillCompanyPicker==='function')fillCompanyPicker();}}
  let renderTick=0;
  const nextFrame=()=>new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
  function render(){
-  if(!data)return;const f=options(),rows=CareerCharts.filters(data.rows,f);controls.status.textContent=(f.focus?'Фокус · ':'')+rows.length+' из '+data.rows.length+' вакансий · '+data.resume.title+' · '+data.resume.model+' · данные на '+new Date(data.as_of).toLocaleString('ru-RU');
+  if(!data)return;const hidden=fillCompanies();const f=options(),rows=CareerCharts.filters(data.rows,f);controls.status.textContent=(hidden?'Компании «'+hidden+'» нет в текущей выборке, фильтр по ней снят. ':'')+(f.focus?'Фокус · ':'')+rows.length+' из '+data.rows.length+' вакансий · '+data.resume.title+' · '+data.resume.model+' · данные на '+new Date(data.as_of).toLocaleString('ru-RU');
   const unknown=data.rows.filter(r=>r.category==='other'),short=unknown.filter(r=>r.quality!=='full').length;controls.unclassified.textContent='Не классифицировано: '+unknown.length+' (из них '+short+' без полного описания). По названию и доступному тексту направление пока не определено; это не оценка соответствия вашему CV. Снимите «Фокус», чтобы увидеть весь архив.';
   controls.share.hidden=controls.mode.value!=='evolution';controls.main.replaceChildren();controls.main.append(controls.mode.value==='evolution'?evolution(f):funnel(rows,f));
   // The first panel appears at once; the rest follow frame by frame so the page stays responsive.
@@ -114,7 +123,7 @@ const CareerAnalytics=(()=>{
   controls.map.replaceChildren(Busy.create('Рисую карту возможностей…'));controls.drill.replaceChildren(Busy.create('Готовлю список вакансий…'));
   (async()=>{for(const step of steps){await nextFrame();if(tick!==renderTick)return;step();}})().catch(error);
  }
- function filterCaption(f){const parts=[];if(f.company)parts.push('Компания: '+f.company);if(f.category)parts.push('Направление: '+(data.taxonomy.find(c=>c.id===f.category)?.label||f.category));if(f.focus)parts.push('Фокус: '+f.focusCategories.map(k=>data.taxonomy.find(c=>c.id===k)?.label||k).join(', '));if(f.availability)parts.push('Активность: '+f.availability);if(f.workFormat)parts.push('Формат: '+f.workFormat);if(f.region)parts.push('Регион: '+f.region);if(f.fit)parts.push('Luna: '+f.fit+' · порог '+f.fitThreshold+'%');if(f.from||f.to)parts.push('Период: '+(f.from||'…')+' — '+(f.to||'…'));return parts.length?parts.join(' · '):'Все вакансии текущей выборки';}
+ function filterCaption(f){const parts=[];if(f.company)parts.push('Компания: '+f.company);if(f.category)parts.push('Направление: '+(data.taxonomy.find(c=>c.id===f.category)?.label||f.category));if(f.focus)parts.push('Фокус: '+f.focusCategories.map(k=>data.taxonomy.find(c=>c.id===k)?.label||k).join(', '));if(f.availability)parts.push('Активность: '+f.availability);if(f.workFormat)parts.push('Формат: '+f.workFormat);if(f.companyRegion)parts.push('Регион компаний: '+(data.regions?.[f.companyRegion]||f.companyRegion));if(f.region)parts.push('Локация: '+f.region);if(f.fit)parts.push('Luna: '+f.fit+' · порог '+f.fitThreshold+'%');if(f.from||f.to)parts.push('Период: '+(f.from||'…')+' — '+(f.to||'…'));return parts.length?parts.join(' · '):'Все вакансии текущей выборки';}
  async function downloadFunnelPNG(source,count,meta={}){
   const cloned=source.cloneNode(true),view=source.viewBox.baseVal,legend=meta.legend||[],notes=meta.notes||[],footer=notes.length*22+Math.ceil(legend.length/3)*25+(legend.length?35:15),header=138,geometry=CareerCharts.exportGeometry(view.width,view.height+footer+header-90);
   // Presentation attributes make the SVG independent of the page's CSS.

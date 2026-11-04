@@ -129,6 +129,12 @@ def snapshot(archive,resume_id='',goal=None,model='text-embedding-3-small',*,now
     observed={}
     for o in observations:
         if o['status']!='unknown':observed.setdefault(o['vacancy_id'],o['status'])
+    from .company_catalog import raw_catalog,REGIONS
+    from .company_filter import company_key
+    catalog=raw_catalog(archive);regions={g['id']:g.get('region','other') for g in catalog};company_regions={}
+    def company_region(name):
+        if name not in company_regions:company_regions[name]=regions.get(company_key(name,catalog),'other')
+        return company_regions[name]
     valid_analyses={};rows=[];reviews={}
     for a in analyses:
         if a['resume_hash']==cv_hash:reviews.setdefault((a['vacancy_id'],a['vacancy_hash']),a)
@@ -151,7 +157,7 @@ def snapshot(archive,resume_id='',goal=None,model='text-embedding-3-small',*,now
         if manual.get('marked') and stage in ('none','draft'):stage='applied'
         ranking=entity.get('ranking') or {};taxonomy=categories.get(jid) or derived.compute('taxonomy',data)
         work_fmt,reg=taxonomy['work_format'],taxonomy['region']
-        rows.append({'id':jid,'title':entity['title'],'company':entity['company'],'url':data.get('link'),'category':taxonomy['primary'],'tags':taxonomy['tags'],**({'classification_evidence':taxonomy['evidence']} if include_evidence else {}),
+        rows.append({'id':jid,'title':entity['title'],'company':entity['company'],'company_region':company_region(entity['company']),'url':data.get('link'),'category':taxonomy['primary'],'tags':taxonomy['tags'],**({'classification_evidence':taxonomy['evidence']} if include_evidence else {}),
                      'work_format':work_fmt,'region':reg,'location':data.get('location') or data.get('city') or (data.get('locations') or [''])[0],
                      'manual_application':manual,'first_seen':entity['first_seen'],'availability':entity['availability'],'quality':data.get('description_quality'),'fit':number(percent,0,100),'alignment':number(ranking.get('goal_similarity'),-1,1),'similarity':number(ranking.get('cv_similarity'),-1,1),'ranking':number(ranking.get('score'),-1,1),'ranking_stale':entity.get('ranking_stale',False),
                      'stage':stage,'application_id':a['id'] if a else None,'analysis_key':analysis.get('key') if analysis else None,'dimensions':metrics(analysis['requirements'])['dimensions'] if analysis else [],'salary':None})
@@ -169,6 +175,6 @@ def snapshot(archive,resume_id='',goal=None,model='text-embedding-3-small',*,now
         excerpt=cv_text[max(0,match.start()-100):match.end()+220].strip()
         if re.search(r'изуч|курс|лаборатор|учеб|stud|course|lecture|MIT',excerpt,re.I) and excerpt not in learning:learning.append(excerpt)
     links=sorted(set(re.findall(r'https://github\.com/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)?',cv_text)))
-    return {'as_of':now.isoformat(),'resume':{'id':resume_id,'title':cv['title'] if cv else 'CV не выбрано','goal':goal,'model':model},'rows':rows,'history':points,'first_observation':first,'taxonomy':[{'id':key,'label':label} for key,label,_ in TAXONOMY],
+    return {'regions':REGIONS,'as_of':now.isoformat(),'resume':{'id':resume_id,'title':cv['title'] if cv else 'CV не выбрано','goal':goal,'model':model},'rows':rows,'history':points,'first_observation':first,'taxonomy':[{'id':key,'label':label} for key,label,_ in TAXONOMY],
             'skills':{'analyses':len(valid_analyses),'dimensions':list(dimensions.values()),'github_links':links,'learning_evidence':learning[:6]},'api_requests':0,
             'methodology':['Это собранная выборка, не весь рынок. Одна вакансия на разных площадках считается отдельно.','Направления определены правилами, без LLM. Основная категория одна; теги технологий, ролей и отраслей пересекаются. Основания показаны в карточке. Дроны/спутники сами по себе не означают оборонную тематику. Возможная связь по работодателю — предположение, не проверенный госконтракт.','X карты зависит от режима: косинусная близость к CV или покрытие требований Luna. Y — косинусная близость к цели. При приближении оси показывают фактический диапазон данных.','Неизвестные оценки не заменяются нулём. Устаревшие CV/JD/цель не используются как текущие оценки.','История отражает полученные снимки и явные закрытия. Исчезновение из выдачи закрытием не считается.','Зарплаты не сохранены структурированно; размер точек одинаковый. GitHub-ссылки не подтверждают качество исследований.']}

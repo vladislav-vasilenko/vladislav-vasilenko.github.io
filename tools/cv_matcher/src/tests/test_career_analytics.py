@@ -66,6 +66,13 @@ class CareerAnalyticsTests(unittest.TestCase):
     response=c.get('/archive/analytics');self.assertEqual(response.status_code,200,response.text);self.assertEqual(response.json()['api_requests'],0)
    self.assertEqual(c.get('/assets/career-analytics.js').status_code,200);self.assertEqual(c.get('/assets/career-charts.js').status_code,200);self.assertEqual(c.get('/assets/career-analytics.css').status_code,200)
    self.assertEqual(c.get('/archive/analytics?model=unknown').status_code,422)
+ def test_company_region_comes_from_the_catalog_and_paid_selection_obeys_every_filter(self):
+  from src.luna_batch import selected
+  base={'tags':['research'],'company':'OpenAI','availability':'unknown','first_seen':'2026-10-01','fit':None,'work_format':'remote','region':'moscow','company_region':'us_uk_eu'}
+  self.assertTrue(selected(base,{'companyRegion':'us_uk_eu','workFormat':'remote','region':'moscow'}))
+  for f in ({'companyRegion':'rus'},{'workFormat':'onsite'},{'region':'spb'}):self.assertFalse(selected(base,f),f)
+  rows=snapshot(self.store,now=datetime(2026,10,19,tzinfo=timezone.utc))
+  self.assertIn('us_uk_eu',rows['regions']);self.assertTrue(all('company_region' in r for r in rows['rows']))
  def test_work_format_and_region_classification_in_snapshot(self):
   remote_job=job(id='hh_1001',text='Удалённая работа для ML инженера. Локация: Санкт-Петербург.',at='2026-08-01T00:00:00Z',locations=['Санкт-Петербург'])
   hybrid_job=job(id='hh_1002',text='Гибридный формат, офис в Москве.',at='2026-08-01T00:00:00Z',locations=['Москва'])

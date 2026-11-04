@@ -29,8 +29,9 @@ def task(store,identifier):
 
 def selected(row,f):
     if f.get('focus') and not set(row['tags']).intersection(f.get('focusCategories',[])):return False
-    for key in ('company','availability'):
-        if f.get(key) and row[key]!=f[key]:return False
+    # Keep in step with CareerCharts.filters: this picks what paid analysis runs on.
+    for key,field in (('company','company'),('availability','availability'),('workFormat','work_format'),('region','region'),('companyRegion','company_region')):
+        if f.get(key) and row.get(field)!=f[key]:return False
     if f.get('category') and f['category'] not in row['tags']:return False
     if f.get('from') and row['first_seen'][:10]<f['from']:return False
     if f.get('to') and row['first_seen'][:10]>f['to']:return False

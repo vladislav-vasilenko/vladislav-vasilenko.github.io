@@ -2,7 +2,7 @@
   "stage": 5,
   "spec": "specs/05-crawl-lifecycle.md",
   "date": "2026-11-04",
-  "status": "committed on career/stage-5-crawl-lifecycle, not pushed",
+  "status": "merged through PR #3",
   "live_run_on_an_archive_copy": {
     "archive_vacancies": 9295,
     "runs": {
