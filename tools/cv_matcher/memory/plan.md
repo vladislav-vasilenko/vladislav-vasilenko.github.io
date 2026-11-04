@@ -32,6 +32,10 @@ Merged through PR #4. `src/portfolio_blocks.py` and `archive-web/portfolio-block
 
 On branch `career/auto-scoring-and-data-date`, not committed. `src/auto_scoring.py` scores new vacancies in the public sample after imports, under a monthly cap, and the public charts show a data date. It is off until the owner consents in the ranking tab; the default cap is $1. `src/spend_guard.py` adds a shared $5 monthly ceiling on all embedding requests, and paid settings need the owner's browser session. Language-model calls are not under this ceiling. Tested with fake rankers and on a copy of the real database with no API call. A real paid batch has not been run. Older vacancies are deliberately not backfilled.
 
+## Market category examples
+
+On branch `portfolio/market-category-examples`. Chart categories on the public site open up to 25 short vacancy examples. Publishing them is a separate setting, `examples`, in the public visuals. A market filter on the site uses `src/market_regions.py`, which reads the vacancy location and falls back to the employer region; the local Opportunities screen still has its 6 catalog regions. An employer filter follows the chosen market and narrows the flow chart and examples; the map deliberately stays per market.
+
 ## Visualisation notes
 
 The opportunities screen already draws a Sankey diagram (`funnel` in `archive-web/career-analytics.js`, layout in `career-charts.js`), and resume comparison already has an alluvial chart (`archive-web/resume-compare.js`). "Market Evolution" is a stacked area chart. A category alluvial over time was offered to the user on 2026-11-04 and is not scheduled. It needs several months of history; the archive had two calendar months.

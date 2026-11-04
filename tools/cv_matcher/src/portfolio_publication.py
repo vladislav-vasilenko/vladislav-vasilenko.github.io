@@ -220,6 +220,7 @@ class Publisher(GitHubAPI):
         return result.stdout.strip() == 'false'
 
     def publish(self, payload):
+        if len(canonical(payload)) > 480000: raise GitHubError('Публичный файл слишком велик для сайта. Прежняя версия сайта сохранена.')
         endpoint = f'repos/{REPOSITORY}/contents/{TARGET}'
         existing = self.request(endpoint)
         sha = existing.get('sha')
