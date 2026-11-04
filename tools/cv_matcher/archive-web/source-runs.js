@@ -2,12 +2,13 @@
 /* Starts whole-source crawls in the local service and shows live progress. No model calls. */
 const SourceRuns=(()=>{
  const states={queued:'В очереди',running:'Идёт сбор',complete:'Готово',partial:'Готово, были ошибки',failed:'Не удалось',stopped:'Остановлен',interrupted:'Прерван — можно запустить снова'};
- const reasons={python_error:'источник не ответил или изменил формат',python_timeout:'превышено время',python_process_failed:'сборщик завершился с ошибкой',python_output_limit:'слишком большой ответ',python_parser_error:'источник изменил формат или недоступен',access_required:'источник ограничил доступ',login_required:'нужен вход',http_rate_limited:'слишком много запросов',navigation_timeout:'страница не ответила'};
+ const reasons={listing_shrank:'выдача резко сократилась, исчезновение вакансий не отмечено',python_error:'источник не ответил или изменил формат',python_timeout:'превышено время',python_process_failed:'сборщик завершился с ошибкой',python_output_limit:'слишком большой ответ',python_parser_error:'источник изменил формат или недоступен',access_required:'источник ограничил доступ',login_required:'нужен вход',http_rate_limited:'слишком много запросов',navigation_timeout:'страница не ответила'};
  let root,body,timer,wasRunning=false,request=0,shown=false;
  const active=state=>state==='queued'||state==='running';
  function result(progress){
   if(progress?.new===undefined)return '';
   const parts=['новых '+progress.new,'обновлено '+progress.updated,'просмотрено '+progress.listed];
+  if(progress.still_listed!==undefined)parts.push('в выдаче '+progress.still_listed);
   if(progress.seconds)parts.push('за '+Math.round(progress.seconds)+' с');
   return parts.join(' · ');
  }

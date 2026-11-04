@@ -77,6 +77,7 @@ class GoogleCareersScraper(BaseScraper):
 
             job_records = wiz_data[0]  # list of job arrays
             self.report["listed"] += len(job_records or [])
+            self.seen_ids.update(f"{self.id_prefix}_{record[0]}" for record in job_records or [] if isinstance(record, list) and record)
             if total_available is None and len(wiz_data) > GOOGLE_TOTAL_IDX:
                 total_available = wiz_data[GOOGLE_TOTAL_IDX]
                 print(f"  Google: {total_available} total results for query '{query}'")

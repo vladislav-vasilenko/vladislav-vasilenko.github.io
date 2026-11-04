@@ -23,6 +23,9 @@ class JobBoardScraper(BaseScraper):
     def _listing(self) -> List[Dict[str, Any]]:
         raise NotImplementedError
 
+    def _link(self, job: Dict[str, Any]) -> Optional[str]:
+        raise NotImplementedError
+
     def _row(self, job: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         raise NotImplementedError
 
@@ -46,6 +49,7 @@ class JobBoardScraper(BaseScraper):
             self._emit('error', company=self.company_name, message=type(error).__name__)
             raise RuntimeError(self.company_name + ': ' + type(error).__name__) from error
         self.report['listed'] = len(jobs)
+        self.seen_ids.update(own['id'] for own in (identity(self._link(job) or '') for job in jobs) if own)
         result = []
         for job in jobs:
             if self.limit and len(result) >= self.limit:
@@ -74,6 +78,9 @@ class GreenhouseScraper(JobBoardScraper):
     def _listing(self):
         return self._get(f'https://boards-api.greenhouse.io/v1/boards/{self.board}/jobs?content=true')['jobs']
 
+    def _link(self, job):
+        return job.get('absolute_url')
+
     def _row(self, job):
         text = BeautifulSoup(html.unescape(job.get('content') or ''), 'html.parser').get_text('\n', strip=True)
         place = (job.get('location') or {}).get('name') or ''
@@ -88,6 +95,9 @@ class AshbyScraper(JobBoardScraper):
     def _listing(self):
         data = self._get(f'https://api.ashbyhq.com/posting-api/job-board/{self.board}?includeCompensation=true')['jobs']
         return [job for job in data if job.get('isListed', True)]
+
+    def _link(self, job):
+        return job.get('jobUrl')
 
     def _row(self, job):
         places = [job.get('location'), *[p.get('location') for p in job.get('secondaryLocations') or [] if isinstance(p, dict)]]

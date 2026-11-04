@@ -24,9 +24,10 @@ RUSSIA, LABS, BIG, CHINA = 'Россия', 'AI-лаборатории', 'Кру�
 GOOGLE_LINK = 'https://www.google.com/about/careers/applications/jobs/results/%'
 
 
-def _spec(label, group, hint, hosts, *, queries=('',), limit=1000, rounds=1, fast=False, link=None, prefix=None, company=None, known_id=None):
+def _spec(label, group, hint, hosts, *, queries=('',), limit=1000, rounds=1, fast=False, link=None, prefix=None, company=None, known_id=None, tracked=True, whole=True, exclude=None):
+    """tracked: its listings report what they saw. whole: a vacancy absent from a complete listing is absent from the source."""
     return {'label': label, 'group': group, 'hint': hint, 'hosts': set(hosts), 'queries': list(queries), 'limit': limit, 'rounds': rounds,
-            'fast': fast, 'link': link, 'prefix': prefix, 'company': company, 'known_id': known_id}
+            'fast': fast, 'link': link, 'prefix': prefix, 'company': company, 'known_id': known_id, 'tracked': tracked, 'whole': whole, 'exclude': exclude}
 
 
 def _google_id(row_id, link):
@@ -45,15 +46,15 @@ def _boards():
 
 
 SOURCES = {
-    'yandex': _spec('Яндекс', RUSSIA, 'Секунды, открытый API', {'yandex.ru', 'yandex.com'}, queries=YANDEX_URLS, limit=300, fast=True, prefix='yandex_'),
-    'sber': _spec('Сбер', RUSSIA, 'Минута-две, открытый API', {'rabota.sber.ru'}, queries=SBER_QUERIES, limit=500, fast=True, prefix='sber_'),
+    'yandex': _spec('Яндекс', RUSSIA, 'Секунды, открытый API', {'yandex.ru', 'yandex.com'}, queries=YANDEX_URLS, limit=300, fast=True, prefix='yandex_', whole=False),
+    'sber': _spec('Сбер', RUSSIA, 'Минута-две, открытый API', {'rabota.sber.ru'}, queries=SBER_QUERIES, limit=500, fast=True, prefix='sber_', whole=False),
     'deepmind': _spec('Google DeepMind', LABS, 'Секунды, страницы Google Careers', {'www.google.com'}, fast=True, link=GOOGLE_LINK, company='DeepMind', known_id=_google_id),
     **_boards(),
-    'google': _spec('Google', BIG, 'Несколько минут, также собирается ежедневно в GitHub', {'www.google.com'}, queries=GOOGLE_QUERIES, limit=500, link=GOOGLE_LINK, known_id=_google_id),
+    'google': _spec('Google', BIG, 'Несколько минут, также собирается ежедневно в GitHub', {'www.google.com'}, queries=GOOGLE_QUERIES, limit=500, link=GOOGLE_LINK, known_id=_google_id, exclude='DeepMind'),
     'meta': _spec('Meta', BIG, 'Браузер, читает только новые; также собирается ежедневно в GitHub', {'www.metacareers.com'}, limit=500, rounds=3, prefix='meta_'),
-    'tencent': _spec('Tencent', CHINA, 'Несколько минут, открытый API', {'careers.tencent.com'}, queries=TENCENT_QUERIES, limit=100, rounds=3),
-    'bytedance': _spec('ByteDance / Seed', CHINA, 'Браузер, большая выдача: до 900 вакансий за запуск', {'jobs.bytedance.com'}, limit=300, rounds=3),
-    'deepseek': _spec('DeepSeek', CHINA, 'Медленно: около 15 с на вакансию', {'talent.deepseek.com', 'app.mokahr.com'}, limit=30, rounds=10),
+    'tencent': _spec('Tencent', CHINA, 'Несколько минут, открытый API', {'careers.tencent.com'}, queries=TENCENT_QUERIES, limit=100, rounds=3, tracked=False),
+    'bytedance': _spec('ByteDance / Seed', CHINA, 'Браузер, большая выдача: до 900 вакансий за запуск', {'jobs.bytedance.com'}, limit=300, rounds=3, tracked=False),
+    'deepseek': _spec('DeepSeek', CHINA, 'Медленно: около 15 с на вакансию', {'talent.deepseek.com', 'app.mokahr.com'}, limit=30, rounds=10, tracked=False),
 }
 UNAVAILABLE = {
     CHINA: 'Пока не работают: Moonshot, Zhipu, MiniMax, Shengshu, Alibaba, Kuaishou / Kling. Их страницы не отдали выдачу автоматическому чтению.',
@@ -81,14 +82,44 @@ def _known(archive, spec, source):
     else:
         # Portals keep hashed IDs, so their rows are recognised by the company name.
         where.append('company=?');args.append(spec['label'])
-    existing, complete = set(), set()
+    existing, complete, scraper_ids = set(), set(), {}
     with archive.connect() as db:
         for row in db.execute("SELECT id,company,json_extract(payload,'$.description_quality') quality,json_extract(payload,'$.link') link FROM entities WHERE " + ' AND '.join(where), args):
             existing.add(row['id'])
+            scraper_ids[spec['known_id'](row['id'], row['link']) if spec['known_id'] else row['id']] = row['id']
             # A role first seen in the Google run must still be relabelled by the DeepMind run.
             if row['quality'] == 'full' and (not spec['company'] or row['company'] == spec['company']):
                 complete.add(spec['known_id'](row['id'], row['link']) if spec['known_id'] else row['id'])
-    return existing, complete
+    return existing, complete, scraper_ids
+
+
+def scope_of(source):
+    return 'https://' + min(SOURCES[source]['hosts']) + '/#' + source
+
+
+def universe(archive, source):
+    """Saved vacancies a complete listing should have shown; empty when the listing can't speak for them."""
+    spec = SOURCES[source]
+    if not spec['whole']:
+        return set()
+    existing = _known(archive, spec, source)[0]
+    if not (spec['company'] or spec['exclude']):
+        return existing
+    with archive.connect() as db:
+        rows = db.execute("SELECT id,company FROM entities WHERE kind='vacancy'").fetchall()
+    # Roles on a shared site belong to one company's listing or the other's.
+    return {r['id'] for r in rows if r['id'] in existing and (r['company'] == spec['company'] if spec['company'] else r['company'] != spec['exclude'])}
+
+
+def source_for(job):
+    """The tracked source whose listing can re-check this vacancy, if any."""
+    from urllib.parse import urlsplit
+    host = urlsplit(job.get('link', '')).hostname
+    matches = [key for key, spec in SOURCES.items() if spec['tracked'] and host in spec['hosts']]
+    named = [key for key in matches if SOURCES[key]['label'] == job.get('company') or SOURCES[key]['company'] == job.get('company')]
+    if named:
+        return named[0]
+    return next((key for key in matches if SOURCES[key]['exclude'] or len(matches) == 1), None)
 
 
 def run_one(archive, run_id, source, stop, executor=None, persist=None):
@@ -98,11 +129,13 @@ def run_one(archive, run_id, source, stop, executor=None, persist=None):
     started = time.time()
     progress = {'done': 0, 'total': len(spec['queries']), 'listed': 0, 'new': 0, 'updated': 0, 'errors': 0, 'reasons': [], 'seconds': 0}
     _write(archive, run_id, 'running', progress)
+    seen, whole_listing = set(), True
     for query in spec['queries']:
+        query_whole = False
         for _ in range(spec['rounds']):
             if stop.is_set():
                 break
-            existing, complete = _known(archive, spec, source)
+            existing, complete, scraper_ids = _known(archive, spec, source)
             payload = {'source_key': source, 'query': query, 'known_ids': sorted(complete), 'deadline': DEADLINE, 'options': {'details': spec['limit'], 'source_run': True}}
             response = executor(payload, stop.is_set)
             response = response if isinstance(response, dict) else {'reason': 'python_error'}
@@ -115,6 +148,8 @@ def run_one(archive, run_id, source, stop, executor=None, persist=None):
             target = {'allowed_hosts': spec['hosts'], 'adapter_id': source}
             for start in range(0, len(rows), BATCH):
                 saved |= set(persist(archive, target, {'rows': rows[start:start + BATCH]}).get('ids', []))
+            seen |= saved | {scraper_ids.get(item, item) for item in response.get('seen_ids', [])}
+            query_whole = report.get('coverage') == 'listing_exhausted' and not report.get('errors') and not reason
             progress['new'] += len(saved - existing)
             progress['updated'] += len(saved & existing)
             progress['seconds'] = round(time.time() - started, 1)
@@ -122,10 +157,16 @@ def run_one(archive, run_id, source, stop, executor=None, persist=None):
             # A batch that hit its limit may have more behind it; saving now keeps the work.
             if report.get('coverage') != 'limited' or not saved:
                 break
+        whole_listing = whole_listing and query_whole
         if stop.is_set():
             break
         progress['done'] += 1
         _write(archive, run_id, 'running', progress)
+    if spec['tracked'] and seen:
+        observed = archive.record_listing('run:' + run_id, source, scope_of(source), seen, complete=whole_listing and not stop.is_set(), universe=universe(archive, source))
+        progress['still_listed'] = observed['seen']
+        if observed.get('suspicious'):
+            progress['reasons'].append('listing_shrank')
     progress['seconds'] = round(time.time() - started, 1)
     # An empty listing means a broken source, not an empty board.
     state = 'stopped' if stop.is_set() else 'failed' if not progress['listed'] else 'partial' if progress['errors'] else 'complete'

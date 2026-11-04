@@ -181,6 +181,18 @@ def apply_batch(archive, lease, rows, offset):
         write(db, state)
 
 
+def record_listings(archive, key, payload, seen):
+    """Pass on which vacancies the run's listings showed. Only a whole listing can show absence."""
+    from .source_runs import scope_of, universe
+    stats = payload.get('stats_last_run') or {}
+    for prefix, source in (('yandex', 'yandex'), ('goog', 'google'), ('meta', 'meta')):
+        report = stats.get(source)
+        if not isinstance(report, dict) or not seen.get(prefix):
+            continue
+        whole = report.get('coverage') == 'listing_exhausted' and not report.get('errors') and not report.get('failed')
+        archive.record_listing('github:' + key + ':' + source, source, scope_of(source), seen[prefix], complete=whole, universe=universe(archive, source) if whole else ())
+
+
 def pull(archive, lease=None, api=None):
     lease = lease or acquire(archive)
     if not lease: return status(archive)
@@ -194,10 +206,13 @@ def pull(archive, lease=None, api=None):
         update(archive, lease, phase='downloading', latest_run=run)
         payload, transport, warnings = api.export(run)
         exported_at, sources = validate_export(payload)
-        records = {}; invalid = 0; duplicates = 0; examples = []
+        records = {}; invalid = 0; duplicates = 0; examples = []; seen = {}
+        started = str(payload.get('collection_started_at') or '')
         for row in payload['vacancies']:
             try:
                 data = normalize(row, exported_at)
+                if started and str(row.get('last_seen') or '') >= started:
+                    seen.setdefault(str(row.get('id', '')).split('_')[0], set()).add(data['id'])
                 previous = records.get(data['id'])
                 if previous:
                     duplicates += 1
@@ -230,6 +245,7 @@ def pull(archive, lease=None, api=None):
             state.update(cursor=key, phase='complete', last_import=receipt, error='',
                          history=([receipt] + [h for h in state.get('history', []) if h['run']['id'] != run['id']])[:10])
             write(db, state)
+        record_listings(archive, key, payload, seen)
     except Exception as error:
         # Raw CLI errors and source text never enter the dashboard/logs.
         message = str(error) if isinstance(error, (GitHubError, ValueError)) else 'Импорт прерван. Сохранённые пакеты останутся; повторная проверка продолжит обработку.'

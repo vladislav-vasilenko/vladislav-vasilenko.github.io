@@ -215,7 +215,7 @@ def collect_source(payload):
     scraper=SCRAPER_REGISTRY[payload['source_key']](limit=limit,headless=True,stealth=False,archive_path=False)
     events=[];scraper.event_sink=events.append
     rows=scraper.fetch_jobs(payload.get('query',''),existing_ids=set(payload.get('known_ids',[])))
-    return {'rows':rows[:limit],'report':scraper.report,**({'reason':'python_parser_error'} if any(e.get('type')=='error' for e in events) else {})}
+    return {'rows':rows[:limit],'report':scraper.report,'seen_ids':sorted(getattr(scraper,'seen_ids',())),**({'reason':'python_parser_error'} if any(e.get('type')=='error' for e in events) else {})}
 
 
 if __name__=='__main__':

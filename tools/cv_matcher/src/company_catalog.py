@@ -9,6 +9,14 @@ TIERS={'top':'Top Tier','second':'2nd Tier','others':'Other Tier'}
 ADAPTERS={'career.avito.com':'avito','ozon.tech':'ozon-tech','career.ozon.ru':'ozon-career','yandex.ru':'yandex','yandex.com':'yandex','tbank.ru':'tbank','www.tbank.ru':'tbank','rabota.sber.ru':'sber','hh.ru':'hh'}
 SELECTORS=('link_selector','card_selector','title_selector','description_selector')
 
+# Added here, not to search-profile.json, because that file also builds the HH search query.
+AI_LABS=(
+ ('anthropic','Anthropic','top',['Anthropic']),('openai','OpenAI','top',['OpenAI']),('xai','xAI / SpaceXSI','top',['xAI','SpaceXSI']),('deepmind','Google DeepMind','top',['DeepMind']),
+ ('cohere','Cohere','top',['Cohere']),('thinkingmachines','Thinking Machines','top',['Thinking Machines']),('physicalintelligence','Physical Intelligence','top',['Physical Intelligence']),('worldlabs','World Labs','top',['World Labs']),
+ ('lumaai','Luma AI','top',['Luma AI']),('midjourney','Midjourney','top',['Midjourney']),('runway','Runway','top',['Runway']),
+ ('perplexity','Perplexity','second',['Perplexity']),('togetherai','Together AI','second',['Together AI']),('elevenlabs','ElevenLabs','second',['ElevenLabs']),('cursor','Cursor','second',['Cursor']),('scaleai','Scale AI','second',['Scale AI']),('figure','Figure','second',['Figure']),('characterai','Character.AI','second',['Character.AI']),('reka','Reka','second',['Reka']),('liquidai','Liquid AI','second',['Liquid AI']),('poolside','Poolside','second',['Poolside']),('higgsfield','Higgsfield','second',['Higgsfield']),('pika','Pika','second',['Pika']),('suno','Suno','second',['Suno']),('synthesia','Synthesia','second',['Synthesia']),('heygen','HeyGen','second',['HeyGen']),('krea','Krea','second',['Krea']),
+)
+
 def defaults():
     profile=json.loads((ROOT/'hh-research-extension/search-profile.json').read_text())
     extras={g['id']:g for g in json.loads((ROOT/'hh-research-extension/company-groups.json').read_text())}
@@ -18,6 +26,9 @@ def defaults():
         urls=[c['career_url']] if c.get('career_url') else []
         if c['id']=='ozon':urls=['https://ozon.tech/vacancies/','https://career.ozon.ru/vacancy/']
         rows.append({'id':c['id'],'label':c['label'],'tier':c['tier'],'region':c.get('region','other'),'aliases':aliases,'career_url':urls[0] if urls else '', 'boards':[{'url':u,**dict.fromkeys(SELECTORS,'')} for u in urls]})
+    rows=[{**r,'aliases':[alias for alias in r['aliases'] if 'deepmind' not in alias.casefold()]} if r['id']=='google' else r for r in rows]
+    known={r['id'] for r in rows}
+    rows+=[{'id':key,'label':label,'tier':tier,'region':'us_uk_eu','aliases':aliases,'career_url':'','boards':[]} for key,label,tier,aliases in AI_LABS if key not in known]
     return rows
 
 def raw_catalog(store):
@@ -28,7 +39,9 @@ def raw_catalog(store):
 def required_companies(rows):
     base={r['id']:r for r in defaults()}
     rows=[{**r,'region':r.get('region') or base.get(r['id'],{}).get('region','other')} for r in rows]
-    return rows+[r for r in base.values() if r['id'] in ('google','meta',*CHINA_SOURCES) and r['id'] not in {c['id'] for c in rows}]
+    # DeepMind has its own entry, and the HH search profile still lists it under Google.
+    rows=[{**r,'aliases':[alias for alias in r['aliases'] if 'deepmind' not in alias.casefold()]} if r['id']=='google' else r for r in rows]
+    return rows+[r for r in base.values() if r['id'] in ('google','meta',*CHINA_SOURCES,*(lab[0] for lab in AI_LABS)) and r['id'] not in {c['id'] for c in rows}]
 
 def revision(rows):return hashlib.sha256(json.dumps(rows,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 
