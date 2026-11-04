@@ -16,6 +16,7 @@ Started 2026-11-04. A new agent session should be able to continue from this fil
 | 5 | [Crawl lifecycle and freshness](../specs/05-crawl-lifecycle.md) | Committed on `career/stage-5-crawl-lifecycle`, not pushed ([report](../reports/05-crawl-lifecycle.json)) |
 | 6 | [Vacancy triage](../specs/06-triage.md) | Not started |
 | 7 | [Infrastructure](../specs/07-infrastructure.md) | Not started |
+| 8 | [Separate repositories](../specs/08-repo-split.md) | Not started; proposed, not approved |
 
 The user approved stage 1 and asked for stages 2, 3 and 4 as additions. The user approved stage 5. Stages 6 and 7 were proposed in the review and are not yet approved.
 
