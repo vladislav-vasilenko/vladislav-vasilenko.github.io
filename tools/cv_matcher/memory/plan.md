@@ -28,6 +28,10 @@ On branch `career/opportunities-region-filters`, not merged. "Регион ко�
 
 Merged through PR #4. `src/portfolio_blocks.py` and `archive-web/portfolio-blocks.js` compare the published `public/hh-experience.json` with the latest primary HH capture, block by block, and apply keep, accept or rewrite decisions. The contract is in `docs/integration/github-import-and-portfolio.md`. Block mode was enabled on 2026-11-05, with no differences pending at that point. A real publish through the UI has not been run yet.
 
+## Automatic scoring and data date
+
+On branch `career/auto-scoring-and-data-date`, not committed. `src/auto_scoring.py` scores new vacancies in the public sample after imports, under a monthly cap, and the public charts show a data date. It is off until the owner consents in the ranking tab; the default cap is $1. `src/spend_guard.py` adds a shared $5 monthly ceiling on all embedding requests, and paid settings need the owner's browser session. Language-model calls are not under this ceiling. Tested with fake rankers and on a copy of the real database with no API call. A real paid batch has not been run. Older vacancies are deliberately not backfilled.
+
 ## Visualisation notes
 
 The opportunities screen already draws a Sankey diagram (`funnel` in `archive-web/career-analytics.js`, layout in `career-charts.js`), and resume comparison already has an alluvial chart (`archive-web/resume-compare.js`). "Market Evolution" is a stacked area chart. A category alluvial over time was offered to the user on 2026-11-04 and is not scheduled. It needs several months of history; the archive had two calendar months.

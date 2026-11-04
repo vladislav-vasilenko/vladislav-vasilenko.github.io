@@ -5,6 +5,15 @@ from .career_skills_catalog import SKILLS
 from .career_trajectory import overview
 from .career_analytics import snapshot, number
 
+RESEARCH_SAMPLE = {'pretraining','post_training','diffusion','research','infrastructure','cuda'}
+# Directions backed by the owner's work history, not only the target research roles.
+EXPERIENCE_SAMPLE = RESEARCH_SAMPLE | {'rag','ai_automation','vision','nlp'}
+SAMPLES = {'research':RESEARCH_SAMPLE,'experience':EXPERIENCE_SAMPLE}
+
+
+def in_sample(category,sample):
+    return sample=='all' or category in SAMPLES[sample]
+
 
 def options(value, *, preview=False):
     if not isinstance(value, dict): raise ValueError('Выберите публичные визуализации.')
@@ -16,7 +25,7 @@ def options(value, *, preview=False):
     identifier=value.get('trajectory_id', '')
     if not isinstance(identifier,str) or len(identifier)>100: raise ValueError('Выберите траекторию.')
     sample=value.get('sample','research')
-    if sample not in ('research','all'): raise ValueError('Выберите исследовательскую или общую выборку.')
+    if sample not in ('research','experience','all'): raise ValueError('Выберите исследовательскую или общую выборку.')
     result['sample']=sample
     result['trajectory_id']=identifier
     if result['enabled'] and value.get('reviewed') is not True and not preview: raise ValueError('Проверьте публичную выборку перед включением.')
@@ -41,7 +50,7 @@ def project(archive, settings):
             result['trajectory']={'label':track['label'], 'labs':labs, 'stages':[{'label':s['label']} for s in path['stages']],
                 'focus_skills':[SKILLS[k]['label'] for k in keys[:5]], 'studying':[SKILLS[k]['label'] for k in keys if k in studying][:5]}
     if settings.get('market'):
-        data=snapshot(archive); rows=[r for r in data['rows'] if settings.get('sample')=='all' or r['category'] in {'pretraining','post_training','diffusion','research','infrastructure','cuda'}];labels={t['id']:t['label'] for t in data['taxonomy']}
+        data=snapshot(archive); rows=[r for r in data['rows'] if in_sample(r['category'],settings.get('sample','research'))];labels={t['id']:t['label'] for t in data['taxonomy']}
         groups=Counter(r['category'] for r in rows); top=[k for k,_ in groups.most_common(7)]
         group=lambda row:row['category'] if row['category'] in top else 'other_public'
         counts=defaultdict(Counter);buckets=Counter()
@@ -52,7 +61,9 @@ def project(archive, settings):
                 buckets[(round(x,2),round(y,2),category)]+=1
         if settings.get('market'):
             points=[{'x':x,'y':y,'category':category,'count':count} for (x,y,category),count in sorted(buckets.items())]
-            result['market']={'sample':settings.get('sample','research'),'observed':len(rows), 'mapped':sum(p['count'] for p in points[:1200]), 'points':points[:1200],
+            # Date only, and only moves with new vacancies, so it never causes a commit by itself.
+            newest=max((str(r['first_seen']) for r in rows if r.get('first_seen')),default='')
+            result['market']={**({'data_as_of':newest[:10]} if newest else {}),'sample':settings.get('sample','research'),'observed':len(rows), 'mapped':sum(p['count'] for p in points[:1200]), 'points':points[:1200],
                 'categories':[{'id':key,'label':labels.get(key,'Другие направления'),'total':c['total'],'full':c['full'],'partial':c['partial']} for key,c in sorted(counts.items(),key=lambda i:-i[1]['total'])],
                 'method':'Saved cosine similarities; rounded to 0.01 and grouped. Observed sample, not the entire market; not a skill or hiring probability score.'}
     return result

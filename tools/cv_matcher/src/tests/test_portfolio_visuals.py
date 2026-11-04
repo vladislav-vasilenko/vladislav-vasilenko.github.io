@@ -20,4 +20,14 @@ class PublicProjection(unittest.TestCase):
             self.assertNotIn(secret,encoded)
         self.assertEqual(value['market']['observed'],1)
         self.assertEqual(value['market']['points'],[{'x':.65,'y':.41,'category':'diffusion','count':1}])
+        self.assertNotIn('data_as_of',value['market'])
+        dated=[{**rows[0],'first_seen':'2026-11-04T15:59:31+00:00'},{**rows[0],'first_seen':'2026-10-01T00:00:00+00:00'}]
+        with patch.object(visuals,'snapshot',return_value={**snapshot,'rows':dated}):self.assertEqual(visuals.project(self.archive,cfg)['market']['data_as_of'],'2026-11-04')
         self.assertIsNone(visuals.project(self.archive,{'enabled':False}))
+
+    def test_experience_sample_adds_applied_directions_only(self):
+        self.assertEqual(visuals.options({'enabled':True,'market':True,'sample':'experience'},preview=True)['sample'],'experience')
+        with self.assertRaises(ValueError):visuals.options({'enabled':True,'sample':'unknown'},preview=True)
+        for category in ('research','rag','ai_automation','vision','nlp'):self.assertTrue(visuals.in_sample(category,'experience'))
+        for category in ('classical','other','backend','qa'):self.assertFalse(visuals.in_sample(category,'experience'))
+        self.assertFalse(visuals.in_sample('rag','research'));self.assertTrue(visuals.in_sample('qa','all'))
