@@ -135,6 +135,8 @@ class BaseScraper:
 
     def _new_report(self) -> None:
         self.report: Dict[str, Any] = {"listed": 0, "accepted": 0, "errors": 0, "coverage": "partial"}
+        # Every ID seen in the listing, including ones skipped as already known.
+        self.seen_ids: Set[str] = set()
 
     def _fail(self, message: str) -> None:
         """Count a source failure so that an empty result can't look like success."""

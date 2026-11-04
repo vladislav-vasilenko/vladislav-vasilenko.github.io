@@ -17,7 +17,7 @@ class ArchiveAccess:
         now=time.time();self.codes={k:v for k,v in self.codes.items() if v>now};self.sessions={k:v for k,v in self.sessions.items() if v>now}
     def cookie_allowed(self,request):
         self.prune()
-        read_paths=('/archive/source-runs','/archive/embedding-batch','/archive/linkedin','/archive/vacancy-export','/archive/network','/archive/linkedin-chat-analysis','/archive/vacancy-team','/archive/portfolio-publication','/archive/github-import','/archive/analytics-batch/','/archive/analytics','/archive/analytics/','/archive/agent','/archive/summary','/archive/entities','/archive/entity/','/archive/diff','/archive/events','/archive/scans','/archive/restore','/archive/export','/archive/rankings','/archive/skill-analysis','/archive/skill-history','/archive/skill-history/','/archive/workflow','/archive/journey','/archive/companies','/archive/company-settings','/archive/calendar/status','/archive/calendar/ics')
+        read_paths=('/archive/market-changes','/archive/source-runs','/archive/embedding-batch','/archive/linkedin','/archive/vacancy-export','/archive/network','/archive/linkedin-chat-analysis','/archive/vacancy-team','/archive/portfolio-publication','/archive/github-import','/archive/analytics-batch/','/archive/analytics','/archive/analytics/','/archive/agent','/archive/summary','/archive/entities','/archive/entity/','/archive/diff','/archive/events','/archive/scans','/archive/restore','/archive/export','/archive/rankings','/archive/skill-analysis','/archive/skill-history','/archive/skill-history/','/archive/workflow','/archive/journey','/archive/companies','/archive/company-settings','/archive/calendar/status','/archive/calendar/ics')
         readonly=request.method=='GET' and any(request.url.path==p or (p.endswith('/') and request.url.path.startswith(p)) for p in read_paths)
         readonly=readonly or (request.method=='POST' and request.url.path=='/archive/compare' and request.headers.get('origin') in (None,ORIGIN))
         readonly=readonly or (request.method=='POST' and request.url.path in ('/archive/source-runs','/archive/embedding-batch','/archive/linkedin','/archive/vacancy-export','/archive/network','/archive/linkedin-chat-analysis','/archive/vacancy-team','/archive/portfolio-publication','/archive/github-import','/archive/resume-source','/archive/analytics-batch','/archive/agent','/archive/resume-review','/archive/skill-analysis','/archive/skill-external','/archive/confirm-description','/archive/workflow','/archive/rank','/archive/company-settings','/archive/calendar') and request.headers.get('origin')==ORIGIN)
@@ -174,6 +174,8 @@ def install_archive(app,token,root,path=None):
             if data.get('op')=='stop':return await asyncio.to_thread(runner.stop,data.get('source'))
             raise ValueError('Неизвестное действие сбора.')
         except (ValueError,TypeError) as error:raise HTTPException(422,str(error)) from None
+    @app.get('/archive/market-changes')
+    async def market_changes(days:int=7):return await call('market_changes',days)
     @app.get('/archive/analytics/status')
     async def analytics_status():
         """Real preparation progress for the screen; also starts preparation if it isn't running."""

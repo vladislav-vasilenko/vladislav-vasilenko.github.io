@@ -135,6 +135,7 @@ class MetaCareersScraper(BaseScraper):
             try:
                 raw_jobs = await self._capture_listing_async(context)
                 self.report["listed"] = len(raw_jobs)
+                self.seen_ids.update(f"{self.id_prefix}_{job['id']}" for job in raw_jobs if job.get("id"))
                 print(f"  Meta: {len(raw_jobs)} вакансий получено из GraphQL")
                 self._emit("listing_captured", company=self.company_name, count=len(raw_jobs))
                 if not raw_jobs:

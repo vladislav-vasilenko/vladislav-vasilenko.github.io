@@ -155,8 +155,8 @@ class Sources(Fixture):
         self.archive.sync({'client_id':'client_12345','records':[]})
         from src.python_collection import persist
         persist(self.archive,{'allowed_hosts':{'www.google.com'},'adapter_id':'google'},{'rows':[{'title':'Role','company':'Google','description':TEXT,'description_quality':'full','link':link}]})
-        _,google=source_runs._known(self.archive,source_runs.SOURCES['google'],'google');self.assertEqual(google,{'goog_12345'})
-        _,deepmind=source_runs._known(self.archive,source_runs.SOURCES['deepmind'],'deepmind');self.assertEqual(deepmind,set())
+        _,google,_=source_runs._known(self.archive,source_runs.SOURCES['google'],'google');self.assertEqual(google,{'goog_12345'})
+        _,deepmind,_=source_runs._known(self.archive,source_runs.SOURCES['deepmind'],'deepmind');self.assertEqual(deepmind,set())
 
 class BoardAPIs(unittest.TestCase):
     def test_greenhouse_rows_are_clean_and_known_ones_skipped(self):
@@ -174,4 +174,3 @@ class BoardAPIs(unittest.TestCase):
         jobs=[{'jobUrl':'https://jobs.ashbyhq.com/openai/a','title':'Listed','descriptionPlain':'Research work. '*20,'location':'SF','isListed':True},{'jobUrl':'https://jobs.ashbyhq.com/openai/b','title':'Hidden','descriptionPlain':'x','isListed':False}]
         with patch.object(s,'_get',return_value={'jobs':jobs}):self.assertEqual([r['title'] for r in s.fetch_jobs('')],['Listed'])
         with patch.object(s,'_get',side_effect=requests.ConnectionError()),self.assertRaises(RuntimeError):s.fetch_jobs('')
-

@@ -76,6 +76,7 @@ class YandexScraper(BaseScraper):
 
             items = data.get("results", [])
             self.report["listed"] += len(items)
+            self.seen_ids.update(f"{self.id_prefix}_{item.get('id')}" for item in items)
             total = data.get("count")
             if page_idx == 0 and total is not None:
                 print(f"  Яндекс API: всего {total} вакансий доступно (limit={self.limit})")

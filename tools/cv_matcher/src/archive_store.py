@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import re
 import sqlite3
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit, parse_qsl, urlencode, urlunsplit
 from .resume_files import redact_contacts
 from .board_import import identity
@@ -194,16 +194,50 @@ class ArchiveStore(AnalysisStore):
         if previous:
             if previous['client_id']!=client or json.loads(previous['payload'])!=data:raise ValueError('Нельзя изменить уже сохранённое наблюдение.')
             return
-        db.execute('INSERT INTO scans VALUES(?,?,?,?,?,?,?)',(identifier,client,kind,scope,end,int(complete),canonical(data)))
+        self._observe(db,client,identifier,kind,scope,end,complete,set(ids),data)
+    def _observe(self,db,client,identifier,kind,scope,end,complete,observed,payload,universe=()):
+        db.execute('INSERT INTO scans VALUES(?,?,?,?,?,?,?)',(identifier,client,kind,scope,end,int(complete),canonical(payload)))
         existing={r['entity_id']:r for r in db.execute('SELECT * FROM membership WHERE client_id=? AND scope=? AND kind=?',(client,scope,kind))}
-        observed=set(ids)
-        for key in observed | (set(existing) if complete else set()):
+        # Only a complete listing can show absence. Rows never tracked here start absent without an event.
+        for key in observed | (set(existing) | set(universe) if complete else set()):
             prior=existing.get(key)
             if prior and prior['checked_at']>end:continue
             present=key in observed
             if prior and bool(prior['present'])!=present:
                 self._event(db,kind,key,'returned' if present else 'missing',end,{'scope':scope,'scan_id':identifier,'previous_scan':prior['scan_id'],'coverage':'complete' if complete else 'partial'})
             db.execute('INSERT OR REPLACE INTO membership VALUES(?,?,?,?,?,?,?)',(client,scope,kind,key,int(present),end,identifier))
+    def record_listing(self,identifier,source,scope,seen,*,complete,universe=()):
+        """Record which vacancies one source's listing showed. Absence never means closed."""
+        at=now_iso();client='listing-observer'
+        with self.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            if db.execute('SELECT 1 FROM scans WHERE id=?',(identifier,)).fetchone():return {'complete':False,'seen':0,'duplicate':True}
+            known={r[0] for r in db.execute("SELECT id FROM entities WHERE kind='vacancy'")}
+            observed=set(seen)&known
+            prior=db.execute("SELECT COUNT(*) FROM membership WHERE client_id=? AND scope=? AND kind='vacancy' AND present=1",(client,scope)).fetchone()[0]
+            # A listing that suddenly halves looks like a site fault, not a wave of closures.
+            suspicious=prior>=10 and len(observed)<prior*0.5
+            usable=complete and not suspicious
+            self._observe(db,client,identifier,'vacancy',scope,at,usable,observed,{'source':source,'count':len(observed),'requested_complete':complete,'suspicious':suspicious,'pages':0},set(universe)&known)
+        return {'complete':usable,'seen':len(observed),'suspicious':suspicious}
+    @staticmethod
+    def listing_state(rows):
+        """Latest listing observation for one vacancy, from its membership rows."""
+        rows=[r for r in rows]
+        if not rows:return None
+        latest=max(rows,key=lambda r:r['checked_at'])
+        seen=[r['checked_at'] for r in rows if r['present']]
+        return {'state':'listed' if latest['present'] else 'gone','checked_at':latest['checked_at'],'seen_at':max(seen) if seen else None}
+    def market_changes(self,days=7):
+        """Per-company movement over a window. Counts what this archive observed, not the whole market."""
+        since=(datetime.now(timezone.utc)-timedelta(days=max(1,min(days,90)))).isoformat(timespec='microseconds')
+        by={}
+        def add(company,key):
+            entry=by.setdefault(company or 'Компания не указана',{'company':company or 'Компания не указана','added':0,'missing':0,'returned':0});entry[key]+=1
+        with self.connect() as db:
+            for r in db.execute("SELECT company FROM entities WHERE kind='vacancy' AND first_seen>=?",(since,)):add(r[0],'added')
+            for r in db.execute("SELECT ev.event,e.company FROM events ev JOIN entities e ON e.kind=ev.kind AND e.id=ev.entity_id WHERE ev.kind='vacancy' AND ev.event IN ('missing','returned') AND ev.at>=?",(since,)):add(r[1],r[0])
+        return {'days':days,'items':sorted(by.values(),key=lambda r:(-r['added']-r['missing']-r['returned'],r['company'])),'note':'Что заметил этот архив, а не весь рынок. Исчезновение из выдачи не доказывает закрытие вакансии, а «новые» включают вакансии, впервые собранные из нового источника.'}
     def summary(self):
         with self.connect() as db:
             counts={r['kind']:r['n'] for r in db.execute('SELECT kind,COUNT(*) n FROM entities GROUP BY kind')}
@@ -245,6 +279,7 @@ class ArchiveStore(AnalysisStore):
         if status in ('active','closed','unknown'):where.append('e.availability=?');args.append(status)
         if exclude_closed:where.append("e.availability<>'closed'")
         if status=='missing':where.append('EXISTS(SELECT 1 FROM membership m WHERE m.kind=e.kind AND m.entity_id=e.id AND m.present=0)')
+        if status in ('listed','gone'):where.append('(SELECT m.present FROM membership m WHERE m.kind=e.kind AND m.entity_id=e.id ORDER BY m.checked_at DESC LIMIT 1)=?');args.append(int(status=='listed'))
         selected=selection(companies,company)
         route_rows=paths(self)
         if trajectory and trajectory not in ('unassigned','intersection','needs_description') and trajectory not in {r['id'] for r in route_rows}:raise ValueError('Траектория не найдена.')
@@ -287,18 +322,20 @@ class ArchiveStore(AnalysisStore):
                 for item in items:item.pop('derived')
                 return {'total':total,'items':items,'trajectory_options':[{'id':r['id'],'label':r['label']} for r in route_rows]}
             self.embedding_states(db,items,model)
-            ids=[item['id'] for item in items];versions={};missing={};payloads={}
+            ids=[item['id'] for item in items];versions={};missing={};payloads={};listings={}
             for part in derived.split(ids):
                 marks=','.join('?'*len(part))
                 versions.update({r[0]:r[1] for r in db.execute("SELECT entity_id,COUNT(*) FROM versions WHERE kind='vacancy' AND entity_id IN ("+marks+') GROUP BY 1',part)})
-                missing.update({r[0]:r[1] for r in db.execute("SELECT entity_id,COUNT(*) FROM membership WHERE kind='vacancy' AND present=0 AND entity_id IN ("+marks+') GROUP BY 1',part)})
+                for r in db.execute("SELECT entity_id,present,checked_at FROM membership WHERE kind='vacancy' AND entity_id IN ("+marks+')',part):
+                    listings.setdefault(r[0],[]).append(r)
+                    if not r[1]:missing[r[0]]=missing.get(r[0],0)+1
                 payloads.update({r[0]:r[1] for r in db.execute("SELECT id,payload FROM entities WHERE kind='vacancy' AND id IN ("+marks+')',part)})
             pending=[item['id'] for item in items if 'trajectory' not in item]
             if pending:derived.ensure(db,'profile',ids=pending);profiles=derived.heads(db,'profile',pending)
             from .vacancy_locations import normalize_locations
             for item in items:
                 item.pop('derived');data=json.loads(payloads[item['id']])
-                item['versions']=versions.get(item['id'],0);item['missing_scopes']=missing.get(item['id'],0)
+                item['versions']=versions.get(item['id'],0);item['missing_scopes']=missing.get(item['id'],0);item['listing']=self.listing_state(listings.get(item['id'],[]))
                 if 'trajectory' not in item:item['trajectory']=relations(self,{'id':item['id'],'description_quality':item['quality']},route_rows,profiles.get(item['id']))
                 loc=normalize_locations(data);item.update({k:loc[k] for k in ('locations','work_formats','locations_status')})
                 if include_payload:item['payload']=data
@@ -320,6 +357,9 @@ class ArchiveStore(AnalysisStore):
         if kind=='vacancy':
             from .career_trajectory_matching import relations
             result['trajectory']=relations(self,result['payload'])
+            result['listing']=self.listing_state(result['membership'])
+            from .source_runs import source_for
+            result['recheck_source']=source_for(result['payload'])
         return result
     def resume_snapshot(self,identifier,version_id):
         with self.connect() as db:

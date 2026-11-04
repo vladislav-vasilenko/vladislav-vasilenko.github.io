@@ -36,7 +36,10 @@ def start(store, *, mode=None):
             db.execute('INSERT INTO collection_backfill_runs VALUES(?,?,?,?,?)',(identifier,'running',mode,stamp,stamp))
             # Explicit user retry begins a new bounded source attempt.
             db.execute('UPDATE collection_source_health SET blocked_until=0,failures=0,reason=?', ('',))
+            has_listing=db.execute("SELECT 1 FROM sqlite_master WHERE name='membership'").fetchone()
+            gone={r[0] for r in db.execute("SELECT e.id FROM entities e WHERE e.kind='vacancy' AND (SELECT m.present FROM membership m WHERE m.kind='vacancy' AND m.entity_id=e.id ORDER BY m.checked_at DESC LIMIT 1)=0")} if has_listing else set()
             for row in db.execute("SELECT id,payload,availability FROM entities WHERE kind='vacancy'").fetchall():
+                if row['id'] in gone:continue
                 payload=json.loads(row['payload']);url=payload.get('link','');host=urlsplit(url).hostname
                 if payload.get('description_quality')=='full' or row['availability']=='closed': continue
                 state='pending';reason=''

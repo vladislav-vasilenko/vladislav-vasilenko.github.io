@@ -69,23 +69,23 @@ def _source_plan(headless: bool = True, include_sber: bool = False):
 
 
 def _load_existing() -> dict:
-    """Read existing online_scraped.json into id→vacancy map, pruning entries older than 30 days."""
+    """Read existing online_scraped.json, dropping vacancies not seen in a listing for 30 days."""
     if not OUTPUT.exists():
         return {}
-    try:
-        data = json.loads(OUTPUT.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
+    # A corrupt file fails the run rather than silently replacing the whole history.
+    data = json.loads(OUTPUT.read_text(encoding="utf-8"))
 
     cutoff = datetime.now(timezone.utc) - timedelta(days=30)
     kept: dict = {}
     for v in data.get("vacancies", []):
-        first_seen = v.get("first_seen")
+        seen = v.get("last_seen") or v.get("first_seen")
         try:
-            ts = datetime.fromisoformat(first_seen) if first_seen else None
-        except Exception:
+            ts = datetime.fromisoformat(seen) if seen else None
+            if ts is not None and ts.tzinfo is None:
+                ts = ts.replace(tzinfo=timezone.utc)
+        except (TypeError, ValueError):
             ts = None
-        if ts is None or ts >= cutoff:
+        if v.get("id") and (ts is None or ts >= cutoff):
             kept[v["id"]] = v
     print(f"📦 Loaded {len(kept)} existing vacancies (after 30-day prune)")
     return kept
@@ -157,7 +157,12 @@ def main() -> int:
                 report=report if isinstance(report,dict) else {}
                 stats[key]["errors"]+=report.get("errors",0)
                 stats[key]["listed"]+=report.get("listed",0)
-                if report:stats[key]["coverage"]=report.get("coverage","partial")
+                # A source's coverage is only as good as its weakest query.
+                if report:stats[key]["coverage"]=report.get("coverage","partial") if stats[key].get("coverage","listing_exhausted")=="listing_exhausted" else stats[key]["coverage"]
+                seen=getattr(scraper,"seen_ids",())
+                for jid in seen if isinstance(seen,(set,list,tuple)) else ():
+                    if jid in by_id:
+                        by_id[jid]["last_seen"]=now_iso
                 empty_is_error=getattr(scraper,"empty_listing_is_error",True) is not False
                 for j in jobs:
                     jid = j["id"]
@@ -171,6 +176,7 @@ def main() -> int:
                 # Save after EACH query for maximum safety
                 _save(by_id, stats, now_iso)
             except Exception as e:
+                stats[key]["coverage"]="partial"
                 print(f"  ✗ {key} on '{q}': {e}")
                 traceback.print_exc(limit=2, file=sys.stderr)
                 stats[key]["errors"] += 1

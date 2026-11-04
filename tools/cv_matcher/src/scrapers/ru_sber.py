@@ -40,6 +40,7 @@ class SberScraper(BaseScraper):
                 self._fail(f"public API stopped at {skip}: {type(e).__name__}")
                 break
             self.report["listed"] += len(items)
+            self.seen_ids.update(f"{self.id_prefix}_{item.get('internalId')}" for item in items if item.get("internalId"))
             for item in items:
                 if self.limit and len(vacancies) >= self.limit:
                     break

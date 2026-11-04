@@ -105,10 +105,10 @@
       "Mistral",
       "Black Forest Labs",
       "Hugging Face",
-      "Artlist",
-      "Luna Labs (name unconfirmed; Luma AI was added)"
+      "Artlist"
     ],
-    "dreamina": "A ByteDance product, so assumed to be covered by the ByteDance source. Not checked."
+    "dreamina": "A ByteDance product, so assumed to be covered by the ByteDance source. Not checked.",
+    "luma": "The user confirmed that 'Luna Labs' meant lumalabs.ai, which is the Luma AI source. lumalabs.ai/join links to the lumaai Ashby board."
   },
   "github_actions": {
     "scheduled_sources": [
