@@ -39,7 +39,7 @@ test('presentation styles preserve work facts and keep minimal as the default',(
  for(const style of themes.presentationStyles){
   const html=minimal.renderMinimal(cv,'ru',data,'all',style,true);
   assert.match(html,/data-export="print"/);assert.match(html,/data-export="markdown"/);
-  assert.match(html,/PyTorch project/);assert.doesNotMatch(html,/AI Tools|Technical|Product|Orbit/);
+  assert.match(html,/PyTorch project/);assert.doesNotMatch(html.replace(/<select class="minimal-focus"[\s\S]*?<\/select>/,''),/AI Tools|Technical|Product|Orbit/);assert.match(html,/<option value="product"/);
   assert.equal((html.match(/PyTorch project/g)||[]).length,1);
   const en=minimal.renderMinimal(cv,'en',data,'all',style,true);assert.match(en,/<details open><summary>Read original/);
  }
