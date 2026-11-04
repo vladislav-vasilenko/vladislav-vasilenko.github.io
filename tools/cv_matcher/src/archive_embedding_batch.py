@@ -28,7 +28,7 @@ def prepare(archive,data):
     if not isinstance(goal,str) or not goal.strip() or len(goal)>2000:raise ValueError('Укажите карьерную цель перед сравнением.')
     model=data.get('model','text-embedding-3-small')
     if model!='text-embedding-3-small':raise ValueError('Для пакетного расчёта используйте text-embedding-3-small.')
-    rows=archive.entities('vacancy',companies=companies,status='full',exclude_closed=True,all_items=True)['items']
+    rows=archive.entities('vacancy',companies=companies,status='full',exclude_closed=True,all_items=True,light=True)['items']
     jobs=[{'id':r['id'],'hash':r['content_hash']} for r in rows]
     if not jobs:raise ValueError('У выбранных компаний нет полных описаний. Сначала выполните дозагрузку.')
     if len(jobs)>20000:raise ValueError('Сузьте набор компаний.')

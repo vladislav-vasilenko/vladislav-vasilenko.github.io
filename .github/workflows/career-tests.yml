@@ -1,0 +1,43 @@
+name: Career workspace tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/cv_matcher/**'
+      - '.github/workflows/career-tests.yml'
+  pull_request:
+    paths:
+      - 'tools/cv_matcher/**'
+      - '.github/workflows/career-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: tools/cv_matcher
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: tools/cv_matcher/uv.lock
+
+      - name: Install Python deps
+        run: uv sync --frozen --all-extras
+
+      - name: Python tests
+        run: .venv/bin/python scripts/test-isolated.py
+
+      - name: Extension and web UI checks
+        run: node hh-research-extension/scripts/check.mjs

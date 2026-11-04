@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Set
-from urllib.parse import quote
+from urllib.parse import urlencode
 from playwright.sync_api import Page
 
 from ._base import BaseScraper
@@ -38,6 +38,7 @@ class GoogleCareersScraper(BaseScraper):
     _BASE_URL = "https://www.google.com/about/careers/applications/jobs/results/"
     _DETAIL_URL_TPL = "https://www.google.com/about/careers/applications/jobs/results/{job_id}"
     _HYDRATION_WAIT_MS = 4000
+    company_filter = ''
 
     def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
         vacancies: List[Dict[str, Any]] = []
@@ -46,17 +47,23 @@ class GoogleCareersScraper(BaseScraper):
 
         while True:
             # Build listing URL
-            url = self._BASE_URL + f"?q={quote(query)}&page={page_num}"
+            params = {"q": query, **({"company": self.company_filter} if self.company_filter else {}), "page": page_num}
+            url = self._BASE_URL + "?" + urlencode(params)
             print(f"  Google: loading page {page_num}... ({url[:100]})")
+            # The listing data is in the served HTML, so rendering the page is only a fallback.
             try:
-                page.goto(url, wait_until="domcontentloaded", timeout=60000)
-                page.wait_for_timeout(self._HYDRATION_WAIT_MS)
-            except Exception as e:
-                print(f"  ⚠️ Google page {page_num}: navigation error — {e}")
-                break
-
-            html = page.content()
-            wiz_data = extract_wiz_data(html)
+                response = page.request.get(url, timeout=30000)
+                wiz_data = extract_wiz_data(response.text()) if response.ok else None
+            except Exception:
+                wiz_data = None
+            if wiz_data is None:
+                try:
+                    page.goto(url, wait_until="domcontentloaded", timeout=60000)
+                    page.wait_for_timeout(self._HYDRATION_WAIT_MS)
+                    wiz_data = extract_wiz_data(page.content())
+                except Exception as e:
+                    self._fail(f"page {page_num}: navigation error {type(e).__name__}")
+                    break
 
             if wiz_data is None:
                 print(f"  ⚠️ Google page {page_num}: no Wiz data found in SSR HTML")
@@ -65,9 +72,11 @@ class GoogleCareersScraper(BaseScraper):
                     page.wait_for_timeout(3000)
                     wiz_data = extract_wiz_data(page.content())
                 if wiz_data is None:
+                    self._fail(f"page {page_num}: listing data not recognised")
                     break
 
             job_records = wiz_data[0]  # list of job arrays
+            self.report["listed"] += len(job_records or [])
             if total_available is None and len(wiz_data) > GOOGLE_TOTAL_IDX:
                 total_available = wiz_data[GOOGLE_TOTAL_IDX]
                 print(f"  Google: {total_available} total results for query '{query}'")
@@ -97,6 +106,7 @@ class GoogleCareersScraper(BaseScraper):
                         )
                 except Exception as e:
                     vid = record[0] if isinstance(record, list) and len(record) > 0 else "?"
+                    self.report["errors"] += 1
                     print(f"  ⚠️ Google record {vid}: {e}")
 
             print(f"  Google page {page_num}: {len(job_records)} records → {len(vacancies)} total accepted")
@@ -113,5 +123,14 @@ class GoogleCareersScraper(BaseScraper):
 
             page_num += 1
 
+        self._finish_coverage(len(vacancies))
         print(f"  Google: ✓ {len(vacancies)} vacancies collected across {page_num} pages")
         return vacancies
+
+
+class DeepMindCareersScraper(GoogleCareersScraper):
+    """DeepMind publishes its roles on Google Careers under a company filter."""
+
+    company_name = "DeepMind"
+    company_filter = "DeepMind"
+

@@ -71,10 +71,11 @@ class YandexScraper(BaseScraper):
                 if page_idx == 0:
                     print(f"  ⚠️ Яндекс API error: {e}. Falling back to old-school scrape.")
                     return self._scrape_fallback(page, query, existing_ids)
-                print(f"  ⚠️ Яндекс pagination stopped at page {page_idx + 1}: {e}")
+                self._fail(f"pagination stopped at page {page_idx + 1}: {type(e).__name__}")
                 break
 
             items = data.get("results", [])
+            self.report["listed"] += len(items)
             total = data.get("count")
             if page_idx == 0 and total is not None:
                 print(f"  Яндекс API: всего {total} вакансий доступно (limit={self.limit})")
@@ -149,13 +150,14 @@ class YandexScraper(BaseScraper):
                     next_url = f"{base_api_url}?{_encode(paged)}"
             page_idx += 1
 
+        if next_url and len(vacancies) < self.limit:
+            self.report["coverage"] = "partial"  # stopped by the page bound, not the end of the listing
+        else:
+            self._finish_coverage(len(vacancies))
         print(f"  Яндекс: собрано {len(vacancies)} вакансий за {page_idx} страниц(ы)")
         return vacancies
 
     def _scrape_fallback(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
-        # This is the original selector-based logic if API fails or changes
-        listing_url = query if query.startswith("http") else f"https://yandex.ru/jobs/vacancies?text={quote(query)}"
-        page.goto(listing_url, wait_until="domcontentloaded", timeout=60000)
-        page.wait_for_timeout(2000)
-        # ... rest of the original logic could go here, but API is preferred.
+        # There is no DOM parser behind the API, so report the outage instead of an empty board.
+        self._fail("jobs API is unavailable and there is no fallback parser")
         return []

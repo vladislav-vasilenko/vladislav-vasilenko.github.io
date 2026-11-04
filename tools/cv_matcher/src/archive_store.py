@@ -56,9 +56,19 @@ class ArchiveStore(AnalysisStore):
             CREATE TABLE IF NOT EXISTS membership(client_id TEXT,scope TEXT,kind TEXT,entity_id TEXT,present INTEGER,checked_at TEXT,scan_id TEXT,PRIMARY KEY(client_id,scope,kind,entity_id));
             CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT,kind TEXT,entity_id TEXT,event TEXT,at TEXT,details TEXT);
             CREATE TABLE IF NOT EXISTS profiles(client_id TEXT PRIMARY KEY,payload TEXT,received_at TEXT);
+            CREATE INDEX IF NOT EXISTS membership_entity ON membership(kind,entity_id,present);
             ''')
+            from .vacancy_derived import TABLE
+            db.executescript(TABLE)
             self.init_analysis(db)
+            self._relabel_false_reopened(db)
         os.chmod(self.path,0o600)
+    @staticmethod
+    def _relabel_false_reopened(db):
+        """Once: unknown -> active was logged as 'reopened'. Relabel only events with no earlier closure."""
+        if db.execute("SELECT 1 FROM archive_meta WHERE key='migration:confirmed-active-events'").fetchone():return
+        db.execute("UPDATE events SET event='confirmed_active' WHERE event='reopened' AND NOT EXISTS(SELECT 1 FROM events c WHERE c.kind=events.kind AND c.entity_id=events.entity_id AND c.event='closed' AND c.id<events.id)")
+        db.execute("INSERT INTO archive_meta VALUES('migration:confirmed-active-events',?)",(now_iso(),))
     def connect(self):
         db=sqlite3.connect(self.path,timeout=20);db.row_factory=sqlite3.Row;return db
     @staticmethod
@@ -159,7 +169,7 @@ class ArchiveStore(AnalysisStore):
             cursor=db.execute('INSERT INTO versions(kind,entity_id,content_hash,payload,received_at,source_at) VALUES(?,?,?,?,?,?)',(kind,identifier,content,canonical(data),received,stamp));version=cursor.lastrowid
             self._event(db,kind,identifier,'added' if not old else 'changed',received,{'before_version':old['version_id'] if old else None,'after_version':version})
         if old and availability!=old['availability']:
-            self._event(db,kind,identifier,'closed' if availability=='closed' else 'reopened',received,{'source_url':data.get('source_page'),'observed_at':data.get('collected_at')})
+            self._event(db,kind,identifier,'closed' if availability=='closed' else 'reopened' if old['availability']=='closed' else 'confirmed_active',received,{'source_url':data.get('source_page'),'observed_at':data.get('collected_at')})
         elif not old and availability=='closed':self._event(db,kind,identifier,'closed',received,{'source_url':data.get('source_page'),'observed_at':data.get('collected_at')})
         db.execute('INSERT OR REPLACE INTO entities VALUES(?,?,?,?,?,?,?,?,?,?,?)',(kind,identifier,data['title'],str(data.get('company','')),canonical(data),version,content,stamp,old['first_seen'] if old else received,received,availability))
     @staticmethod
@@ -205,49 +215,94 @@ class ArchiveStore(AnalysisStore):
             profile=db.execute('SELECT payload FROM profiles ORDER BY received_at DESC LIMIT 1').fetchone()
         profile=json.loads(profile[0]) if profile else {}
         return {'resumes':counts.get('resume',0),'vacancies':counts.get('vacancy',0),'full_descriptions':full,'closed':closed,'missing_in_search':missing,'versions':versions,'scans':scans,'last_sync':last,'primary_id':profile.get('primary_id'),'goal':profile.get('goal','')}
-    def entities(self,kind,*,q='',status='',offset=0,limit=50,resume_id='',goal=None,model='text-embedding-3-small',company='',companies=None,ranked_only=False,exclude_closed=False,all_items=False,include_payload=False,trajectory=''):
+    def entities(self,kind,*,q='',status='',offset=0,limit=50,resume_id='',goal=None,model='text-embedding-3-small',company='',companies=None,ranked_only=False,exclude_closed=False,all_items=False,include_payload=False,trajectory='',light=False):
         if kind not in ('resume','vacancy'):raise ValueError('Неизвестный раздел.')
+        if kind=='vacancy':return self._vacancies(q,status,offset,limit,resume_id,goal,model,company,companies,ranked_only,exclude_closed,all_items,include_payload,trajectory,light)
         where=['e.kind=?'];args=[kind]
-        if q:
-            body="json_extract(e.payload,'$.sections')" if kind=='resume' else "json_extract(e.payload,'$.description')"
-            where.append('(e.title LIKE ? OR e.company LIKE ? OR '+body+' LIKE ?)');args.extend(['%'+q[:200]+'%']*3)
+        if q:where.append("(e.title LIKE ? OR e.company LIKE ? OR json_extract(e.payload,'$.sections') LIKE ?)");args.extend(['%'+q[:200]+'%']*3)
         if status in ('active','closed','unknown'):where.append('e.availability=?');args.append(status)
-        if exclude_closed and kind=='vacancy':where.append("e.availability<>'closed'")
         if status=='missing':where.append('EXISTS(SELECT 1 FROM membership m WHERE m.kind=e.kind AND m.entity_id=e.id AND m.present=0)')
         if status=='full':where.append("json_extract(e.payload,'$.description_quality')='full'")
         if status=='needs_review':where.append("json_extract(e.payload,'$.description_quality')='needs_review'")
-        clause=' AND '.join(where)
         with self.connect() as db:
-            rows=db.execute('SELECT e.*,(SELECT COUNT(*) FROM versions v WHERE v.kind=e.kind AND v.entity_id=e.id) versions,(SELECT COUNT(*) FROM membership m WHERE m.kind=e.kind AND m.entity_id=e.id AND m.present=0) missing_scopes,json_extract(e.payload,\'$.description_quality\') quality FROM entities e WHERE '+clause+' ORDER BY e.last_seen DESC,e.id',args).fetchall()
-            items=[dict(r) for r in rows]
-            from .company_catalog import selection,raw_catalog
-            selected=selection(companies,company)
-            if selected is not None and kind=='vacancy':
-                from .company_filter import company_key
-                catalog=raw_catalog(self);allowed=set(selected)
-                items=[r for r in items if company_key(r['company'],catalog) in allowed]
-            self.analysis_states(db,items,resume_id,goal,model)
+            rows=db.execute('SELECT e.*,(SELECT COUNT(*) FROM versions v WHERE v.kind=e.kind AND v.entity_id=e.id) versions,(SELECT COUNT(*) FROM membership m WHERE m.kind=e.kind AND m.entity_id=e.id AND m.present=0) missing_scopes,json_extract(e.payload,\'$.description_quality\') quality FROM entities e WHERE '+' AND '.join(where)+' ORDER BY e.last_seen DESC,e.id',args).fetchall()
+            items=self.analysis_states(db,[dict(r) for r in rows],resume_id,goal,model)
             if ranked_only:items=[r for r in items if r['ranking']]
             if status.startswith('embedding_'):items=[r for r in items if r['embedding']['status']==status.removeprefix('embedding_')]
-            if kind=='vacancy' and resume_id:items.sort(key=lambda r:-(r['ranking']['score'] if r['ranking'] else -2))
-            route_rows=[]
-            if kind=='vacancy':
-                from .career_trajectory_matching import paths,relations,accepts
-                route_rows=paths(self)
-                if trajectory and trajectory not in ('unassigned','intersection','needs_description') and trajectory not in {r['id'] for r in route_rows}:raise ValueError('Траектория не найдена.')
-                if trajectory:
-                    for item in items:item['trajectory']=relations(self,json.loads(item['payload']),route_rows)
-                    items=[item for item in items if accepts(trajectory,item['trajectory'])]
             total=len(items)
             if not all_items:items=items[max(offset,0):max(offset,0)+min(max(limit,1),200)]
             for item in items:
                 payload=item.pop('payload',None)
-                if kind=='vacancy' and 'trajectory' not in item:item['trajectory']=relations(self,json.loads(payload),route_rows)
-                if kind=='vacancy':
-                    from .vacancy_locations import normalize_locations
-                    loc=normalize_locations(json.loads(payload));item.update({k:loc[k] for k in ('locations','work_formats','locations_status')})
                 if include_payload:item['payload']=json.loads(payload)
-            if kind=='vacancy' and db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='applications'").fetchone():
+        return {'total':total,'items':items,'trajectory_options':[]}
+    def _vacancies(self,q,status,offset,limit,resume_id,goal,model,company,companies,ranked_only,exclude_closed,all_items,include_payload,trajectory,light):
+        """Filter and sort on saved facts, and read full payloads only for the rows returned."""
+        from . import vacancy_derived as derived
+        from .company_catalog import selection,raw_catalog
+        from .career_trajectory_matching import paths,relations,accepts
+        where=["e.kind='vacancy'"];args=[]
+        if q:where.append("(e.title LIKE ? OR e.company LIKE ? OR json_extract(e.payload,'$.description') LIKE ?)");args.extend(['%'+q[:200]+'%']*3)
+        if status in ('active','closed','unknown'):where.append('e.availability=?');args.append(status)
+        if exclude_closed:where.append("e.availability<>'closed'")
+        if status=='missing':where.append('EXISTS(SELECT 1 FROM membership m WHERE m.kind=e.kind AND m.entity_id=e.id AND m.present=0)')
+        selected=selection(companies,company)
+        route_rows=paths(self)
+        if trajectory and trajectory not in ('unassigned','intersection','needs_description') and trajectory not in {r['id'] for r in route_rows}:raise ValueError('Траектория не найдена.')
+        with self.connect() as db:
+            # Callers taking full payloads select jobs to act on, so they check the real text, not saved facts.
+            rows=db.execute('SELECT e.kind,e.id,e.title,e.company,e.version_id,e.content_hash,e.source_at,e.first_seen,e.last_seen,e.availability'+(',e.payload current_payload' if include_payload else '')+' FROM entities e WHERE '+' AND '.join(where)+' ORDER BY e.first_seen DESC,e.id',args).fetchall()
+            if not include_payload:derived.ensure(db,'basic')
+            facts={} if include_payload else derived.heads(db,'basic')
+            wanted={'full':'full','needs_review':'needs_review'}.get(status)
+            items=[]
+            for row in rows:
+                saved=facts.get(row['id'])
+                if saved is None:
+                    # Changed since the facts were read: this request's row wins over the cache.
+                    current=[row['current_payload']] if include_payload else db.execute("SELECT payload FROM entities WHERE kind='vacancy' AND id=?",(row['id'],)).fetchone()
+                    if not current:continue
+                    saved=derived.compute('basic',json.loads(current[0]))
+                if wanted and saved['quality']!=wanted:continue
+                items.append({**{key:row[key] for key in row.keys() if key!='current_payload'},'quality':saved['quality'],'derived':saved})
+            if selected is not None:
+                from .company_filter import company_key
+                catalog=raw_catalog(self);allowed=set(selected);known={}
+                for item in items:
+                    if item['company'] not in known:known[item['company']]=company_key(item['company'],catalog) in allowed
+                items=[item for item in items if known[item['company']]]
+            self.ranking_states(db,items,resume_id,goal,model)
+            if ranked_only:items=[item for item in items if item['ranking']]
+            if status.startswith('embedding_'):
+                self.embedding_states(db,items,model)
+                items=[item for item in items if item['embedding']['status']==status.removeprefix('embedding_')]
+            if resume_id:items.sort(key=lambda item:-(item['ranking']['score'] if item['ranking'] else -2))
+            if trajectory:
+                derived.ensure(db,'profile',ids=[item['id'] for item in items])
+                profiles=derived.heads(db,'profile')
+                for item in items:item['trajectory']=relations(self,{'id':item['id'],'description_quality':item['quality']},route_rows,profiles.get(item['id']))
+                items=[item for item in items if accepts(trajectory,item['trajectory'])]
+            total=len(items)
+            if not all_items:items=items[max(offset,0):max(offset,0)+min(max(limit,1),200)]
+            if light:
+                for item in items:item.pop('derived')
+                return {'total':total,'items':items,'trajectory_options':[{'id':r['id'],'label':r['label']} for r in route_rows]}
+            self.embedding_states(db,items,model)
+            ids=[item['id'] for item in items];versions={};missing={};payloads={}
+            for part in derived.split(ids):
+                marks=','.join('?'*len(part))
+                versions.update({r[0]:r[1] for r in db.execute("SELECT entity_id,COUNT(*) FROM versions WHERE kind='vacancy' AND entity_id IN ("+marks+') GROUP BY 1',part)})
+                missing.update({r[0]:r[1] for r in db.execute("SELECT entity_id,COUNT(*) FROM membership WHERE kind='vacancy' AND present=0 AND entity_id IN ("+marks+') GROUP BY 1',part)})
+                payloads.update({r[0]:r[1] for r in db.execute("SELECT id,payload FROM entities WHERE kind='vacancy' AND id IN ("+marks+')',part)})
+            pending=[item['id'] for item in items if 'trajectory' not in item]
+            if pending:derived.ensure(db,'profile',ids=pending);profiles=derived.heads(db,'profile',pending)
+            from .vacancy_locations import normalize_locations
+            for item in items:
+                item.pop('derived');data=json.loads(payloads[item['id']])
+                item['versions']=versions.get(item['id'],0);item['missing_scopes']=missing.get(item['id'],0)
+                if 'trajectory' not in item:item['trajectory']=relations(self,{'id':item['id'],'description_quality':item['quality']},route_rows,profiles.get(item['id']))
+                loc=normalize_locations(data);item.update({k:loc[k] for k in ('locations','work_formats','locations_status')})
+                if include_payload:item['payload']=data
+            if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='applications'").fetchone():
                 queued={}
                 for application in db.execute("SELECT id,status,context FROM applications ORDER BY created DESC"):
                     context=json.loads(application['context']);job_id=context.get('vacancy',{}).get('id')
@@ -291,7 +346,7 @@ class ArchiveStore(AnalysisStore):
         return {'before':before,'after':after,'segments':segments,'large_document':False}
     def timeline(self,offset=0,limit=100):
         with self.connect() as db:
-            rows=db.execute("SELECT ev.*,e.title,e.company FROM events ev LEFT JOIN entities e ON e.kind=ev.kind AND e.id=ev.entity_id WHERE ev.event!='added' OR ev.at>COALESCE((SELECT value FROM archive_meta WHERE key='initial_import_until'),'') ORDER BY ev.at DESC,ev.id DESC LIMIT ? OFFSET ?",(min(max(limit,1),200),max(offset,0))).fetchall()
+            rows=db.execute("SELECT ev.*,e.title,e.company FROM events ev LEFT JOIN entities e ON e.kind=ev.kind AND e.id=ev.entity_id WHERE ev.event!='confirmed_active' AND (ev.event!='added' OR ev.at>COALESCE((SELECT value FROM archive_meta WHERE key='initial_import_until'),'')) ORDER BY ev.at DESC,ev.id DESC LIMIT ? OFFSET ?",(min(max(limit,1),200),max(offset,0))).fetchall()
         return {'items':[{**dict(r),'details':json.loads(r['details'])} for r in rows]}
     def scans(self,offset=0):
         with self.connect() as db:rows=db.execute('SELECT * FROM scans ORDER BY completed_at DESC LIMIT 100 OFFSET ?',(max(offset,0),)).fetchall()

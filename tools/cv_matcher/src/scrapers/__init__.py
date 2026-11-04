@@ -16,6 +16,8 @@ from .international import (  # noqa: F401
     _strip_html,
 )
 from .faang import GoogleCareersScraper, MetaCareersScraper  # noqa: F401
+from .google_careers import DeepMindCareersScraper  # noqa: F401
+from .ats import BOARD_SCRAPERS, AnthropicScraper, OpenAIScraper  # noqa: F401
 
 SCRAPER_REGISTRY = {
     # RU
@@ -41,7 +43,9 @@ SCRAPER_REGISTRY = {
     # FAANG
     "google":      GoogleCareersScraper,
     "meta":        MetaCareersScraper,
+    "deepmind":    DeepMindCareersScraper,
 }
+SCRAPER_REGISTRY.update(BOARD_SCRAPERS)
 
 from .china import CHINA_SCRAPERS
 SCRAPER_REGISTRY.update(CHINA_SCRAPERS)

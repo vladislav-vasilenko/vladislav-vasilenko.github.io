@@ -22,7 +22,6 @@ def main() -> int:
         expected_prefix="sber",
         expected_hosts=("rabota.sber.ru",),
         args=args,
-        stealth=True,
     )
 
 

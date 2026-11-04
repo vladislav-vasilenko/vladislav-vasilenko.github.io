@@ -120,12 +120,38 @@ class AnalysisStore:
 
     def analysis_states(self,db,entities,resume_id='',goal=None,model='text-embedding-3-small'):
         """Scores belong to a specific CV + JD + goal + model; vectors belong to documents."""
+        self.embedding_states(db,entities,model)
+        return self.ranking_states(db,entities,resume_id,goal,model)
+    @staticmethod
+    def _facts(entity):
+        """Saved facts when the caller loaded them; otherwise computed from the payload."""
+        if 'derived' in entity:return entity['derived']
         from .extension_ranking import chunks
+        data=json.loads(entity['payload']);text=document_text(entity['kind'],data)
+        return {'quality':data.get('description_quality'),'text_hash':text_hash(text),'chunks':len(chunks(text))}
+    def embedding_states(self,db,entities,model='text-embedding-3-small'):
         from .manual_applications import all_marks
         manual=all_marks(db)
+        query='SELECT kind,entity_id,document_hash,namespace,COUNT(*) n FROM document_embeddings WHERE model=?'
+        tail=' GROUP BY kind,entity_id,document_hash,namespace'
+        rows=[]
+        if len(entities)<=500:
+            # The lookup index only helps when the rows are named.
+            for kind in {e['kind'] for e in entities}:
+                ids=[e['id'] for e in entities if e['kind']==kind]
+                rows+=db.execute(query+' AND kind=? AND entity_id IN ('+','.join('?'*len(ids))+')'+tail,(model,kind,*ids)).fetchall()
+        else:rows=db.execute(query+tail,(model,)).fetchall()
         bindings={}
-        for r in db.execute('SELECT kind,entity_id,document_hash,namespace,COUNT(*) n FROM document_embeddings WHERE model=? GROUP BY kind,entity_id,document_hash,namespace',(model,)):
-            key=(r['kind'],r['entity_id']);bindings.setdefault(key,[]).append(r)
+        for r in rows:bindings.setdefault((r['kind'],r['entity_id']),[]).append(r)
+        for entity in entities:
+            if entity['kind']=='vacancy':entity['manual_application']=manual.get(entity['id'],{'marked':False,'revision':0})
+            facts=self._facts(entity);current=facts['text_hash'];parts=facts['chunks'];known=bindings.get((entity['kind'],entity['id']),[])
+            current_counts=[r['n'] for r in known if r['document_hash']==current];count=max(current_counts,default=0)
+            status='generated' if parts and count==parts else 'partial' if count else 'stale' if known else 'not_generated'
+            if entity['kind']=='vacancy' and facts['quality']!='full':status='needs_description'
+            entity['embedding']={'status':status,'model':model,'chunks_ready':count,'chunks_total':parts}
+        return entities
+    def ranking_states(self,db,entities,resume_id='',goal=None,model='text-embedding-3-small'):
         cv=db.execute("SELECT payload FROM entities WHERE kind='resume' AND id=?",(resume_id,)).fetchone()
         cv=json.loads(cv[0]) if cv else None
         runs=db.execute('SELECT payload FROM ranking_runs WHERE resume_id=? AND model=? ORDER BY generated_at DESC',(resume_id,model)).fetchall() if cv else []
@@ -136,13 +162,17 @@ class AnalysisStore:
             for item in data['all']:
                 scores.setdefault(item['id'],[]).append({**item,'generated_at':data['generated_at'],'model':model,'goal':data.get('goal','')})
         for entity in entities:
-            if entity['kind']=='vacancy':entity['manual_application']=manual.get(entity['id'],{'marked':False,'revision':0})
-            data=json.loads(entity['payload']);text=document_text(entity['kind'],data);current=text_hash(text);parts=len(chunks(text));known=bindings.get((entity['kind'],entity['id']),[])
-            current_counts=[r['n'] for r in known if r['document_hash']==current];count=max(current_counts,default=0)
-            status='generated' if parts and count==parts else 'partial' if count else 'stale' if known else 'not_generated'
-            if entity['kind']=='vacancy' and data.get('description_quality')!='full':status='needs_description'
-            entity['embedding']={'status':status,'model':model,'chunks_ready':count,'chunks_total':parts}
             candidates=scores.get(entity['id'],[]) if entity['kind']=='vacancy' else []
-            valid=next((item for item in candidates if item.get('vacancy_hash')==current or (not item.get('vacancy_hash') and item.get('collected_at') and item['collected_at']==data.get('collected_at'))),None)
+            valid=None
+            if candidates:
+                current=self._facts(entity)['text_hash'];collected=None
+                for item in candidates:
+                    if item.get('vacancy_hash')==current:valid=item;break
+                    # Older runs have no text hash; they match on the collection time instead.
+                    if not item.get('vacancy_hash') and item.get('collected_at'):
+                        if collected is None:
+                            payload=entity.get('payload') or db.execute("SELECT payload FROM entities WHERE kind=? AND id=?",(entity['kind'],entity['id'])).fetchone()[0]
+                            collected=json.loads(payload).get('collected_at') or ''
+                        if item['collected_at']==collected:valid=item;break
             entity['ranking']=valid;entity['ranking_stale']=bool(candidates) and valid is None
         return entities

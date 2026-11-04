@@ -1,0 +1,27 @@
+{
+  "stage": 1,
+  "spec": "specs/01-quick-fixes.md",
+  "date": "2026-11-04",
+  "status": "implemented, not committed",
+  "items": {
+    "false_reopened_events": {"status": "done", "files": ["src/archive_store.py", "archive-web/archive.js"], "decision": "New confirmed_active event for unknown to active. It stays in the database but is left out of the Changes feed, because it is routine rather than a change."},
+    "newest_first": {"status": "done", "files": ["src/archive_store.py"], "note": "Vacancies sort by first_seen. Rows imported in the same bulk run tie and fall back to ID order."},
+    "source_errors": {"status": "done", "files": ["src/scrapers/_base.py", "src/scrapers/ru_yandex.py", "src/scrapers/ru_sber.py", "src/scrapers/google_careers.py", "src/scrapers/meta_careers.py", "src/scrapers/china.py", "scripts/scrape_online.py", "scripts/check_scrape_health.py", ".github/workflows/daily-scrape.yml"]},
+    "tests_in_ci": {"status": "added, unverified", "files": [".github/workflows/career-tests.yml"]}
+  },
+  "verification": {
+    "python_tests": {"ran": 556, "failed": 0, "new": 8},
+    "extension_and_ui_tests": {"ran": 432, "failed": 0},
+    "migration_on_archive_copy": {"reopened_before": 1150, "reopened_after": 0, "confirmed_active_after": 1150},
+    "list_on_archive_copy": "Newest vacancies first, dated 2026-10-30."
+  },
+  "not_verified": [
+    "career-tests.yml and the health step have not run on GitHub. Tests may need something the local environment already has, such as Playwright browsers.",
+    "The new crawler error paths were tested with mocks, not against live sites.",
+    "The migration has not run on the real archive. It runs once, the next time the service starts."
+  ],
+  "behaviour_changes": [
+    "A daily run now goes red if a source lists nothing or fails, after saved results are published.",
+    "The Yandex fallback no longer opens the listing page, since it had no parser behind it."
+  ]
+}

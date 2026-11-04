@@ -1,0 +1,46 @@
+{
+  "stage": "investigation",
+  "date": "2026-11-04",
+  "method": "Code reading, GitHub Actions logs and run history, git history, and benchmarks on a temporary copy of the archive database on the user's Mac. Aggregate numbers only; no personal data belongs in this file.",
+  "archive_copy": {"size_mb": 168, "entities": 7771, "versions": 10165, "membership": 2781, "events": 11507},
+  "timings_seconds": {
+    "vacancy_list_default_any_page": 3.5,
+    "vacancy_list_search_pytorch": 0.9,
+    "vacancy_list_resume_selected": 3.0,
+    "vacancy_list_trajectory_unassigned": 43.0,
+    "summary": 0.06,
+    "detail": 0.006,
+    "analytics_snapshot_under_profiler": 67.1
+  },
+  "ui_timeouts_seconds": {"default_api": 30, "analytics": 60},
+  "analytics": {"rows": 7765, "response_mb": 11.3, "rows_mb": 10.88, "classify_calls": 22985, "classify_cumulative_seconds_under_profiler": 56.0},
+  "archive": {
+    "quality": {"full": 4137, "needs_review": 2618, "snippet": 1010},
+    "needs_review_from_github": 2616,
+    "github_availability": {"unknown": 5327, "active": 29},
+    "vacancies_sharing_oct_30_last_seen": 4348,
+    "reopened_events": 1150,
+    "reopened_with_earlier_closed": 0,
+    "changed_events": 2384,
+    "changed_with_identical_title_and_description": 468
+  },
+  "online_scraped_2026_10_30": {
+    "rows": 4428,
+    "rows_with_last_seen_equal_first_seen": 4428,
+    "by_source": {"google": 2867, "meta": 1444, "yandex": 117},
+    "ml_ai_title_rough_regex": {"google": 736, "meta": 326, "yandex": 38},
+    "same_title_company_groups": 460,
+    "rows_in_those_groups": 1140,
+    "exact_text_duplicate_rows": 58
+  },
+  "ci": {
+    "meta_silent_failure": "new 0 and errors 0 in every sampled run from 2026-10-04 to 2026-10-15; fixed by commit 43f6643 on 2026-10-23",
+    "failures_2026_10_16_to_21": "A since-removed embedding step with a bad API key, plus a Playwright download error. Not crawler bugs.",
+    "run_2026_11_03": {"scrape_minutes": 15.5, "google_pages": 199, "google_new": 63, "meta_listed": 1317, "meta_new": 27},
+    "generated_json_in_git": {"blobs": 376, "mib_on_disk": 183, "pack_mib": 376},
+    "tests_in_ci": false
+  },
+  "tests_baseline": {"python": {"ran": 548, "failed": 0, "seconds": 34}},
+  "not_reviewed": ["Chrome extension in depth (skimmed only)", "LinkedIn", "Telegram", "MCP adapter", "resume code", "browser rendering time"],
+  "worth_keeping": ["Versioned SQLite storage", "Idempotent resumable import", "Absence does not prove closure", "textContent rendering", "CSP"]
+}
