@@ -199,6 +199,31 @@
       "logo": "https://www.apple.com/favicon.ico"
     }
   ],
+  "projects": [
+    {
+      "id": "kandinsky6-mlx",
+      "period": "Октябрь 2026 — сейчас",
+      "name": "kandinsky6-mlx",
+      "role": "Порт Kandinsky 6.0 Video на MLX для Apple Silicon",
+      "summary": "Независимый community-порт видеомоделей Kandinsky 6.0 на MLX: text-to-video и image-to-video с синхронным звуком на Mac, от промпта до MP4 одной командой, в разрешениях 432×256 и 864×480.",
+      "highlights": [
+        "Реализовал пайплайн на MLX (DiT, HunyuanVideo VAE с тайловым декодированием, MMAudio VAE, вокодер BigVGAN, планировщики PiFlow и FlowMatch) с кодированием текста через Qwen2.5-VL и CLIP-L; сконвертировал и опубликовал веса Lite-distill 5s на Hugging Face.",
+        "Сверил каждый компонент с diffusers на реальных весах: в float32 весь пайплайн даёт не менее 96,6 дБ по кадрам и 84,2 дБ по аудио на 4 сидах, планировщик PiFlow совпадает побитово.",
+        "Сравнил с Torch MPS на M3 Max 48 ГБ: парные независимые процессы, 95% доверительные интервалы, тесты с поправкой Холма. Lite-5s на 50 шагах работает примерно на 10–12% быстрее; для дистиллированной модели на 10 шагах разница не доказана.",
+        "Измерил компромисс по памяти: с нулевым лимитом кэша MLX генерирует клип 432×256 с пиком 7,8 ГиБ, но дольше; самый низкий завершённый запуск Torch MPS дал пик 13,4 ГиБ. При 13–15 ГиБ настроенный Torch MPS быстрее примерно на 10%."
+      ],
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/vladislav-vasilenko/kandinsky6-mlx"
+        },
+        {
+          "label": "Hugging Face",
+          "url": "https://huggingface.co/VVladTech/Kandinsky-6.0-Lite-distill-5s-MLX"
+        }
+      ]
+    }
+  ],
   "education": [
     {
       "year": "2014",

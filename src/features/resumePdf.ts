@@ -14,6 +14,10 @@ export function resumePDFDefinition(cv:CVContent,lang:Lang,snapshot:HHSnapshot|n
  const content:unknown[]=portrait?[{columns:[{width:'*',stack:header},{image:portrait,fit:[112,148],width:112}],columnGap:20}]:header;
  if(snapshot?.source.url)content.push({text:[ru?'Источник: ':'Source: ',{text:ru?'основное HH-резюме':'primary HH resume',link:snapshot.source.url}],fontSize:9,color:'#64716c'});
  content.push(heading(ru?'Обо мне':'About'),{text:snapshot?.about?.translations?.[lang]||snapshot?.about?.text||cv.aboutMd});
+ if(cv.projects?.length){
+  content.push(heading(ru?'Open-source проекты':'Open-source projects'));
+  for(const project of cv.projects)content.push({columns:[{width:92,text:project.period,fontSize:9,color:'#64716c'},{width:'*',stack:[{text:project.name,bold:true,fontSize:11},{text:project.role,bold:true,margin:[0,3,0,7]},{text:project.summary,margin:[0,0,0,5]},{ul:project.highlights,margin:[0,0,0,5]},{text:project.links.flatMap((item,index)=>[...(index?[' · ']:[]),{text:item.label,link:item.url,style:'link'}])}]}],columnGap:16,margin:[0,7,0,14]});
+ }
  content.push(heading(ru?'Опыт работы':'Work experience'));
  for(const job of cv.experience)content.push({columns:[{width:92,text:job.period+'\n'+job.duration,fontSize:9,color:'#64716c'},{width:'*',stack:[{text:job.company,bold:true,fontSize:11},{text:job.role,bold:true,margin:[0,3,0,7]},{text:plain(job.descriptionMd)}]}],columnGap:16,margin:[0,7,0,14]});
  if(snapshot?.confirmed_skills.length){

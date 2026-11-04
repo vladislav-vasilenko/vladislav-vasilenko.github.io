@@ -9,13 +9,14 @@ const PortfolioPublication=(()=>{
   root.append(label);
   if(state.published_at)root.append(make('p','muted','Опубликовано: '+date(state.published_at)+' · блоков опыта '+state.experience_count+' · навыков '+state.skill_count));
   if(state.error)root.append(make('p','githubImportWarning',state.error));
-  const actions=make('div','githubImportActions'),preview=make('button','secondary','Предпросмотр и редактирование'),publish=make('button','secondary','Обновить сайт сейчас'),body=make('div');
-  preview.type=publish.type='button';
+  const actions=make('div','githubImportActions'),compare=make('button','secondary','Сравнить сайт и HH по блокам'),preview=make('button','secondary','Предпросмотр и редактирование'),publish=make('button','secondary','Обновить сайт сейчас'),body=make('div');
+  preview.type=publish.type=compare.type='button';
+  compare.onclick=async()=>{compare.disabled=true;try{body.replaceChildren();await PortfolioBlocks.mount(body);}catch(e){notice(e.message);}finally{compare.disabled=false;}};
   preview.onclick=async()=>{preview.disabled=true;try{const data=await api('portfolio-publication',{op:'preview'});body.replaceChildren();body.append(make('h3','',data.resume_title),make('p','muted','Из основного HH: '+data.payload.experience.length+' блоков. Язык источника: '+data.payload.source.language.toUpperCase()+'. Перевод для другого языка редактируется ниже; до его проверки доступен исходный текст.'));
    await aboutEditor(body,data);
    experienceEditor(body,data);
    visualEditor(body).catch(e=>notice(e.message));
-   const experienceTitle=make('h3','','Опыт из основного HH-резюме');body.append(experienceTitle);
+   const experienceTitle=make('h3','',data.block_review?'Опыт на сайте · проверенные блоки':'Опыт из основного HH-резюме');body.append(experienceTitle);
    for(const item of data.payload.experience){const card=make('details');card.append(make('summary','',item.company+' · '+item.role+' · '+item.period),make('pre','flowText',item.description));body.append(card);}
    const title=make('h3','','Подтверждённые навыки · для HH и портфолио');body.append(title);
    if(!data.payload.confirmed_skills.length)body.append(make('p','muted','Пока нет подтверждённых практических навыков со ссылками на GitHub. Добавьте проект/лабораторную и отметьте подтверждение в карьерной траектории. Само упоминание в CV не засчитывается.'));
@@ -23,7 +24,7 @@ const PortfolioPublication=(()=>{
    const copy=make('button','secondary','Скопировать блок навыков для HH');copy.onclick=()=>navigator.clipboard.writeText(data.skills_text).then(()=>notice('Блок навыков скопирован.'));copy.disabled=!data.payload.confirmed_skills.length;body.append(copy);
   }catch(e){notice(e.message);}finally{preview.disabled=false;}};
   publish.onclick=async()=>{publish.disabled=true;publish.textContent='Публикую…';try{const result=await api('portfolio-publication',{op:'publish'},180000);if(result.phase==='error')throw Error(result.error);notice(result.phase==='publishing'?'Публикация уже выполняется.':result.phase==='up_to_date'?'Публичный опыт уже актуален.':'JSON опубликован. GitHub Actions собирает обновление сайта.');await mount(root);}catch(e){notice(e.message);}finally{publish.disabled=false;publish.textContent='Обновить сайт сейчас';}};
-  actions.append(preview,publish);root.append(actions,body,external('https://vladislav-vasilenko.github.io/','Открыть публичное портфолио ↗'));
+  actions.append(compare,preview,publish);root.append(actions,body,external('https://vladislav-vasilenko.github.io/','Открыть публичное портфолио ↗'));
  }
  async function aboutEditor(host,data){
   const box=make('section','portfolioAboutEditor');box.append(make('h3','','Введение под шапкой резюме'));

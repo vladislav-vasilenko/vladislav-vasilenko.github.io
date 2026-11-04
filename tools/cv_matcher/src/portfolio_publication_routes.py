@@ -31,6 +31,11 @@ def install(app):
             if data.get('op') == 'save_experience_translation': return await asyncio.to_thread(publication.save_experience_translation, archive, data)
             if data.get('op') == 'context': return await asyncio.to_thread(publication.discussion_context, archive)
             if data.get('op') == 'github_activity': return await asyncio.to_thread(publication.refresh_github_activity, archive)
+            if data.get('op') in ('block_compare', 'block_apply', 'block_mode'):
+                from . import portfolio_blocks as blocks
+                if data['op'] == 'block_compare': return await asyncio.to_thread(blocks.compare, archive)
+                if data['op'] == 'block_apply': return await asyncio.to_thread(blocks.apply_blocks, archive, data)
+                return await asyncio.to_thread(blocks.set_mode, archive, data.get('enabled'))
             if data.get('op') == 'publish': return await asyncio.to_thread(publication.publish, archive)
             if data.get('op') == 'configure':
                 if type(data.get('enabled')) is not bool: raise ValueError('Укажите режим автопубликации.')

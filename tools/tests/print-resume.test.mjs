@@ -36,6 +36,15 @@ test('print view exposes complete dated experience and evidence with no interact
  assert.ok(html.includes(snapshot.source.url));assert.ok(html.includes('https://github.com/example/lab'));
  assert.equal(JSON.stringify(cv),original);
 });
+test('print view lists open-source projects with visible links before work experience', () => {
+ const project={id:'p',period:'Oct 2026 — Present',name:'port-mlx',role:'MLX port',summary:'Port <b>summary</b>.',highlights:['Verified output.'],links:[{label:'GitHub',url:'https://github.com/example/port-mlx'}]};
+ const html=renderPrintResume({...cv,projects:[project]},'en',snapshot);
+ for(const text of ['Open-source projects','port-mlx','Verified output.','github.com/example/port-mlx','Oct 2026 — Present'])assert.ok(html.includes(text));
+ assert.ok(html.indexOf('Open-source projects')<html.indexOf('Work experience'));
+ assert.match(html,/Port &lt;b&gt;summary/);
+ assert.equal((html.match(/class="print-experience-entry"/g)||[]).length,3);
+ assert.doesNotMatch(renderPrintResume(cv,'en',snapshot),/Open-source projects/);
+});
 test('English print view discloses untranslated source blocks; no-snapshot rendering keeps the full bio', () => {
  const html=renderPrintResume(cv,'en',snapshot);
  assert.match(html,/Translation pending/);assert.match(html,/Original experience text · RU/);

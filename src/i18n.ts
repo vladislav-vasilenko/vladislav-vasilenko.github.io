@@ -33,6 +33,16 @@ export interface Experience {
   logoWidth?: string;
 }
 
+export interface Project {
+  id: string;
+  period: string;
+  name: string;
+  role: string;
+  summary: string;
+  highlights: string[];
+  links: { label: string; url: string }[];
+}
+
 export interface Education {
   year: string;
   institution: string;
@@ -97,6 +107,7 @@ interface CVJson {
   };
   employment: string;
   experience: (Omit<Experience, 'descriptionHtml' | 'descriptionMd'>)[];
+  projects?: Project[];
   education: Education[];
   languages: string[];
 }
@@ -109,6 +120,7 @@ export interface CVContent {
   labels: CVJson['labels'];
   employment: string;
   experience: Experience[];
+  projects?: Project[];
   education: Education[];
   languages: string[];
   aboutHtml: string;
@@ -165,6 +177,7 @@ export function loadContent(lang: Lang, techProfile: string = 'vision'): CVConte
     labels: cv.labels,
     employment: cv.employment,
     experience,
+    projects: cv.projects,
     education: cv.education,
     languages: cv.languages,
     aboutHtml,

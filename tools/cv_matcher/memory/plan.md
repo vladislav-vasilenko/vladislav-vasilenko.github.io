@@ -16,8 +16,13 @@ Started 2026-11-04. A new agent session should be able to continue from this fil
 | 5 | [Crawl lifecycle and freshness](../specs/05-crawl-lifecycle.md) | Committed on `career/stage-5-crawl-lifecycle`, not pushed ([report](../reports/05-crawl-lifecycle.json)) |
 | 6 | [Vacancy triage](../specs/06-triage.md) | Not started |
 | 7 | [Infrastructure](../specs/07-infrastructure.md) | Not started |
+| 8 | [Separate repositories](../specs/08-repo-split.md) | Not started; proposed, not approved |
 
 The user approved stage 1 and asked for stages 2, 3 and 4 as additions. The user approved stage 5. Stages 6 and 7 were proposed in the review and are not yet approved.
+
+## Portfolio block review
+
+On branch `portfolio/kandinsky-and-block-review`. `src/portfolio_blocks.py` and `archive-web/portfolio-blocks.js` compare the published `public/hh-experience.json` with the latest primary HH capture, block by block, and apply keep, accept or rewrite decisions. The contract is in `docs/integration/github-import-and-portfolio.md`. Tested in isolation and on a copy of the real database (no pending differences, block-mode text equal to the site, no publish triggered). A real publish through the UI has not been run. Block mode is off until the owner enables it, and the running service needs a restart to load the new code.
 
 ## Visualisation notes
 
