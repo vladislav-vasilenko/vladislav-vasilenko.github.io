@@ -35,6 +35,7 @@ def create_app(token, *, ranker=None, cover_writer=None, archive_path=None):
         derived=asyncio.create_task(app.state.derived_warmer.scheduler())
         try:yield
         finally:
+            if getattr(app.state,'source_runner',None):app.state.source_runner.shutdown()
             derived.cancel()
             with suppress(asyncio.CancelledError):await derived
             publication.cancel()

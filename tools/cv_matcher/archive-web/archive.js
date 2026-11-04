@@ -72,6 +72,7 @@ async function reload(){
 async function loadList(reset=false){
  if(['vacancy','ranking'].includes(tab)&&typeof VacancyExport!=='undefined')VacancyExport.pending();
  if(typeof GitHubImport!=='undefined')GitHubImport.enter();
+ if(typeof SourceRuns!=='undefined')SourceRuns.enter();
  if(typeof PortfolioPublication!=='undefined')PortfolioPublication.enter();
  const request=++listRequest,wait=reset?Busy.create(tab==='resume'?'Загружаю резюме…':'Загружаю вакансии…'):null;if(reset){offset=0;$('list').replaceChildren(wait);}else $('more').disabled=true;
  const params=new URLSearchParams({...Object.fromEntries(analysisParams()),kind:tab==='ranking'?'vacancy':tab,...(companyPicker.value===null?{}:{companies:JSON.stringify(companyPicker.value)}),ranked_only:String(tab==='ranking'),exclude_closed:String(tab==='ranking'),q:$('search').value,trajectory:['vacancy','ranking'].includes(tab)?($('trajectoryFilter').value||initialTrajectory):'',status:tab==='resume'&&$('filter').value!=='missing'?'':$('filter').value,offset:String(offset),limit:'50'});

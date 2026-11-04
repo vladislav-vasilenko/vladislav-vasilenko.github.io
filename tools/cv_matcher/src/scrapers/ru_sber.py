@@ -2,113 +2,96 @@
 
 from __future__ import annotations
 
-import random
+import time
 from typing import Any, Dict, List, Set
-from urllib.parse import quote
-from playwright.sync_api import Page, TimeoutError as PWTimeout
+from urllib.parse import urlencode
+from playwright.sync_api import Page
 
-from ._base import BaseScraper, _extract_date
+from ._base import BaseScraper
 from .parsers.sber import (
-    SBER_DEEP_PARSE_JS,
-    SBER_PARSER_VERSION,
-    compose_sber_description,
-    sber_id_from_url,
-    sber_locations,
+    SBER_API_VERSION,
+    SBER_PUBLICATIONS_URL,
+    compose_sber_publication,
+    sber_compensation,
 )
 
 
 class SberScraper(BaseScraper):
-    """rabota.sber.ru — browser-side deep parser for Sber vacancies."""
+    """rabota.sber.ru, read through the public API its own search page uses.
+
+    One list request carries full vacancy text, so no detail pages are needed.
+    """
 
     company_name = "Сбер"
     id_prefix = "sber"
-    stealth = True  # requires stealth to bypass the JS challenge
-    detail_concurrency = 4
-    detail_delay_ms = 400
-    detail_timeout_ms = 15000
-    scroll_delay_ms = 1500
-    max_empty_scrolls = 12
+    api_page_size = 50
+    api_timeout_ms = 15000
 
     def _scrape(self, page: Page, query: str, existing_ids: Set[str]) -> List[Dict[str, Any]]:
-        page.on("console", lambda msg: print(f"  browser: {msg.text}") if msg.text.startswith("[sber-parser]") else None)
-        print(
-            f"  Сбер parser={SBER_PARSER_VERSION} "
-            f"(detail_concurrency={self.detail_concurrency}, detail_timeout_ms={self.detail_timeout_ms})"
-        )
-
-        # Empty query → unfiltered full catalog. Sber rejects ?query= with no value
-        # (ERR_ABORTED), so we drop the param entirely in that case.
-        listing_url = (
-            "https://rabota.sber.ru/search/"
-            if not query.strip()
-            else f"https://rabota.sber.ru/search/?query={quote(query)}"
-        )
-        try:
-            page.goto(listing_url, wait_until="networkidle", timeout=60000)
-        except PWTimeout:
-            # networkidle can be flaky on long-polling SPAs; fall back to DOM load
-            page.goto(listing_url, wait_until="domcontentloaded", timeout=60000)
-        # human-like settle time — anti-bot checks timing of first interaction
-        page.wait_for_timeout(3500 + int(random.random() * 1500))
-
-        # sometimes a challenge page shows up — detect and bail early
-        html_head = (page.content() or "").lower()[:2000]
-        if "проверк" in html_head and ("человек" in html_head or "робот" in html_head):
-            self._fail("JS-challenge detected; requires storage_state or headed mode")
-            return []
-
-        try:
-            raw_items = page.evaluate(SBER_DEEP_PARSE_JS, {
-                "limit": self.limit,
-                "detailConcurrency": self.detail_concurrency,
-                "detailDelayMs": self.detail_delay_ms,
-                "detailTimeoutMs": self.detail_timeout_ms,
-                "maxEmptyScrolls": self.max_empty_scrolls,
-                "scrollDelayMs": self.scroll_delay_ms,
-            })
-        except Exception as e:
-            self._fail(f"browser parser failed: {type(e).__name__}")
-            return []
-
-        self.report["listed"] = len(raw_items or [])
-        q_lower = query.lower()
+        page.goto("https://rabota.sber.ru/search/", wait_until="domcontentloaded", timeout=60000)
         vacancies: List[Dict[str, Any]] = []
-        for raw in raw_items or []:
-            if len(vacancies) >= self.limit:
+        q_lower = query.strip().lower()
+        skip = 0
+        while True:
+            params = {"skip": skip, "take": self.api_page_size, **({"searchString": query.strip()} if query.strip() else {})}
+            try:
+                items, total = self._read_page(page, params)
+            except Exception as e:
+                self._fail(f"public API stopped at {skip}: {type(e).__name__}")
                 break
-            job_url = str(raw.get("url") or "")
-            if not job_url:
-                continue
-            vid = sber_id_from_url(job_url)
-            jid = f"{self.id_prefix}_{vid}"
-            if jid in existing_ids:
-                continue
-
-            title = str(raw.get("title") or "Sber Vacancy").strip()
-            details = raw.get("details") if isinstance(raw.get("details"), dict) else {}
-            description = compose_sber_description(details)
-            if not description:
-                description = " ".join(str(raw.get(k) or "") for k in ("title", "city", "company")).strip()
-            clean = " ".join(description.split())
-            if q_lower and q_lower not in clean.lower() and q_lower not in title.lower():
-                continue
-
-            pub_date = str(raw.get("date") or "").strip() or _extract_date(clean)
-            vacancies.append({
-                "id": jid,
-                "title": title,
-                "company": self.company_name,
-                "pub_date": pub_date,
-                "description": description,
-                "description_quality": "full" if len(description)>150 and any("требован" in str(k).lower() for k in details) and any("обязанност" in str(k).lower() or "задач" in str(k).lower() for k in details) else "needs_review",
-                "adapter_version": SBER_PARSER_VERSION,
-                "link": job_url,
-                "locations": list(sber_locations(raw)),
-                "origin_query": query,
-            })
-            self._emit("vacancy", id=jid, title=title, company=self.company_name, link=job_url)
-            print(f"  ✓ {title}")
-
+            self.report["listed"] += len(items)
+            for item in items:
+                if self.limit and len(vacancies) >= self.limit:
+                    break
+                row = self._publication(item, query, q_lower, existing_ids)
+                if row:
+                    vacancies.append(row)
+                    self._emit("vacancy", id=row["id"], title=row["title"], company=self.company_name, link=row["link"])
+            skip += len(items)
+            if not items or skip >= total or (self.limit and len(vacancies) >= self.limit):
+                break
+            time.sleep(0.3)
         self._finish_coverage(len(vacancies))
-        print(f"  Сбер: собрано {len(vacancies)} вакансий через browser-side parser")
+        print(f"  Сбер: собрано {len(vacancies)} новых вакансий, просмотрено {self.report['listed']}")
         return vacancies
+
+    def _read_page(self, page: Page, params: Dict[str, Any]) -> Any:
+        """A single request occasionally hangs, so retry once. Being refused is never retried."""
+        url = f"{SBER_PUBLICATIONS_URL}?{urlencode(params)}"
+        for attempt in range(2):
+            try:
+                response = page.request.get(url, timeout=self.api_timeout_ms)
+            except Exception:
+                if attempt:
+                    raise
+                time.sleep(2)
+                continue
+            if not response.ok:
+                raise RuntimeError(f"HTTP {response.status}")
+            data = response.json()["data"]
+            return data["vacancies"], data["total"]
+
+    def _publication(self, item: Dict[str, Any], query: str, q_lower: str, existing_ids: Set[str]) -> Any:
+        vid = str(item.get("internalId") or "")
+        title = str(item.get("title") or "").strip()
+        jid = f"{self.id_prefix}_{vid}"
+        if not vid or not title or jid in existing_ids:
+            return None
+        description = compose_sber_publication(item)
+        # The site's search is broader than an exact term; keep only rows that mention it.
+        if q_lower and q_lower not in title.lower() and q_lower not in " ".join(description.split()).lower():
+            return None
+        return {
+            "id": jid,
+            "title": title,
+            "company": str(item.get("company") or self.company_name),
+            "pub_date": str(item.get("publicationDate") or "Recently"),
+            "description": description,
+            "description_quality": "full" if item.get("duties") and item.get("requirements") and len(description) > 150 else "needs_review",
+            "adapter_version": SBER_API_VERSION,
+            "link": f"https://rabota.sber.ru/search/{vid}",
+            "locations": [city for city in [str(item.get("city") or "").strip()] if city],
+            "teams": [item["specialization"]] if item.get("specialization") else [],
+            "compensation": sber_compensation(item),
+            "origin_query": query,
+        }

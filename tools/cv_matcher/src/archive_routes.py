@@ -17,10 +17,10 @@ class ArchiveAccess:
         now=time.time();self.codes={k:v for k,v in self.codes.items() if v>now};self.sessions={k:v for k,v in self.sessions.items() if v>now}
     def cookie_allowed(self,request):
         self.prune()
-        read_paths=('/archive/embedding-batch','/archive/linkedin','/archive/vacancy-export','/archive/network','/archive/linkedin-chat-analysis','/archive/vacancy-team','/archive/portfolio-publication','/archive/github-import','/archive/analytics-batch/','/archive/analytics','/archive/analytics/','/archive/agent','/archive/summary','/archive/entities','/archive/entity/','/archive/diff','/archive/events','/archive/scans','/archive/restore','/archive/export','/archive/rankings','/archive/skill-analysis','/archive/skill-history','/archive/skill-history/','/archive/workflow','/archive/journey','/archive/companies','/archive/company-settings','/archive/calendar/status','/archive/calendar/ics')
+        read_paths=('/archive/source-runs','/archive/embedding-batch','/archive/linkedin','/archive/vacancy-export','/archive/network','/archive/linkedin-chat-analysis','/archive/vacancy-team','/archive/portfolio-publication','/archive/github-import','/archive/analytics-batch/','/archive/analytics','/archive/analytics/','/archive/agent','/archive/summary','/archive/entities','/archive/entity/','/archive/diff','/archive/events','/archive/scans','/archive/restore','/archive/export','/archive/rankings','/archive/skill-analysis','/archive/skill-history','/archive/skill-history/','/archive/workflow','/archive/journey','/archive/companies','/archive/company-settings','/archive/calendar/status','/archive/calendar/ics')
         readonly=request.method=='GET' and any(request.url.path==p or (p.endswith('/') and request.url.path.startswith(p)) for p in read_paths)
         readonly=readonly or (request.method=='POST' and request.url.path=='/archive/compare' and request.headers.get('origin') in (None,ORIGIN))
-        readonly=readonly or (request.method=='POST' and request.url.path in ('/archive/embedding-batch','/archive/linkedin','/archive/vacancy-export','/archive/network','/archive/linkedin-chat-analysis','/archive/vacancy-team','/archive/portfolio-publication','/archive/github-import','/archive/resume-source','/archive/analytics-batch','/archive/agent','/archive/resume-review','/archive/skill-analysis','/archive/skill-external','/archive/confirm-description','/archive/workflow','/archive/rank','/archive/company-settings','/archive/calendar') and request.headers.get('origin')==ORIGIN)
+        readonly=readonly or (request.method=='POST' and request.url.path in ('/archive/source-runs','/archive/embedding-batch','/archive/linkedin','/archive/vacancy-export','/archive/network','/archive/linkedin-chat-analysis','/archive/vacancy-team','/archive/portfolio-publication','/archive/github-import','/archive/resume-source','/archive/analytics-batch','/archive/agent','/archive/resume-review','/archive/skill-analysis','/archive/skill-external','/archive/confirm-description','/archive/workflow','/archive/rank','/archive/company-settings','/archive/calendar') and request.headers.get('origin')==ORIGIN)
         return readonly and self.sessions.get(request.cookies.get('archive_session',''),0)>time.time()
 
 def install_archive(app,token,root,path=None):
@@ -87,7 +87,7 @@ def install_archive(app,token,root,path=None):
     async def asset(name:str):
         if name in ('resume-portfolio.js','workflow-core.js','workflow-letter.js','workflow-career.js','vacancy-map.js','resume-sources.js','resume-compare.js','resume-compare-core.js','vacancy-selection.js','vacancy-document.js'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
         if name in ('linkedin-job-export.js','vacancy-export.js','linkedin-profile.js','network-map.js','linkedin-contacts.js','linkedin-chats.js','vacancy-team.js','embedding-batch.js','linkedin.js','linkedin.css','github-runs.js','portfolio-publication.js','github-import.js','trajectory-badges.js','career-trajectory.js','learning-impact.js','career-analytics.js','career-charts.js','career-skills.js','career-analytics.css'):return FileResponse(root/'archive-web'/name,headers={'Cache-Control':'no-cache'})
-        allowed={'busy.js':root/'archive-web/busy.js','linkedin-core.js':root/'hh-research-extension/linkedin-core.js','intake.js':root/'archive-web/intake.js','resume-profile.js':root/'archive-web/resume-profile.js','resume-profile-core.js':root/'archive-web/resume-profile-core.js','resume-profile.css':root/'archive-web/resume-profile.css','company-settings.js':root/'archive-web/company-settings.js','company-picker.js':root/'archive-web/company-picker.js','crm-planning.js':root/'archive-web/crm-planning.js','workflow.js':root/'archive-web/workflow.js','workflow.css':root/'archive-web/workflow.css','journey.js':root/'archive-web/journey.js','skill-analysis-ui.js':root/'archive-web/skill-analysis-ui.js','archive.js':root/'archive-web/archive.js','archive.css':root/'archive-web/archive.css','chatgpt-export.js':root/'hh-research-extension/chatgpt-export.js'}
+        allowed={'busy.js':root/'archive-web/busy.js','source-runs.js':root/'archive-web/source-runs.js','linkedin-core.js':root/'hh-research-extension/linkedin-core.js','intake.js':root/'archive-web/intake.js','resume-profile.js':root/'archive-web/resume-profile.js','resume-profile-core.js':root/'archive-web/resume-profile-core.js','resume-profile.css':root/'archive-web/resume-profile.css','company-settings.js':root/'archive-web/company-settings.js','company-picker.js':root/'archive-web/company-picker.js','crm-planning.js':root/'archive-web/crm-planning.js','workflow.js':root/'archive-web/workflow.js','workflow.css':root/'archive-web/workflow.css','journey.js':root/'archive-web/journey.js','skill-analysis-ui.js':root/'archive-web/skill-analysis-ui.js','archive.js':root/'archive-web/archive.js','archive.css':root/'archive-web/archive.css','chatgpt-export.js':root/'hh-research-extension/chatgpt-export.js'}
         if name not in allowed:raise HTTPException(404)
         return FileResponse(allowed[name],headers={'Cache-Control':'no-cache'})
     @app.post('/archive/open')
@@ -156,6 +156,24 @@ def install_archive(app,token,root,path=None):
                 identifiers={r['id'] for r in subset['items']};data['rows']=[r for r in data['rows'] if r['id'] in identifiers]
             return data
         except (ValueError,KeyError,TypeError) as error:raise HTTPException(422,str(error)) from None
+    def source_runner():
+        from . import source_runs
+        if getattr(app.state,'source_runner',None) is None:app.state.source_runner=source_runs.Runner(store())
+        return app.state.source_runner
+    @app.get('/archive/source-runs')
+    async def source_runs_status():
+        runner=source_runner();runner.kick()
+        return await asyncio.to_thread(runner.status)
+    @app.post('/archive/source-runs')
+    async def source_runs_action(request:Request):
+        data=await payload(request,10000);runner=source_runner()
+        try:
+            if data.get('op')=='start':
+                result=await asyncio.to_thread(runner.start,data.get('sources'))
+                runner.kick();return result
+            if data.get('op')=='stop':return await asyncio.to_thread(runner.stop,data.get('source'))
+            raise ValueError('Неизвестное действие сбора.')
+        except (ValueError,TypeError) as error:raise HTTPException(422,str(error)) from None
     @app.get('/archive/analytics/status')
     async def analytics_status():
         """Real preparation progress for the screen; also starts preparation if it isn't running."""

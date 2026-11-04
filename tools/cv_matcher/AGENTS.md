@@ -13,6 +13,7 @@ A personal, local job-search service. It collects vacancies, stores them with ve
 | Review UI | `archive-web/` (`archive.js`, `career-analytics.js`) | Plain JS with no build step, strict CSP |
 | Opportunities screen | `src/career_analytics.py`, `archive-web/career-analytics.js` | "Карта возможностей", endpoint `GET /archive/analytics` |
 | Scheduled crawlers | `scripts/scrape_online.py`, `src/scrapers/` | Run by `.github/workflows/daily-scrape.yml` at the repo root |
+| Crawls from the web UI | `src/source_runs.py`, `archive-web/source-runs.js` | Yandex and Sber, one at a time in isolated processes |
 | CI to local import | `src/github_collection_export.py`, `src/github_collection_import.py` | The Actions artifact is imported into SQLite |
 | Browser crawler | `hh-research-extension/` | Chrome extension, collects through the user's own tabs |
 | Legacy, do not extend | `server.py` (port 8787), `viewer/`, `linkedin-scraper-extension/`, `cv_matcher.py` | |
@@ -39,6 +40,7 @@ node hh-research-extension/scripts/check.mjs  # extension checks (`npm run caree
 - **Don't commit or push unless asked.** If asked while on `main`, branch first.
 - **Never commit** `.env`, `.cache/`, `.auth/`, `chroma_db/`, `linkedin_profile/`, or anything holding CV text, contacts or tokens. `node tools/workspace.mjs check` from the repo root checks the git index.
 - **Reports in `reports/` are public once committed.** Use aggregate numbers only, with no vacancy text, CV content, contacts or tokens.
+- **Respect refusals from job sites.** Don't add ways around bot checks or blocks, such as spoofed clients. If a site refuses automated reads, report it and leave that source on the Chrome route.
 - **Paid API calls need explicit user action.** Page views and filters must not call OpenAI or other models.
 - **Don't infer closure.** A vacancy missing from a listing is not proof it closed, and absent scores are not zero. The UI says this deliberately.
 - **Migrate user data reversibly.** Relabel rather than delete, record a marker in `archive_meta`, and look at the data first.

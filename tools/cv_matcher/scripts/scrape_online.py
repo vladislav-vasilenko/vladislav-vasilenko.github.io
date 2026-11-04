@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from src.china_sources import CHINA_SOURCES
+from src.source_runs import SBER_QUERIES, YANDEX_URLS
 from src.scrapers import (  # noqa: E402
     YandexScraper, SberScraper, GoogleCareersScraper, MetaCareersScraper,
 )
@@ -41,24 +42,6 @@ GOOGLE_QUERIES = [
     "Applied Scientist",
     "Research Scientist",
 ]
-
-# Yandex special — its URL filter is far more efficient than per-keyword iteration
-YANDEX_URLS = [
-    (
-        "https://yandex.ru/jobs/vacancies?"
-        "professions=ml-developer&professions=backend-developer"
-        "&professions=database-developer"
-    ),
-]
-
-# Sber: only ML/AI-relevant roles — narrow keyword set instead of full catalog.
-SBER_QUERIES = [
-    "ML", "LLM", "VAE", "DPO", "RLHF", "Diffusion", "Audio",
-    "Speech", "ASR", "TTS",
-    "NLP", "RAG", "Search",
-    "Research",
-]
-
 
 def _source_plan(headless: bool = True, include_sber: bool = False):
     """Build (key, factory, queries) list. Storage state is env-driven."""
@@ -87,7 +70,7 @@ def _source_plan(headless: bool = True, include_sber: bool = False):
     if include_sber or not os.environ.get("GITHUB_ACTIONS"):
         plan.append((
             "sber",
-            lambda limit=0: SberScraper(limit=limit or 5000, stealth=True, headless=headless),
+            lambda limit=0: SberScraper(limit=limit or 5000, headless=headless),
             SBER_QUERIES,
         ))
 

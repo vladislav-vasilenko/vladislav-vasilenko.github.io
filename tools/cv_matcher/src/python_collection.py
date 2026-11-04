@@ -14,10 +14,10 @@ def execute(payload, stopped=lambda:False):
     env = {k:v for k,v in os.environ.items() if not any(part in k.upper() for part in ('TOKEN','API_KEY','SESSION','STORAGE_STATE','OPENAI','TELEGRAM'))}
     with tempfile.TemporaryDirectory(prefix='career-python-read-') as directory:
         task = Path(directory)/'task.json'; output = Path(directory)/'result.json'
-        task.write_text(json.dumps({key:payload[key] for key in ('source_url','vacancy_id','options') if key in payload}))
+        task.write_text(json.dumps({key:payload[key] for key in ('source_url','vacancy_id','options','known_ids') if key in payload}))
         with (Path(directory)/'worker.log').open('wb') as log:
             process = subprocess.Popen([sys.executable,'-m','src.python_collection','--task',str(task),'--output',str(output)],cwd=root,env=env,stdout=log,stderr=log,start_new_session=True)
-            deadline = time.monotonic()+75
+            deadline = time.monotonic()+min(600,payload.get('deadline',75))
             try:
                 while process.poll() is None:
                     if stopped() or time.monotonic()>=deadline:
@@ -190,7 +190,7 @@ def collect(payload):
     """Use specialised legacy parsers for discovery, shared DOM adapters for detail."""
     url=payload['source_url'];host=urlsplit(url).hostname;provider=SOURCES.get(host)
     if not provider:return {'rows':[],'reason':'unsupported_python_source'}
-    options=payload.get('options',{});limit=min(100,max(1,int(options.get('details',1 if payload.get('vacancy_id') else 40))))
+    options=payload.get('options',{});limit=min(1000 if options.get('source_run') else 100,max(1,int(options.get('details',1 if payload.get('vacancy_id') else 40))))
     if options.get('tbank_filters'):
         return {'rows':[],'reason':'native_filter_requires_chrome'}
     if payload.get('vacancy_id') or identity(url) and not identity(url)['id'].startswith('board_'):
@@ -202,8 +202,8 @@ def collect(payload):
     search=url if provider in ('yandex','avito','ozon') else query.get('query',query.get('q',['']))[0]
     scraper=SCRAPER_REGISTRY[provider](limit=limit,headless=True,stealth=False,archive_path=False)
     events=[];scraper.event_sink=events.append
-    rows=scraper.fetch_jobs(search,existing_ids=set())
-    return {'rows':rows[:limit],**({'reason':'python_parser_error'} if any(e.get('type')=='error' for e in events) else {})}
+    rows=scraper.fetch_jobs(search,existing_ids=set(payload.get('known_ids',[])))
+    return {'rows':rows[:limit],'report':scraper.report,**({'reason':'python_parser_error'} if any(e.get('type')=='error' for e in events) else {})}
 
 
 if __name__=='__main__':

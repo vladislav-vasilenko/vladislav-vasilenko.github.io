@@ -1,0 +1,77 @@
+{
+  "stage": 3,
+  "spec": "specs/03-web-crawler-runs.md",
+  "date": "2026-11-04",
+  "status": "committed, not pushed; the user ran Sber from the panel on the real archive",
+  "live_runs_through_the_ui_on_an_archive_copy": {
+    "first": {
+      "yandex": {
+        "seconds": 4,
+        "listed": 38,
+        "new": 1,
+        "updated": 2
+      },
+      "sber": {
+        "seconds": 72,
+        "queries": 14,
+        "listed": 684,
+        "new": 339,
+        "updated": 0
+      }
+    },
+    "repeat": {
+      "yandex": {
+        "seconds": 2,
+        "new": 0,
+        "updated": 0
+      },
+      "sber": {
+        "seconds": 68,
+        "listed": 684,
+        "new": 0,
+        "updated": 0
+      }
+    },
+    "stop_during_sber_seconds": 4.5,
+    "leftover_worker_processes": 0,
+    "vacancies_before_after": [
+      8000,
+      8340
+    ]
+  },
+  "sber": {
+    "before": {
+      "seconds_per_vacancy": 1.6,
+      "full_text_share_of_30": 0.1,
+      "problem": "Detail pages no longer matched the parser, so most rows saved the whole page: site menu plus truncated JSON."
+    },
+    "after": {
+      "seconds_per_new_vacancy_first_run": 0.21,
+      "full_text": 339,
+      "of": 339,
+      "rows_containing_page_json": 0
+    },
+    "stealth_needed": false,
+    "plain_http": "403. Respected: requests go through a normal browser page."
+  },
+  "yandex_seconds_per_vacancy_with_details": 0.5,
+  "transient_failure_found": "One Sber API request hung for 30 s during a 14-query probe, which switched that query to the old slow parser. A similar failure is the likely cause of one error in an earlier run, though that was not confirmed. A hung request now retries once after 2 s, a refusal is not retried, and the old page parser is removed.",
+  "verification": {
+    "python_tests": {
+      "ran": 578,
+      "failed": 0,
+      "new": 13
+    },
+    "extension_and_ui_tests": {
+      "ran": 433,
+      "failed": 0
+    }
+  },
+  "limits": [
+    "A repeat Sber run still takes about a minute, because each of the 14 queries opens its own browser. Sharing one would speed it up.",
+    "Known vacancies are skipped without updating last_seen. That belongs to stage 5.",
+    "The 144 Yandex snippet rows in the archive were not in the current listing, so these runs did not improve them.",
+    "A CI run from GitHub's network may behave differently for Sber. Sber is not on the schedule and this was not tested.",
+    "The timings above come from temporary archive copies."
+  ]
+}
