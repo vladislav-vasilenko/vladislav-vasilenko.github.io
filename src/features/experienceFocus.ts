@@ -5,6 +5,7 @@ const rules:Record<string,{pattern:RegExp;ru:string;en:string}>={
  multimodal:{pattern:/multimodal|cross.modal|мультимод|\bCLIP\b|\bCLAP\b|\bVLM\b|text.to.audio|text.to.image|модальност/i,ru:'Мультимодальные системы',en:'Multimodal systems'},
  multiagent:{pattern:/multi.agent|langgraph|agent orchestrat|agentic|мультиагент|многоагент|оркестрац.{0,20}агент/i,ru:'Агенты / Оркестрация',en:'Agents / Orchestration'},
  llm:{pattern:/\bLLM\b|\bNLP\b|transformer|attention|llama|\bGPT\b|\bSFT\b|\bRLHF\b|\bRAG\b|tokeniz|трансформер|языков.{0,8}модел/i,ru:'LLM / NLP',en:'LLM / NLP'},
+ product:{pattern:/product (?:owner|manager|management|discovery|strategy|metrics|analytics|launch|roadmap)|\broadmap\b|\bMAU\b|продакт|менеджер продукта|владел.{0,6} продукта|управлени.{0,10} продукт|вывод продукта|анализ данных продукта|роадмап/i,ru:'Продукт',en:'Product'},
  ios:{pattern:/\biOS\b|swift|uikit|coreml|objective.c|arkit/i,ru:'iOS / Swift',en:'iOS / Swift'},
 };
 export function experienceFocus(exp:Pick<Experience,'role'|'company'|'descriptionMd'>,profile:string,lang:Lang):string|null{
