@@ -75,3 +75,11 @@ test('dragging pans a zoomed funnel without activating a flow; ordinary clicks r
  events.pointerdown({button:0,pointerId:1,clientX:200,clientY:200});events.pointermove({pointerId:1,clientX:198,clientY:200});events.pointerup({pointerId:1});events.click(click);assert.equal(blocked,0);
  events.pointerdown({button:0,pointerId:2,clientX:200,clientY:200});events.pointermove({pointerId:2,clientX:150,clientY:170});events.pointerup({pointerId:2});assert.equal(box.scrollLeft,450);assert.equal(box.scrollTop,280);events.click(click);assert.equal(blocked,2);
 });
+test('company list follows the other filters with counts, and company region is the employer region',()=>{
+ const data=[{id:'1',company:'OpenAI',company_region:'us_uk_eu',region:'unknown',category:'research',tags:['research'],first_seen:'2026-10-01',availability:'unknown',fit:null,alignment:null},{id:'2',company:'OpenAI',company_region:'us_uk_eu',region:'unknown',category:'diffusion',tags:['diffusion'],first_seen:'2026-10-01',availability:'unknown',fit:null,alignment:null},{id:'3',company:'Яндекс',company_region:'rus',region:'moscow',category:'research',tags:['research'],first_seen:'2026-10-01',availability:'unknown',fit:null,alignment:null}];
+ assert.equal(JSON.stringify(Charts.companyCounts(data,{category:'diffusion'})),JSON.stringify([{company:'OpenAI',count:1}]));
+ assert.equal(JSON.stringify(Charts.companyCounts(data,{focus:true,focusCategories:['research']}).map(c=>[c.company,c.count])),JSON.stringify([['Яндекс',1],['OpenAI',1]]));
+ assert.equal(Charts.companyCounts(data,{company:'OpenAI',category:'research'}).length,2);
+ assert.equal(Charts.filters(data,{companyRegion:'rus'}).map(r=>r.id).join(),'3');
+});
+

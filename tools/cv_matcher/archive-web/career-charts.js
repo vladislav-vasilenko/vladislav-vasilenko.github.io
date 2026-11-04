@@ -4,7 +4,9 @@
  const stageLabels={none:'Нет отклика в CRM',draft:'Черновик',applied:'Отклик / общение',interview:'Интервью',rejected:'Отказ',offer:'Оффер'};
  const categoryColors=["#7665b7", "#ac6b39", "#297f96", "#5078b6", "#4c7963", "#6870a4", "#a7667c", "#7b8650", "#697983", "#945a47", "#474b94", "#629447", "#944778", "#478f94", "#948347", "#6d4794", "#479456", "#94474f", "#476594", "#7b9447", "#944792", "#479480", "#946947", "#534794", "#529447", "#944768", "#477f94", "#949347", "#7c4794", "#479466", "#945047", "#475594", "#6c9447", "#944782", "#47948f", "#96a09c"];
  function bucket(value,threshold,high,low,unknown){return value===null||value===undefined?unknown:value>=threshold?high:low;}
- function filters(rows,f){return rows.filter(r=>(!f.focus||r.tags.some(tag=>(f.focusCategories||[]).includes(tag)))&&(!f.company||r.company===f.company)&&(!f.category||r.tags.includes(f.category))&&(!f.workFormat||r.work_format===f.workFormat)&&(!f.region||r.region===f.region)&&(!f.from||r.first_seen.slice(0,10)>=f.from)&&(!f.to||r.first_seen.slice(0,10)<=f.to)&&(!f.availability||r.availability===f.availability)&&(!f.fit||f.fit==='known'&&r.fit!==null||f.fit==='unknown'&&r.fit===null||f.fit==='high'&&r.fit!==null&&r.fit>=f.fitThreshold));}
+ function filters(rows,f){return rows.filter(r=>(!f.focus||r.tags.some(tag=>(f.focusCategories||[]).includes(tag)))&&(!f.company||r.company===f.company)&&(!f.category||r.tags.includes(f.category))&&(!f.workFormat||r.work_format===f.workFormat)&&(!f.region||r.region===f.region)&&(!f.companyRegion||r.company_region===f.companyRegion)&&(!f.from||r.first_seen.slice(0,10)>=f.from)&&(!f.to||r.first_seen.slice(0,10)<=f.to)&&(!f.availability||r.availability===f.availability)&&(!f.fit||f.fit==='known'&&r.fit!==null||f.fit==='unknown'&&r.fit===null||f.fit==='high'&&r.fit!==null&&r.fit>=f.fitThreshold));}
+ // Companies available under every other active filter, each with its vacancy count.
+ function companyCounts(rows,f){const counts=new Map();for(const r of filters(rows,{...f,company:''}))counts.set(r.company,(counts.get(r.company)||0)+1);return [...counts].map(([company,count])=>({company,count})).sort((a,b)=>(a.company||'').localeCompare(b.company||'','ru'));}
  function funnel(rows,taxonomy,{fitThreshold=60,alignmentThreshold=.4,width=1450}={}){
   const labels=Object.fromEntries(taxonomy.map(t=>[t.id,t.label])),nodes=new Map(),edges=new Map();
   const paths=rows.map(r=>[{key:'market',label:'Собранная выборка'},{key:r.category,label:labels[r.category]},
@@ -81,5 +83,5 @@
   box.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopImmediatePropagation();suppressClick=false;}},true);
   return {zoomBy,reset,setActive,setWheelZoom:value=>{wheelZoom=!!value;}};
  }
- const api={stageLabels,categoryColors,filters,funnel,evolution,opportunityMap,mapViewport,exportGeometry,zoomViewport,funnelZoom};root.CareerCharts=api;if(typeof module!=='undefined')module.exports=api;
+ const api={stageLabels,categoryColors,filters,companyCounts,funnel,evolution,opportunityMap,mapViewport,exportGeometry,zoomViewport,funnelZoom};root.CareerCharts=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -246,6 +246,7 @@ async function calculateRanking(allowAPI){
 $('runRanking').onclick=()=>calculateRanking(true);$('rankOffline').onclick=()=>calculateRanking(false);
 
 function fillCompanies(){companyPicker.setOptions(companyOptions);}
+function fillCompanyPicker(){fillCompanies();}
 
 document.querySelectorAll('[data-about-target]').forEach(button=>button.onclick=()=>setTab(button.dataset.aboutTarget));
 

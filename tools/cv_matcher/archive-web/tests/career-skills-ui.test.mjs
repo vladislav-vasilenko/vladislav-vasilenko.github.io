@@ -13,7 +13,7 @@ class Element{
 function env(){
  const elements=new Map(),head=new Element('head'),errors=[],snapshot={resume:{id:'fixture_cv',title:'CV',goal:'Research',model:'small'},rows:[],taxonomy:[{id:'other',label:'Other'}],skills:{learning_evidence:[],github_links:[]},methodology:[],as_of:new Date().toISOString()};
  const document={head,createElement:t=>new Element(t),createElementNS:(_,t)=>new Element(t),getElementById:id=>{if(!elements.has(id)){const e=new Element('div');e.value='small';elements.set(id,e);}return elements.get(id);}};
- const context=vm.createContext({document,console,URL,location:{href:"http://127.0.0.1:8788/?view=analytics"},URLSearchParams,setTimeout,clearTimeout,localStorage:{getItem:()=>null,setItem(){}},summaryData:{goal:'Research'},api:async path=>path.startsWith('entities')?{items:[{id:'fixture_cv',title:'CV'}]}:snapshot,showDiagnostic:(e,op)=>errors.push({message:e.message,op}),CareerCharts:{categoryColors:['#333'],filters:r=>r,opportunityMap:()=>({points:[],total:0,missing:0}),stageLabels:{}}});
+ const context=vm.createContext({document,console,URL,location:{href:"http://127.0.0.1:8788/?view=analytics"},URLSearchParams,setTimeout,clearTimeout,localStorage:{getItem:()=>null,setItem(){}},summaryData:{goal:'Research'},api:async path=>path.startsWith('entities')?{items:[{id:'fixture_cv',title:'CV'}]}:snapshot,showDiagnostic:(e,op)=>errors.push({message:e.message,op}),CareerCharts:{categoryColors:['#333'],filters:r=>r,companyCounts:()=>[],opportunityMap:()=>({points:[],total:0,missing:0}),stageLabels:{}}});
  return {context,elements,head,errors};
 }
 test('analytics still renders when new skills asset is missing; failure has a retry',async()=>{
