@@ -164,7 +164,11 @@ class ChinaScraper(BaseScraper):
             try:
                 response=page.goto(spec['url'],wait_until='domcontentloaded',timeout=45000)
                 if response and response.status>=400:raise ValueError('Портал недоступен: HTTP '+str(response.status))
-                page.wait_for_timeout(6000)
+                # Portals can take far longer than usual to draw their first page.
+                for _ in range(50):
+                    if feed or page.locator('a[href*="/job/"],a[href*="position"][href*="detail"]').count():break
+                    page.wait_for_timeout(500)
+                page.wait_for_timeout(1000)
                 for pass_number in range(1000):
                     if re.search(r'/login|/authwall|/checkpoint',page.url) or page.locator('iframe[src*="captcha"],input[type="password"]').count():raise ValueError('Нужен ручной вход или проверка сайта.')
                     if spec['provider']=='feishu':

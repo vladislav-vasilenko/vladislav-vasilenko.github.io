@@ -2,7 +2,7 @@
   "stage": 3,
   "spec": "specs/03-web-crawler-runs.md",
   "date": "2026-11-04",
-  "status": "committed, not pushed; the user ran Sber from the panel on the real archive",
+  "status": "committed, not pushed",
   "live_runs_through_the_ui_on_an_archive_copy": {
     "first": {
       "yandex": {
@@ -58,9 +58,8 @@
   "transient_failure_found": "One Sber API request hung for 30 s during a 14-query probe, which switched that query to the old slow parser. A similar failure is the likely cause of one error in an earlier run, though that was not confirmed. A hung request now retries once after 2 s, a refusal is not retried, and the old page parser is removed.",
   "verification": {
     "python_tests": {
-      "ran": 578,
-      "failed": 0,
-      "new": 13
+      "ran": 583,
+      "failed": 0
     },
     "extension_and_ui_tests": {
       "ran": 433,
@@ -73,5 +72,61 @@
     "The 144 Yandex snippet rows in the archive were not in the current listing, so these runs did not improve them.",
     "A CI run from GitHub's network may behave differently for Sber. Sber is not on the schedule and this was not tested.",
     "The timings above come from temporary archive copies."
-  ]
+  ],
+  "extended_sources_2026_11_04": {
+    "tested_on_archive_copy": {
+      "vacancies_before_after": [
+        8477,
+        11615
+      ],
+      "all_fast_seconds": 101,
+      "deepmind_seconds": 7,
+      "google_seconds": 219,
+      "google_old_seconds_about": 900,
+      "meta_seconds": 5,
+      "meta_listed": 1329
+    },
+    "boards_added": 26,
+    "verified_by": "Each board's own job text or company name, or the company's careers page. xAI's board now names the company SpaceXSI, and x.ai/careers links to it.",
+    "deepmind": "Google Careers with company=DeepMind, a URL provided by the user.",
+    "china_working": [
+      "Tencent",
+      "ByteDance",
+      "DeepSeek"
+    ],
+    "bytedance_flake": "1 of 3 runs failed because the page drew after the 6 s wait. The scraper now waits for data, up to 25 s.",
+    "china_not_working": {
+      "Moonshot, Zhipu": "Job links did not appear within 62 s in the last check, though Moonshot showed them once at 25 s",
+      "MiniMax, Shengshu": "Pages stayed blank",
+      "Alibaba": "No job links on the page tried",
+      "Kuaishou / Kling": "API refused the same request the site sends"
+    },
+    "not_found": [
+      "Mistral",
+      "Black Forest Labs",
+      "Hugging Face",
+      "Artlist",
+      "Luna Labs (name unconfirmed; Luma AI was added)"
+    ],
+    "dreamina": "A ByteDance product, so assumed to be covered by the ByteDance source. Not checked."
+  },
+  "github_actions": {
+    "scheduled_sources": [
+      "yandex",
+      "google",
+      "meta"
+    ],
+    "blocker": "public/online_scraped.json is 19.2 MiB, and the new boards add about 17 MiB of description text alone. MAX_BYTES is 32 MiB in src/github_collection_export.py and src/github_collection_api.py, so adding them to the schedule without moving data out of git would break the export."
+  },
+  "embeddings_estimate": {
+    "vacancies": 8338,
+    "chunks": 31735,
+    "chunks_done": 3199,
+    "description_chars_millions": 25.6,
+    "assumed_chars_per_token": 3,
+    "tokens_millions_about": 8.5,
+    "price_per_million_usd": 0.02,
+    "cost_usd_about": 0.17,
+    "note": "Token count is an estimate, not a tokenizer count. Price is from OpenAI's announcement; check the current pricing page."
+  }
 }

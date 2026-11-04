@@ -25,23 +25,12 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from src.china_sources import CHINA_SOURCES
-from src.source_runs import SBER_QUERIES, YANDEX_URLS
+from src.source_runs import GOOGLE_QUERIES, SBER_QUERIES, YANDEX_URLS
 from src.scrapers import (  # noqa: E402
     YandexScraper, SberScraper, GoogleCareersScraper, MetaCareersScraper,
 )
 
 OUTPUT = ROOT.parent.parent / "public" / "online_scraped.json"
-
-# Google gets server-side filtering so broader queries cover more relevant roles
-GOOGLE_QUERIES = [
-    "Machine Learning",
-    "AI Engineer",
-    "Deep Learning",
-    "NLP",
-    "Computer Vision",
-    "Applied Scientist",
-    "Research Scientist",
-]
 
 def _source_plan(headless: bool = True, include_sber: bool = False):
     """Build (key, factory, queries) list. Storage state is env-driven."""

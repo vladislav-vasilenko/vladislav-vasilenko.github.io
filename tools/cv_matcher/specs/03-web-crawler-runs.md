@@ -15,6 +15,8 @@ The user wants to start crawlers from the web UI, especially fast ones like Yand
 - **Plain HTTP to Sber gets 403, and that stays respected.** Requests go through a normal browser page. A refused request is not retried.
 - **hh.ru stays on Chrome.** It needs the user's authorised session, which is never passed to Python, so the panel only explains how to run it.
 
-## Possible next sources
+## Sources
 
-From small live checks on 2026-11-04. Avito and T-Bank work but take about 15 s per vacancy. Ozon, X5 and Wildberries returned nothing, and Alfa failed. VK and MTS rows have IDs that don't match the archive. Google and Meta arrive through the daily GitHub run, and Google's scraper IDs (`goog_`) differ from archive IDs (`board_`), so known-ID skipping would need a fix.
+`src/source_runs.py` lists them, and `src/scrapers/ats.py` lists the Greenhouse and Ashby boards. Check any new board against the company's own text or careers page, because board names can collide. `reports/03-web-crawler-runs.json` records what works, what doesn't, and why.
+
+Other options from small checks on 2026-11-04: Avito and T-Bank work but take about 15 s per vacancy. Ozon, X5 and Wildberries returned nothing, and Alfa failed. VK and MTS rows have IDs that don't match the archive.

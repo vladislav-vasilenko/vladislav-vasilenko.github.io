@@ -6,10 +6,10 @@ and a repeat run only reads what is still missing. No model calls happen here.
 """
 import asyncio
 import json
+import re
 import secrets
 import threading
 import time
-from urllib.parse import urlencode
 
 # Also used by scripts/scrape_online.py. Yandex's URL filter beats per-keyword search.
 YANDEX_URLS = [
@@ -17,12 +17,49 @@ YANDEX_URLS = [
 ]
 # ML/AI roles only: a narrow keyword set rather than the full catalog.
 SBER_QUERIES = ['ML', 'LLM', 'VAE', 'DPO', 'RLHF', 'Diffusion', 'Audio', 'Speech', 'ASR', 'TTS', 'NLP', 'RAG', 'Search', 'Research']
+GOOGLE_QUERIES = ['Machine Learning', 'AI Engineer', 'Deep Learning', 'NLP', 'Computer Vision', 'Applied Scientist', 'Research Scientist']
+TENCENT_QUERIES = ['AI', 'machine learning', 'algorithm', 'LLM']
+
+RUSSIA, LABS, BIG, CHINA = 'Россия', 'AI-лаборатории', 'Крупные компании', 'Китай'
+GOOGLE_LINK = 'https://www.google.com/about/careers/applications/jobs/results/%'
+
+
+def _spec(label, group, hint, hosts, *, queries=('',), limit=1000, rounds=1, fast=False, link=None, prefix=None, company=None, known_id=None):
+    return {'label': label, 'group': group, 'hint': hint, 'hosts': set(hosts), 'queries': list(queries), 'limit': limit, 'rounds': rounds,
+            'fast': fast, 'link': link, 'prefix': prefix, 'company': company, 'known_id': known_id}
+
+
+def _google_id(row_id, link):
+    """Google rows are stored under a hash of the link, but the scraper checks its own ID."""
+    found = re.match(r'\d+', (link or '').rstrip('/').rsplit('/', 1)[-1])
+    return 'goog_' + found[0] if found else row_id
+
+
+GREENHOUSE = {'job-boards.greenhouse.io', 'boards.greenhouse.io'}
+ASHBY = {'jobs.ashbyhq.com'}
+
+
+def _boards():
+    from .scrapers.ats import BOARDS, GreenhouseScraper
+    return {key: _spec(label, LABS, 'Секунды, открытый API', GREENHOUSE if base is GreenhouseScraper else ASHBY, fast=True) for key, (label, base, _) in BOARDS.items()}
+
 
 SOURCES = {
-    'yandex': {'label': 'Яндекс', 'prefix': 'yandex_', 'urls': YANDEX_URLS, 'limit': 300},
-    'sber': {'label': 'Сбер', 'prefix': 'sber_', 'urls': ['https://rabota.sber.ru/search/?' + urlencode({'query': term}) for term in SBER_QUERIES], 'limit': 500},
+    'yandex': _spec('Яндекс', RUSSIA, 'Секунды, открытый API', {'yandex.ru', 'yandex.com'}, queries=YANDEX_URLS, limit=300, fast=True, prefix='yandex_'),
+    'sber': _spec('Сбер', RUSSIA, 'Минута-две, открытый API', {'rabota.sber.ru'}, queries=SBER_QUERIES, limit=500, fast=True, prefix='sber_'),
+    'deepmind': _spec('Google DeepMind', LABS, 'Секунды, страницы Google Careers', {'www.google.com'}, fast=True, link=GOOGLE_LINK, company='DeepMind', known_id=_google_id),
+    **_boards(),
+    'google': _spec('Google', BIG, 'Несколько минут, также собирается ежедневно в GitHub', {'www.google.com'}, queries=GOOGLE_QUERIES, limit=500, link=GOOGLE_LINK, known_id=_google_id),
+    'meta': _spec('Meta', BIG, 'Браузер, читает только новые; также собирается ежедневно в GitHub', {'www.metacareers.com'}, limit=500, rounds=3, prefix='meta_'),
+    'tencent': _spec('Tencent', CHINA, 'Несколько минут, открытый API', {'careers.tencent.com'}, queries=TENCENT_QUERIES, limit=100, rounds=3),
+    'bytedance': _spec('ByteDance / Seed', CHINA, 'Браузер, большая выдача: до 900 вакансий за запуск', {'jobs.bytedance.com'}, limit=300, rounds=3),
+    'deepseek': _spec('DeepSeek', CHINA, 'Медленно: около 15 с на вакансию', {'talent.deepseek.com', 'app.mokahr.com'}, limit=30, rounds=10),
 }
-DEADLINE = 300
+UNAVAILABLE = {
+    CHINA: 'Пока не работают: Moonshot, Zhipu, MiniMax, Shengshu, Alibaba, Kuaishou / Kling. Их страницы не отдали выдачу автоматическому чтению.',
+    LABS: 'Пока не подключены: Mistral, Black Forest Labs, Hugging Face, Artlist. Открытую доску вакансий для них найти не удалось.',
+}
+DEADLINE = 600
 STALE_SECONDS = DEADLINE + 120
 BATCH = 100
 ACTIVE = ('queued', 'running')
@@ -34,13 +71,24 @@ def _write(archive, run_id, state, progress):
         db.execute('UPDATE source_runs SET state=?,payload=?,updated=? WHERE id=?', (state, json.dumps(progress), time.time(), run_id))
 
 
-def _known(archive, prefix):
-    """All saved IDs for the source, and those with a full text that needn't be read again."""
-    rows = {}
+def _known(archive, spec, source):
+    """Saved IDs for the source, and the scraper-side IDs of rows with a full text to skip."""
+    where, args = ["kind='vacancy'"], []
+    if spec['prefix']:
+        where.append('id LIKE ?');args.append(spec['prefix'] + '%')
+    elif spec['link']:
+        where.append("json_extract(payload,'$.link') LIKE ?");args.append(spec['link'])
+    else:
+        # Portals keep hashed IDs, so their rows are recognised by the company name.
+        where.append('company=?');args.append(spec['label'])
+    existing, complete = set(), set()
     with archive.connect() as db:
-        for row in db.execute("SELECT id,json_extract(payload,'$.description_quality') FROM entities WHERE kind='vacancy' AND id LIKE ?", (prefix + '%',)):
-            rows[row[0]] = row[1]
-    return set(rows), {key for key, quality in rows.items() if quality == 'full'}
+        for row in db.execute("SELECT id,company,json_extract(payload,'$.description_quality') quality,json_extract(payload,'$.link') link FROM entities WHERE " + ' AND '.join(where), args):
+            existing.add(row['id'])
+            # A role first seen in the Google run must still be relabelled by the DeepMind run.
+            if row['quality'] == 'full' and (not spec['company'] or row['company'] == spec['company']):
+                complete.add(spec['known_id'](row['id'], row['link']) if spec['known_id'] else row['id'])
+    return existing, complete
 
 
 def run_one(archive, run_id, source, stop, executor=None, persist=None):
@@ -48,29 +96,35 @@ def run_one(archive, run_id, source, stop, executor=None, persist=None):
     executor, persist = executor or execute, persist or save
     spec = SOURCES[source]
     started = time.time()
-    progress = {'done': 0, 'total': len(spec['urls']), 'listed': 0, 'new': 0, 'updated': 0, 'errors': 0, 'reasons': [], 'seconds': 0}
+    progress = {'done': 0, 'total': len(spec['queries']), 'listed': 0, 'new': 0, 'updated': 0, 'errors': 0, 'reasons': [], 'seconds': 0}
     _write(archive, run_id, 'running', progress)
-    for url in spec['urls']:
+    for query in spec['queries']:
+        for _ in range(spec['rounds']):
+            if stop.is_set():
+                break
+            existing, complete = _known(archive, spec, source)
+            payload = {'source_key': source, 'query': query, 'known_ids': sorted(complete), 'deadline': DEADLINE, 'options': {'details': spec['limit'], 'source_run': True}}
+            response = executor(payload, stop.is_set)
+            response = response if isinstance(response, dict) else {'reason': 'python_error'}
+            rows, report, reason = response.get('rows', []), response.get('report', {}), response.get('reason')
+            progress['listed'] += max(report.get('listed', 0), len(rows))
+            progress['errors'] += report.get('errors', 0) + (1 if reason and reason != 'stopped' and not report.get('errors') else 0)
+            if reason and reason != 'stopped' and reason not in progress['reasons']:
+                progress['reasons'].append(reason)
+            saved = set()
+            target = {'allowed_hosts': spec['hosts'], 'adapter_id': source}
+            for start in range(0, len(rows), BATCH):
+                saved |= set(persist(archive, target, {'rows': rows[start:start + BATCH]}).get('ids', []))
+            progress['new'] += len(saved - existing)
+            progress['updated'] += len(saved & existing)
+            progress['seconds'] = round(time.time() - started, 1)
+            _write(archive, run_id, 'running', progress)
+            # A batch that hit its limit may have more behind it; saving now keeps the work.
+            if report.get('coverage') != 'limited' or not saved:
+                break
         if stop.is_set():
             break
-        existing, complete = _known(archive, spec['prefix'])
-        payload = {'source_url': url, 'known_ids': sorted(complete), 'deadline': DEADLINE, 'options': {'details': spec['limit'], 'source_run': True}}
-        response = executor(payload, stop.is_set)
-        rows = response.get('rows', []) if isinstance(response, dict) else []
-        report = response.get('report', {}) if isinstance(response, dict) else {}
-        reason = response.get('reason') if isinstance(response, dict) else 'python_error'
-        progress['listed'] += max(report.get('listed', 0), len(rows))
-        progress['errors'] += report.get('errors', 0) + (1 if reason and reason != 'stopped' and not report.get('errors') else 0)
-        if reason and reason != 'stopped' and reason not in progress['reasons']:
-            progress['reasons'].append(reason)
-        saved = set()
-        for start in range(0, len(rows), BATCH):
-            result = persist(archive, {'source_url': url}, {'rows': rows[start:start + BATCH]})
-            saved |= set(result.get('ids', []))
-        progress['new'] += len(saved - existing)
-        progress['updated'] += len(saved & existing)
         progress['done'] += 1
-        progress['seconds'] = round(time.time() - started, 1)
         _write(archive, run_id, 'running', progress)
     progress['seconds'] = round(time.time() - started, 1)
     # An empty listing means a broken source, not an empty board.
@@ -135,7 +189,7 @@ class Runner:
                 await asyncio.to_thread(run_one, self.archive, run_id, source, stop, self.executor)
             except Exception as error:
                 # Keep only the type: exception text may quote page contents.
-                _write(self.archive, run_id, 'failed', {'done': 0, 'total': len(SOURCES[source]['urls']), 'listed': 0, 'new': 0, 'updated': 0, 'errors': 1, 'reasons': [type(error).__name__], 'seconds': 0})
+                _write(self.archive, run_id, 'failed', {'done': 0, 'total': len(SOURCES[source]['queries']), 'listed': 0, 'new': 0, 'updated': 0, 'errors': 1, 'reasons': [type(error).__name__], 'seconds': 0})
             finally:
                 self.stops.pop(run_id, None)
 
@@ -152,7 +206,7 @@ class Runner:
                 if row:
                     state = 'interrupted' if row[0] == 'running' and time.time() - row[3] > STALE_SECONDS else row[0]
                     last = {'state': state, 'progress': json.loads(row[1]), 'created': row[2], 'updated': row[3]}
-                items.append({'source': source, 'label': spec['label'], 'last': last})
+                items.append({'source': source, 'label': spec['label'], 'group': spec['group'], 'hint': spec['hint'], 'fast': spec['fast'], 'last': last})
         from .application_store import ApplicationStore
         workers = ApplicationStore(self.archive.path).browser_status()
-        return {'items': items, 'running': any(i['last'] and i['last']['state'] in ACTIVE for i in items), 'chrome_connected': bool(workers.get('collection', {}).get('connected') or workers.get('hh', {}).get('connected'))}
+        return {'items': items, 'unavailable': UNAVAILABLE, 'running': any(i['last'] and i['last']['state'] in ACTIVE for i in items), 'chrome_connected': bool(workers.get('collection', {}).get('connected') or workers.get('hh', {}).get('connected'))}

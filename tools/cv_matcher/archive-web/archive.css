@@ -43,3 +43,5 @@
 @media (prefers-reduced-motion:reduce){.busySpinner{animation-duration:3s}}
 .loginForm{display:contents}
 .sourceRunsBody{display:grid;gap:12px;padding:12px 0 4px}.sourceRun{padding:12px 14px;border:1px solid #dce5dc;border-radius:10px;background:#fff}.sourceRunHead{display:flex;align-items:center;flex-wrap:wrap;gap:12px}.sourceRunHead button{margin:0 0 0 auto}.sourceRun .busy{padding:12px 0 2px}.sourceRun p{margin:8px 0 0}.sourceRunWarning{color:#8a4b12}.sourceRunsBody>button{justify-self:start}
+.sourceRunGroup{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:10px}.sourceRunGroup>h4{grid-column:1/-1;margin:6px 0 0}.sourceRunHead>.muted{flex:1 1 100%;order:3}
+.sourceRunNote{grid-column:1/-1;margin:0}

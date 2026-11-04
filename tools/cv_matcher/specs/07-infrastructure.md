@@ -10,3 +10,4 @@ Proposed, not yet approved. Report: `reports/07-infrastructure.json`.
 - Retire `viewer/` and `server.py`.
 - Declare authorization per route instead of the allowlists in `src/archive_routes.py:20-23`.
 - Split up `archive.js`, especially the repeated `setTab` branches.
+- Add the API-based job boards to the daily schedule. Do this after moving data out of git: the new boards would take `online_scraped.json` past the 32 MiB export limit.

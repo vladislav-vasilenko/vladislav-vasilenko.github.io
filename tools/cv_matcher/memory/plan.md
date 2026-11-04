@@ -11,7 +11,7 @@ Started 2026-11-04. A new agent session should be able to continue from this fil
 | --- | --- | --- |
 | 1 | [Quick fixes](../specs/01-quick-fixes.md) | Committed, not pushed; CI workflow unverified ([report](../reports/01-quick-fixes.json)) |
 | 2 | [Web performance and progress](../specs/02-web-performance.md) | Committed, not pushed; running on the real archive ([report](../reports/02-web-performance.json)) |
-| 3 | [Run crawlers from the web UI](../specs/03-web-crawler-runs.md) | Committed, not pushed; in use on the real archive ([report](../reports/03-web-crawler-runs.json)) |
+| 3 | [Run crawlers from the web UI](../specs/03-web-crawler-runs.md) | Committed, not pushed ([report](../reports/03-web-crawler-runs.json)) |
 | 4 | [macOS Dock app](../specs/04-macos-dock-app.md) | Committed, not pushed; installed and in use ([report](../reports/04-macos-dock-app.json)) |
 | 5 | [Crawl lifecycle](../specs/05-crawl-lifecycle.md) | Not started |
 | 6 | [Vacancy triage](../specs/06-triage.md) | Not started |
@@ -22,6 +22,10 @@ The user approved stage 1 and asked for stages 2, 3 and 4 as additions. Stages 5
 ## Visualisation notes
 
 The opportunities screen already draws a Sankey diagram (`funnel` in `archive-web/career-analytics.js`, layout in `career-charts.js`), and resume comparison already has an alluvial chart (`archive-web/resume-compare.js`). "Market Evolution" is a stacked area chart. A category alluvial over time was offered to the user on 2026-11-04 and is not scheduled. It needs several months of history; the archive had two calendar months.
+
+## Embeddings
+
+The user asked how to embed the whole archive. Estimated about 8.5M tokens and $0.17 with `text-embedding-3-small`, with 3,199 of 31,735 chunks done. Recommended paying rather than compressing. Figures are in `reports/03-web-crawler-runs.json`.
 
 ## Raised with the user
 
