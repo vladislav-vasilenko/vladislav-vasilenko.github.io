@@ -223,3 +223,6 @@ html.minimal-mode #latent-intro+#app{position:relative;margin-top:-24px;border-r
  .latent-intro-track:has([data-orbit="dna"],[data-orbit="galaxy"]) .latent-intro-contacts .intro-huggingface{grid-column:1/-1;justify-self:center}
 }
 .minimal-open-source{margin-bottom:48px}
+.public-node{cursor:pointer}.public-node:hover text:first-of-type,.public-node:focus-visible text:first-of-type{text-decoration:underline}.public-node:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.public-examples ul{list-style:none;margin:10px 0 0;padding:0}.public-examples li{padding:10px 0;border-top:1px solid #dfe5e7}.public-examples li p{margin:4px 0 0;font-size:13px;line-height:1.45;overflow-wrap:anywhere}.public-example-tags{color:#66707a}
+.public-market-filter{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 6px}.public-market-filter button{font:inherit;font-size:13px;padding:4px 10px;border:1px solid #cbd5d9;border-radius:8px;background:transparent;color:inherit;cursor:pointer}.public-market-filter button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.public-example-company{color:#66707a;font-weight:600}.public-employer-filter{display:block;margin:10px 0;font-size:13px}.public-employer-filter select{font:inherit;max-width:100%;margin-left:6px;padding:4px 6px}

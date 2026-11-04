@@ -5,6 +5,7 @@ import './styles/introMobile.css';
 import {setLang,loadContent,type Lang} from './i18n';
 import {loadHHSnapshot,applyHHSnapshot,localizeHHSnapshot,validateSnapshot,type HHSnapshot} from './features/hhExperience';
 import {renderMinimal} from './features/minimalPortfolio';
+import {bindMarketExamples} from './features/publicVisuals';
 import {presentationStyle} from './features/presentationStyle';
 import {exportMarkdown} from './export';
 import {portfolioLanguage} from './features/locale';
@@ -65,6 +66,7 @@ function renderPage():void{
   return;
  }
  root.innerHTML=renderMinimal(cv,language,pageSnapshot,focus,style,detailed);
+ bindMarketExamples(root,pageSnapshot?.visuals,language);
  root.querySelectorAll<HTMLButtonElement>('button[data-presentation]').forEach(button=>button.onclick=()=>{
   style=presentationStyle(button.dataset.presentation||null);const url=new URL(location.href);
   if(style==='minimal')url.searchParams.delete('style');else url.searchParams.set('style',style);
