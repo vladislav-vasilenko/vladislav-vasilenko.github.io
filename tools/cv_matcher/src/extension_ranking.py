@@ -34,7 +34,7 @@ def unit(vector):
 class OpenAIBackend:
     def __init__(self, model):
         if model not in MODELS: raise ValueError('Выбери text-embedding-3-small или text-embedding-3-large.')
-        self.client=None;self.allow_api=True
+        self.client=None;self.allow_api=True;self.ledger=None
         self.model=model;self.dimensions=MODELS[model];self.base_url='https://api.openai.com/v1'
         self.usage_tokens=0;self.request_count=0;self.started=time.monotonic()
     def embed_documents(self, texts):
@@ -47,6 +47,9 @@ class OpenAIBackend:
         out=[]
         for start in range(0,len(texts),64):
             if time.monotonic()-self.started>180: raise ValueError('Лимит времени API. Повторите: уже полученные векторы будут взяты из кэша.')
+            if self.ledger:
+                from .spend_guard import check
+                check(self.ledger,texts[start:start+64])
             try:
                 response=self.client.embeddings.create(model=self.model,input=texts[start:start+64],encoding_format='float')
                 rows=sorted(response.data,key=lambda row:row.index)
@@ -55,6 +58,9 @@ class OpenAIBackend:
                     if len(row.embedding)!=self.dimensions: raise ValueError('Размерность embedding не соответствует модели.')
                     out.append(unit(row.embedding))
                 self.usage_tokens+=response.usage.total_tokens;self.request_count+=1
+                if self.ledger:
+                    from .spend_guard import record
+                    record(self.ledger,response.usage.total_tokens)
             except ValueError: raise
             except Exception as exc:
                 code=getattr(exc,'status_code',None)
@@ -119,7 +125,7 @@ def rank_vacancies(payload, cache_dir, *, backend_factory=OpenAIBackend, now=Non
     for job in jobs:
         start=len(texts);texts.extend(chunks(job['title']+'\n'+job['description']));ranges.append((start,len(texts)))
     if len(texts)>4000: raise ValueError('Больше 4000 текстовых фрагментов. Уменьшите подборку вакансий.')
-    backend=backend_factory(model);backend.allow_api=allow_api
+    backend=backend_factory(model);backend.allow_api=allow_api;backend.ledger=archive
     cache=CachedEmbeddings(backend,cache_dir,version='extension-ranking-v1',vector_store=archive)
     # Cache each batch before the next request so interruption does not discard paid results.
     if archive:

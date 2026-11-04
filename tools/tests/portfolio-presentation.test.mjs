@@ -55,6 +55,11 @@ test('public visuals validate totals and expose neither CRM nor raw review field
  const renderer=load('publicVisuals');
  const data={schema_version:1,trajectory:{label:'Generative research',labs:[{url:'https://github.com/example/lab',label:'lab'}],stages:[{label:'Build a project'}],focus_skills:['Diffusion'],studying:[]},market:{sample:'research',observed:3,mapped:2,points:[{x:.6,y:.4,category:'diffusion',count:2}],categories:[{id:'diffusion',label:'Diffusion',total:3,full:2,partial:1}],method:'saved'}};
  assert.ok(renderer.validateVisuals(data));const html=renderer.renderPublicVisuals(data,'en');assert.match(html,/viewBox/);assert.match(html,/Similarity to CV/);assert.doesNotMatch(html,/NaN|Infinity|PRIVATE/);
+ assert.doesNotMatch(html,/Data updated/);
+ const experience={...data,market:{...data.market,sample:'experience'}};assert.ok(renderer.validateVisuals(experience));assert.match(renderer.renderPublicVisuals(experience,'ru'),/направлениям моего опыта/);assert.equal(renderer.validateVisuals({...data,market:{...data.market,sample:'unknown'}}),null);
+ const dated={...data,market:{...data.market,data_as_of:'2026-11-04'}};assert.ok(renderer.validateVisuals(dated));
+ assert.match(renderer.renderPublicVisuals(dated,'en'),/Data updated: November 4, 2026/);assert.match(renderer.renderPublicVisuals(dated,'ru'),/Данные обновлены: 4 ноября 2026/);
+ for(const bad of ['yesterday','2026-13-45',5])assert.equal(renderer.validateVisuals({...data,market:{...data.market,data_as_of:bad}}),null);
  assert.equal(renderer.validateVisuals({...data,crm:{rejected:1}}),null);
  assert.equal(renderer.validateVisuals({...data,market:{...data.market,observed:4}}),null);
  assert.equal(renderer.validateVisuals({...data,market:{...data.market,points:[{x:NaN,y:.4,category:'diffusion',count:2}]}}),null);

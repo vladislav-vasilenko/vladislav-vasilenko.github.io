@@ -30,6 +30,8 @@ def create_app(token, *, ranker=None, cover_writer=None, archive_path=None):
         github_import=asyncio.create_task(run_github_import(app.state.archive_store))
         from src.portfolio_publication import scheduler as run_portfolio_publication
         publication=asyncio.create_task(run_portfolio_publication(app.state.archive_store))
+        from src.auto_scoring import scheduler as run_auto_scoring
+        auto_scoring=asyncio.create_task(run_auto_scoring(app.state.archive_store,lambda:app.state.rank_archive))
         from src.vacancy_derived import Warmer
         app.state.derived_warmer=Warmer(app.state.archive_store)
         derived=asyncio.create_task(app.state.derived_warmer.scheduler())
@@ -38,6 +40,8 @@ def create_app(token, *, ranker=None, cover_writer=None, archive_path=None):
             if getattr(app.state,'source_runner',None):app.state.source_runner.shutdown()
             derived.cancel()
             with suppress(asyncio.CancelledError):await derived
+            auto_scoring.cancel()
+            with suppress(asyncio.CancelledError):await auto_scoring
             publication.cancel()
             with suppress(asyncio.CancelledError):await publication
             github_import.cancel()
