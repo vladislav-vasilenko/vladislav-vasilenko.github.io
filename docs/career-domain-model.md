@@ -110,11 +110,11 @@ erDiagram
 
 ## Связанные документы и код
 
-- [Архитектура локального сервиса](../tools/cv_matcher/docs/architecture/current-state.md)
-- [Карьерная траектория](../tools/cv_matcher/docs/architecture/career-trajectory.md)
-- [Skills Intelligence](../tools/cv_matcher/docs/architecture/skills-intelligence.md)
-- [Разбор портфеля CV](../tools/cv_matcher/docs/architecture/resume-portfolio-review.md)
-- [Слой приложения](../tools/cv_matcher/docs/architecture/application-layer.md)
-- [ArchiveStore](../tools/cv_matcher/src/archive_store.py)
-- [AnalysisStore](../tools/cv_matcher/src/analysis_store.py)
-- [Модуль траекторий](../tools/cv_matcher/src/career_trajectory.py)
+- [Архитектура локального сервиса](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/docs/architecture/current-state.md)
+- [Карьерная траектория](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/docs/architecture/career-trajectory.md)
+- [Skills Intelligence](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/docs/architecture/skills-intelligence.md)
+- [Разбор портфеля CV](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/docs/architecture/resume-portfolio-review.md)
+- [Слой приложения](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/docs/architecture/application-layer.md)
+- [ArchiveStore](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/src/archive_store.py)
+- [AnalysisStore](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/src/analysis_store.py)
+- [Модуль траекторий](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/src/career_trajectory.py)

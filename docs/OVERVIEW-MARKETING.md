@@ -183,4 +183,4 @@ Career Workspace turns this into one loop: **collect → understand → choose �
 | Models | OpenAI embeddings and chat models through the local service, or any assistant via copy-paste prompts |
 | Public site | TypeScript, Vite, static prerender, GitHub Pages, PWA |
 
-Getting started: [Career Workspace quickstart](../tools/cv_matcher/docs/applicant_quickstart.md) · [Documentation index](../tools/cv_matcher/docs/README.md) · [Security and secrets](../tools/cv_matcher/docs/security.md)
+Getting started: [Career Workspace quickstart](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/docs/applicant_quickstart.md) · [Documentation index](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/docs/README.md) · [Security and secrets](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/docs/security.md)

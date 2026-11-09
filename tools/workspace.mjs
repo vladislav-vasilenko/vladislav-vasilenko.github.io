@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Explicit entry points for two projects; no secrets, sync or model calls. */
+/** Explicit portfolio entry points; no secrets, sync or model calls. */
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -59,29 +59,20 @@ if (project === 'check') {
 }
 
 const entry = manifest.projects[project];
-if (!entry) throw Error('Choose portfolio or career; use list for project paths.');
+if (!entry) throw Error('Choose portfolio; use list for the project path.');
 const cwd = path.resolve(root, entry.root);
 
-if (project === 'portfolio') {
-  const vite = path.join(root, 'node_modules/vite/bin/vite.js');
-  const tsc = path.join(root, 'node_modules/typescript/bin/tsc');
-  if (command === 'build') {
-    run(process.execPath, [tsc], cwd);
-    run(process.execPath, [vite, 'build'], cwd);
-    run(process.execPath, [path.join(root,'tools/portfolio-static.mjs')], cwd);
-  } else if (command === 'dev') {
-    const url = new URL(entry.local_url);
-    run(process.execPath, [vite, '--host', url.hostname, '--port', url.port, '--strictPort'], cwd);
-  } else if (command === 'preview') {
-    run(process.execPath, [vite, 'preview'], cwd);
-  } else {
-    throw Error('Portfolio: dev, build, preview');
-  }
+const vite = path.join(root, 'node_modules/vite/bin/vite.js');
+const tsc = path.join(root, 'node_modules/typescript/bin/tsc');
+if (command === 'build') {
+  run(process.execPath, [tsc], cwd);
+  run(process.execPath, [vite, 'build'], cwd);
+  run(process.execPath, [path.join(root,'tools/portfolio-static.mjs')], cwd);
+} else if (command === 'dev') {
+  const url = new URL(entry.local_url);
+  run(process.execPath, [vite, '--host', url.hostname, '--port', url.port, '--strictPort'], cwd);
+} else if (command === 'preview') {
+  run(process.execPath, [vite, 'preview'], cwd);
 } else {
-  const python = path.join(cwd, '.venv/bin/python');
-  if (!fs.existsSync(python)) throw Error('Run uv sync in tools/cv_matcher first.');
-  if (command === 'dev') run(python, [entry.entry], cwd);
-  else if (command === 'test') run(python, ['scripts/test-isolated.py'], cwd);
-  else if (command === 'check') run(process.execPath, ['hh-research-extension/scripts/check.mjs'], cwd);
-  else throw Error('Career: dev, test, check');
+  throw Error('Portfolio: dev, build, preview');
 }

@@ -6,4 +6,4 @@
 
 Старые Workday-функции сохранены: импорт опыта и образования, помощь с ответом через старый публичный endpoint. Они не используют выбранное локальное CV, approvals, Candidate Facts или CRM. Переносить их в основной workflow следует отдельным Workday-адаптером с preview, версиями и проверкой результата. До этого не считать два расширения взаимозаменяемыми.
 
-См. [аудит структуры и причин](../tools/cv_matcher/docs/architecture/repository-and-autofill.md).
+См. [аудит структуры и причин](https://github.com/vladislav-vasilenko/career-intelligence/blob/main/docs/architecture/repository-and-autofill.md).

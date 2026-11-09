@@ -12,9 +12,6 @@
     "portfolio:dev": "node tools/workspace.mjs portfolio dev",
     "portfolio:build": "node tools/workspace.mjs portfolio build",
     "portfolio:preview": "node tools/workspace.mjs portfolio preview",
-    "career:dev": "node tools/workspace.mjs career dev",
-    "career:test": "node tools/workspace.mjs career test",
-    "career:check": "node tools/workspace.mjs career check",
     "portfolio:test": "node --test tools/tests/*.test.mjs"
   },
   "devDependencies": {
@@ -34,5 +31,5 @@
     "react-dom": "^19.3.1",
     "three": "^0.186.1"
   },
-  "description": "Workspace: public personal portfolio and local Career Intelligence service"
+  "description": "Public personal portfolio"
 }

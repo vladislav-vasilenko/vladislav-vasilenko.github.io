@@ -1,2 +1,0 @@
-"""Runnable scraper smoke tests."""
-
