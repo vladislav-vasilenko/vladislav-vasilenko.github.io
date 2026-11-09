@@ -101,7 +101,7 @@ async function loadData() {
         
         renderVacancies();
     } catch (e) {
-        document.getElementById('loading')!.textContent = `❌ Error loading data: ${e}. Have you run 'uv run cv_matcher.py' at least once?`;
+        document.getElementById('loading')!.textContent = `❌ Error loading data: ${e}. The archived matcher data may be unavailable.`;
     }
 }
 

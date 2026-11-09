@@ -2,7 +2,6 @@ import { type CVContent, getLang } from '../i18n';
 import { type ViewMode, getShortView, getCollapseView, getTechProfile } from '../state';
 import { copyAsText, exportPDF, exportDOC, exportMarkdown } from '../export';
 import { showToast } from './toast';
-import workspace from '../../workspace.projects.json';
 
 function buildShareUrl(viewMode: ViewMode): string {
     const url = new URL(window.location.origin + window.location.pathname);
@@ -62,14 +61,6 @@ export function initializeExport(app: HTMLElement, cv: CVContent, currentViewMod
             };
 
             switch (action) {
-                case 'career': {
-                    const target = new URL(workspace.projects.career.local_url);
-                    target.searchParams.set('view', 'resume');
-                    window.open(target.href, '_blank', 'noopener,noreferrer');
-                    exportMarkdown(filteredCv);
-                    showToast(getLang() === 'ru' ? 'CV скачано. В локальном сервисе откройте Резюме и импортируйте Markdown-файл.' : 'CV downloaded. Import the Markdown file in Career Workspace → Resumes.');
-                    break;
-                }
                 case 'copy':
                     await copyAsText(filteredCv);
                     showToast(cv.labels.copied);

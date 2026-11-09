@@ -5,9 +5,8 @@
 | Проект | Где находится | Запуск |
 |---|---|---|
 | Личное портфолио · TypeScript/Vite | `src/`, `content/`, `public/` | `npm run portfolio:dev` |
-| Career Workspace · Python/SQLite/Web/Chrome | `tools/cv_matcher/` | `npm run career:dev` |
 
-[Структура и совместная работа проектов](docs/workspace.md) · [Сущности и связи системы](docs/career-domain-model.md) · [Документация Career Workspace](tools/cv_matcher/docs/README.md)
+[Структура портфолио](docs/workspace.md)
 
 `workspace.projects.json` задаёт явные точки входа. `npm run workspace:list` показывает их, `npm run workspace:check` проверяет структуру.
 

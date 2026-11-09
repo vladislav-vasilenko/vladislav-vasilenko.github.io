@@ -13,7 +13,6 @@ export default defineConfig({
             input: {
                 main: resolve(__dirname, 'index.html'),
                 matcher: resolve(__dirname, 'matcher.html'),
-                scrape: resolve(__dirname, 'scrape.html'),
                 latent: resolve(__dirname, 'latent.html'),
             }
         }
